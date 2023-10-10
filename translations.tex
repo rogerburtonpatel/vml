@@ -1,0 +1,207 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{ebproof}
+\usepackage{alltt}
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{qtree}
+\usepackage{semantic}
+\usepackage{mathpartir}
+
+\newcommand{\br}[1]{\langle #1 \rangle}
+\newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
+\newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
+
+
+
+\begin{document}
+This document doesn't add anything new yet. 
+
+\parskip=0.8\baselineskip plus 2pt
+\parindent=0pt
+
+
+Introduce an abstract machine semantics? uscheme in chapter 3. 
+
+First, talk about syntactic forms and forms of judgement. 
+
+1 for verse, one for PM. 
+
+Forms of judgement 
+
+First, the base translation: 
+
+\textit{Translation from P to V-style if-then-else:}
+
+\hfill \break
+\textit{case} \texttt{v} \textit{of} \_ $\rightarrow$ \textit{e}
+\hfill \break
+$\triangleq$
+\hfill \break
+\texttt{if (True) e e}
+\hfill \break
+------------------------
+\vspace{-10pt}
+
+TODO FIX if true e e to if true e impossible 
+
+
+\begin{mathpar}
+    \inferrule*[Left=\textsc{Verse-IfTrueBindings}]
+    {\ }
+    {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+    }
+\end{mathpar}
+
+
+\begin{mathpar}
+    \inferrule*[Left=\textsc{Verse-IfTrueEval}]
+    {\ }
+    {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+    }
+\end{mathpar}
+
+Maybe want these as $\textsc{Verse-IfLiteralBindings}$?
+
+
+\begin{mathpar}
+\inferrule*[Left=\textsc{TranslateWildcardBindings}]
+{{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+}
+  {{\textsc{case}(\textsc{Wildcard}, v)}
+   \rightarrowtail {\{\}} 
+  }
+\end{mathpar}
+
+
+
+\begin{mathpar}
+    \inferrule*[Left=\textsc{TranslateWildcardEval}]
+    {\ }
+      {{\textsc{case}(\textsc{Wildcard}, v, e)}
+       \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;e\; e)}
+      }
+    \end{mathpar}
+
+    \begin{mathpar}
+        \inferrule*[Left=\textsc{TranslateWildcardEval'}]
+        {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+        }
+          {{\textsc{case}(\textsc{Wildcard}, v, e)}
+           \rightarrowtail e 
+          }
+        \end{mathpar}
+
+% Help wanted formalizing. Add evaluation? With bindings? 
+
+Moving on to variables: 
+
+\hfill \break
+\textit{case} \texttt{v} \textit{of} $x \rightarrow$ \textit{e}
+\hfill \break
+$\triangleq$
+\hfill \break
+\texttt{if ($\exists x. \; x = v$) e e}
+\hfill \break
+------------------------
+
+\begin{mathpar}
+    \inferrule*[Left=\textsc{Verse-IfBindings}]
+    {\ }
+    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+    }
+\end{mathpar}
+
+\begin{mathpar}
+    \inferrule*[Left=\textsc{Verse-IfEval}]
+    {\ }
+    {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+    }
+\end{mathpar}
+
+\begin{mathpar}
+    \inferrule*[Left=\textsc{TranslateVarBindings}]
+    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail {\{x \longmapsto v\}}
+    }
+      {{\textsc{case}(x, v, e)}
+       \rightarrowtail {\{x \longmapsto v\}}
+      }
+    \end{mathpar}
+
+    \begin{mathpar}
+        \inferrule*[Left=\textsc{TranslateVarEval}]
+        {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+        }
+          {{\textsc{case}(x, v, e)}
+           \rightarrowtail e{\{x \longmapsto v\}}
+          }
+        \end{mathpar}
+    
+
+
+% \pagebreak
+
+% \textbf{Problem C.}
+
+% First, the rules for \&\&:
+% \begin{mathpar}
+% \inferrule*[Right=\textsc{AndShort}]
+%           {\evalr{e_1}  \Downarrow \state{v_1}{\xi'}{\phi}{\rho'}
+%            \and 
+%            v_1 = 0}
+%            {\evalr{\textsc{and}(e_1, e_2)}
+%                 \Downarrow
+%             \state{v_1}{\xi'}{\phi}{\rho'}}
+% \end{mathpar}
+% \begin{mathpar}
+% \inferrule*[Right=\textsc{AndLong}]
+%           {\evalr{e_1}  \Downarrow \state{v_1}{\xi'}{\phi}{\rho'}
+%            \and 
+%            v_1 \neq 0
+%            \and
+%            \state{e_2}{\xi'}{\phi}{\rho'} \Downarrow
+%               \state{v_2}{\xi''}{\phi}{\rho''}}
+%            {\evalr{\textsc{and}(e_1, e_2)}
+%                 \Downarrow
+%             \state{v_2}{\xi''}{\phi}{\rho''}}
+% \end{mathpar}
+
+% \vspace{20pt}
+% And here are the optional rules for $\vert\vert$:
+% \begin{mathpar}
+% \inferrule*[Right=\textsc{OrShort}]
+%           {\evalr{e_1}  \Downarrow \state{v_1}{\xi'}{\phi}{\rho'}
+%            \and 
+%            v_1 \neq 0}
+%            {\evalr{\textsc{or}(e_1, e_2)}
+%                 \Downarrow
+%             \state{v_1}{\xi'}{\phi}{\rho'}}
+% \end{mathpar}
+% \begin{mathpar}
+% \inferrule*[Right=\textsc{OrLong}]
+%           {\evalr{e_1}  \Downarrow \state{v_1}{\xi'}{\phi}{\rho'}
+%            \and 
+%            v_1 = 0
+%            \and
+%            \state{e_2}{\xi'}{\phi}{\rho'} \Downarrow
+%               \state{v_2}{\xi''}{\phi}{\rho''}}
+%            {\evalr{\textsc{or}(e_1, e_2)}
+%                 \Downarrow
+%             \state{v_2}{\xi''}{\phi}{\rho''}}
+
+% \end{mathpar}
+
+% \hfill \break
+% \textit{case} \texttt{scrutinee} \textit{of} \_ $\rightarrow$ \textit{e}
+% \hfill \break
+% $\triangleq$
+% \hfill \break
+% \texttt{if (True) e}
+% \hfill \break
+
+\end{document}
