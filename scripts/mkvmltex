@@ -1,0 +1,43 @@
+#!/bin/bash -e
+#
+# Usage: mkvmltex <name>
+#
+# Makes a latex document specifically for vml translations. 
+#
+# Requires global VMLDIR variable to be set to the toplevel `vml` directory.
+
+
+
+VMLDIR=$DIRVML
+
+if [[ -z "$VMLDIR" ]] ; then 
+    >&2 echo "Error: VMLDIR not set. Make sure it's defined in this script."
+    exit 1
+fi
+
+if [[ "$#" -ne "1" ]] ; then
+    >&2 echo "Usage: mkvmltex <unique-filename>"
+    exit 1
+fi 
+
+TARGET="$1"
+
+# make sure we have a .tex file for VSCode's tex server to recognize it
+filename=$(basename -- "$TARGET")
+extension="${filename##*.}"
+filename="${filename%.*}"
+
+if [[ "$extension" != "tex" ]] ; then 
+    echo "Prepending \"$TARGET\" with .tex extension."
+    TARGET="$filename".tex
+fi
+
+if [[ -f "$TARGET" ]] ; then
+    >&2 echo "Error: file $TARGET already exists."
+    exit 1
+fi
+
+#############
+# finally, do something
+cat "$VMLDIR/scripts/vmltex-template.tex" >> "$TARGET"
+echo "Created new templated document \"$TARGET\"."

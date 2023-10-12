@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage[top=0.2in,bottom=0.3in]{geometry}
+\usepackage{amsmath}
+
+\makeatletter
+\newcommand{\mono}[1]{%  Thanks Paul A. (Windfall Software)
+  {\@tempdima = \fontdimen2\font
+   \frenchspacing
+   \texttt{\spaceskip = 1.1\@tempdima{}#1}}}
+\newcommand\xmono[2][1.1]
+  {\@tempdima = \fontdimen2\font
+   \frenchspacing
+   \texttt{\spaceskip = #1\@tempdima{}#2}}
+\makeatother
+\newcommand*\monobox[2][1.1]{\mbox{\upshape\xmono[#1]{#2}}}
+
+\newcommand\emptylist{\ensuremath{[\,]}}
+\usepackage{keyval}
+
+
+\makeatletter
+
+\newcommand\defcomponent[2]{%
+  \define@key{state}{#1}{\@nameuse{setmyval@#1}{##1}}%
+  \@namedef{setmyval@#1}##1{\@namedef{myval@#1}{##1}}%
+  \@nameuse{setmyval@#1}{\ensuremath{#2}}%
+}
+
+\newcommand\component[1]{\@nameuse{myval@#1}}
+
+\makeatother
+
+\defcomponent{fuel}{F}
+\defcomponent{running}{R}
+\newcommand\norunning{\ensuremath{\mathord{\bullet}}}
+\defcomponent{queue}{Q}
+\defcomponent{heap}{H}
+\defcomponent{jsheap}{J}
+\defcomponent{mc}{M}
+%\defcomponent{cont}{K}
+\newcommand\running[1]{\ensuremath{\ast#1}}
+
+\newcommand\anystate[1][]{%
+  {\tracingall\setkeys{state}{#1}%
+   \let\c=\component
+   \ensuremath{\langle \c{fuel}, \c{running}, \c{queue}, \c{heap}; 
+               \c{mc}, \c{jsheap} \rangle}}}
+\newcommand\hstate[1][]{\anystate[running=\running{R},mc=K,#1]}
+
+\newcommand\goesto[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
+
+\newcommand\cons[2]{\ensuremath{#1\mathbin:#2}}
+\newcommand\parthreads[2]{\ensuremath{#1\mathbin\mid#2}}
+
+\begin{document}
+
+Put things here. 
+
+% Example small-step:
+% \[
+% \hstate[fuel=F,queue=\parthreads{R'} Q]
+% \goesto{\text{context switch}}
+% \hstate[running=\running{R'},queue=\parthreads{Q}{R}]
+% \]
+
+
+
+\end{document}
+
