@@ -16,8 +16,15 @@
 \RequirePackage{semantic}
 \RequirePackage{mathpartir}
 
+
+\newcommand{\choice}{\vrule width 2pt height 7pt}
+
 \newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
 \newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
+
+\renewcommand{\tt}[1]{\texttt{#1}}
+\renewcommand{\it}[1]{\textit{#1}}
+\renewcommand{\bf}[1]{\textbf{#1}}
 
 \makeatletter
 \newcommand{\mono}[1]{%  Thanks Paul A. (Windfall Software)

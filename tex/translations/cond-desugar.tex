@@ -2,17 +2,54 @@
 \usepackage{vmlmacros}
 \begin{document}
 
-A desugaring of Scheme \texttt{cond} to \textit{V}: 
+A desugaring of Scheme \tt{cond} to \textit{V}: 
 
 \begin{align*}
-\texttt{(cond)} \;\; & \triangleq \;\; \texttt{wrong} \\
-\texttt{(cond [} e_g, \; e_a \texttt{] ...)} \;\; 
-& \triangleq \;\; \texttt{if} \;\; e_g  \;\; \texttt{then} \;\; e_a \;\; 
-  \texttt{else (cond ...)} \\
+\tt{(cond)} \;\; & \triangleq \;\; \tt{wrong} \\
+\tt{(cond [} e_g, \; e_a \tt{] \dots)} \;\; 
+& \triangleq \;\; \tt{if} \;\; e_g  \;\; \tt{then} \;\; e_a \;\; 
+  \tt{else (cond \dots)} \\
 \end{align*}
 
-where $e_g$ is a \textit{guarded-exp} and $e_a$ is an \textit{exp} on the 
+where $e_g$ is a \it{guarded-exp} and $e_a$ is an \it{exp} on the 
 right-hand side. 
+
+This translation desugars \tt{cond} into the Verse \tt{if-then-else} form, 
+which itself is syntactic sugar for \bf{one}. 
+
+\medskip
+
+Here is a translation from \tt{cond} to \bf{one}. 
+
+$$ \tt{(cond)} \;\;  \triangleq \;\; \tt{wrong} $$
+
+$$ \tt{(cond [} e_{g1} \; e_{a1}\tt{]} \; \tt{[}e_{g2} \; e_{a2} \tt{] \dots [}e_{gn} \; e_{an}\tt{] )}
+  \triangleq \;\; 
+$$
+
+$$ (\bf{one} \; \{(e_{g1} ; \; \lambda\langle\rangle.\; e_{a1}) \; \choice \; 
+(e_{g2} ; \;\lambda\langle\rangle.\; e_{a2}) \; \choice \; \dots \; \choice \; 
+(e_{gn} ; \;\lambda\langle\rangle.\; e_{an}) \; 
+\choice \; \bf{wrong} \})\langle\rangle  \\
+$$  
+
+Question: is it the above, or is the \bf{wrong} in a lambda, like
+$$
+(\bf{one} \; \{(e_{g1} ; \; \lambda\langle\rangle.\; e_{a1}) \; \choice \; 
+(e_{g2} ; \;\lambda\langle\rangle.\; e_{a2}) \; \choice \; \dots \; \choice \; (e_{gn} ; \;\lambda\langle\rangle.\; e_{an}) \; 
+\choice \; \lambda\langle\rangle.\;\bf{wrong} \})\langle\rangle  \\
+$$  
+
+? 
+
+Either way, getting to the last branch produces wrong- if reaching \bf{wrong} is
+a run-time error, it needen't be in the lambda, but if it's any sort of value, 
+maybe evaluating it with he same semantics as the rest of the branches, as the 
+result of a applying the returned lambda to $\langle\rangle$, could be best. 
+
+\bigskip
+Also, I suspect there's a better symbol to use than $\triangleq$ for 
+translations. What have you used? 
 
 % TODO: Build macros as you go. Translations, evaluations, judgements, rules, 
 %       and all other forms will become clear as you write. 
@@ -54,11 +91,11 @@ right-hand side.
 % \textit{Translation from P to V-style if-then-else:}
 
 % \hfill \break
-% \textit{case} \texttt{v} \textit{of} \_ $\rightarrow$ \textit{e}
+% \textit{case} \tt{v} \textit{of} \_ $\rightarrow$ \textit{e}
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \texttt{if (True) e e}
+% \tt{if (True) e e}
 % \hfill \break
 % ------------------------
 % \vspace{-10pt}
@@ -69,7 +106,7 @@ right-hand side.
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfTrueBindings}]
 %     {\ }
-%     {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+%     {{\textsc{Verse-If}(\tt{True} \;e\; e)}  \rightarrowtail {\{\}}
 %     }
 % \end{mathpar}
 
@@ -77,7 +114,7 @@ right-hand side.
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfTrueEval}]
 %     {\ }
-%     {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+%     {{\textsc{Verse-If}(\tt{True} \;e\; e)}  \rightarrowtail e
 %     }
 % \end{mathpar}
 
@@ -86,7 +123,7 @@ right-hand side.
 
 % \begin{mathpar}
 % \inferrule*[Left=\textsc{TranslateWildcardBindings}]
-% {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+% {{\textsc{Verse-If}(\tt{True} \;e\; e)}  \rightarrowtail {\{\}}
 % }
 %   {{\textsc{case}(\textsc{Wildcard}, v)}
 %    \rightarrowtail {\{\}} 
@@ -99,13 +136,13 @@ right-hand side.
 %     \inferrule*[Left=\textsc{TranslateWildcardEval}]
 %     {\ }
 %       {{\textsc{case}(\textsc{Wildcard}, v, e)}
-%        \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;e\; e)}
+%        \rightarrowtail {\textsc{Verse-If}(\tt{True} \;e\; e)}
 %       }
 %     \end{mathpar}
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateWildcardEval'}]
-%         {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+%         {{\textsc{Verse-If}(\tt{True} \;e\; e)}  \rightarrowtail e
 %         }
 %           {{\textsc{case}(\textsc{Wildcard}, v, e)}
 %            \rightarrowtail e 
@@ -117,31 +154,31 @@ right-hand side.
 % Moving on to variables: 
 
 % \hfill \break
-% \textit{case} \texttt{v} \textit{of} $x \rightarrow$ \textit{e}
+% \textit{case} \tt{v} \textit{of} $x \rightarrow$ \textit{e}
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \texttt{if ($\exists x. \; x = v$) e e}
+% \tt{if ($\exists x. \; x = v$) e e}
 % \hfill \break
 % ------------------------
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfBindings}]
 %     {\ }
-%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\tt{($\exists x. \; x = v$)} e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
 %     }
 % \end{mathpar}
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfEval}]
 %     {\ }
-%     {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+%     {{\textsc{Verse-If}(\tt{True} \;e\; e)}  \rightarrowtail e
 %     }
 % \end{mathpar}
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateVarBindings}]
-%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail {\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\tt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail {\{x \longmapsto v\}}
 %     }
 %       {{\textsc{case}(x, v, e)}
 %        \rightarrowtail {\{x \longmapsto v\}}
@@ -150,7 +187,7 @@ right-hand side.
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateVarEval}]
-%         {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+%         {{\textsc{Verse-If} (\tt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
 %         }
 %           {{\textsc{case}(x, v, e)}
 %            \rightarrowtail e{\{x \longmapsto v\}}
