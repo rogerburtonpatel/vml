@@ -1,7 +1,7 @@
 The first code example in the Verse paper strikes me as "unlike pattern 
 matching." 
 
-$\exists x, \; y, \; z. \; x = \langle y, 3 \rangle; \; x = \langle 2, z \rangle; y \; $ 
+$\exists x, y, z. x = \langle y, 3 \rangle; x = \langle 2, z \rangle; y  $ 
 
 After analyzing it and other examples, I realized it had several
 unique properties that were unlike `case` expressions: 
@@ -72,7 +72,7 @@ case pair of
 ```
 
 Our translation is: 
-$(\textbf{one}\{(\exists xs, \; y, z. \; \texttt{pair} = (xs, y); \; y = \texttt{SOME} \; z;\; \lambda \langle\rangle.\; z::xs \; | \textbf{wrong}\})\langle\rangle$
+$(\textbf{one}\{(\exists xs, y, z. \texttt{pair} = (xs, y);  y = \texttt{SOME}  z; \lambda \langle\rangle. z::xs  | \textbf{wrong}\})\langle\rangle$
 
 We can see $xs$ and $y$ are depend on $\texttt{pair}$, a formal - all good. 
 And $z$ depends on $y$, which is only OK because $y$ depends on $\texttt{pair}$.
@@ -82,5 +82,5 @@ scrutinee.
 <!-- Because all logical variables must be _somewhat_ value-restricted
 (the following is not valid Verse):
 
-$\exists x. \; x$  -->
+$\exists x.  x$  -->
 
