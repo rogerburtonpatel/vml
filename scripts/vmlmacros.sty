@@ -16,20 +16,25 @@
 \RequirePackage{semantic}
 \RequirePackage{mathpartir}
 
-
+% Verse abstract syntax
 \newcommand{\choice}{\vrule width 2pt height 7pt}
+\newcommand{\vlambda}[2]{\lambda \langle #1 \rangle. \; #2}
 
+% Translation rules with oxford brackets
 \newcommand{\oxs}[1]{[\![#1]\!]}
 \newcommand{\translate}[1]{ \mathcal{T} \oxs{#1}}
 \newcommand{\desugar}[1]{ \mathcal{D} \oxs{#1}}
 
-\newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
-\newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
+% \newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
+% \newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
 
+% Abbreviations 
 \renewcommand{\tt}[1]{\texttt{#1}}
 \renewcommand{\it}[1]{\textit{#1}}
 \renewcommand{\bf}[1]{\textbf{#1}}
 
+
+% Nice judgement and rule forms
 \makeatletter
 \newcommand{\mono}[1]{%  Thanks Paul A. (Windfall Software)
   {\@tempdima = \fontdimen2\font

@@ -1,6 +1,43 @@
 \documentclass[]{article}
 \usepackage{vmlmacros}
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
 \begin{document}
+Given $\tt{guarded-exp}$:
 
+\begin{lstlisting}
+    guarded-exp ::= exp
+                 |  $\exists$ x . guarded-exp
+                 |  x = exp; guarded-exp
+
+\end{lstlisting}
+
+\tt{if $e_1$ [] $e_2$ [] ... $e_n$ [] ... fi},
+
+where each $e_k$ is a \tt{guarded-exp}, rewrites to: 
+
+$$
+(\bf{one} \; \{\translate{(e_{1}})
+\; \choice \; (\translate{e_{2}}) 
+\; \choice \; \dots \; \choice \; 
+(\translate{e_{n}}) 
+\; \choice \; \bf{wrong} \})
+ \langle\rangle  \\
+$$  
+
+where
+
+\begin{align}    
+    \translate{\tt{exp}} &= \vlambda{}{\tt{exp}} \\
+    \translate{\exists \; \tt{x.guarded-exp}} 
+    &= \exists \; \tt{x.} \; \translate{\tt{guarded-exp}} \\
+    \translate{\tt{x = exp; guarded-exp}} 
+    &= \tt{x = } \tt{exp}; \translate{\tt{guarded-exp}}
+\end{align}
+
+Let's build off of this to formalize our translations. 
 
 \end{document}
