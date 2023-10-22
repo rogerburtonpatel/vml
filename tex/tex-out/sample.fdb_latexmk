@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1697943316 "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/foo.tex" "foo.pdf" "foo" 1697943316 0
+["pdflatex"] 1697943246 "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/sample.tex" "sample.pdf" "sample" 1697943247 0
   "/Users/rogerburtonpatel/Library/texmf/tex/latex/local/vmlmacros.sty" 1697694946 2522 2f804c16d8742e8e8b31cd5ec2562138 ""
-  "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/foo.tex" 1697943315 3864 d88f5b14c3d954c4e6213d9b694b204a ""
+  "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/sample.tex" 1697088027 3864 d88f5b14c3d954c4e6213d9b694b204a ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1248133631 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1461363279 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/local/texlive/2023/texmf-dist/tex/generic/atbegshi/atbegshi.sty" 1575674566 24708 5584a51a7101caf7e6bbf1fc27d8f7b1 ""
@@ -139,12 +139,12 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1697079000 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1697078929 7883462 3cdb9b88b26eed1a52476da67d50fa9b ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "foo.tex" 1697943315 3864 d88f5b14c3d954c4e6213d9b694b204a ""
-  "tex-out/foo.aux" 1697943316 554 e6f85c6f44bbe194532b4fa1fd8ca02c "pdflatex"
-  "tex-out/foo.out" 1697943316 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "sample.tex" 1697088027 3864 d88f5b14c3d954c4e6213d9b694b204a ""
+  "tex-out/sample.aux" 1697943247 554 e6f85c6f44bbe194532b4fa1fd8ca02c "pdflatex"
+  "tex-out/sample.out" 1697943247 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
   (generated)
-  "foo.pdf"
-  "tex-out/foo.aux"
-  "tex-out/foo.log"
-  "tex-out/foo.out"
+  "sample.pdf"
+  "tex-out/sample.aux"
+  "tex-out/sample.log"
+  "tex-out/sample.out"
   (rewritten before read)

@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  21 OCT 2023 22:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  21 OCT 2023 22:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/foo.tex
-(/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/foo.tex
+**/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/sample.tex
+(/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/sample.tex
 LaTeX2e <2022-11-01> patch level 1
 L3 programming layer <2023-02-22> (/usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
@@ -645,8 +645,8 @@ Package: mathpartir 2016/02/24 version 1.3.2 Math Paragraph for Typesetting Infe
 \mpr@hlist=\box97
 \mpr@vlist=\box98
 \mpr@right=\box99
-)) (tex-out/foo.aux)
-\openout1 = `foo.aux'.
+)) (tex-out/sample.aux)
+\openout1 = `sample.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 3.
 LaTeX Font Info:    ... okay on input line 3.
@@ -721,26 +721,26 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
 Package hyperref Info: Link coloring OFF on input line 3.
- (tex-out/foo.out) (tex-out/foo.out)
+ (tex-out/sample.out) (tex-out/sample.out)
 \@outlinefile=\write4
-\openout4 = `foo.out'.
+\openout4 = `sample.out'.
 
  [1
 
-{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (tex-out/foo.aux)
-Package rerunfilecheck Info: File `foo.out' has not changed.
+{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (tex-out/sample.aux)
+Package rerunfilecheck Info: File `sample.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
  21553 strings out of 476025
- 401818 string characters out of 5790016
+ 401869 string characters out of 5790016
  1850388 words of memory out of 5000000
  41640 multiletter control sequences out of 15000+600000
  512287 words of font info for 32 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 117i,5n,118p,481b,433s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 117i,5n,118p,484b,433s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-Output written on tex-out/foo.pdf (1 page, 13614 bytes).
+Output written on tex-out/sample.pdf (1 page, 13614 bytes).
 PDF statistics:
  21 PDF objects out of 1000 (max. 8388607)
  15 compressed objects within 1 object stream

@@ -1,0 +1,145 @@
+\documentclass[]{article}
+\usepackage{vmlmacros}
+\usepackage{syntax}
+\usepackage{relsize}
+
+% \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
+\setlength{\grammarindent}{10em} % increase separation between LHS/RHS
+
+\setlength{\parindent}{0cm}
+\title{A Syntax of Or-patterns and side conditions in P+}
+\author{rab}
+\date{October 21, 2023}
+\begin{document}
+
+\maketitle
+
+
+We extend an example grammar of patterns within uML with 
+or-patterns and side conditions: 
+
+\bigskip
+
+\begin{grammar}
+    <case-expression> ::= (\tt{case} <expr> (\{ <case-branch> \}))
+    
+    <case-branch> ::= (<pattern> <expr> [side-condition])
+    
+    <pattern> ::= <value-variable-name>
+    \alt <value-constructor-name>
+    \alt <value-constructor-name {pattern}>
+    % <pattern> ::= (<name> \{ <name> | \tt{_} \})
+    \alt (\tt{oneof} <pattern> \{<pattern>\})
+    \alt \texttt{_}
+    
+    <side-condition> ::= (\tt{when} <expr>)
+\end{grammar}
+
+\bigskip
+
+\section{Side conditions with \tt{when}}
+
+The \tt{when} keyword may optionally appear on the rightmost side of a \tt{case}
+branch in \it{P}, within a set of parentheses also containing an expression.
+If the scrutinee matches the pattern, the expression is evaluated. If it 
+evaluates to produce a truthy value, the match succeeds and the right-hand
+side expression is evaluated with the new $\rho'$ produced by the pattern.
+
+\medskip
+
+\bf{General concrete syntax of \tt{when}: }
+
+\begin{verbatim}
+    (case scrutinee
+        [pattern rhs-exp (when condition)])
+\end{verbatim}
+
+
+Example: 
+\begin{verbatim}
+    (case v
+        ['() 0]
+        [(cons x xs) (+ 1 (count-evens xs)) (when (= 0 (mod 2 x)))])
+\end{verbatim}
+
+\bf{A question about types:}
+\medskip
+
+I had a blurb like this: 
+
+\medskip
+
+Note: the \tt{exp} in a \tt{when} is not limited to be a boolean expression, 
+and there is no static type system to assert that it will evaluate to a boolean.
+As in the rest of \it{P}, when an expression evaluates to \tt{\#f}, it
+is considered falsey; otherwise, it is considered truthy. 
+
+\medskip
+
+As I was writing this, I realized uML \it{does}, obviously, have a type system
+to do exactly this. At the same time, I remember you saying we won't have static
+types in our languages- which do you want to go off of? 
+
+\section{Or-patterns with \tt{oneof}}
+
+\medskip
+
+This again raises the question of the type system. 
+
+---------
+
+
+The \tt{oneof} keyword may optionally appear on the leftmost side of a \tt{case}
+branch in \it{P}, within a set of parentheses also containing the set of 
+patterns for that branch. The set of patterns $S$ is defined as such: if $S$ 
+contains a pattern $p$ and the scrutinee matches $p$, that branch is evaluated
+if the pattern-matching algorithm reaches it. 
+When the match succeeds and the right-hand
+side expression is evaluated with the new $\rho'$ produced by a pattern, only 
+that pattern's fresh variables are introduced into $\rho'$. 
+
+\medskip
+
+General concrete syntax of \tt{oneof}: 
+
+
+\begin{verbatim}
+    (case scrutinee
+        [(oneof pattern-1 pattern-2 ... pattern-k) rhs-exp])
+\end{verbatim}
+
+
+Example: 
+\begin{verbatim}
+    (case light
+        [RED 'stop]
+        [(oneof GREEN YELLOW) 'keep-on-goin])
+\end{verbatim}
+
+
+
+\medskip
+
+\bf{A question about or-patterns and types: }
+
+
+The ocaml description of or-patterns is as follows: 
+
+\medskip
+
+The pattern $pattern_1 \mid pattern_2$ represents the logical “or” of the two
+patterns $pattern_1$ and $pattern_2$. A value matches $pattern_1 \mid pattern_2$
+if it matches $pattern_1$ or $pattern_2$. The two sub-patterns $pattern_1$ and
+$pattern_2$ must bind exactly the same identifiers to values having the same
+types. Matching is performed from left to right. More precisely, in case some
+value v matches $pattern_1 \mid pattern_2$, the bindings performed are those of
+$pattern_1$ when v matches $pattern_1$. Otherwise, value v matches $pattern_2$
+whose bindings are performed.
+
+\medskip
+
+\bf{This is a restriction at the level of the type system.
+Again, do we want strict static types in $P$?}
+
+
+\end{document}
