@@ -8,6 +8,7 @@
 
 \setlength{\parindent}{0cm}
 \title{A Syntax of Or-patterns and side conditions in $P^{+}$}
+\title{A Syntax of Or-patterns and side conditions in $P^{+}$}
 \author{rab}
 \date{October 21, 2023}
 \begin{document}
@@ -22,18 +23,18 @@ or-patterns and side conditions:
 
 \begin{grammar}
     <case-expression> ::= \tt{(case} <expr> \{ <case-branch> \} \tt{)}
+    <case-expression> ::= \tt{(case} <expr> \{ <case-branch> \} \tt{)}
     
-    <case-branch> ::= \tt{(}<pattern> <expr> [side-condition]\tt{)}
+    <case-branch> ::= \tt{(}<pattern> <expr>\tt{)}
     
     <pattern> ::= <value-variable-name>
     \alt <value-constructor-name>
     \alt <value-constructor-name> \{<pattern>\}
-    \alt <pattern> <side-condition> 
+    \alt \tt{(}<pattern> \tt{when} <expr> \tt{)} 
     % <pattern> ::= (<name> \{ <name> | \tt{_} \})
     \alt \tt{(oneof} \{<pattern>\}\tt{)}
     \alt \tt{_}
     
-    <side-condition> ::= \tt{(when} <expr>\tt{)}
 \end{grammar}
 
 \bigskip
@@ -52,7 +53,7 @@ side expression is evaluated with the new $\rho'$ produced by the pattern.
 
 \begin{verbatim}
     (case scrutinee
-        [pattern rhs-exp (when condition)])
+        [pattern (when condition) rhs-exp])
 \end{verbatim}
 
 
@@ -60,7 +61,7 @@ Example:
 \begin{verbatim}
     (case v
         ['() 0]
-        [(cons x xs) (+ 1 (count-evens xs)) (when (= 0 (mod 2 x)))])
+        [(cons x xs) (when (= 0 (mod 2 x))) (+ 1 (count-evens xs)) ])
 \end{verbatim}
 
 % \bf{A question about types:}

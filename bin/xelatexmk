@@ -1,0 +1,9 @@
+#!/bin/bash 
+
+if [[ "$#" -ne 1 ]]; then 
+    >&2 echo "Usage: $0 file.tex"
+fi 
+
+TEXFILE="$1"
+
+latexmk -xelatex -pdf -output-directory=. -aux-directory=tex-out --halt-on-error -file-line-error "$TEXFILE"

@@ -20,6 +20,11 @@
 \newcommand{\choice}{\vrule width 2pt height 7pt}
 \newcommand{\vlambda}[2]{\lambda \langle #1 \rangle. \; #2}
 
+% Verse judgement rules 
+\newcommand{\rhohat}{\hat{\rho}}
+\newcommand{\vtempstuck}{\tt{?t}}
+\newcommand{\vfail}{\tt{fail}}
+
 % Translation rules with oxford brackets
 \newcommand{\oxs}[1]{[\![#1]\!]}
 \newcommand{\translate}[1]{ \mathcal{T} \oxs{#1}}
@@ -64,6 +69,7 @@
 \makeatother
 
 \defcomponent{fuel}{F}
+\defcomponent{Rho}{\rho}
 \defcomponent{running}{R}
 \newcommand\norunning{\ensuremath{\mathord{\bullet}}}
 \defcomponent{queue}{Q}
@@ -76,11 +82,49 @@
 \newcommand\anystate[1][]{%
   {\tracingall\setkeys{state}{#1}%
    \let\c=\component
-   \ensuremath{\langle \c{fuel}, \c{running}, \c{queue}, \c{heap}; 
-               \c{mc}, \c{jsheap} \rangle}}}
+   \ensuremath{\langle \c{Rho}, \rangle}}}
 \newcommand\hstate[1][]{\anystate[running=\running{R},mc=K,#1]}
 
 \newcommand\goesto[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
+
+
+\newcommand\vjtuple[1]{
+   \let\c=\component
+   \ensuremath{\langle #1 \rangle}}
+
+   \newcommand\vjudgement[2]{
+    \let\c=\component
+    \ensuremath{#1 \goesto{} #2}}
+
+
+    % rough opsem-based stuff: to change
+\newcommand{\br}[1]{\langle #1 \rangle}
+\newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
+\newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
+
+% Inference rule formatting for use later
+
+% \begin{mathpar}
+%   \inferrule*[Left=\textsc{IfTrue}]
+%     {\inferrule*[Left=\textsc{FormalVar}]
+%       {\texttt{x} \in dom \rho}
+%       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
+%      \and 1 \neq 0 \and
+%      \inferrule*[Right=\textsc{Literal}]
+%        {\ }
+%        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+%     }
+%     {\evalr{\textsc{if}(\textsc{var}(\texttt{x}), 
+%                         \textsc{lit}(\texttt{2}),
+%                         \textsc{lit}(\texttt{3}))}
+%      \Downarrow \evalr{2} 
+%     }
+%   \end{mathpar}
+
+% \newcommand\hstate[1][]{\anystate[running=\running{R},mc=K,#1]}
+
+
+
 
 \newcommand\cons[2]{\ensuremath{#1\mathbin:#2}}
 \newcommand\parthreads[2]{\ensuremath{#1\mathbin\mid#2}}

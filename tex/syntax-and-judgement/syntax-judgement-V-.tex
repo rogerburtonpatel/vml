@@ -20,48 +20,92 @@ We present a grammar of a guarded \tt{if} in $V^{-}$:
 
 \bigskip
 
+
 \begin{grammar}
-    <guarded-if> ::= (\tt{if}  (\{ <guarded-exp> \}) \tt{fi})
+    <program> ::= \{[<def>]\}
+    
+    <def> ::= val <name> <exp>
+        \alt <exp>
+    
+    <name> ::= any token that is not an \textit{int-lit}, does not contain 
+    whitespace, 
+    % a \texttt{'}, bracket, or parenthesis, 
+    and is not a reserved word.
+
+    <exp> ::= <integer-literal>
+        \alt <name>
+        \alt <guarded-if>
+        \alt <lambda>
+
+    <integer-literal> ::= token composed only of digits, possibly prefixed with a \texttt{+} or \texttt{-}.
+
+    <lambda> ::= \tt{lam}.\{[<name>]\} <exp>
+
+    <guarded-if> ::= \tt{if}  (\{ <guarded-exp> \}) \tt{fi}
+
 
     <guarded-exp> ::= <exp>
-    \alt  (\tt{exists} [<logical-var>] <guarded-exp>)
-    \alt  (\tt{exists} <logical-var> \{<logical-var>\} <guarded-exp>) $\star$
-    \alt  ((\solve \; <logical-var> <exp>) <guarded-exp>)
+    \alt  \tt{E} [<logical-var>]\tt{.} <guarded-exp>
+    \alt  \tt{E} <logical-var> \{<logical-var>\}\tt{.} <guarded-exp> $\star$
+    \alt  <exp>\tt{;} <guarded-exp>
+    \alt   <logical-var> \tt{=} <exp>\tt{;} <guarded-exp>
 
-    <logical-var> ::= a fresh name (cannot be lambda- or \tt{exists}-bound in
+    <logical-var> ::= a fresh name (cannot be \tt{lam}- or \tt{E}-bound in
     this scope).
 
 \end{grammar}
 
 A $\star$ indicates syntactic sugar. 
 
-The desugaring of a multi-name \tt{exists}
+The desugaring of a multi-name \tt{E}
 is:
 
 
-$$(\tt{exists} \; lv_1 \; \dots \; \langle guarded\textrm{-}exp \rangle) \;
-\triangleq \; (\tt{exists} \; lv_1 \; (\tt{exists} \; \dots \; \langle
-guarded\textrm{-}exp \rangle))  $$
+$$\tt{E} \; lv_1 \tt{.} \; \dots \; \langle guarded\textrm{-}exp \rangle \;
+\triangleq \; \tt{E} \; lv_1 \tt{.} \; \tt{E} \tt{.} \; \dots \; \langle
+guarded\textrm{-}exp \rangle  $$
 
 
 \section{Forms of Judgement for $V^{-}$:}
 
+    \begin{mathpar}
+        \inferrule*[Left=\textsc{EquationSuccess}]{}
+          {\vjudgement{\vjtuple{\rho, eq}}{\rhohat}}
+    \end{mathpar}
+
+    \begin{mathpar}
+        \inferrule*[Left=\textsc{EquationTempStuck}]{}
+          {\vjudgement{\vjtuple{\rho, eq}}{\vtempstuck}}
+    \end{mathpar}
+
+    \begin{mathpar}
+        \inferrule*[Left=\textsc{EquationFail}]{}
+          {\vjudgement{\vjtuple{\rho, eq}}{\vfail}}
+    \end{mathpar}
+
+    % $$\vjudgement[eq] \goesto{} \vtempstuck$$ 
+    
+    % $$\vjudgement[eq] \goesto{} \vfail $$
+
+
+
 In english: 
 
-A series of equations is either is solved to produce a value or gets stuck. 
+An equation is either solved to produce bindings that extend an environemnt,
+gets temporarily stuck, or fails. 
 
+
+\section{Rules for $V^{-}$:}
+A series of equations is either is solved to produce a value or gets stuck. 
 A single sub-equation of the form x = e , where eq is an equation or an
 expression, either is solved to produce an environment or gets stuck. 
 
 An equation x = e can only be solved if e contains no unbound logical variables. 
 
-
-\section{Rules for $V^{-}$:}
-
-\it{In progress}
-$$
-(\tt{if} \; \tt{fi}) \triangleq (\tt{wrong})
-$$
+% \it{In progress}
+% $$
+% (\tt{if} \; \tt{fi}) \triangleq (\tt{wrong})
+% $$
 
 % \bigskip
 
