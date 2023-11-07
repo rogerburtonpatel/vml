@@ -16,4 +16,4 @@ and Roger Burtonpatel.
 
 `src`: source code for vml. 
 
-`scripts`: scripts for improving workflow. 
+`script-util`: util files for scripts to improve workflow. 

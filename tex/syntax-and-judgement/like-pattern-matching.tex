@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage{vmlmacros}
+
+\begin{document}
+nr's theory: 
+
+
+1. An equation can be solved if it has a side with no unevaluated (i.e.,
+unbound) logical variables. 
+
+2. Once an equation is solved, all its logical variables are evaluated (bound). 
+
+3. A guard can be evaluated "like pattern matching" if there is an order in
+which all its equations can be solved. 
+
+Now consider a graph of equations, not variables.  There is an edge from
+equation A to equation B if solving A makes B solvable.  That may be the
+dependency graph you are looking for.
+
+guard ::= exp list 
+
+exp ::= value $\vert$ eq; e $\vert$ $\exists$ x. exp $\vert$ fail $\vert$ e1 \choice e2 $\vert$ v1 v2 $\vert$ one{exp} $\vert$ all{exp}
+
+eq ::= exp $\vert$ equation 
+
+equation ::= x = exp 
+
+
+A term eq is either an ordinary expression e, or an equation v = e; this syntax
+ensures that equations can only occur to the left of a “; ”. 
+
+
+BUILDING A GUARD IS THE TOPOLOGICAL SORT. 
+
+the guard is the decision tree. 
+
+BIG NOTE: 
+
+In verse, 
+
+1 ; 2 will give you 2 results. we can't have 2 results in ml. 
+so- can you eliminate the form e1 ; e2 ? 
+
+% ntegers 𝑘
+% Variables 𝑥, ~, 𝑧, 𝑓 , 𝑔
+% Programs 𝑝 ::= one{e} where fvs(𝑒) = ∅
+% Expressions 𝑒 ::= v | 𝑒𝑞; e | ∃x. e | fail | e1 e2 | v1 v2 | one{e} | all{e}
+% 𝑒𝑞 ::= e | v = e Note: “𝑒𝑞” is pronounced “expression or equation”
+% Values v ::= 𝑥 | hnf
+% Head values hnf ::= 𝑘 | 𝑜𝑝 | ⟨v1, ···, vn⟩ | 𝜆x. e
+% Primops 𝑜𝑝 ::= gt | add
+% Concrete syntax: “ ” and “;” are right-associative.
+% “=” binds more tightly than “;”.
+% “𝜆” and “∃” each scope as far to the right as possible.
+% For example, (𝜆y. ∃x. x = 1; x + y) means (𝜆y. (∃x. ((x = 1); (x + y)))).
+% Parentheses may be used freely to aid readability and override default precedence.
+% fvs(e) means the free variables of e; in VC, 𝜆 and ∃ are the only binders.
+
+\end{document}

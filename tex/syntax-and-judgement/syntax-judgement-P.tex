@@ -7,7 +7,7 @@
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 
 \setlength{\parindent}{0cm}
-\title{A Syntax of Or-patterns and side conditions in P+}
+\title{A Syntax of Or-patterns and side conditions in $P^{+}$}
 \author{rab}
 \date{October 21, 2023}
 \begin{document}
@@ -21,18 +21,19 @@ or-patterns and side conditions:
 \bigskip
 
 \begin{grammar}
-    <case-expression> ::= (\tt{case} <expr> (\{ <case-branch> \}))
+    <case-expression> ::= \tt{(case} <expr> \{ <case-branch> \} \tt{)}
     
-    <case-branch> ::= (<pattern> <expr> [side-condition])
+    <case-branch> ::= \tt{(}<pattern> <expr> [side-condition]\tt{)}
     
     <pattern> ::= <value-variable-name>
     \alt <value-constructor-name>
-    \alt <value-constructor-name {pattern}>
+    \alt <value-constructor-name> \{<pattern>\}
+    \alt <pattern> <side-condition> 
     % <pattern> ::= (<name> \{ <name> | \tt{_} \})
-    \alt (\tt{oneof} <pattern> \{<pattern>\})
-    \alt \texttt{_}
+    \alt \tt{(oneof} \{<pattern>\}\tt{)}
+    \alt \tt{_}
     
-    <side-condition> ::= (\tt{when} <expr>)
+    <side-condition> ::= \tt{(when} <expr>\tt{)}
 \end{grammar}
 
 \bigskip
@@ -124,6 +125,13 @@ values of the same type within all parts of the or-pattern. Because $P$ has no
 static type system, we don't make this assertion: whichever pattern in the
 or-pattern matches will introduce its variables and bindings into the $\rho'$
 with which the right-hand side is evaluated. 
+
+In addition, a fresh variable on the right-hand side of the or-pattern must
+appear in ALL branches of the or-pattern. 
+
+In V-, you can have defaults to your 'or-patterns' in a way you can't so much in
+P+, i.e. x can be a literal at the end of a list of unmatched patterns (or we
+can fail).
 
 Example: 
 \begin{verbatim}

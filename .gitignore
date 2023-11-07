@@ -1,1 +1,16 @@
 *~
+# binaries
+*.o
+*.ui
+*.uo
+# latex 
+*.aux
+*.fdb_latexmk
+*.synctex.gz
+*.log
+*.fls
+# binaries and linking
+/build/*
+/bin/vml
+/bin/vml-test
+/bin/vml.opt

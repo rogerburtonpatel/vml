@@ -1,0 +1,10 @@
+version = 1
+[workspace]
+root = "millet.cm"
+[workspace.path-vars]
+FOO = { value = "woof" }
+BAR = { path = "bork" }
+[diagnostics]
+5011.severity = "warning"
+4015.severity = "error"
+5029.severity = "ignore"

@@ -1,0 +1,65 @@
+#!/bin/ksh
+
+function die {
+  echo "$*" >&2
+  exit 1
+}
+
+target=
+
+case $1 in
+  -o) target="$2"; shift 2 ;;
+esac
+
+[[ $# == 1 ]] || die "Usage: $(basename $0) [-o output] file.cm"
+
+set -A uis
+set -A uos
+
+typeset -A compiled
+
+newest=  # newest prerequisite
+
+function compile {
+  cat "$1" | while read src comments; do
+    case "$src" in
+      *.sml)
+        if [[ -z "${compiled[$src]}" ]]; then
+          compiled[$src]=yes
+          uo="${src%.sml}.uo"
+          if [[ -z "$newest" ]]; then newest="$src"; fi
+          if [[ "$src" -nt "$uo" || "$newest" -nt "$uo" ]]; then
+            echo mosmlc -c -toplevel ... $src
+            mosmlc -c -toplevel ${uis[*]} $src || exit 1
+          else
+            : echo SKIP $src
+          fi
+          ui="$(basename $src .sml).ui"
+          uis+=($ui)
+          uos+=($(basename $src .sml).uo)
+          if [[ "$ui" -nt "$newest" ]]; then
+            newest="$ui"
+          fi
+        fi
+        ;;
+      ?/basis.cm)
+        : do nothing
+        ;;
+      \(\**)
+        : do nothing
+        ;;
+      *.cm)
+        compile "$src"
+        ;;
+    esac
+  done
+}
+
+
+compile "$1"
+
+if [[ -n "$target" ]]; then
+  echo mosmlc -toplevel -o "$target" "${uos[*]}"
+       mosmlc -toplevel -o "$target" "${uos[*]}"
+fi
+

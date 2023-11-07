@@ -1,0 +1,20 @@
+group is
+  $/basis.cm
+
+  (***** basic infrastructure *****)
+
+  impossible.cm   (* analog of assertion failure *)
+  escapes.sml     (* character escapes for string literals *)
+
+  env.sml         (* environment abstraction *)
+  set.sml         (* set abstraction *)
+  ioutil.sml      (* convenience functions for I/O *)
+  listutil.sml    (* list functions missing from Moscow ML *)
+  Unit.sml
+  error-sig.sml
+  error-module.sml
+   (****** VML ******)
+  vml.sml
+  guard.sml
+  guardsort.sml
+  test-guard-sort.sml
