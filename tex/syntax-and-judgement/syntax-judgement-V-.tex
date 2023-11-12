@@ -9,20 +9,20 @@
 \newcommand{\solve}{\tt{<->}}
 
 \setlength{\parindent}{0cm}
-\title{A Syntax of \tt{if-fi} in a Scheme-like $V^{-}$}
-\author{rab}
+\title{A Syntax of $V^{-}$}
+\author{Roger Burtonpatel}
 \date{October 22, 2023}
 \begin{document}
 
 \maketitle
 
-We present a grammar of a guarded \tt{if} in $V^{-}$: 
+We present a grammar of $V^{-}$: 
 
 \bigskip
 
 
 \begin{grammar}
-    <program> ::= \{[<def>]\}
+    <program> ::= \{<def>\}
     
     <def> ::= val <name> <exp>
         \alt <exp>
@@ -34,73 +34,107 @@ We present a grammar of a guarded \tt{if} in $V^{-}$:
 
     <exp> ::= <integer-literal>
         \alt <name>
+        \alt <name>
         \alt <guarded-if>
         \alt <lambda>
 
     <integer-literal> ::= token composed only of digits, possibly prefixed with a \texttt{+} or \texttt{-}.
 
-    <lambda> ::= \tt{lam}.\{[<name>]\} <exp>
+    <lambda> ::= $\lambda$\{<name>\}\tt{.} <exp>
 
-    <guarded-if> ::= \tt{if}  (\{ <guarded-exp> \}) \tt{fi}
+    <guarded-if> ::= \tt{if}  [<guarded-exp> \{ [] <guarded-exp> \}] \tt{fi}
 
 
     <guarded-exp> ::= <exp>
-    \alt  \tt{E} [<logical-var>]\tt{.} <guarded-exp>
-    \alt  \tt{E} <logical-var> \{<logical-var>\}\tt{.} <guarded-exp> $\star$
+    \alt  \tt{E} \{<logical-var>\}\tt{.} <guarded-exp>
     \alt  <exp>\tt{;} <guarded-exp>
     \alt   <logical-var> \tt{=} <exp>\tt{;} <guarded-exp>
+    \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
+    \alt   <guarded-exp> | <guarded-exp>
 
     <logical-var> ::= a fresh name (cannot be \tt{lam}- or \tt{E}-bound in
     this scope).
 
 \end{grammar}
 
-A $\star$ indicates syntactic sugar. 
+Add patterns, value constructors (application), choice, one, all. 
 
-The desugaring of a multi-name \tt{E}
-is:
+% A $\star$ indicates syntactic sugar. 
 
-
-$$\tt{E} \; lv_1 \tt{.} \; \dots \; \langle guarded\textrm{-}exp \rangle \;
-\triangleq \; \tt{E} \; lv_1 \tt{.} \; \tt{E} \tt{.} \; \dots \; \langle
-guarded\textrm{-}exp \rangle  $$
+% The desugaring of a multi-name \tt{E}
+% is:
 
 
-\section{Forms of Judgement for $V^{-}$:}
-
+% $$\tt{E} \; lv_1 \tt{.} \; \dots \; \langle guarded\rm{-}exp \rangle \;
+% \triangleq \; \tt{E} \; lv_1 \tt{.} \; \tt{E} \tt{.} \; \dots \; \langle
+    % guarded\rm{-}exp \rangle  $$
+    
+    
+    \section{Forms of Judgement for $V^{-}$:}
+    
+    $$\rho: name \rightarrow \mathcal{V}_{\bot}$$
+    
     \begin{mathpar}
         \inferrule*[Left=\textsc{EquationSuccess}]{}
-          {\vjudgement{\vjtuple{\rho, eq}}{\rhohat}}
+        {\vjudgement{\vjtuple{\rho, eq}}{\rhohat}}
     \end{mathpar}
-
+    
     \begin{mathpar}
         \inferrule*[Left=\textsc{EquationTempStuck}]{}
-          {\vjudgement{\vjtuple{\rho, eq}}{\vtempstuck}}
+        {\vjudgement{\vjtuple{\rho, eq}}{\vtempstuck}}
     \end{mathpar}
-
+    
     \begin{mathpar}
         \inferrule*[Left=\textsc{EquationFail}]{}
-          {\vjudgement{\vjtuple{\rho, eq}}{\vfail}}
+        {\vjudgement{\vjtuple{\rho, eq}}{\vfail}}
     \end{mathpar}
-
+    
     % $$\vjudgement[eq] \goesto{} \vtempstuck$$ 
     
     % $$\vjudgement[eq] \goesto{} \vfail $$
+    In english: 
+    
+    An equation is either solved to produce bindings that extend an environemnt,
+    gets temporarily stuck, or fails. 
 
+    \bigskip
+    
+    Other important guidelines (where do we put these?):
+    
+    $$\rho \subseteq \rho'$$
+$$ \rm{when dom } \rho \subseteq \rm{dom } \rho'$$
+$$ \rm{and } \forall x \in \rm{dom } \rho: \rho(x) \subseteq \rho'(x)$$
 
+\bigskip
 
-In english: 
+When $\vjudgement{\vjtuple{\rho, e}}{\rho'}$, then $\rho \subseteq \rho'$.
 
-An equation is either solved to produce bindings that extend an environemnt,
-gets temporarily stuck, or fails. 
-
+\bigskip
 
 \section{Rules for $V^{-}$:}
-A series of equations is either is solved to produce a value or gets stuck. 
-A single sub-equation of the form x = e , where eq is an equation or an
-expression, either is solved to produce an environment or gets stuck. 
 
-An equation x = e can only be solved if e contains no unbound logical variables. 
+% \begin{mathpar}
+%   \inferrule*[Left=\textsc{IfTrue}]
+%     {\inferrule*[Left=\textsc{FormalVar}]
+%       {\texttt{x} \in dom \rho}
+%       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
+%      \and 1 \neq 0 \and
+%      \inferrule*[Right=\textsc{Literal}]
+%        {\ }
+%        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+%     }
+%     {\evalr{\textsc{if}(\textsc{var}(\texttt{x}), 
+%                         \textsc{lit}(\texttt{2}),
+%                         \textsc{lit}(\texttt{3}))}
+%      \Downarrow \evalr{2} 
+%     }
+%   \end{mathpar}
+
+% A series of equations is either is solved to produce a value or gets stuck. 
+% A single sub-equation of the form x = e , where eq is an equation or an
+% expression, either is solved to produce an environment or gets stuck. 
+
+% An equation x = e can only be solved if e contains no unbound logical variables. 
 
 % \it{In progress}
 % $$

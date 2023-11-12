@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{vmlmacros}
+
+\title{Using graphs to prove properties about guarded expressions}
+
+\begin{document}
+
+\maketitle
+
+A guarded expression is composed of parts. 
+
+\bigskip
+
+\it{Note: we could call these "equations," but intermediate expressions like 
+"x" or "3" in} 
+
+\tt{$\exists$ x. x = 3; x; 3; 2 + x}
+\it{aren't really equations. What do you think?}
+
+\bigskip
+
+A part can be solved if, considering an environment $\rho$, 
+all names in the part are known within $\rho$. (A name is 
+\it{known} in an environment if it exists in that environment 
+and has a binding to a value in that environment. A \it{value} 
+is simply either an integer or a value constructor applied 
+to one or more arguments.). 
+
+\bigskip
+
+Let us consider a guarded expression $GE$ and the graph $G$. $G$ is 
+composed of nodes which represent the parts of $GE$. The edges in $G$
+are formed with this rule:
+
+\it{If }
+
+
+\end{document}
