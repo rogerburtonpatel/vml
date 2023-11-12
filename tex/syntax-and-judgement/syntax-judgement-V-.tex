@@ -28,10 +28,10 @@ We present a grammar of $V^{-}$:
         \alt <exp>
     
     <name> ::= any token that is not an \textit{int-lit}, does not contain 
-    whitespace, 
+    whitespace,
     % a \texttt{'}, bracket, or parenthesis, 
-    and is not a reserved word.
-
+    and is not a <value-constructor-name> or a reserved word.
+    <value-constructor-name> ::= \tt{cons} | 
     <exp> ::= <integer-literal>
         \alt <name>
         \alt <name>
