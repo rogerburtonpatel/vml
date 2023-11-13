@@ -2,6 +2,7 @@
 \usepackage{vmlmacros}
 \usepackage{syntax}
 \usepackage{relsize}
+\usepackage{palatino}
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
@@ -20,6 +21,13 @@ We present a grammar of $V^{-}$:
 
 \bigskip
 
+
+% Integers \hspace{1cm} $k$ \\
+% Variables \hspace{.45cm} $x, y, z, f, g$ \\
+% Programs \hspace{1cm} $p ::= \bf{one} \{ e \}$, where \ppl{fvs} $e = \emptyset$ \\
+% Expressions $e ::= v \; \vert \; eq \ppl{;} \; e$ 
+% Values \hspace{1cm} $v ::= x \;\vert\; hnf$ 
+% Head Values \hspace{1cm} $hnf ::= k \;\vert\; op \;\vert\; \lambda x.\;e$ 
 
 \begin{grammar}
     <program> ::= \{<def>\}
@@ -51,6 +59,8 @@ We present a grammar of $V^{-}$:
     \alt   <logical-var> \tt{=} <exp>\tt{;} <guarded-exp>
     \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
     \alt   <guarded-exp> | <guarded-exp>
+    \alt   \tt{one}(\{<guarded-exp>\})
+    \alt   \tt{all}(\{<guarded-exp>\})
 
     <logical-var> ::= a fresh name (cannot be \tt{lam}- or \tt{E}-bound in
     this scope).
@@ -72,46 +82,187 @@ Add patterns, value constructors (application), choice, one, all.
     
     \section{Forms of Judgement for $V^{-}$:}
     
-    $$\rho: name \rightarrow \mathcal{V}_{\bot}$$
+    \it{Metavariables:} \\
+    $v, \; v': $ value \\
+    $eq: $ equation \\ 
+    $\vtempstuck:$ a temporarily-stuck equation \\
+    $\vfail:$ failure \\
+    $\rho, \; \rhohat:$ environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+    $\mathcal{T}: $ Context of all temporarily stuck equations \\ 
+    $e:$ An expression \\ 
+    $ge:$ A guarded expression \\
     
-    \begin{mathpar}
-        \inferrule*[Left=\textsc{EquationSuccess}]{}
-        {\vjudgement{\vjtuple{\rho, eq}}{\rhohat}}
-    \end{mathpar}
-    
-    \begin{mathpar}
-        \inferrule*[Left=\textsc{EquationTempStuck}]{}
-        {\vjudgement{\vjtuple{\rho, eq}}{\vtempstuck}}
-    \end{mathpar}
-    
-    \begin{mathpar}
-        \inferrule*[Left=\textsc{EquationFail}]{}
-        {\vjudgement{\vjtuple{\rho, eq}}{\vfail}}
-    \end{mathpar}
-    
-    % $$\vjudgement[eq] \goesto{} \vtempstuck$$ 
-    
-    % $$\vjudgement[eq] \goesto{} \vfail $$
+    \it{Forms of judgement on equations:} 
+
+    \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat}
+    \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\vtempstuck}
+    \mkjudgementcmd{EquationFail}{\vtuple{\rho, eq}}{\vfail}
+    \newcommand{\EvalSucc}[1][v] {{\vtuple{\rho, e}}%
+    \Downarrow #1} 
+    \mkevaljudgementcmd{EvalFail}{\vtuple{\rho, e}}{\vfail}
+    \newcommand{\EvalGeSucc}[1][\rho] {{\vtuple{#1, \vtempstucks, ge}}%
+                                        \Downarrow v} 
+    \mkevaljudgementcmd{EvalGeFail}{\vtuple{\rho, \vtempstucks, ge}}{\vfail} 
+    \mkjudgementcmd{CtxToRho}{\vtuple{\rho, \vtempstuck;%
+    \vtempstucks}}{\vtuple{\rhohat, \vtempstucks}}
+
+    \showvjudgement{EquationSuccess}{\EquationSuccess}
+    \showvjudgement{EquationTempStuck}{\EquationTempStuck}
+    \showvjudgement{EquationFail}{\EquationFail}
+
+    \it{Forms of judgement on expressions:}
+
+
+    \showvjudgement{EvalSucc}{\EvalSucc}
+    \showvjudgement{EvalFail}{\EvalFail}
+    \showvjudgement{EvalGeSucc}{\EvalGeSucc}
+    \showvjudgement{EvalGeFail}{\EvalGeFail}
+
+    \it{Other forms:}
+
+    \showvjudgement{CtxToRho}{\CtxToRho}
+
     In english: 
     
     An equation is either solved to produce bindings that extend an environemnt,
     gets temporarily stuck, or fails. 
 
+    An expression either evaluates to produce a value or fails. 
+
     \bigskip
     
     Other important guidelines (where do we put these?):
     
-    $$\rho \subseteq \rho'$$
+$$\rho \subseteq \rho'$$
 $$ \rm{when dom } \rho \subseteq \rm{dom } \rho'$$
 $$ \rm{and } \forall x \in \rm{dom } \rho: \rho(x) \subseteq \rho'(x)$$
 
 \bigskip
 
-When $\vjudgement{\vjtuple{\rho, e}}{\rho'}$, then $\rho \subseteq \rho'$.
+When ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, then $\rho \subseteq \rho'$.
 
 \bigskip
 
-\section{Rules for $V^{-}$:}
+\section{Rules (Big-step Operational Semantics) for $V^{-}$:}
+
+    
+\mkevaljudgementcmd{GeEqCtxEval}{\vtuple{\rho, eq; \vtempstucks, ge}}{v}
+
+\newcommand\GeCtxStuckRule[1][Left]{%
+\inferrule*[#1=\textsc{ (Ge-Ctx-Stuck) }]
+    {\inferrule*{}{\EquationTempStuck} 
+    \and
+    \inferrule*{}{\CtxToRho}
+    \and 
+    \inferrule*{}{\EvalGeSucc}
+    }
+    {\GeEqCtxEval}
+}
+
+\mpar{\GeCtxStuckRule}
+
+% \begin{mathpar}
+%     \inferrule*[Left=\textsc{ (Ge-Ctx-Stuck) }]
+%     {\inferrule*{\EquationTempStuck}{\CtxToRho}
+%     \and 
+%     \inferrule*{}{\EvalGeSucc}
+%     }
+%     {\GeEqCtxEval}
+% \end{mathpar}
+
+% Which of the above two do you prefer? 
+
+\mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \vtempstucks, eq; ge}}{v}
+
+\newcommand\GeEqStuckRule{%
+\inferrule*[Left=\textsc{ (Ge-Eq-Succ) }]
+{\GeCtxStuckRule[Right]}
+{\GeCtxEqEval}
+}
+
+\mpar{\GeEqStuckRule}
+
+% Gotta fix the stacking. 
+
+\newcommand\GeCtxSuccRule{%
+\inferrule*[Left=\textsc{ (Ge-Ctx-Succ) }]
+    {\inferrule*{}{\EquationSuccess} 
+    \and 
+    \inferrule*{}{\EvalGeSucc[\rhohat]}
+    }
+    {\GeEqCtxEval}
+}
+
+\mpar{\GeCtxSuccRule}
+
+
+\newcommand\GeEqSuccRule{%
+\inferrule*[Left=\textsc{ (Ge-Eq-Succ) }]
+    {\inferrule*{}{\GeCtxSuccRule[Right]} 
+    }
+    {\GeCtxEqEval}
+}
+
+\mpar{\GeEqSuccRule}
+
+
+\mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq; \vtempstucks, ge}}{\vfail}
+\mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \vtempstucks, eq; ge}}{\vfail}
+
+\newcommand\GeCtxFailRule[1][Left]{%
+\inferrule*[#1=\textsc{ (Ge-Ctx-Fail) }]
+    {\inferrule*{}{\EquationFail} 
+    }
+    {\GeEqCtxEvalFail}
+}
+
+    \mpar{\GeCtxFailRule}
+
+\newcommand\GeEqFailRule{%
+\inferrule*[Left=\textsc{ (Ge-Eq-Fail) }]
+    {\inferrule*{}{\GeCtxFailRule[Right]} 
+    }
+    {\GeCtxEqEvalFail}
+}
+
+\mpar{\GeEqFailRule}
+
+\mkevaljudgementcmd{GeExpSucc}{\vtuple{\rho, \vtempstucks, e; ge}}{v}
+\mkevaljudgementcmd{GeExpFail}{\vtuple{\rho, \vtempstucks, e; ge}}{\vfail}
+
+\newcommand\GeExpFailRule{%
+\inferrule*[Left=\textsc{ (Ge-Exp-Fail) }]
+    {\EvalSucc[\vfail]}
+    {\GeExpFail}
+}
+
+\mpar{\GeExpFailRule}
+
+\newcommand\GeExpSuccRule{%
+\inferrule*[Left=\textsc{ (Ge-Eq-Succ) }]
+    {\EvalSucc[v']
+    \and 
+    \EvalGeSucc}
+    {\GeExpSucc}
+}
+
+\mpar{\GeExpSuccRule}
+
+
+
+
+% \begin{mathpar}
+% \inferrule*[Left=\textsc{Ge-Ctx-Stuck}]
+%     {\inferrule*[Left=\textsc{FormalVar}]
+%       {\texttt{x} \in dom \rho}
+%       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
+%      \and 1 \neq 0 \and
+%      \inferrule*[Right=\textsc{Literal}]
+%        {\EvalGeSucc}
+%        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+%     }
+%     {\GeCtxStuck}
+% \end{mathpar}
 
 % \begin{mathpar}
 %   \inferrule*[Left=\textsc{IfTrue}]
@@ -140,124 +291,5 @@ When $\vjudgement{\vjtuple{\rho, e}}{\rho'}$, then $\rho \subseteq \rho'$.
 % $$
 % (\tt{if} \; \tt{fi}) \triangleq (\tt{wrong})
 % $$
-
-% \bigskip
-
-% \section{Side conditions with \tt{when}}
-
-% The \tt{when} keyword may optionally appear on the rightmost side of a \tt{case}
-% branch in \it{P}, within a set of parentheses also containing an expression.
-% If the scrutinee matches the pattern, the expression is evaluated. If it 
-% evaluates to produce a truthy value, the match succeeds and the right-hand
-% side expression is evaluated with the new $\rho'$ produced by the pattern.
-
-% \medskip
-
-% \bf{General concrete syntax of \tt{when}: }
-
-% \begin{verbatim}
-%     (case scrutinee
-%         [pattern rhs-exp (when condition)])
-% \end{verbatim}
-
-
-% Example: 
-% \begin{verbatim}
-%     (case v
-%         ['() 0]
-%         [(cons x xs) (+ 1 (count-evens xs)) (when (= 0 (mod 2 x)))])
-% \end{verbatim}
-
-% % \bf{A question about types:}
-% % \medskip
-
-% % I had a blurb like this: 
-
-% \medskip
-
-% Note: the \tt{exp} in a \tt{when} is not limited to be a boolean expression, 
-% and there is no static type system to assert that it will evaluate to a boolean.
-% As in the rest of \it{P}, when an expression evaluates to \tt{\#f}, it
-% is considered falsey; otherwise, it is considered truthy. 
-
-% \medskip
-
-% % As I was writing this, I realized uML \it{does}, obviously, have a type system
-% % to do exactly this. At the same time, I remember you saying we won't have static
-% % types in our languages- which do you want to go off of? 
-
-% \section{Or-patterns with \tt{oneof}}
-
-% \medskip
-
-% ---------
-
-
-% The \tt{oneof} keyword may optionally appear on the leftmost side of a \tt{case}
-% branch in \it{P}, within a set of parentheses also containing the set of 
-% patterns for that branch. The set of patterns $S$ is defined as such: if $S$ 
-% contains a pattern $p$ and the scrutinee matches $p$, that branch is evaluated
-% if the pattern-matching algorithm reaches it. 
-% When the match succeeds and the right-hand
-% side expression is evaluated with the new $\rho'$ produced by a pattern, only 
-% that pattern's fresh variables are introduced into $\rho'$. 
-
-% \medskip
-
-% General concrete syntax of \tt{oneof}: 
-
-
-% \begin{verbatim}
-%     (case scrutinee
-%         [(oneof pattern-1 pattern-2 ... pattern-k) rhs-exp])
-% \end{verbatim}
-
-
-% Example: 
-% \begin{verbatim}
-%     (case light
-%         [RED 'stop]
-%         [(oneof GREEN YELLOW) 'keep-on-goin])
-% \end{verbatim}
-
-
-
-% \medskip
-
-% Typed languages with or-patterns, like OCaml, often have the restriction that
-% logical variables introduced within a section of an or-pattern must represesent
-% values of the same type within all parts of the or-pattern. Because $P$ has no
-% static type system, we don't make this assertion: whichever pattern in the
-% or-pattern matches will introduce its variables and bindings into the $\rho'$
-% with which the right-hand side is evaluated. 
-
-% Example: 
-% \begin{verbatim}
-%     (case (list2 1 #f)
-%         ['() 0]
-%         [(oneof (cons 4 x) (cons x 3) (cons x #f)) x]) ;; returns #f
-% \end{verbatim}
-
-% \bf{A question about or-patterns and types: }
-
-
-% The ocaml description of or-patterns is as follows: 
-
-% \medskip
-
-% The pattern $pattern_1 \mid pattern_2$ represents the logical “or” of the two
-% patterns $pattern_1$ and $pattern_2$. A value matches $pattern_1 \mid pattern_2$
-% if it matches $pattern_1$ or $pattern_2$. The two sub-patterns $pattern_1$ and
-% $pattern_2$ must bind exactly the same identifiers to values having the same
-% types. Matching is performed from left to right. More precisely, in case some
-% value v matches $pattern_1 \mid pattern_2$, the bindings performed are those of
-% $pattern_1$ when v matches $pattern_1$. Otherwise, value v matches $pattern_2$
-% whose bindings are performed.
-
-% \medskip
-
-% \bf{This is a restriction at the level of the type system.
-% Again, do we want strict static types in $P$?}
-
 
 \end{document}

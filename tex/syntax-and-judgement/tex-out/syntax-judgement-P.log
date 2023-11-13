@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  26 OCT 2023 15:22
 =======
 This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  8 NOV 2023 02:42
 >>>>>>> 7e6fe2b (changes (srs: guard sorting is done, with some tests, in its own)
+=======
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  13 NOV 2023 02:08
+>>>>>>> 6376e85 (Fundamental eval rules and judgement for V-, with context. Looking to add existential, literal, vcon, etc. Good progress.)
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -768,6 +772,7 @@ Package rerunfilecheck Info: File `syntax-judgement-P.out' has not changed.
 (rerunfilecheck)             Checksum: 067E216E335F7FB0853E7BC291C3EB9A;336.
  ) 
 Here is how much of TeX's memory you used:
+<<<<<<< HEAD
  21906 strings out of 476025
  407034 string characters out of 5790016
 <<<<<<< HEAD
@@ -779,8 +784,12 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
 Output written on tex-out/syntax-judgement-P.pdf (2 pages, 136246 bytes).
 =======
+=======
+ 21921 strings out of 476025
+ 407150 string characters out of 5790016
+>>>>>>> 6376e85 (Fundamental eval rules and judgement for V-, with context. Looking to add existential, literal, vcon, etc. Good progress.)
  1867388 words of memory out of 5000000
- 41951 multiletter control sequences out of 15000+600000
+ 41966 multiletter control sequences out of 15000+600000
  521773 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  117i,6n,118p,520b,433s stack positions out of 10000i,1000n,20000p,200000b,200000s

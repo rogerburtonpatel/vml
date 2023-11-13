@@ -1,5 +1,6 @@
 # Fdb version 4
 <<<<<<< HEAD
+<<<<<<< HEAD
 ["pdflatex"] 1698348179 "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" "syntax-judgement-P.pdf" "syntax-judgement-P" 1698348180 0
   "/Users/rogerburtonpatel/Library/texmf/tex/latex/local/vmlmacros.sty" 1697694946 2522 2f804c16d8742e8e8b31cd5ec2562138 ""
   "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" 1698348179 4996 9f77a94c2db7b48b298e038d348cfda3 ""
@@ -8,6 +9,11 @@
   "/Users/rogerburtonpatel/Library/texmf/tex/latex/local/vmlmacros.sty" 1697694946 2522 2f804c16d8742e8e8b31cd5ec2562138 ""
   "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" 1699429340 4944 d19a08e08df11fe7822a953625433d64 ""
 >>>>>>> 7e6fe2b (changes (srs: guard sorting is done, with some tests, in its own)
+=======
+["pdflatex"] 1699859300 "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" "syntax-judgement-P.pdf" "syntax-judgement-P" 1699859301 0
+  "/Users/rogerburtonpatel/Library/texmf/tex/latex/local/vmlmacros.sty" 1699859294 3996 4c439f958cab8499e899ae1651732e90 ""
+  "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" 1699859300 4944 d19a08e08df11fe7822a953625433d64 ""
+>>>>>>> 6376e85 (Fundamental eval rules and judgement for V-, with context. Looking to add existential, literal, vcon, etc. Good progress.)
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -187,6 +193,7 @@
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1697078929 7883462 3cdb9b88b26eed1a52476da67d50fa9b ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
 <<<<<<< HEAD
+<<<<<<< HEAD
   "syntax-judgement-P.tex" 1698348179 4996 9f77a94c2db7b48b298e038d348cfda3 ""
   "tex-out/syntax-judgement-P.aux" 1698348179 817 b01817b6c90d3df1d1e5262298b7c8e9 "pdflatex"
   "tex-out/syntax-judgement-P.out" 1698348179 336 067e216e335f7fb0853e7bc291c3eb9a "pdflatex"
@@ -195,6 +202,11 @@
   "tex-out/syntax-judgement-P.aux" 1699429341 817 b01817b6c90d3df1d1e5262298b7c8e9 "pdflatex"
   "tex-out/syntax-judgement-P.out" 1699429341 336 067e216e335f7fb0853e7bc291c3eb9a "pdflatex"
 >>>>>>> 7e6fe2b (changes (srs: guard sorting is done, with some tests, in its own)
+=======
+  "syntax-judgement-P.tex" 1699859300 4944 d19a08e08df11fe7822a953625433d64 ""
+  "tex-out/syntax-judgement-P.aux" 1699859301 817 b01817b6c90d3df1d1e5262298b7c8e9 "pdflatex"
+  "tex-out/syntax-judgement-P.out" 1699859301 336 067e216e335f7fb0853e7bc291c3eb9a "pdflatex"
+>>>>>>> 6376e85 (Fundamental eval rules and judgement for V-, with context. Looking to add existential, literal, vcon, etc. Good progress.)
   (generated)
   "syntax-judgement-P.pdf"
   "tex-out/syntax-judgement-P.aux"

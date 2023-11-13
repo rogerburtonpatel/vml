@@ -16,22 +16,56 @@
 \RequirePackage{semantic}
 \RequirePackage{mathpartir}
 
-% Verse abstract syntax
+%%%%%%%%%% VERSE ABSTRACT SYNTAX %%%%%%%%%%
+
+% Symbols 
 \newcommand{\choice}{\vrule width 2pt height 7pt}
 \newcommand{\vlambda}[2]{\lambda \langle #1 \rangle. \; #2}
 
-% Verse judgement rules 
+%%%%%%%%%% VERSE JUDGEMENT RULES %%%%%%%%%%
+
+% Symbols 
 \newcommand{\rhohat}{\hat{\rho}}
 \newcommand{\vtempstuck}{\tt{?t}}
-\newcommand{\vfail}{\tt{fail}}
+\newcommand{\vfail}{\bf{fail}}
+\newcommand{\vtempstucks}{\mathcal{T}}
 
-% Translation rules with oxford brackets
+% Latex abbreviations 
+
+\newcommand{\mpar}[1]{\begin{mathpar} #1 \end{mathpar}}
+
+
+%  Judgements 
+\newcommand{\vtuple}[1]{%
+  \let\c=\component%
+  \ensuremath{\langle #1 \rangle}%
+  }
+  
+\newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
+  
+\newcommand{\vevaljudgement}[2]{#1 \Downarrow #2}
+
+\newcommand{\showvjudgement}[3][Right]{%
+  \mpar{\inferrule*[#1=\textsc{ (#2) }]%
+  {}      
+  {#3}}%
+}
+      
+\newcommand{\mkjudgementcmd}[3]{%
+  \expandafter\newcommand\csname #1\endcsname{\vjudgement{#2}{#3}}%
+  }
+
+\newcommand{\mkevaljudgementcmd}[3]{%
+  \expandafter\newcommand\csname #1\endcsname{\vevaljudgement{#2}{#3}}%
+  }
+      %%%%%%%%%% TRANSLATION %%%%%%%%%%
+      
+      % Translation rules with oxford brackets
 \newcommand{\oxs}[1]{[\![#1]\!]}
 \newcommand{\translate}[1]{ \mathcal{T} \oxs{#1}}
 \newcommand{\desugar}[1]{ \mathcal{D} \oxs{#1}}
 
-% \newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
-% \newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
+%%%%%%%%%% OTHER %%%%%%%%%%
 
 % Abbreviations 
 \renewcommand{\tt}[1]{\texttt{#1}}
@@ -39,10 +73,13 @@
 \renewcommand{\bf}[1]{\textbf{#1}}
 \renewcommand{\rm}[1]{\textrm{#1}}
 
+% Fonts
+\newcommand{\ppl}[1]{{\fontfamily{ppl}\selectfont #1}}
+
 
 % Nice judgement and rule forms
-\makeatletter
 \newcommand{\mono}[1]{%  Thanks Paul A. (Windfall Software)
+\makeatletter
   {\@tempdima = \fontdimen2\font
    \frenchspacing
    \texttt{\spaceskip = 1.1\@tempdima{}#1}}}
@@ -86,16 +123,8 @@
    \ensuremath{\langle \c{Rho}, \rangle}}}
 \newcommand\hstate[1][]{\anystate[running=\running{R},mc=K,#1]}
 
-\newcommand\goesto[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
+\newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
 
-
-\newcommand\vjtuple[1]{
-   \let\c=\component
-   \ensuremath{\langle #1 \rangle}}
-
-   \newcommand\vjudgement[2]{
-    \let\c=\component
-    \ensuremath{#1 \goesto{} #2}}
 
 
     % rough opsem-based stuff: to change
