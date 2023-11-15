@@ -3,19 +3,37 @@
 \usepackage{syntax}
 \usepackage{relsize}
 \usepackage{palatino}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\setcounter{secnumdepth}{1}
+
+\DeclareMathOperator{\dom}{dom}
+
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 
 \newcommand{\solve}{\tt{<->}}
 
+\newcommand\gt{\mathrel{>}}
+\newcommand\lt{\mathrel{<}}
+\newcommand\nr[1]{\leavevmode\emph{NR: #1}}
+\newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
+
+\newcommand\eq{\ensuremath{\mathit{eq}}}  % equation
+\newcommand\emptyseq{\ensuremath{\varepsilon}}
+
 \setlength{\parindent}{0cm}
-\title{A Syntax of $V^{-}$}
+\title{Syntax and Semantics of $V^{-}$}
 \author{Roger Burtonpatel}
 \date{October 22, 2023}
 \begin{document}
 
 \maketitle
+
+\section{Syntax}
+
+\nr{I recommend macros for optional and sequence, not literal brackets.}
 
 We present a grammar of $V^{-}$: 
 
@@ -32,16 +50,18 @@ We present a grammar of $V^{-}$:
 \begin{grammar}
     <program> ::= \{<def>\}
     
-    <def> ::= val <name> <exp>
+    <def> ::= \texttt{val} <name> <exp>
         \alt <exp>
     
     <name> ::= any token that is not an \textit{int-lit}, does not contain 
     whitespace,
     % a \texttt{'}, bracket, or parenthesis, 
     and is not a <value-constructor-name> or a reserved word.
-    <value-constructor-name> ::= \tt{cons} | 
+
+    <value-constructor-name> ::= \tt{cons} | any token that begins
+    with a capital letter or a colon
+
     <exp> ::= <integer-literal>
-        \alt <name>
         \alt <name>
         \alt <guarded-if>
         \alt <lambda>
@@ -53,12 +73,12 @@ We present a grammar of $V^{-}$:
     <guarded-if> ::= \tt{if}  [<guarded-exp> \{ [] <guarded-exp> \}] \tt{fi}
 
 
-    <guarded-exp> ::= <exp>
+    <guarded-exp> ::= $\boldsymbol{\rightarrow}$<exp>
     \alt  \tt{E} \{<logical-var>\}\tt{.} <guarded-exp>
     \alt  <exp>\tt{;} <guarded-exp>
     \alt   <logical-var> \tt{=} <exp>\tt{;} <guarded-exp>
     \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
-    \alt   <guarded-exp> | <guarded-exp>
+    \alt   <guarded-exp> | <guarded-exp> 
     \alt   \tt{one}(\{<guarded-exp>\})
     \alt   \tt{all}(\{<guarded-exp>\})
 
@@ -66,6 +86,18 @@ We present a grammar of $V^{-}$:
     this scope).
 
 \end{grammar}
+
+\nr{I'm skeptical about some of the forms of guarded expression:}
+\begin{itemize}
+\item 
+Choice doesn't look flexible enough, e.g., to express this:
+\begin{align*}
+\exists x . (x \lt 0 | x \gt 0) \rightarrow 17
+\end{align*}
+\item
+Unconvinced about \texttt{one} and \texttt{all} here.
+Let's see some examples.
+\end{itemize}
 
 Add patterns, value constructors (application), choice, one, all. 
 
@@ -80,19 +112,42 @@ Add patterns, value constructors (application), choice, one, all.
     % guarded\rm{-}exp \rangle  $$
     
     
+\section{Refinement ordering on environments}
+
+\begin{align*}
+\rho \subseteq \rho' \text{ when }&\dom\rho  \subseteq \dom \rho'\\
+\text{ and } &\forall x \in \dom \rho: \rho(x) \subseteq \rho'(x)
+\end{align*}
+
+
+
+\vfilbreak
+
+
+
     \section{Forms of Judgement for $V^{-}$:}
     
-    \it{Metavariables:} \\
-    $v, \; v': $ value \\
-    $eq: $ equation \\ 
-    $\vtempstuck:$ a temporarily-stuck equation \\
-    $\vfail:$ failure \\
-    $\rho, \; \rhohat:$ environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
-    $\mathcal{T}: $ Context of all temporarily stuck equations \\ 
-    $e:$ An expression \\ 
-    $ge:$ A guarded expression \\
-    
-    \it{Forms of judgement on equations:} 
+\begin{tabular}{ll}
+\toprule
+    \multicolumn2{l}{\emph{Metavariables}} \\
+\midrule
+    $v, \; v'$& value \\
+    $eq$& equation \\ 
+    $\vtempstuck$& a temporarily-stuck equation \nr{Needs to record \emph{what} is stuck} \\
+    $\vfail$& failure \\
+    $\rho, \; \rhohat$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+    $\mathcal{T}$& Context of all temporarily stuck equations \\ 
+    $e$& An expression \\ 
+    $ge$& A guarded expression \\
+\bottomrule
+\end{tabular}    
+
+\medskip
+
+\subsection{Equations}
+
+    An \emph{equation} is either solved to produce bindings that extend an environemnt,
+    gets temporarily stuck, or fails. 
 
     \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat}
     \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\vtempstuck}
@@ -110,7 +165,18 @@ Add patterns, value constructors (application), choice, one, all.
     \showvjudgement{EquationTempStuck}{\EquationTempStuck}
     \showvjudgement{EquationFail}{\EquationFail}
 
-    \it{Forms of judgement on expressions:}
+Success only refines the environment; that~is, when
+${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
+
+
+
+
+\subsection{Expressions}
+
+    An expression either evaluates to produce a value or fails. 
+\nr{Don't we want a \emph{sequence} of values in the success case?
+And if we have a sequence, do we need \vfail?   Or will the empty
+sequence suffice?}
 
 
     \showvjudgement{EvalSucc}{\EvalSucc}
@@ -118,33 +184,46 @@ Add patterns, value constructors (application), choice, one, all.
     \showvjudgement{EvalGeSucc}{\EvalGeSucc}
     \showvjudgement{EvalGeFail}{\EvalGeFail}
 
-    \it{Other forms:}
+\subsection{Temporarily stuck equations}
+
 
     \showvjudgement{CtxToRho}{\CtxToRho}
 
-    In english: 
-    
-    An equation is either solved to produce bindings that extend an environemnt,
-    gets temporarily stuck, or fails. 
+\nr{I don't buy it.  The token \vtempstuck\ won't be enough to enable
+a rule to compute $\rhohat$.}
 
-    An expression either evaluates to produce a value or fails. 
 
-    \bigskip
-    
-    Other important guidelines (where do we put these?):
-    
-$$\rho \subseteq \rho'$$
-$$ \rm{when dom } \rho \subseteq \rm{dom } \rho'$$
-$$ \rm{and } \forall x \in \rm{dom } \rho: \rho(x) \subseteq \rho'(x)$$
 
 \bigskip
 
-When ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, then $\rho \subseteq \rho'$.
 
-\bigskip
+
+
+
+
+\section{Lists}
+
+Ideas:
+\begin{itemize} 
+\item
+Use $\cdot$ as an infix, associative concatenation operator.
+\item
+Extend it to single values in the customary way.
+\item
+Write the empty sequence as \emptyseq.
+\end{itemize}
+\nr{Could it be worth writing laws here?}
+
 
 \section{Rules (Big-step Operational Semantics) for $V^{-}$:}
 
+
+\nr{Semicolon for list concatenation is not going to work here.  I
+suggest concatenating with a small dot, as in ``$\eq \cdot
+\vtempstucks$.''
+As~the notation stands, it makes my brain hurt.  I'm~not going to try
+to follow~it.
+}
     
 \mkevaljudgementcmd{GeEqCtxEval}{\vtuple{\rho, eq; \vtempstucks, ge}}{v}
 
@@ -172,6 +251,12 @@ When ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, then $\rho \subseteq \rho'$
 
 % Which of the above two do you prefer? 
 
+\nr{The notation below has multiple horizontal lines.  That makes it a
+derivation, not a rule.  I'm having trouble figuring out what's being
+said here.}
+
+
+
 \mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \vtempstucks, eq; ge}}{v}
 
 \newcommand\GeEqStuckRule{%
@@ -181,6 +266,9 @@ When ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, then $\rho \subseteq \rho'$
 }
 
 \mpar{\GeEqStuckRule}
+
+\nr{If you're trying to pluck an equation out of a list of things, try
+``$\vtempstucks \cdot \eq \cdot \vtempstucks'$.''}
 
 % Gotta fix the stacking. 
 
