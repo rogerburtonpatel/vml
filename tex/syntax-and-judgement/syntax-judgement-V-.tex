@@ -11,21 +11,14 @@
 
 
 % Docket: move relevant macros to macros file. 
-\newcommand{\bnfopt}[1]{\{#1\}}
-\renewcommand{\cons}{::}
+\newcommand{\bracketed}[1]{\{#1\}}
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 
-\newcommand{\solve}{\tt{<->}}
-
-\newcommand\gt{\mathrel{>}}
-\newcommand\lt{\mathrel{<}}
 \newcommand\nr[1]{\leavevmode\emph{NR: #1}}
+\newcommand\rab[1]{\leavevmode\emph{rab: #1}}
 \newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
-
-\newcommand\eq{\ensuremath{\mathit{eq}}}  % equation
-\newcommand\emptyseq{\ensuremath{\varepsilon}}
 
 \setlength{\parindent}{0cm}
 \title{Syntax and Semantics of $V^{-}$}
@@ -37,12 +30,11 @@
 
 \section{Syntax}
 
-\nr{I recommend macros for optional and sequence, not literal brackets.}
-
+\nr{I recommend macros for optional and sequence, not literal brackets.} \\
+\rab{Despite my best efforts, such a macro does not work in grammar mode.} \\
 We present a grammar of $V^{-}$: 
 
 \bigskip
-
 
 % Integers \hspace{1cm} $k$ \\
 % Variables \hspace{.45cm} $x, y, z, f, g$ \\
@@ -57,53 +49,41 @@ We present a grammar of $V^{-}$:
     <def> ::= \tt{val} <name> <exp>
         \alt <exp>
     
-    <name> ::= any token that is not an \textit{int-lit}, does not contain 
-    whitespace,
-    % a \texttt{'}, bracket, or parenthesis, 
-    and is not a <value-constructor-name> or a reserved word.
-
-    <value-constructor-name> ::= \tt{cons} | \tt{[]} | any token that begins
-    with a capital letter or a colon
-
-    <exp> ::= <integer-literal>
+        
+        
+        <exp> ::= <integer-literal>
         \alt <name>
         \alt <guarded-if>
         \alt <lambda>
+        \alt <value-constructor-name> \{<exp>\}
+        \alt <exp> $\choice$ <exp>
+        
+        
+        <lambda> ::= $\lambda$\{<name>\}\tt{.} <exp>
+        
+        <guarded-if> ::= \tt{if}  [<guarded-exp> \{ [] <guarded-exp> \}] \tt{fi}
+        
+        
+        <guarded-exp> ::= $\boldsymbol{\rightarrow}$<exp>
+        \alt  \tt{E} \{<name>\}\tt{.} <guarded-exp>
+        \alt  <exp>\tt{;} <guarded-exp>
+        \alt   <name> \tt{=} <exp>\tt{;} <guarded-exp>
+        \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
+        \alt   <guarded-exp> $\choice$ <guarded-exp> 
+        \alt   \tt{one}(\{<guarded-exp>\})
+        \alt   \tt{all}(\{<guarded-exp>\})
+        
+        <name> ::= any token that is not an \textit{int-lit}, does not contain 
+        whitespace,
+        % a \texttt{'}, bracket, or parenthesis, 
+        and is not a <value-constructor-name> or a reserved word.
 
-    <integer-literal> ::= token composed only of digits, possibly prefixed with a \texttt{+} or \texttt{-}.
-
-    <lambda> ::= $\lambda$\{<name>\}\tt{.} <exp>
-
-    <guarded-if> ::= \tt{if}  [<guarded-exp> \{ [] <guarded-exp> \}] \tt{fi}
-
-
-    <guarded-exp> ::= $\boldsymbol{\rightarrow}$<exp>
-    \alt  \tt{E} \{<logical-var>\}\tt{.} <guarded-exp>
-    \alt  <exp>\tt{;} <guarded-exp>
-    \alt   <logical-var> \tt{=} <exp>\tt{;} <guarded-exp>
-    \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
-    \alt   <guarded-exp> | <guarded-exp> 
-    \alt   \tt{one}(\{<guarded-exp>\})
-    \alt   \tt{all}(\{<guarded-exp>\})
-
-    <logical-var> ::= a fresh name (cannot be \tt{lam}- or \tt{E}-bound in
-    this scope).
-
-\end{grammar}
-
-\nr{I'm skeptical about some of the forms of guarded expression:}
-\begin{itemize}
-\item 
-Choice doesn't look flexible enough, e.g., to express this:
-\begin{align*}
-\exists x . (x \lt 0 | x \gt 0) \rightarrow 17
-\end{align*}
-\item
-Unconvinced about \texttt{one} and \texttt{all} here.
-Let's see some examples.
-\end{itemize}
-
-Add patterns, value constructors (application), choice, one, all. 
+        <value-constructor-name> ::= \tt{cons} | \tt{[]} | any token that begins
+        with a capital letter or a colon
+    
+        <integer-literal> ::= token composed only of digits, possibly prefixed with a \texttt{+} or \texttt{-}.
+    
+    \end{grammar}
 
 % A $\star$ indicates syntactic sugar. 
 
@@ -114,8 +94,7 @@ Add patterns, value constructors (application), choice, one, all.
 % $$\tt{E} \; lv_1 \tt{.} \; \dots \; \langle guarded\rm{-}exp \rangle \;
 % \triangleq \; \tt{E} \; lv_1 \tt{.} \; \tt{E} \tt{.} \; \dots \; \langle
     % guarded\rm{-}exp \rangle  $$
-    
-    
+        
 \section{Refinement ordering on environments}
 
 \begin{align*}
@@ -129,58 +108,69 @@ Add patterns, value constructors (application), choice, one, all.
 
 
 
-    \section{Forms of Judgement for $V^{-}$:}
-    
+\section{Forms of Judgement for $V^{-}$:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
     $v, \; v'$& value \\
     $eq$& equation \\ 
-    $\vtempstuck$& a temporarily-stuck equation \nr{Needs to record \emph{what} is stuck} \\
+    $\vtempstuck$& a temporarily-stuck equation \\
     $\vfail$& failure \\
     $\rho, \; \rhohat$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
-    $\mathcal{T}$& Context of all temporarily stuck equations \\ 
+    $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
     $e$& An expression \\ 
     $ge$& A guarded expression \\
 \bottomrule
 \end{tabular}    
 
-\medskip
+\bigskip
 
-\subsection{Equations}
+\begin{tabular}{ll}
+    \toprule
+        \multicolumn2{l}{\emph{Sequences}} \\
+    \midrule
+        $\emptyseq$& the empty sequence \\
+        $S_1 \cdot S_2 $&  Concatenate sequence $S_1$ and sequence $S_2$ \\
+        $x \cdot S_2 $& Cons $x$ onto sequence $S_2$ \\
+    \bottomrule
+    \end{tabular}    
+    
+    \medskip
+    
+    \subsection{Equations}
+    
+    An \emph{equation} is added to the context of equations temporarily stuck
+    equations or produces \vreject. 
 
-    An \emph{equation} is either solved to produce bindings that extend an environemnt,
-    gets temporarily stuck, or fails. 
 
-    \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat}
+    \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat REMOVE THIS}
     \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\vtempstuck}
-    \mkjudgementcmd{EquationFail}{\vtuple{\rho, eq}}{\vfail}
+    \mkjudgementcmd{EquationReject}{\vtuple{\rho, eq}}{\vreject}
+
+    % \showvjudgement{EquationSuccess}{\EquationSuccess}
+    \showvjudgement{EquationTempStuck}{\EquationTempStuck}
+    \showvjudgement{EquationReject}{\EquationReject}
+    
+    
     \newcommand{\EvalSucc}[1][v] {{\vtuple{\rho, e}}%
     \Downarrow #1} 
-    \mkevaljudgementcmd{EvalFail}{\vtuple{\rho, e}}{\vfail}
+    \mkevaljudgementcmd{EvalFail}{\vtuple{\rho, e}}{\emptyseq}
     \newcommand{\EvalGeSucc}[1][\rho] {{\vtuple{#1, \vtempstucks, ge}}%
                                         \Downarrow v} 
-    \mkevaljudgementcmd{EvalGeFail}{\vtuple{\rho, \vtempstucks, ge}}{\vfail} 
-    \mkjudgementcmd{CtxToRho}{\vtuple{\rho, \vtempstuck \cons%
+    \mkevaljudgementcmd{EvalGeFail}{\vtuple{\rho, \vtempstucks, ge}}{\emptyseq} 
+    \mkjudgementcmd{CtxToRho}{\vtuple{\rho, \vtempstuck \cdot%
     \vtempstucks}}{\vtuple{\rhohat, \vtempstucks}}
 
-    \showvjudgement{EquationSuccess}{\EquationSuccess}
-    \showvjudgement{EquationTempStuck}{\EquationTempStuck}
-    \showvjudgement{EquationFail}{\EquationFail}
 
-Success only refines the environment; that~is, when
-${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
-
-
+% Success only refines the environment; that~is, when
+% ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
 
 
 \subsection{Expressions}
 
-    An expression either evaluates to produce a value or fails. 
-\nr{Don't we want a \emph{sequence} of values in the success case?
-And if we have a sequence, do we need \vfail?   Or will the empty
-sequence suffice?}
+    An expression either evaluates to produce a sequence of values or fails. 
+    Failure is indicated by the empty sequence $\emptyseq$. 
 
 
     \showvjudgement{EvalSucc}{\EvalSucc}
@@ -193,11 +183,6 @@ sequence suffice?}
 
     \showvjudgement{CtxToRho}{\CtxToRho}
 
-\nr{I don't buy it.  The token \vtempstuck\ won't be enough to enable
-a rule to compute $\rhohat$.}
-
-
-
 \bigskip
 
 
@@ -205,31 +190,21 @@ a rule to compute $\rhohat$.}
 
 
 
-\section{Lists}
+\section{Sequences}
 
-Ideas:
-\begin{itemize} 
-\item
-Use $\cdot$ as an infix, associative concatenation operator.
-\item
-Extend it to single values in the customary way.
-\item
-Write the empty sequence as \emptyseq.
-\end{itemize}
-\nr{Could it be worth writing laws here?}
+The trivial sequence is \emptyseq. Sequences can be concatenated with infix 
+$\cdot$. In an appropriate context, a value like $x$ stands for 
+the singleton sequence containing $x$. 
 
+\begin{align*}
+    \emptyseq \cdot \ys &\equiv \ys \\
+    \ys \cdot \emptyseq &\equiv \ys \\
+    (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
+\end{align*}
 
 \section{Rules (Big-step Operational Semantics) for $V^{-}$:}
-
-
-\nr{Semicolon for list concatenation is not going to work here.  I
-suggest concatenating with a small dot, as in ``$\eq \cdot
-\vtempstucks$.''
-As~the notation stands, it makes my brain hurt.  I'm~not going to try
-to follow~it.
-}
     
-\mkevaljudgementcmd{GeEqCtxEval}{\vtuple{\rho, eq \cons \vtempstucks, ge}}{v}
+\mkevaljudgementcmd{GeEqCtxEval}{\vtuple{\rho, \vtempstucks \cdot eq \cdot \vtempstucks, ge}}{v}
 
 \newcommand\GeCtxStuckRule[1][Left]{%
 \inferrule*[#1=\textsc{ (Ge-Ctx-Stuck) }]
@@ -237,7 +212,7 @@ to follow~it.
     \and
     \inferrule*{}{\CtxToRho}
     \and 
-    \inferrule*{}{\EvalGeSucc}
+    \inferrule*{}{\EvalGeSucc[\rhohat]}
     }
     {\GeEqCtxEval}
 }
@@ -276,8 +251,8 @@ said here.}
 
 % Gotta fix the stacking. 
 
-\newcommand\GeCtxSuccRule{%
-\inferrule*[Left=\textsc{ (Ge-Ctx-Succ) }]
+\newcommand\GeCtxSuccRule[1][Left]{%
+\inferrule*[#1=\textsc{ (Ge-Ctx-Succ) }]
     {\inferrule*{}{\EquationSuccess} 
     \and 
     \inferrule*{}{\EvalGeSucc[\rhohat]}
@@ -298,12 +273,12 @@ said here.}
 \mpar{\GeEqSuccRule}
 
 
-\mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cons \vtempstucks, ge}}{\vfail}
+\mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cdot \vtempstucks, ge}}{\vfail}
 \mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \vtempstucks, eq; ge}}{\vfail}
 
 \newcommand\GeCtxFailRule[1][Left]{%
 \inferrule*[#1=\textsc{ (Ge-Ctx-Fail) }]
-    {\inferrule*{}{\EquationFail} 
+    {\inferrule*{}{\EquationReject} 
     }
     {\GeEqCtxEvalFail}
 }

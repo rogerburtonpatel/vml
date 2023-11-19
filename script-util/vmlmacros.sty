@@ -16,6 +16,11 @@
 \RequirePackage{semantic}
 \RequirePackage{mathpartir}
 
+
+%%%%%%%%%% GENERAL MATH %%%%%%%%%%
+\newcommand\gt{\mathrel{>}}
+\newcommand\lt{\mathrel{<}}
+
 %%%%%%%%%% VERSE ABSTRACT SYNTAX %%%%%%%%%%
 
 % Symbols 
@@ -26,12 +31,12 @@
 
 % Symbols 
 \newcommand{\rhohat}{\hat{\rho}}
-\newcommand{\vtempstuck}{\tt{?t}}
+\newcommand{\vtempstuck}[1][\bracketed{eq}]{\tt{?t.}\it{#1}}
 \newcommand{\vfail}{\bf{fail}}
 \newcommand{\vtempstucks}{\mathcal{T}}
+\newcommand{\vreject}{\bf{reject}}
 
 % Latex abbreviations 
-
 \newcommand{\mpar}[1]{\begin{mathpar} #1 \end{mathpar}}
 
 
@@ -75,6 +80,14 @@
 
 % Fonts
 \newcommand{\ppl}[1]{{\fontfamily{ppl}\selectfont #1}}
+
+% Lists 
+\newcommand\eq{\ensuremath{\mathit{eq}}}  % equation
+\newcommand\xs{\ensuremath{\mathit{xs}}}
+\newcommand\ys{\ensuremath{\mathit{ys}}}
+\newcommand\zs{\ensuremath{\mathit{zs}}}
+\newcommand\emptyseq{\ensuremath{\varepsilon}}
+
 
 
 % Nice judgement and rule forms
@@ -156,5 +169,5 @@
 
 
 
-\newcommand\cons[2]{\ensuremath{#1\mathbin:#2}}
+% \newcommand\cons[2]{\ensuremath{#1\mathbin:#2}}
 \newcommand\parthreads[2]{\ensuremath{#1\mathbin\mid#2}}
