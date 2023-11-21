@@ -114,14 +114,18 @@ We present a grammar of $V^{-}$:
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
-    $v, \; v'$& value \\
+    % $v, \; v'$& value \\
+    $\vbar$& a (possibly empty) sequence of values. \\
     $eq$& equation \\ 
-    $\vtempstuck$& a temporarily-stuck equation \\
-    $\vfail$& failure \\
-    $\rho, \; \rhohat$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+    % $\tempstuck$& a temporarily-stuck equation \\
+    $\reject$& equation rejection \\
+    $\result$& $\vbar \mid$ reject : a result of a sequence of values or
+    rejection\\
+    $\rho$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+    $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
     $e$& An expression \\ 
-    $ge$& A guarded expression \\
+    $g$& A guarded expression \\
 \bottomrule
 \end{tabular}    
 
@@ -139,56 +143,37 @@ We present a grammar of $V^{-}$:
     
     \medskip
     
-    \subsection{Equations}
-    
-    An \emph{equation} is added to the context of equations temporarily stuck
-    equations or produces \vreject. 
-
-
     \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat REMOVE THIS}
-    \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\vtempstuck}
-    \mkjudgementcmd{EquationReject}{\vtuple{\rho, eq}}{\vreject}
+    \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\tempstuck}
+    \mkjudgementcmd{EquationReject}{\vtuple{\rho, eq}}{reject}
 
     % \showvjudgement{EquationSuccess}{\EquationSuccess}
-    \showvjudgement{EquationTempStuck}{\EquationTempStuck}
-    \showvjudgement{EquationReject}{\EquationReject}
+    % \showvjudgement{EquationTempStuck}{\EquationTempStuck}
+    % \showvjudgement{EquationReject}{\EquationReject}
     
     
-    \newcommand{\EvalSucc}[1][v] {{\vtuple{\rho, e}}%
-    \Downarrow #1} 
-    \mkevaljudgementcmd{EvalFail}{\vtuple{\rho, e}}{\emptyseq}
-    \newcommand{\EvalGeSucc}[1][\rho] {{\vtuple{#1, \vtempstucks, ge}}%
-                                        \Downarrow v} 
-    \mkevaljudgementcmd{EvalGeFail}{\vtuple{\rho, \vtempstucks, ge}}{\emptyseq} 
-    \mkjudgementcmd{CtxToRho}{\vtuple{\rho, \vtempstuck \cdot%
-    \vtempstucks}}{\vtuple{\rhohat, \vtempstucks}}
-
-
-% Success only refines the environment; that~is, when
-% ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
-
-
+    
+    
+    % Success only refines the environment; that~is, when
+    % ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
+    
+    
 \subsection{Expressions}
 
-    An expression either evaluates to produce a sequence of values or fails. 
-    Failure is indicated by the empty sequence $\emptyseq$. 
+    
+    \mkevaljudgementcmd{EvalE}{\vctx[]}{\vbar}
+    \mkevaljudgementcmd{EvalGe}{\vctx[Expr=g]}{\result}
+    An expression evaluates to produce possibly-empty sequence of values.
 
+    A guarded expression evaluates to produce a \bf{result}. A result is either
+    a possibly-empty sequence of values or reject. 
 
-    \showvjudgement{EvalSucc}{\EvalSucc}
-    \showvjudgement{EvalFail}{\EvalFail}
-    \showvjudgement{EvalGeSucc}{\EvalGeSucc}
-    \showvjudgement{EvalGeFail}{\EvalGeFail}
+    \[\it{r} \; \rm{::=} \; \vbar \;|\; \fail \]
 
-\subsection{Temporarily stuck equations}
-
-
-    \showvjudgement{CtxToRho}{\CtxToRho}
+    \showvjudgement{Eval-Expr}{\EvalE}
+    \showvjudgement{Eval-Guarded-Expr}{\EvalGe}
 
 \bigskip
-
-
-
-
 
 
 \section{Sequences}
@@ -205,159 +190,200 @@ the singleton sequence containing $x$.
 
 \section{Rules (Big-step Operational Semantics) for $V^{-}$:}
     
-\mkevaljudgementcmd{GeEqCtxEval}{\vtuple{\rho, \vtempstucks \cdot eq \cdot \vtempstucks, ge}}{v}
+\subsection{Evaluating Guarded Expressions}
 
-\newcommand\GeCtxStuckRule[1][Left]{%
-\inferrule*[#1=\textsc{ (Ge-Ctx-Stuck) }]
-    {\inferrule*{}{\EquationTempStuck} 
-    \and
-    \inferrule*{}{\CtxToRho}
-    \and 
-    \inferrule*{}{\EvalGeSucc[\rhohat]}
+\[
+\inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
+    {\veval{e}{\vbar}}
+    {\vgctx[Tempstucks=\emptyseq, Expr=\arrowe] 
+    \Downarrow \vbar}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Exists) }]
+    {\vgctx[Rho=\rho\{x \mapsto \bot \}] \Downarrow \result}
+    {\vgctx[Expr=\exists x.\; g] 
+    \Downarrow \result}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Eval-With-Ctx) }]
+    {\ }
+    {\vgctx[Tempstucks=\TeqT] 
+    \Downarrow \result}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Move-To-Ctx) }]
+    {\inferrule*{\vgctx[Tempstucks=eq \cdot \tempstucks] 
+                 \Downarrow \result}{}
     }
-    {\GeEqCtxEval}
-}
+    {\vctx[Expr=eq; \; g] \Downarrow \result}
+\]
 
-\mpar{\GeCtxStuckRule}
+\subsection{Evaluating General Expressions}
 
-% \begin{mathpar}
-%     \inferrule*[Left=\textsc{ (Ge-Ctx-Stuck) }]
-%     {\inferrule*{\EquationTempStuck}{\CtxToRho}
+
+\[
+\inferrule*[Left=\textsc{ (If-Fi-Fail) }]
+    {\ }
+    {\veval{\iffi{\ }}{\emptyseq}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (If-Fi-Success) }]
+    {\vgctx[Tempstucks=\emptyseq] \Downarrow \vbar}
+    {\veval{\iffi{g \; \square \; \dots}}{\vbar}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (If-Fi-Reject) }]
+    {\inferrule*[] {}
+    {\vgctx[Tempstucks=\emptyseq] \Downarrow \reject}
+    \and 
+    \veval{\iffi{\dots}}{\vbar}}
+    {\veval{\iffi{g \; \square \; \dots }}{\vbar}}
+\]
+
+
+% % \begin{mathpar}
+% %     \inferrule*[Left=\textsc{ (G-Ctx-Stuck) }]
+% %     {\inferrule*{\EquationTempStuck}{\CtxToRho}
+% %     \and 
+% %     \inferrule*{}{\EvalGeSucc}
+% %     }
+% %     {\GeEqCtxEval}
+% % \end{mathpar}
+
+% % Which of the above two do you prefer? 
+
+% \nr{The notation below has multiple horizontal lines.  That makes it a
+% derivation, not a rule.  I'm having trouble figuring out what's being
+% said here.}
+
+
+
+% \mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \tempstucks, eq; g}}{v}
+
+% \newcommand\GeEqStuckRule{%
+% \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
+% {\GeCtxStuckRule[Right]}
+% {\GeCtxEqEval}
+% }
+
+% \mpar{\GeEqStuckRule}
+
+% \nr{If you're trying to pluck an equation out of a list of things, try
+% ``$\tempstucks \cdot \eq \cdot \tempstucks'$.''}
+
+% % Gotta fix the stacking. 
+
+% \newcommand\GeCtxSuccRule[1][Left]{%
+% \inferrule*[#1=\textsc{ (G-Ctx-Succ) }]
+%     {\inferrule*{}{\EquationSuccess} 
 %     \and 
-%     \inferrule*{}{\EvalGeSucc}
+%     \inferrule*{}{\EvalGeSucc[\rhohat]}
 %     }
 %     {\GeEqCtxEval}
-% \end{mathpar}
+% }
 
-% Which of the above two do you prefer? 
-
-\nr{The notation below has multiple horizontal lines.  That makes it a
-derivation, not a rule.  I'm having trouble figuring out what's being
-said here.}
+% \mpar{\GeCtxSuccRule}
 
 
-
-\mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \vtempstucks, eq; ge}}{v}
-
-\newcommand\GeEqStuckRule{%
-\inferrule*[Left=\textsc{ (Ge-Eq-Succ) }]
-{\GeCtxStuckRule[Right]}
-{\GeCtxEqEval}
-}
-
-\mpar{\GeEqStuckRule}
-
-\nr{If you're trying to pluck an equation out of a list of things, try
-``$\vtempstucks \cdot \eq \cdot \vtempstucks'$.''}
-
-% Gotta fix the stacking. 
-
-\newcommand\GeCtxSuccRule[1][Left]{%
-\inferrule*[#1=\textsc{ (Ge-Ctx-Succ) }]
-    {\inferrule*{}{\EquationSuccess} 
-    \and 
-    \inferrule*{}{\EvalGeSucc[\rhohat]}
-    }
-    {\GeEqCtxEval}
-}
-
-\mpar{\GeCtxSuccRule}
-
-
-\newcommand\GeEqSuccRule{%
-\inferrule*[Left=\textsc{ (Ge-Eq-Succ) }]
-    {\inferrule*{}{\GeCtxSuccRule[Right]} 
-    }
-    {\GeCtxEqEval}
-}
-
-\mpar{\GeEqSuccRule}
-
-
-\mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cdot \vtempstucks, ge}}{\vfail}
-\mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \vtempstucks, eq; ge}}{\vfail}
-
-\newcommand\GeCtxFailRule[1][Left]{%
-\inferrule*[#1=\textsc{ (Ge-Ctx-Fail) }]
-    {\inferrule*{}{\EquationReject} 
-    }
-    {\GeEqCtxEvalFail}
-}
-
-    \mpar{\GeCtxFailRule}
-
-\newcommand\GeEqFailRule{%
-\inferrule*[Left=\textsc{ (Ge-Eq-Fail) }]
-    {\inferrule*{}{\GeCtxFailRule[Right]} 
-    }
-    {\GeCtxEqEvalFail}
-}
-
-\mpar{\GeEqFailRule}
-
-\mkevaljudgementcmd{GeExpSucc}{\vtuple{\rho, \vtempstucks, e; ge}}{v}
-\mkevaljudgementcmd{GeExpFail}{\vtuple{\rho, \vtempstucks, e; ge}}{\vfail}
-
-\newcommand\GeExpFailRule{%
-\inferrule*[Left=\textsc{ (Ge-Exp-Fail) }]
-    {\EvalSucc[\vfail]}
-    {\GeExpFail}
-}
-
-\mpar{\GeExpFailRule}
-
-\newcommand\GeExpSuccRule{%
-\inferrule*[Left=\textsc{ (Ge-Eq-Succ) }]
-    {\EvalSucc[v']
-    \and 
-    \EvalGeSucc}
-    {\GeExpSucc}
-}
-
-\mpar{\GeExpSuccRule}
-
-
-
-
-% \begin{mathpar}
-% \inferrule*[Left=\textsc{Ge-Ctx-Stuck}]
-%     {\inferrule*[Left=\textsc{FormalVar}]
-%       {\texttt{x} \in dom \rho}
-%       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
-%      \and 1 \neq 0 \and
-%      \inferrule*[Right=\textsc{Literal}]
-%        {\EvalGeSucc}
-%        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+% \newcommand\GeEqSuccRule{%
+% \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
+%     {\inferrule*{}{\GeCtxSuccRule[Right]} 
 %     }
-%     {\GeCtxStuck}
-% \end{mathpar}
+%     {\GeCtxEqEval}
+% }
 
-% \begin{mathpar}
-%   \inferrule*[Left=\textsc{IfTrue}]
-%     {\inferrule*[Left=\textsc{FormalVar}]
-%       {\texttt{x} \in dom \rho}
-%       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
-%      \and 1 \neq 0 \and
-%      \inferrule*[Right=\textsc{Literal}]
-%        {\ }
-%        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+% \mpar{\GeEqSuccRule}
+
+
+% \mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cdot \tempstucks, g}}{\fail}
+% \mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \tempstucks, eq; g}}{\fail}
+
+% \newcommand\GeCtxFailRule[1][Left]{%
+% \inferrule*[#1=\textsc{ (G-Ctx-Fail) }]
+%     {\inferrule*{}{\EquationReject} 
 %     }
-%     {\evalr{\textsc{if}(\textsc{var}(\texttt{x}), 
-%                         \textsc{lit}(\texttt{2}),
-%                         \textsc{lit}(\texttt{3}))}
-%      \Downarrow \evalr{2} 
+%     {\GeEqCtxEvalFail}
+% }
+
+%     \mpar{\GeCtxFailRule}
+
+% \newcommand\GeEqFailRule{%
+% \inferrule*[Left=\textsc{ (G-Eq-Fail) }]
+%     {\inferrule*{}{\GeCtxFailRule[Right]} 
 %     }
-%   \end{mathpar}
+%     {\GeCtxEqEvalFail}
+% }
 
-% A series of equations is either is solved to produce a value or gets stuck. 
-% A single sub-equation of the form x = e , where eq is an equation or an
-% expression, either is solved to produce an environment or gets stuck. 
+% \mpar{\GeEqFailRule}
 
-% An equation x = e can only be solved if e contains no unbound logical variables. 
+% \mkevaljudgementcmd{GeExpSucc}{\vtuple{\rho, \tempstucks, e; g}}{v}
+% \mkevaljudgementcmd{GeExpFail}{\vtuple{\rho, \tempstucks, e; g}}{\fail}
 
-% \it{In progress}
-% $$
-% (\tt{if} \; \tt{fi}) \triangleq (\tt{wrong})
-% $$
+% \newcommand\GeExpFailRule{%
+% \inferrule*[Left=\textsc{ (G-Exp-Fail) }]
+%     {\EvalSucc[\fail]}
+%     {\GeExpFail}
+% }
+
+% \mpar{\GeExpFailRule}
+
+% \newcommand\GeExpSuccRule{%
+% \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
+%     {\EvalSucc[v']
+%     \and 
+%     \EvalGeSucc}
+%     {\GeExpSucc}
+% }
+
+% \mpar{\GeExpSuccRule}
+
+
+
+
+% % \begin{mathpar}
+% % \inferrule*[Left=\textsc{G-Ctx-Stuck}]
+% %     {\inferrule*[Left=\textsc{FormalVar}]
+% %       {\texttt{x} \in dom \rho}
+% %       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
+% %      \and 1 \neq 0 \and
+% %      \inferrule*[Right=\textsc{Literal}]
+% %        {\EvalGeSucc}
+% %        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+% %     }
+% %     {\GeCtxStuck}
+% % \end{mathpar}
+
+% % \begin{mathpar}
+% %   \inferrule*[Left=\textsc{IfTrue}]
+% %     {\inferrule*[Left=\textsc{FormalVar}]
+% %       {\texttt{x} \in dom \rho}
+% %       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
+% %      \and 1 \neq 0 \and
+% %      \inferrule*[Right=\textsc{Literal}]
+% %        {\ }
+% %        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
+% %     }
+% %     {\evalr{\textsc{if}(\textsc{var}(\texttt{x}), 
+% %                         \textsc{lit}(\texttt{2}),
+% %                         \textsc{lit}(\texttt{3}))}
+% %      \Downarrow \evalr{2} 
+% %     }
+% %   \end{mathpar}
+
+% % A series of equations is either is solved to produce a value or gets stuck. 
+% % A single sub-equation of the form x = e , where eq is an equation or an
+% % expression, either is solved to produce an environment or gets stuck. 
+
+% % An equation x = e can only be solved if e contains no unbound logical variables. 
+
+% % \it{In progress}
+% % $$
+% % (\tt{if} \; \tt{fi}) \triangleq (\tt{wrong})
+% % $$
 
 \end{document}

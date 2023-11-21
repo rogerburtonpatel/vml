@@ -27,17 +27,24 @@
 \newcommand{\choice}{\vrule width 2pt height 7pt}
 \newcommand{\vlambda}[2]{\lambda \langle #1 \rangle. \; #2}
 
+%%%%%%%%%% VERSE CONCRETE SYNTAX %%%%%%%%%%
+
 %%%%%%%%%% VERSE JUDGEMENT RULES %%%%%%%%%%
 
 % Symbols 
-\newcommand{\rhohat}{\hat{\rho}}
-\newcommand{\vtempstuck}[1][\bracketed{eq}]{\tt{?t.}\it{#1}}
-\newcommand{\vfail}{\bf{fail}}
-\newcommand{\vtempstucks}{\mathcal{T}}
-\newcommand{\vreject}{\bf{reject}}
+\newcommand\rhohat{\hat{\rho}}
+\newcommand\tempstuck[1][\bracketed{eq}]{\tt{?t.}\it{#1}}
+\newcommand\fail{\bf{fail}}
+\newcommand\tempstucks{\mathcal{T}}
+\newcommand\TeqT{\tempstucks \cdot \eq \cdot \tempstucks}
+\newcommand\reject{\bf{reject}}
+\newcommand\vbar{\bar{v}}
+\newcommand\result{\it{r}}
+\newcommand\arrowe{\rightarrow e}
+
+\newcommand\iffi[1]{\textsc{if} \; #1 \; \textsc{fi}}
 
 % Latex abbreviations 
-\newcommand{\mpar}[1]{\begin{mathpar} #1 \end{mathpar}}
 
 
 %  Judgements 
@@ -46,14 +53,16 @@
   \ensuremath{\langle #1 \rangle}%
   }
   
+
+% \newcommand\veval[3]
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
-\newcommand{\vevaljudgement}[2]{#1 \Downarrow #2}
+\newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
 
 \newcommand{\showvjudgement}[3][Right]{%
-  \mpar{\inferrule*[#1=\textsc{ (#2) }]%
+  \[\inferrule*[#1=\textsc{ (#2) }]%
   {}      
-  {#3}}%
+  {#3}\]%
 }
       
 \newcommand{\mkjudgementcmd}[3]{%
@@ -61,7 +70,7 @@
   }
 
 \newcommand{\mkevaljudgementcmd}[3]{%
-  \expandafter\newcommand\csname #1\endcsname{\vevaljudgement{#2}{#3}}%
+  \expandafter\newcommand\csname #1\endcsname{\veval{#2}{#3}}%
   }
       %%%%%%%%%% TRANSLATION %%%%%%%%%%
       
@@ -119,26 +128,25 @@
 
 \makeatother
 
-\defcomponent{fuel}{F}
 \defcomponent{Rho}{\rho}
-\defcomponent{running}{R}
-\newcommand\norunning{\ensuremath{\mathord{\bullet}}}
-\defcomponent{queue}{Q}
-\defcomponent{heap}{H}
-\defcomponent{jsheap}{J}
-\defcomponent{mc}{M}
+\defcomponent{Tempstucks}{\tempstucks}
+\defcomponent{Expr}{e}
+% \newcommand\norunning{\ensuremath{\mathord{\bullet}}}
+% \defcomponent{queue}{Q}
+% \defcomponent{heap}{H}
+% \defcomponent{jsheap}{J}
+% \defcomponent{mc}{M}
 %\defcomponent{cont}{K}
-\newcommand\running[1]{\ensuremath{\ast#1}}
+% \newcommand\running[1]{\ensuremath{\ast#1}}
 
-\newcommand\anystate[1][]{%
+\newcommand\vctx[1][]{%
   {\tracingall\setkeys{state}{#1}%
    \let\c=\component
-   \ensuremath{\langle \c{Rho}, \rangle}}}
-\newcommand\hstate[1][]{\anystate[running=\running{R},mc=K,#1]}
+   \ensuremath{\c{Rho}; \; \c{Tempstucks} \vdash \c{Expr}}}}
+   \newcommand\vgctx[1][]{\vctx[Expr=g,#1]}
+
 
 \newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
-
-
 
     % rough opsem-based stuff: to change
 \newcommand{\br}[1]{\langle #1 \rangle}
