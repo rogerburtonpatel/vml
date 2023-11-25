@@ -66,7 +66,7 @@ We present a grammar of $V^{-}$:
         
         
         <guarded-exp> ::= $\boldsymbol{\rightarrow}$<exp>
-        \alt  \tt{E} \{<name>\}\tt{.} <guarded-exp>
+        \alt  \tt{E} \{<name>\}\tt{.} <guarded-exp>${}_{\alpha}$
         \alt  <exp>\tt{;} <guarded-exp>
         \alt   <name> \tt{=} <exp>\tt{;} <guarded-exp>
         \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
@@ -119,7 +119,7 @@ We present a grammar of $V^{-}$:
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
-    $\result$& $\vbar \mid$ reject : a result of a sequence of values or
+    $\result$& $\vbar \mid$ \reject : a result of a sequence of values or
     rejection\\
     $\rho$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -161,14 +161,14 @@ We present a grammar of $V^{-}$:
 \subsection{Expressions}
 
     
-    \mkevaljudgementcmd{EvalE}{\vctx[]}{\vbar}
-    \mkevaljudgementcmd{EvalGe}{\vctx[Expr=g]}{\result}
+    \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \vbar}
+    \newcommand\EvalGe{\vctx[Expr=g] \Downarrow \result}
     An expression evaluates to produce possibly-empty sequence of values.
 
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a possibly-empty sequence of values or reject. 
 
-    \[\it{r} \; \rm{::=} \; \vbar \;|\; \fail \]
+    \[\it{r} \; \rm{::=} \; \vbar \;|\; \reject \]
 
     \showvjudgement{Eval-Expr}{\EvalE}
     \showvjudgement{Eval-Guarded-Expr}{\EvalGe}
@@ -194,7 +194,7 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\veval{e}{\vbar}}
+    {\vctx[Tempstucks=\emptyseq] \Downarrow \vbar}
     {\vgctx[Tempstucks=\emptyseq, Expr=\arrowe] 
     \Downarrow \vbar}
 \]
@@ -224,27 +224,54 @@ the singleton sequence containing $x$.
 \subsection{Evaluating General Expressions}
 
 
-\[
-\inferrule*[Left=\textsc{ (If-Fi-Fail) }]
-    {\ }
-    {\veval{\iffi{\ }}{\emptyseq}}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (If-Fi-Fail) }]
+%     {\ }
+%     {\veval{\iffi{\ }}{\emptyseq}}
+% \]
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
-    {\vgctx[Tempstucks=\emptyseq] \Downarrow \vbar}
+    {\vgctx[] \Downarrow \vbar}
     {\veval{\iffi{g \; \square \; \dots}}{\vbar}}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Reject) }]
     {\inferrule*[] {}
-    {\vgctx[Tempstucks=\emptyseq] \Downarrow \reject}
+    {\vgctx[] \Downarrow \reject}
     \and 
     \veval{\iffi{\dots}}{\vbar}}
     {\veval{\iffi{g \; \square \; \dots }}{\vbar}}
 \]
 
+\[
+\inferrule*[Left=\textsc{ (Vcon-Empty) }]
+    {\ }
+    {\veval{K}{K}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Vcon-Multi) }]
+    {\inferrule*[] {}
+    {
+    \veval{e_{i}}{\vbar_{i}}
+    \and 
+    1 \leq i \leq n
+    }}
+    {\veval{K(e_{1}, \dots e_{n})}{K(\vbar_{1}, \dots \vbar_{i})}}
+\]
+
+% \[
+% \inferrule*[Left=\textsc{ (Apply) }]
+%     {\inferrule*[] {}
+%     {
+%     \veval{e_{i}}{\vbar_{i}}
+%     \and 
+%     1 \leq i \leq n
+%     }}
+%     {\veval{\lambda \vbar_{1}, \dots \vbar_{i}. e }{K(\vbar_{1}, \dots \vbar_{i})}}
+% \]
 
 % % \begin{mathpar}
 % %     \inferrule*[Left=\textsc{ (G-Ctx-Stuck) }]

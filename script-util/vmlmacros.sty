@@ -38,7 +38,7 @@
 \newcommand\tempstucks{\mathcal{T}}
 \newcommand\TeqT{\tempstucks \cdot \eq \cdot \tempstucks}
 \newcommand\reject{\bf{reject}}
-\newcommand\vbar{\bar{v}}
+\newcommand\vbar{\ensuremath{v^{\alpha}}}
 \newcommand\result{\it{r}}
 \newcommand\arrowe{\rightarrow e}
 
@@ -57,7 +57,8 @@
 % \newcommand\veval[3]
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
-\newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
+% \newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
+\newcommand{\veval}[2]{\rho; \; \tempstucks \vdash #1 \Downarrow #2}
 
 \newcommand{\showvjudgement}[3][Right]{%
   \[\inferrule*[#1=\textsc{ (#2) }]%
@@ -152,6 +153,25 @@
 \newcommand{\br}[1]{\langle #1 \rangle}
 \newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
 \newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
+
+
+%  Bulk command definition
+% \def\do#1{\expandafter\newcommand\csname#1\endcsname{\elem{#1}}}
+% \docsvlist {fire,earth,air,ice,dark,light,wild}
+% \let\frost\ice
+
+% \newcommand\bulkdef[2]{% command arglist
+%   \def\do##1{\expandafter\newcommand\csname##1\endcsname{#1{##1}}}%
+%   \docsvlist{#2}}
+
+% \bulkdef\gen{attack,jump,range,move,shield,loot,retaliate,teleport,xp,heal,target,damage}  
+% \bulkdef\cond{push,pull,muddle,bane,poison,wound,invisible,immobilize,disarm,curse,stun,strengthen,pierce,brittle,bless,impair}
+% \newcommand\eat{\consume}
+
+% \bulkdef\icon{shuffle}
+
+% \let\shuffleicon=\shuffle
+% \def\shuffle{\hfill\shuffleicon\mbox{\hskip 0.5em}\parfillskip=0pt}
 
 % Inference rule formatting for use later
 

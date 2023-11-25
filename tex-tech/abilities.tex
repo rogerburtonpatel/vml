@@ -1,0 +1,131 @@
+\documentclass{article}
+\pagestyle{empty}
+\usepackage{tikz}
+\usepackage{etoolbox}
+\usepackage{array}
+\usepackage[margin=1cm]{geometry}
+\usepackage{graphicx}
+\usepackage{calc}
+
+\usepackage{fontspec}
+\newfontfamily\pirata{Germania One}
+%\newcommand\pirata{\relax}
+\newfontfamily\tower{High Tower Text}
+%\setmainfont{High Tower Text}
+
+\newcommand\icon[1]{%
+  \raisebox{0.6ex-0.5\height}
+           {\includegraphics[width=1.4em]{symbols/#1.pdf}}}
+
+\newcommand\img[2][2.4ex]{%
+  \raisebox{0.6ex-0.5\height}
+           {\includegraphics[height=#1]{#2}}}
+
+\newcommand\wh{/red1/Gloomhaven/worldhaven/images}
+\newcommand\fh{\wh/art/frosthaven}
+\newcommand\cond[1]{\img[3.0ex]{\fh/icons/conditions/fh-#1-color-icon.png}}
+\newcommand\consume[1]{\img{\fh/icons/elements/fh-#1-consume-color-icon.png}:}
+\newcommand\eatany{\eat{wild}}
+\newcommand\gen[1]{% general
+  \img{\fh/icons/general/fh-#1-bw-icon.png}}
+\newcommand\elem[1]{\img[3.2ex]{\fh/icons/elements/fh-#1-color-icon.png}}
+\newcommand\monster[1]{%
+  \raisebox{0.6ex+\depth-0.5\totalheight}{%
+      \begin{tikzpicture}[x=0.18pt,y=0.18pt]
+        \begin{scope}
+        \clip (0,0) -- ++(60:60) -- ++(0:60) -- ++(-60:60) --
+        ++(-120:60) -- ++(-180:60) -- cycle;
+        \node[anchor=west,inner sep=0] (image) at (0,0)
+             {\includegraphics*[scale=0.18,angle=90,viewport={140 140 260 260}]
+             {\wh/monster-stat-cards/frosthaven/fh-#1-0.png}};
+        \end{scope}
+        \draw[line width=1pt,color=red!80!black] (0,0) -- ++(60:60) -- ++(0:60) -- ++(-60:60) --
+        ++(-120:60) -- ++(-180:60) -- cycle;
+      \end{tikzpicture}}%
+}
+
+
+\def\do#1{\expandafter\newcommand\csname#1\endcsname{\elem{#1}}}
+\docsvlist {fire,earth,air,ice,dark,light,wild}
+\let\frost\ice
+
+\newcommand\bulkdef[2]{% command arglist
+  \def\do##1{\expandafter\newcommand\csname##1\endcsname{#1{##1}}}%
+  \docsvlist{#2}}
+
+\bulkdef\gen{attack,jump,range,move,shield,loot,retaliate,teleport,xp,heal,target,damage}  
+\bulkdef\cond{push,pull,muddle,bane,poison,wound,invisible,immobilize,disarm,curse,stun,strengthen,pierce,brittle,bless,impair}
+\newcommand\eat{\consume}
+
+\bulkdef\icon{shuffle}
+
+\let\shuffleicon=\shuffle
+\def\shuffle{\hfill\shuffleicon\mbox{\hskip 0.5em}\parfillskip=0pt}
+
+\parskip=1.5\baselineskip
+%\parskip=0.5\baselineskip
+
+\newcommand\legible{\sffamily\large\bfseries}
+
+\newcommand\blank{\leavevmode\vrule height 0pt depth 0.4pt width 1em }
+
+\newenvironment{enemy}[1]
+  {\tabular{|>{\vrule width 0pt height 8pt depth 5pt\bfseries}r>{\tower\large}p{3.5cm}>{\legible}r>{\legible}r@{\hskip5pt}>{\legible}l>{\legible\raggedright\arraybackslash}p{5.7cm}@{}|}
+   \hline
+   &\multicolumn{5}{l|}{\pirata\Large\vrule width 0pt height 2.8ex #1}\\[3pt]
+   \multicolumn1{|l}{\rlap{\emph{Init.}}}& \rmfamily\emph{Name} & \gen{move} & \gen{attack} & 
+   & \rmfamily\mdseries\emph{Other} \\
+  }
+  {\crcr\hline\endtabular\par}
+
+\newcommand\m[1]{{--}\hskip1.5pt#1}
+
+\newcommand\display[1]{%
+  \def\do##1{\input{dossiers/##1.tex}}%
+  \docsvlist{#1}}
+
+
+\begin{document}
+
+\parskip=6pt
+\parindent=0pt
+
+%\display{shrike-fiend}
+
+%\newpage
+
+%\display{frozen-corpse,robotic-boltshooter,steel-automaton}
+%\display{lurker-mindsnipper,shrike-fiend,burrowing-blade,earth-demon}
+
+%\display{ancient-artillery,ruined-machine,flaming-bladespinner}
+%\display{deep-terror,frost-demon,black-imp}
+
+%\display{lurker-soldier,lurker-mindsnipper,lurker-clawcrusher,boss}
+%\display{city-guard,hound,sun-demon}
+%\display{snow-imp,ice-wraith}
+
+%\display{frost-demon,living-spirit,living-bones,imp}
+%\display{frozen-corpse}%,shrike-fiend}
+
+%\display{algox-snowspeaker,algox-guard,snow-imp}
+%\display{piranha-pig,abael-herder,lightning-eel}
+%\display{algox-icespeaker,algox-archer}
+% \display{algox-guard,algox-archer,algox-priest}  % scenario 101
+
+%\display{chaos-demon,frost-demon,living-spirit,night-demon,savvas-icestorm,wind-demon}
+%\display{living-spirit,living-bones,ruined-machine}
+%\display{ancient-artillery,ruined-machine,flaming-bladespinner,steel-automaton}
+%\display{robotic-boltshooter}
+%\display{vermling-scout,vermling-priest,steel-automaton,polar-bear} % 121 black memories
+%\display{snow-imp,living-spirit,ice-wraith} % 126 Joseph the Lion
+%\display{living-doom,living-spirit,ruined-machine,shrike-fiend} % 110 Guardian's Tower
+%\display{ice-wraith,snow-imp,frozen-corpse,frost-demon} % 132 Temple of Feline power
+%\display{polar-bear,forest-imp,rending-drake,spitting-drake} % 133 Bolt
+\display{steel-automaton,lurker-wavethrower}
+
+\end{document}
+
+
+
+
+zbv!fen7yqc4epk9MHR

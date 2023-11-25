@@ -29,7 +29,7 @@ or-patterns and side conditions:
     
     <pattern> ::= <value-variable-name>
     \alt <value-constructor-name>
-    \alt <value-constructor-name> \{<pattern>\}
+    \alt \tt{(}<value-constructor-name> \{<pattern>\}\tt{)}
     \alt \tt{(}<pattern> \tt{when} <expr> \tt{)} 
     % <pattern> ::= (<name> \{ <name> | \tt{_} \})
     \alt \tt{(oneof} \{<pattern>\}\tt{)}
