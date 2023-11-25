@@ -6,7 +6,6 @@
 % \usepackage{nrgrammar}
 \usepackage{simplebnf}
 \setcounter{secnumdepth}{1}
-\newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
 
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
@@ -38,7 +37,7 @@
     $d$ : \textsf{Definitions} ::=
     | $\tt{(val} \; x \; e\tt{)}$ : bind name to expression
     ;;
-    \B{exp} : \textsf{Expressions} ::=
+    $e$ : \textsf{Expressions} ::=
     | $x$ : name
     | $\tt{(case} \; e \; \bracketed{\tt{(} p \; e \tt{)}} \tt{)}$ : case expression 
     | $K \bracketed{e}$ : value constructor application 
@@ -52,7 +51,7 @@
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 
     | \tt{[]} : empty list 
-    | $\#x$ : name beginning with \tt{\#}
+    | $\tt{\#}x$ : name beginning with \tt{\#}
     | \tt{A-Z}$x$ : name beggining with capital letter
     | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
 
@@ -60,13 +59,16 @@
 \end{center}
 \bigskip 
 
-A \tt{name} is any token that is not an integer literal, 
+A \it{name} is any token that is not an integer literal, 
 does not contain whitespace, a bracket, or parenthesis, 
 and is not a value constructor name or a reserved word.
 
 \bigskip
 
-Would like help cleaning up the format on this. 
+\rab{Would like help cleaning up the format on this, specifically with regards 
+to the regex. The one downside of this nicer package is that descriptions will 
+not wrap, so describing an integer literal in english isn't an option as 
+far as I can tell. }
 
 % \begin{grammar}
 

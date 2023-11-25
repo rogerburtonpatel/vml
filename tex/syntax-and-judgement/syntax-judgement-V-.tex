@@ -2,9 +2,10 @@
 \usepackage{vmlmacros}
 \usepackage{syntax}
 \usepackage{relsize}
-\usepackage{palatino}
+% \usepackage{palatino} % I don't love this, to be honest. 
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{simplebnf}
 \setcounter{secnumdepth}{1}
 
 \DeclareMathOperator{\dom}{dom}
@@ -13,11 +14,6 @@
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
-
-\newcommand\nr[1]{\leavevmode\emph{NR: #1}}
-\newcommand\rab[1]{\leavevmode\emph{rab: #1}}
-\newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
-
 \setlength{\parindent}{0cm}
 \title{Syntax and Semantics of $V^{-}$}
 \author{Roger Burtonpatel}
@@ -28,11 +24,10 @@
 
 \section{Syntax}
 
-\nr{I recommend macros for optional and sequence, not literal brackets.} \\
-\rab{Despite my best efforts, such a macro does not work in grammar mode.} \\
 We present a grammar of $V^{-}$: 
 
 \bigskip
+\newcommand\galpha{\ensuremath{g_{\alpha}}}
 
 % Integers \hspace{1cm} $k$ \\
 % Variables \hspace{.45cm} $x, y, z, f, g$ \\
@@ -41,48 +36,93 @@ We present a grammar of $V^{-}$:
 % Values \hspace{1cm} $v ::= x \;\vert\; hnf$ 
 % Head Values \hspace{1cm} $hnf ::= k \;\vert\; op \;\vert\; \lambda x.\;e$ 
 
-\begin{grammar}
-    <program> ::= \{{<def>}\}
-    
-    <def> ::= \tt{val} <name> <exp>
-        \alt <exp>
-    
-        
-        
-        <exp> ::= <integer-literal>
-        \alt <name>
-        \alt <guarded-if>
-        \alt <lambda>
-        \alt <value-constructor-name> \{<exp>\}
-        \alt <exp> <exp>
-        \alt <exp> $\choice$ <exp>
-        
-        
-        <lambda> ::= $\lambda$\{<name>\}\tt{.} <exp>
-        
-        <guarded-if> ::= \tt{if}  [<guarded-exp> \{ [] <guarded-exp> \}] \tt{fi}
-        
-        
-        <guarded-exp> ::= $\boldsymbol{\rightarrow}$<exp>
-        \alt  \tt{E} \{<name>\}\tt{.} <guarded-exp>${}_{\alpha}$
-        \alt  <exp>\tt{;} <guarded-exp>
-        \alt   <name> \tt{=} <exp>\tt{;} <guarded-exp>
-        \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
-        \alt   <guarded-exp> $\choice$ <guarded-exp> 
-        \alt   \tt{one}(\{<guarded-exp>\})
-        \alt   \tt{all}(\{<guarded-exp>\})
-        
-        <name> ::= any token that is not an \textit{int-lit}, does not contain 
-        whitespace,
-        % a \texttt{'}, bracket, or parenthesis, 
-        and is not a <value-constructor-name> or a reserved word.
+\begin{center}
+    \begin{bnf}
 
-        <value-constructor-name> ::= \cons | \tt{[]} | any token that begins
-        with a capital letter or a colon
+    $P$ : \textsf{Programs} ::=
+    $\bracketed{d}$ : definition
+    ;;
+    $d$ : \textsf{Definitions} ::=
+    | $\tt{val} \; x  \tt{=} \; e$ : bind name to expression
+    ;;
+    $e$ : \textsf{Expressions} ::=
+    | $x$ : name
+    | $\tt{if} \; \galpha \; \bracketed{[] \galpha} \; \tt{fi}$ : if-fi 
+    | $K \bracketed{e}$ : value constructor application 
+    | $e_1 \; e_2$ : function application 
+    ;;
+    $\galpha$ : \textsf{Guarded Expressions} ::=  
+    $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
+    | $e; \; \galpha$ : intermediate expression 
+    | $\tt{E} \bracketed{x} \tt{.} \galpha$ : existential 
+    | $e_1 = e_2; \; \galpha$ : equation 
+    ;;
+    $K$ : \textsf{Value Constructors} ::=
+    \cons : cons 
+    | \tt{[]} : empty list 
+    | $\tt{\#}x$ : name beginning with \tt{\#}
+    | \tt{A-Z}$x$ : name beggining with capital letter
+    | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+
+    \end{bnf}
+\end{center}
+
+\bigskip 
+
+A \it{name} is any token that is not an integer literal, 
+does not contain whitespace, a bracket, or parenthesis, 
+and is not a value constructor name or a reserved word.
+
+\bigskip 
+
+\rab{Would like help cleaning up the format on this, specifically with regards 
+to the regex. The one downside of this nicer package is that descriptions will 
+not wrap, so describing an integer literal in english isn't an option as 
+far as I can tell.}
+% \begin{grammar}
+%     <program> ::= \{{<def>}\}
     
-        <integer-literal> ::= token composed only of digits, possibly prefixed with a \texttt{+} or \texttt{-}.
+%     <def> ::= \tt{val} <name> <exp>
+%         \alt <exp>
     
-    \end{grammar}
+        
+        
+%         <exp> ::= <integer-literal>
+%         \alt <name>
+%         \alt <guarded-if>
+%         \alt <lambda>
+%         \alt <value-constructor-name> \{<exp>\}
+%         \alt <exp> <exp>
+%         \alt <exp> $\choice$ <exp>
+        
+        
+%         <lambda> ::= $\lambda$\{<name>\}\tt{.} <exp>
+        
+%         <guarded-if> ::= \tt{if}  [<guarded-exp> \{ [] <guarded-exp> \}] \tt{fi}
+        
+        
+%         <guarded-exp> ::= $\boldsymbol{\rightarrow}$<exp>
+%         \alt  \tt{E} \{<name>\}\tt{.} <guarded-exp>${}_{\alpha}$
+%         \alt  <exp>\tt{;} <guarded-exp>
+%         \alt   <name> \tt{=} <exp>\tt{;} <guarded-exp>
+%         \alt   <exp> \tt{=} <exp>\tt{;} <guarded-exp>
+%         \alt   <guarded-exp> $\choice$ <guarded-exp> 
+%         \alt   \tt{one}(\{<guarded-exp>\})
+%         \alt   \tt{all}(\{<guarded-exp>\})
+        
+%         <name> ::= any token that is not an \textit{int-lit}, does not contain 
+%         whitespace,
+%         % a \texttt{'}, bracket, or parenthesis, 
+%         and is not a <value-constructor-name> or a reserved word.
+
+%         <value-constructor-name> ::= \cons | \tt{[]} | any token that begins
+%         with a capital letter or a colon
+    
+%         <integer-literal> ::= token composed only of digits, possibly prefixed with a \texttt{+} or \texttt{-}.
+    
+%     \end{grammar}
+
+
 
 % A $\star$ indicates syntactic sugar. 
 

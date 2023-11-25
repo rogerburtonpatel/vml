@@ -17,11 +17,16 @@
 \RequirePackage{mathpartir}
 
 
+
 %%%%%%%%%% GENERAL MATH %%%%%%%%%%
 \newcommand\gt{\mathrel{>}}
 \newcommand\lt{\mathrel{<}}
 
 \newcommand{\bracketed}[1]{\{#1\}}
+
+%%%%%%%%%% FORMATTING %%%%%%%%%%
+\newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
+
 %%%%%%%%%% VERSE ABSTRACT SYNTAX %%%%%%%%%%
 
 % Symbols 
@@ -74,12 +79,16 @@
 \newcommand{\mkevaljudgementcmd}[3]{%
   \expandafter\newcommand\csname #1\endcsname{\veval{#2}{#3}}%
   }
-      %%%%%%%%%% TRANSLATION %%%%%%%%%%
+%%%%%%%%%% TRANSLATION %%%%%%%%%%
       
       % Translation rules with oxford brackets
 \newcommand{\oxs}[1]{[\![#1]\!]}
 \newcommand{\translate}[1]{ \mathcal{T} \oxs{#1}}
 \newcommand{\desugar}[1]{ \mathcal{D} \oxs{#1}}
+
+%%%%%%%%%% VANITY %%%%%%%%%%
+\newcommand\nr[1]{\leavevmode\emph{NR: #1}}
+\newcommand\rab[1]{\leavevmode\emph{rab: #1}}
 
 %%%%%%%%%% OTHER %%%%%%%%%%
 
