@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  21 NOV 2023 02:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  24 NOV 2023 23:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -659,27 +659,150 @@ Package: syntax 1996/05/17 1.07 Syntax typesetting (MDW)
 \sdindent=\dimen291
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/relsize/relsize.sty
 Package: relsize 2013/03/29 ver 4.1
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/simplebnf/simplebnf.sty (/usr/local/texlive/2023/texmf-dist/tex/latex/tabularray/tabularray.sty
+Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
+\l__tblr_a_int=\count317
+\l__tblr_c_int=\count318
+\l__tblr_r_int=\count319
+\l__tblr_d_dim=\dimen292
+\l__tblr_h_dim=\dimen293
+\l__tblr_o_dim=\dimen294
+\l__tblr_p_dim=\dimen295
+\l__tblr_q_dim=\dimen296
+\l__tblr_r_dim=\dimen297
+\l__tblr_s_dim=\dimen298
+\l__tblr_t_dim=\dimen299
+\l__tblr_v_dim=\dimen300
+\l__tblr_w_dim=\dimen301
+\l__tblr_a_box=\box100
+\l__tblr_b_box=\box101
+\l__tblr_c_box=\box102
+\l__tblr_d_box=\box103
+\g__tblr_table_count_int=\count320
+\c@rownum=\count321
+\c@colnum=\count322
+\c@rowcount=\count323
+\c@colcount=\count324
+\abovesep=\dimen302
+\belowsep=\dimen303
+\leftsep=\dimen304
+\rightsep=\dimen305
+\g_tblr_level_int=\count325
+\g__tblr_data_row_key_count_int=\count326
+\g__tblr_data_column_key_count_int=\count327
+\g__tblr_data_cell_key_count_int=\count328
+\g__tblr_array_int=\count329
+\l__tblr_key_count_int=\count330
+\l__tblr_key_quotient_int=\count331
+\l__tblr_key_quotient_two_int=\count332
+\l__tblr_key_remainder_int=\count333
+\g__tblr_data_str_value_count_int=\count334
+\rulewidth=\dimen306
+\l__tblr_strut_dp_dim=\dimen307
+\l__tblr_strut_ht_dim=\dimen308
+\g__tblr_cell_wd_dim=\dimen309
+\g__tblr_cell_ht_dim=\dimen310
+\g__tblr_cell_head_dim=\dimen311
+\g__tblr_cell_foot_dim=\dimen312
+\l__column_target_dim=\dimen313
+\l__tblr_caption_box=\box104
+\l__tblr_caption_left_box=\box105
+\l__tblr_row_head_box=\box106
+\l__tblr_row_foot_box=\box107
+\l__tblr_row_head_foot_dim=\dimen314
+\tablewidth=\dimen315
+\l__tblr_table_firsthead_box=\box108
+\l__tblr_table_middlehead_box=\box109
+\l__tblr_table_lasthead_box=\box110
+\l__tblr_table_firstfoot_box=\box111
+\l__tblr_table_middlefoot_box=\box112
+\l__tblr_table_lastfoot_box=\box113
+\l__tblr_remain_height_dim=\dimen316
+\l__tblr_long_from_int=\count335
+\l__tblr_long_to_int=\count336
+\l__tblr_curr_i_int=\count337
+\l__tblr_prev_i_int=\count338
+\l__tblr_table_page_int=\count339
+\l__tblr_table_head_box=\box114
+\l__tblr_table_foot_box=\box115
+\l__tblr_table_head_foot_dim=\dimen317
+\l__tblr_table_head_body_foot_dim=\dimen318
+\l__tblr_table_box=\box116
+\l__tblr_table_hlines_box=\box117
+\l__tblr_hline_box=\box118
+\l__tblr_row_box=\box119
+\l__tblr_col_o_wd_dim=\dimen319
+\l__tblr_col_b_wd_dim=\dimen320
+\l__tblr_hline_leftskip_dim=\dimen321
+\l__tblr_hline_rightskip_dim=\dimen322
+\l__tblr_row_ht_dim=\dimen323
+\l__tblr_row_dp_dim=\dimen324
+\l__tblr_row_abovesep_dim=\dimen325
+\l__tblr_row_belowsep_dim=\dimen326
+\l__tblr_row_vlines_box=\box120
+\l__tblr_vline_box=\box121
+\l__tblr_cell_box=\box122
+\l__row_upper_dim=\dimen327
+\l__row_lower_dim=\dimen328
+\l__row_vpace_dim=\dimen329
+\l__tblr_vline_aboveskip_dim=\dimen330
+\l__tblr_vline_belowskip_dim=\dimen331
+\l__tblr_cell_wd_dim=\dimen332
+\l__tblr_cell_ht_dim=\dimen333
+\l__tblr_diag_box=\box123
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2022/06/29 v1.29 mathematical typesetting tools
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count340
+\calc@Bcount=\count341
+\calc@Adimen=\dimen334
+\calc@Bdimen=\dimen335
+\calc@Askip=\skip141
+\calc@Bskip=\skip142
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count342
+\calc@Cskip=\skip143
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mhsetup.sty
+Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
+)
+\g_MT_multlinerow_int=\count343
+\l_MT_multwidth_dim=\dimen336
+\origjot=\skip144
+\l_MT_shortvdotswithinadjustabove_dim=\dimen337
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen338
+\l_MT_above_intertext_sep=\dimen339
+\l_MT_below_intertext_sep=\dimen340
+\l_MT_above_shortintertext_sep=\dimen341
+\l_MT_below_shortintertext_sep=\dimen342
+\xmathstrut@box=\box124
+\xmathstrut@dim=\dimen343
+)
+Package: simplebnf 2023-11-25 v1.0.0 A simple package to format Backus–Naur form
+\l__simplebnf_prod_sep_dim=\dimen344
+\l__simplebnf_row_sep_dim=\dimen345
 ) (tex-out/syntax-judgement-P.aux)
 \openout1 = `syntax-judgement-P.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 18.
+LaTeX Font Info:    ... okay on input line 18.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -717,16 +840,16 @@ LaTeX Font Info:    ... okay on input line 14.
 
 (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count317
-\scratchdimen=\dimen292
-\scratchbox=\box100
-\nofMPsegments=\count318
-\nofMParguments=\count319
+\scratchcounter=\count344
+\scratchdimen=\dimen346
+\scratchbox=\box125
+\nofMPsegments=\count345
+\nofMParguments=\count346
 \everyMPshowfont=\toks56
-\MPscratchCnt=\count320
-\MPscratchDim=\dimen293
-\MPnumerator=\count321
-\makeMPintoPDFobject=\count322
+\MPscratchCnt=\count347
+\MPscratchDim=\dimen347
+\MPnumerator=\count348
+\makeMPintoPDFobject=\count349
 \everyMPtoPDFconversion=\toks57
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -734,53 +857,64 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (/usr/local/texlive/2023/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 14.
+Package hyperref Info: Link coloring OFF on input line 18.
  (tex-out/syntax-judgement-P.out) (tex-out/syntax-judgement-P.out)
 \@outlinefile=\write4
 \openout4 = `syntax-judgement-P.out'.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 17.
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/ninecolors/ninecolors.sty
+Package: ninecolors 2022-02-13 vv2022D Select colors with proper color contrast
+)
+LaTeX Font Info:    Trying to load font information for U+msa on input line 21.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 17.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 21.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 25.
+> Step: init table outer spec.
+> Step: parse table options.
+> Step: split table.
+> Step: init table inner spec.
+> Step: parse table inner spec.
+> Step: execute table commands.
+> Step: calculate cell and line sizes.
+LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 79.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2022/07/10 v2.5l Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 25.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 79.
 
-Overfull \hbox (27.53113pt too wide) in paragraph at lines 25--27
-[]\OT1/cmtt/m/n/10 (case [] \OMS/cmsy/m/n/10 f [] g \OT1/cmtt/m/n/10 ) [] \OT1/cmr/m/n/10 ::= \OT1/cmtt/m/n/10 (case [] \OMS/cmsy/m/n/10 f []
+
+Package tabularray Warning: Table width is too small, need 45.50722pt more!
+
+> Step: build the whole table.
+
+Overfull \hbox (45.50722pt too wide) in paragraph at lines 79--80
+ [] 
  []
 
-LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 42.
-LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 52.
 [1
 
-{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] (tex-out/syntax-judgement-P.aux)
+{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (tex-out/syntax-judgement-P.aux)
 Package rerunfilecheck Info: File `syntax-judgement-P.out' has not changed.
-(rerunfilecheck)             Checksum: 067E216E335F7FB0853E7BC291C3EB9A;336.
+(rerunfilecheck)             Checksum: 87CD432C8F572C320D7A7ABD5FBEFCA5;73.
  ) 
 Here is how much of TeX's memory you used:
- 21925 strings out of 476025
- 406944 string characters out of 5790016
- 1867388 words of memory out of 5000000
- 41971 multiletter control sequences out of 15000+600000
- 521773 words of font info for 70 fonts, out of 8000000 for 9000
+ 25032 strings out of 476025
+ 481804 string characters out of 5790016
+ 1895388 words of memory out of 5000000
+ 45058 multiletter control sequences out of 15000+600000
+ 523941 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 117i,6n,118p,520b,584s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on tex-out/syntax-judgement-P.pdf (2 pages, 135740 bytes).
+ 117i,10n,118p,520b,926s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on tex-out/syntax-judgement-P.pdf (1 page, 101695 bytes).
 PDF statistics:
- 89 PDF objects out of 1000 (max. 8388607)
- 60 compressed objects within 1 object stream
- 5 named destinations out of 1000 (max. 500000)
- 29 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 66 PDF objects out of 1000 (max. 8388607)
+ 44 compressed objects within 1 object stream
+ 3 named destinations out of 1000 (max. 500000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

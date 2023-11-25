@@ -10,8 +10,6 @@
 \DeclareMathOperator{\dom}{dom}
 
 
-% Docket: move relevant macros to macros file. 
-\newcommand{\bracketed}[1]{\{#1\}}
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
@@ -115,11 +113,11 @@ We present a grammar of $V^{-}$:
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
     % $v, \; v'$& value \\
-    $\vbar$& a (possibly empty) sequence of values. \\
+    $\valbar$& a (possibly empty) sequence of values. \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
-    $\result$& $\vbar \mid$ \reject : a result of a sequence of values or
+    $\result$& $\valbar \mid$ \reject : a result of a sequence of values or
     rejection\\
     $\rho$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -161,14 +159,14 @@ We present a grammar of $V^{-}$:
 \subsection{Expressions}
 
     
-    \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \vbar}
+    \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \valbar}
     \newcommand\EvalGe{\vctx[Expr=g] \Downarrow \result}
     An expression evaluates to produce possibly-empty sequence of values.
 
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a possibly-empty sequence of values or reject. 
 
-    \[\it{r} \; \rm{::=} \; \vbar \;|\; \reject \]
+    \[\it{r} \; \rm{::=} \; \valbar \;|\; \reject \]
 
     \showvjudgement{Eval-Expr}{\EvalE}
     \showvjudgement{Eval-Guarded-Expr}{\EvalGe}
@@ -194,9 +192,9 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vctx[Tempstucks=\emptyseq] \Downarrow \vbar}
+    {\vctx[Tempstucks=\emptyseq] \Downarrow \valbar}
     {\vgctx[Tempstucks=\emptyseq, Expr=\arrowe] 
-    \Downarrow \vbar}
+    \Downarrow \valbar}
 \]
 
 \[
@@ -232,8 +230,8 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
-    {\vgctx[] \Downarrow \vbar}
-    {\veval{\iffi{g \; \square \; \dots}}{\vbar}}
+    {\vgctx[] \Downarrow \valbar}
+    {\veval{\iffi{g \; \square \; \dots}}{\valbar}}
 \]
 
 \[
@@ -241,8 +239,8 @@ the singleton sequence containing $x$.
     {\inferrule*[] {}
     {\vgctx[] \Downarrow \reject}
     \and 
-    \veval{\iffi{\dots}}{\vbar}}
-    {\veval{\iffi{g \; \square \; \dots }}{\vbar}}
+    \veval{\iffi{\dots}}{\valbar}}
+    {\veval{\iffi{g \; \square \; \dots }}{\valbar}}
 \]
 
 \[
@@ -255,22 +253,22 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
     {\inferrule*[] {}
     {
-    \veval{e_{i}}{\vbar_{i}}
+    \veval{e_{i}}{\valbar_{i}}
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(e_{1}, \dots e_{n})}{K(\vbar_{1}, \dots \vbar_{i})}}
+    {\veval{K(e_{1}, \dots e_{n})}{K(\valbar_{1}, \dots \valbar_{i})}}
 \]
 
 % \[
 % \inferrule*[Left=\textsc{ (Apply) }]
 %     {\inferrule*[] {}
 %     {
-%     \veval{e_{i}}{\vbar_{i}}
+%     \veval{e_{i}}{\valbar_{i}}
 %     \and 
 %     1 \leq i \leq n
 %     }}
-%     {\veval{\lambda \vbar_{1}, \dots \vbar_{i}. e }{K(\vbar_{1}, \dots \vbar_{i})}}
+%     {\veval{\lambda \valbar_{1}, \dots \valbar_{i}. e }{K(\valbar_{1}, \dots \valbar_{i})}}
 % \]
 
 % % \begin{mathpar}
