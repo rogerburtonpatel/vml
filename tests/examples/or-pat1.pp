@@ -71,6 +71,12 @@
 
 (check-error (name-clash-or-fail))
 
+(define multi-oneof-or-succ ()
+    (case '(3 2)
+        [(cons (oneof 3 1) x) x]))
+
+(check-expect (multi-oneof-or-succ) 2)
+
 
 ; (let ([result 
 ;     (case f 
