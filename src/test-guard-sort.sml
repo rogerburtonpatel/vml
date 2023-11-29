@@ -1,5 +1,5 @@
-local open Guard
-local open GuardSort
+local open Guard in 
+local open GuardSort in 
 
 (* hack for tests  *)
 
@@ -224,4 +224,6 @@ fun checkSort sorted_check test' =
                                              "could not sort \n" ^
                                              gexpString test ^
                                              "\n: " ^ s)
+end 
+end
 end 
