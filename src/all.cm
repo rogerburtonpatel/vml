@@ -23,6 +23,3 @@ group is
 
   (* **** languages **** *)
   decision-tree.sml
-
-  (* **** dml **** *)
-  example-dml.sml

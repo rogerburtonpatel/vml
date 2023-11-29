@@ -24,6 +24,6 @@ group is
   decision-tree.sml
 
   (* **** dml **** *)
-  example-dml.sml
+  dml/example-dml.sml
 
   main.sml

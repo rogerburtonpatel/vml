@@ -5,4 +5,4 @@ group is
 
   Unit.sml 
   (* **** dml **** *)
-  example-dml.sml
+  dml/example-dml.sml

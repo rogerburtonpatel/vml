@@ -9,7 +9,7 @@
 *.synctex.gz
 *.log
 *.fls
-# *.pdf
+*.pdf
 # binaries and linking
 /build/*
 /bin/vml

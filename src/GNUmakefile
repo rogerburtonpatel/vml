@@ -7,7 +7,7 @@ BASES=main impossible
 MLBS=$(BASES:%=%.mlb)
 CMS=$(BASES:%=%.cm)
 SRCS=$(shell echo *.sml)
-DML_SRCS=example-dml.sml Unit.sml
+DML_SRCS=dml/example-dml.sml Unit.sml
 DML_CM=dml.cm
 
 MAINS=vml.opt vml vml-test dml-test
