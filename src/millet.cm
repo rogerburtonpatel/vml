@@ -15,7 +15,7 @@ group is
   error-sig.sml
   error-module.sml
    (****** VML ******)
-  vml.sml
+  vminus.sml
   guard.sml
   guardsort.sml
   test-guard-sort.sml

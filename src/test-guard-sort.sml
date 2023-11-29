@@ -1,5 +1,5 @@
-open Guard
-open GuardSort
+local open Guard
+local open GuardSort
 
 (* hack for tests  *)
 
