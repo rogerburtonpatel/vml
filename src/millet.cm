@@ -1,7 +1,8 @@
 group is
   $/basis.cm
 
-  (***** basic infrastructure *****)
+
+  (* **** basic infrastructure **** *)
 
   impossible.sml
   escapes.sml     (* character escapes for string literals *)
@@ -18,5 +19,11 @@ group is
   guard.sml
   guardsort.sml
   test-guard-sort.sml
+
+  (* **** languages **** *)
+  decision-tree.sml
+
+  (* **** dml **** *)
+  example-dml.sml
 
   main.sml

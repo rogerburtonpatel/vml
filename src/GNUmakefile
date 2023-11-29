@@ -7,22 +7,21 @@ BASES=main impossible
 MLBS=$(BASES:%=%.mlb)
 CMS=$(BASES:%=%.cm)
 SRCS=$(shell echo *.sml)
+DML_SRCS=example-dml.sml Unit.sml
+DML_CM=dml.cm
 
-MAINS=vml.opt vml vml-test
+MAINS=vml.opt vml vml-test dml-test
 
 .PHONY: mosml
 
 mosml: $(BIN)/vml-test
 	@: do nothing, and say nothing about doing nothing
 
-# mosml: $(BIN)/vml
-# 	@: do nothing, and say nothing about doing nothing
-
 .PHONY: clean
 
 clean:
 	rm -f *.ui *.uo
-	rm -f $(BIN)/vml $(BIN)/vml.opt $(BIN)/vml-test
+	rm -f $(BIN)/vml $(BIN)/vml.opt $(BIN)/vml-test $(BIN)/dml-test
 
 .PHONY: all
 
@@ -45,6 +44,12 @@ $(BIN)/vml-test: $(SRCS) $(CMS)
 
 $(BIN)/vml: $(SRCS) $(CMS)
 	$(TOP)/bin/mosml-compile-cm -o $@ main.cm
+
+dml-test: $(BIN)/dml-test
+	@: do nothing, and say nothing about doing nothing
+
+$(BIN)/dml-test: $(DML_SRCS) $(DML_CM)
+	$(TOP)/bin/mosml-compile-cm -o $@ $(DML_CM)
 
 millet.cm: $(CMS)
 	expand-cm main.cm > $@
