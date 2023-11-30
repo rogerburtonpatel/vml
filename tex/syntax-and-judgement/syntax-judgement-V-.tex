@@ -66,7 +66,6 @@ We present a grammar of $V^{-}$:
     \end{bnf}
 \end{center}
 
-\bigskip 
 
 A \it{name} is any token that is not an integer literal, 
 does not contain whitespace, a bracket, or parenthesis, 
@@ -152,11 +151,11 @@ far as I can tell.}
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
     % $v, \; v'$& value \\
-    $\valbar$& a (possibly empty) sequence of values. \\
+    \valpha& a value produced from evaluating $\alpha$. \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
-    $\result$& $\valbar \mid$ \reject : a result of a sequence of values or
+    $\result$& $\vartheta \mid$ \reject : a result of \valpha or
     rejection\\
     $\rho$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -180,9 +179,9 @@ far as I can tell.}
     
     \medskip
     
-    \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat REMOVE THIS}
-    \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\tempstuck}
-    \mkjudgementcmd{EquationReject}{\vtuple{\rho, eq}}{reject}
+    % \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat REMOVE THIS}
+    % \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\tempstuck}
+    % \mkjudgementcmd{EquationReject}{\vtuple{\rho, eq}}{reject}
 
     % \showvjudgement{EquationSuccess}{\EquationSuccess}
     % \showvjudgement{EquationTempStuck}{\EquationTempStuck}
@@ -197,18 +196,25 @@ far as I can tell.}
     
 \subsection{Expressions}
 
-    
-    \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \valbar}
+    \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \vartheta}
     \newcommand\EvalGe{\vctx[Expr=g] \Downarrow \result}
-    An expression evaluates to produce possibly-empty sequence of values.
+    \newcommand\GNoTree{\vctx[Expr=g] \rightsquigarrow \uppsidown} 
+    An expression in core Verse evaluates to produce possibly-empty sequence of 
+    values. In \Vminus, values depend on $\alpha.$ If $\alpha$ is a Verse-like 
+    expression, \valpha will be a value sequence. If it is an ML-like 
+    expression, it will be a single value. 
 
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a possibly-empty sequence of values or reject. 
 
-    \[\it{r} \; \rm{::=} \; \valbar \;|\; \reject \]
+    \[\it{r} \; \rm{::=} \; \vartheta \;|\; \reject \]
 
     \showvjudgement{Eval-Expr}{\EvalE}
     \showvjudgement{Eval-Guarded-Expr}{\EvalGe}
+    
+    \bigskip
+
+    \showvjudgement{NoTree}{\GNoTree}
 
 \bigskip
 
@@ -231,9 +237,9 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vctx[Tempstucks=\emptyseq] \Downarrow \valbar}
-    {\vgctx[Tempstucks=\emptyseq, Expr=\arrowe] 
-    \Downarrow \valbar}
+    {\vctx[T=\emptyseq] \Downarrow \vartheta}
+    {\vgctx[T=\emptyseq, Expr=\arrowe] 
+    \Downarrow \vartheta}
 \]
 
 \[
@@ -244,18 +250,57 @@ the singleton sequence containing $x$.
 \]
 
 \[
-\inferrule*[Left=\textsc{ (G-Eval-With-Ctx) }]
-    {\ }
-    {\vgctx[Tempstucks=\TeqT] 
-    \Downarrow \result}
-\]
-
-\[
 \inferrule*[Left=\textsc{ (G-Move-To-Ctx) }]
-    {\inferrule*{\vgctx[Tempstucks=eq \cdot \tempstucks] 
+    {\inferrule*{\vgctx[T=eq \cdot \T] 
                  \Downarrow \result}{}
     }
     {\vctx[Expr=eq; \; g] \Downarrow \result}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Move-Eqn) }]
+    {\inferrule*[] {}
+    {
+    \veval{e}{\valpha}
+    \and 
+    \vgctx[Rhoext=\bracketed{x \mapsto \valpha},
+           T=\T \cdot \T']
+    \Downarrow \result'
+    }}
+    {\vgctx[T=\TeqT{x = e}] 
+    \Downarrow \result'}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Vcon-Single-Fail) }]
+    {K \neq K'}
+    {\vgctx[T=\TeqT{K = K'}] 
+    \Downarrow \reject}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Vcon-Single-Succ) }]
+    {\vgctx[T=\TT] 
+    \Downarrow \result}
+    {\vgctx[T=\TeqT{K= K}] 
+    \Downarrow \result}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (G-Vcon-Multi-Fail) }]
+    {K \neq K'}
+    {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K'(e'_{1}, \dots e'_{n})}] 
+    \Downarrow \reject}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Vcon-Multi-Succ) }]
+    {
+    \vgctx[T=\eqTT{\lbrack e_{i}=e'_{i} \; \vert \; 1 \leq i \leq n \rbrack}] 
+    \Downarrow \result}
+    {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K(e'_{1}, \dots e'_{n})}] 
+    \Downarrow \result}
 \]
 
 \subsection{Evaluating General Expressions}
@@ -269,8 +314,8 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
-    {\vgctx[] \Downarrow \valbar}
-    {\veval{\iffi{g \; \square \; \dots}}{\valbar}}
+    {\vgctx[] \Downarrow \vartheta}
+    {\veval{\iffi{g \; \square \; \dots}}{\vartheta}}
 \]
 
 \[
@@ -278,8 +323,8 @@ the singleton sequence containing $x$.
     {\inferrule*[] {}
     {\vgctx[] \Downarrow \reject}
     \and 
-    \veval{\iffi{\dots}}{\valbar}}
-    {\veval{\iffi{g \; \square \; \dots }}{\valbar}}
+    \veval{\iffi{\dots}}{\vartheta}}
+    {\veval{\iffi{g \; \square \; \dots }}{\vartheta}}
 \]
 
 \[
@@ -292,22 +337,22 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
     {\inferrule*[] {}
     {
-    \veval{e_{i}}{\valbar_{i}}
+    \veval{e_{i}}{\vartheta_{i}}
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(e_{1}, \dots e_{n})}{K(\valbar_{1}, \dots \valbar_{i})}}
+    {\veval{K(e_{1}, \dots e_{n})}{K(\vartheta_{1}, \dots \vartheta_{i})}}
 \]
 
 % \[
 % \inferrule*[Left=\textsc{ (Apply) }]
 %     {\inferrule*[] {}
 %     {
-%     \veval{e_{i}}{\valbar_{i}}
+%     \veval{e_{i}}{\vartheta_{i}}
 %     \and 
 %     1 \leq i \leq n
 %     }}
-%     {\veval{\lambda \valbar_{1}, \dots \valbar_{i}. e }{K(\valbar_{1}, \dots \valbar_{i})}}
+%     {\veval{\lambda \vartheta_{1}, \dots \vartheta_{i}. e }{K(\vartheta_{1}, \dots \vartheta_{i})}}
 % \]
 
 % % \begin{mathpar}
@@ -327,7 +372,7 @@ the singleton sequence containing $x$.
 
 
 
-% \mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \tempstucks, eq; g}}{v}
+% \mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \`T', eq; g}}{v}
 
 % \newcommand\GeEqStuckRule{%
 % \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
@@ -338,7 +383,7 @@ the singleton sequence containing $x$.
 % \mpar{\GeEqStuckRule}
 
 % \nr{If you're trying to pluck an equation out of a list of things, try
-% ``$\tempstucks \cdot \eq \cdot \tempstucks'$.''}
+% ``$\T \cdot \eq \cdot \T'$.''}
 
 % % Gotta fix the stacking. 
 
@@ -364,8 +409,8 @@ the singleton sequence containing $x$.
 % \mpar{\GeEqSuccRule}
 
 
-% \mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cdot \tempstucks, g}}{\fail}
-% \mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \tempstucks, eq; g}}{\fail}
+% \mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cdot \T, g}}{\fail}
+% \mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \T, eq; g}}{\fail}
 
 % \newcommand\GeCtxFailRule[1][Left]{%
 % \inferrule*[#1=\textsc{ (G-Ctx-Fail) }]
@@ -385,8 +430,8 @@ the singleton sequence containing $x$.
 
 % \mpar{\GeEqFailRule}
 
-% \mkevaljudgementcmd{GeExpSucc}{\vtuple{\rho, \tempstucks, e; g}}{v}
-% \mkevaljudgementcmd{GeExpFail}{\vtuple{\rho, \tempstucks, e; g}}{\fail}
+% \mkevaljudgementcmd{GeExpSucc}{\vtuple{\rho, \T, e; g}}{v}
+% \mkevaljudgementcmd{GeExpFail}{\vtuple{\rho, \T, e; g}}{\fail}
 
 % \newcommand\GeExpFailRule{%
 % \inferrule*[Left=\textsc{ (G-Exp-Fail) }]
