@@ -35,9 +35,13 @@ We present a grammar of $V^{-}$:
 % Values \hspace{1cm} $v ::= x \;\vert\; hnf$ 
 % Head Values \hspace{1cm} $hnf ::= k \;\vert\; op \;\vert\; \lambda x.\;e$ 
 
+
+% I attempted to use the grammar environment you provided. But there was either
+% something missing or something I overlooked in the example code and it would
+% not compile, despite many reducing changes I made. So I went with the
+% simplebnf package, which I quite like.  
 \begin{center}
     \begin{bnf}
-
     $P$ : \textsf{Programs} ::=
     $\bracketed{d}$ : definition
     ;;
@@ -45,7 +49,7 @@ We present a grammar of $V^{-}$:
     | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
     ;;
     $e$ : \textsf{Expressions} ::=
-    | $x$ : name
+    | $x, y, z$ : names
     | $\tt{if} \; \galpha \; \bracketed{[] \galpha} \; \tt{fi}$ : if-fi 
     | $K \bracketed{e}$ : value constructor application 
     | $e_1 \; e_2$ : function application 
@@ -73,10 +77,14 @@ and is not a value constructor name or a reserved word.
 
 \bigskip 
 
-\rab{Would like help cleaning up the format on this, specifically with regards 
-to the regex. The one downside of this nicer package is that descriptions will 
-not wrap, so describing an integer literal in english isn't an option as 
-far as I can tell.}
+% \rab{Would like help cleaning up the format on this, specifically with regards 
+% to the regex. The one downside of this nicer package is that descriptions will 
+% not wrap, so describing an integer literal in full english isn't an option as 
+% far as I can tell.}
+% I'll ask this later. 
+
+% The old grammar, with the \syntax package 
+
 % \begin{grammar}
 %     <program> ::= \{{<def>}\}
     
@@ -162,6 +170,7 @@ far as I can tell.}
     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
     $e$& An expression \\ 
     $g$& A guarded expression \\
+    \uppsidown& Inability to compile to a decision tree; a compile time error \\
 \bottomrule
 \end{tabular}    
 
@@ -213,7 +222,10 @@ far as I can tell.}
     \showvjudgement{Eval-Guarded-Expr}{\EvalGe}
     
     \bigskip
-
+    If a guarded expression cannot be evaluated without producing logical 
+    variables at runtime, it cannot be expressed as a decision tree. 
+    This notation indicates this failure (think of \uppsidown as a fallen 
+    tree), which results in a compile-time error. 
     \showvjudgement{NoTree}{\GNoTree}
 
 \bigskip
@@ -234,6 +246,7 @@ the singleton sequence containing $x$.
 \section{Rules (Big-step Operational Semantics) for $V^{-}$:}
     
 \subsection{Evaluating Guarded Expressions}
+\subsubsection{Evaluating simple parts of guarded expressions}
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
@@ -250,6 +263,18 @@ the singleton sequence containing $x$.
 \]
 
 \[
+\inferrule*[Left=\textsc{ (Eval-Expseq) }]
+    {\inferrule* {}
+    {
+    \veval{e}{\valpha}
+    \and
+    \veval{g}{\result}
+    }}
+    {\vgctx[Expr=e;\; g] 
+    \Downarrow \result}
+\]
+\subsubsection{Shifting an equation to the context}
+\[
 \inferrule*[Left=\textsc{ (G-Move-To-Ctx) }]
     {\inferrule*{\vgctx[T=eq \cdot \T] 
                  \Downarrow \result}{}
@@ -257,9 +282,25 @@ the singleton sequence containing $x$.
     {\vctx[Expr=eq; \; g] \Downarrow \result}
 \]
 
+\subsubsection{Evaluating with different types of equations}
+
 \[
-\inferrule*[Left=\textsc{ (Eval-Move-Eqn) }]
-    {\inferrule*[] {}
+\inferrule*[Left=\textsc{ (G-EqExps) }]
+    {\inferrule* {}
+    {
+    x,\;y \; \rm{are distinct and fresh}
+    \\\\
+    \vgctx[Rhoext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
+          T=\eqTT{x = e_{1} \cdot y = e_{2} \cdot x = y}]
+    \Downarrow \result 
+    }}
+    {\vgctx[T=\TeqT{e_{1} = e_{2}}] 
+    \Downarrow \result}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-EqNameExp) }]
+    {\inferrule* {}
     {
     \veval{e}{\valpha}
     \and 
@@ -268,6 +309,62 @@ the singleton sequence containing $x$.
     \Downarrow \result'
     }}
     {\vgctx[T=\TeqT{x = e}] 
+    \Downarrow \result'}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-EqNames-Vals-Succ) }]
+    {\inferrule* {}
+    {
+    x,\;y \in \dom \rho
+    \\\\
+    \rho(x) = \valpha, \; \rho(y) = \valpha
+    \\\\ 
+    \vgctx[T=\TT]
+    \Downarrow \result
+    }}
+    {\vgctx[T=\TeqT{x = y}] 
+    \Downarrow \result}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-EqNames-Vals-Fail) }]
+    {\inferrule* {}
+    {
+    x,\;y \in \dom \rho
+    \\\\
+    \rho(x) = \valpha, \; \rho(y) = \valpha'
+    \\\\
+    \valpha \neq \valpha'}}
+    {\vgctx[T=\TeqT{x = y}] 
+    \Downarrow \reject}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-EqNames-Bots-Fail) }]
+    {\inferrule* {}
+    {
+    x,\;y \in \dom \rho
+    \\\\
+    \rho(x) = \bot, \; \rho(y) = \bot
+    \\\\
+    x,\;y \; \rm{do not appear in} \; \T, \; \T'}}
+    {\vgctx[T=\TeqT{x = y}] 
+    \rightsquigarrow \uppsidown}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-EqNames-BotVal-Succ) }]
+    {\inferrule* {}
+    {
+    x,\;y \in \dom \rho
+    \\\\
+    \rho(x) = \bot, \; \rho(y) = \valpha
+    \\\\
+    \vgctx[Rhoext=\bracketed{x \mapsto \valpha},
+           T=\T \cdot \T']
+    \Downarrow \result'}}
+    {\vgctx[T=\TeqT{x = y}] 
     \Downarrow \result'}
 \]
 
@@ -291,6 +388,13 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Fail) }]
     {K \neq K'}
     {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K'(e'_{1}, \dots e'_{n})}] 
+    \Downarrow \reject}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Vcon-Multi-Arity-Fail) }]
+    {n \neq m}
+    {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K(e'_{1}, \dots e'_{m})}] 
     \Downarrow \reject}
 \]
 
@@ -320,7 +424,7 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Reject) }]
-    {\inferrule*[] {}
+    {\inferrule* {}
     {\vgctx[] \Downarrow \reject}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
@@ -335,7 +439,7 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
-    {\inferrule*[] {}
+    {\inferrule* {}
     {
     \veval{e_{i}}{\vartheta_{i}}
     \and 
@@ -344,9 +448,29 @@ the singleton sequence containing $x$.
     {\veval{K(e_{1}, \dots e_{n})}{K(\vartheta_{1}, \dots \vartheta_{i})}}
 \]
 
+\section{The very suspect rule from question 5}
+\[
+\inferrule*[Left=\textsc{ (EqNames-Bots-Succ) }]
+    {\inferrule* {}
+    {
+    x,\;y \in \dom \rho
+    \\\\
+    \rho(x) = \bot, \; \rho(y) = \bot
+    \\\\
+    \rm{Either} \; x \; \rm{or} \; y \; \rm{appears in} \; \T, \; \T'
+    \\\\
+    \vgctx[T=\TeqT{x = y}] 
+    \Downarrow \result 
+    }}
+    {\vgctx[T=\TeqT{x = y}] 
+    \Downarrow \result}
+\]
+
+% Old rules, some useful 
+
 % \[
 % \inferrule*[Left=\textsc{ (Apply) }]
-%     {\inferrule*[] {}
+%     {\inferrule* {}
 %     {
 %     \veval{e_{i}}{\vartheta_{i}}
 %     \and 
