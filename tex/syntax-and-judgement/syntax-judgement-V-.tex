@@ -29,7 +29,7 @@ We present a grammar of $V^{-}$:
 \bigskip
 
 % Integers \hspace{1cm} $k$ \\
-% Variables \hspace{.45cm} $x, y, z, f, g$ \\
+% Variables \hspace{.45cm} $x, y, z, f, \galpha$ \\
 % Programs \hspace{1cm} $p ::= \bf{one} \{ e \}$, where \ppl{fvs} $e = \emptyset$ \\
 % Expressions $e ::= v \; \vert \; eq \ppl{;} \; e$ 
 % Values \hspace{1cm} $v ::= x \;\vert\; hnf$ 
@@ -170,7 +170,7 @@ and is not a value constructor name or a reserved word.
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
     $\ealpha$& An expression \\ 
-    $g$& A guarded expression \\
+    $\galpha$& A guarded expression \\
     \uppsidown& Inability to compile to a decision tree; a compile time error \\
 \bottomrule
 \end{tabular}    
@@ -207,8 +207,8 @@ and is not a value constructor name or a reserved word.
 \subsection{Expressions}
 
     \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \vartheta}
-    \newcommand\EvalGe{\vctx[Expr=g] \Downarrow \result}
-    \newcommand\GNoTree{\vctx[Expr=g] \rightsquigarrow \uppsidown} 
+    \newcommand\EvalGe{\vgctx \Downarrow \result}
+    \newcommand\GNoTree{\vgctx \rightsquigarrow \uppsidown} 
     An expression in core Verse evaluates to produce possibly-empty sequence of 
     values. In \Vminus, values depend on $\alpha.$ If $\alpha$ is a Verse-like 
     expression, \valpha will be a value sequence. If it is an ML-like 
@@ -259,7 +259,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
     {\vgctx[Rho=\rho\{x \mapsto \bot \}] \Downarrow \result}
-    {\vgctx[Expr=\exists x.\; g] 
+    {\vgctx[Expr=\exists x.\; \galpha] 
     \Downarrow \result}
 \]
 
@@ -269,9 +269,9 @@ the singleton sequence containing $x$.
     {
     \veval{\ealpha}{\valpha}
     \and
-    \veval{g}{\result}
+    \veval{\galpha}{\result}
     }}
-    {\vgctx[Expr=\ealpha;\; g] 
+    {\vgctx[Expr=\ealpha;\; \galpha] 
     \Downarrow \result}
 \]
 \subsubsection{Shifting an equation to the context}
@@ -280,7 +280,7 @@ the singleton sequence containing $x$.
     {\inferrule*{\vgctx[T=eq \cdot \T] 
                  \Downarrow \result}{}
     }
-    {\vctx[Expr=eq; \; g] \Downarrow \result}
+    {\vctx[Expr=eq; \; \galpha] \Downarrow \result}
 \]
 
 \subsubsection{Evaluating with different types of equations}
@@ -420,7 +420,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
     {\vgctx[] \Downarrow \vartheta}
-    {\veval{\iffi{g \; \square \; \dots}}{\vartheta}}
+    {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
 \]
 
 \[
@@ -429,7 +429,7 @@ the singleton sequence containing $x$.
     {\vgctx[] \Downarrow \reject}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
-    {\veval{\iffi{g \; \square \; \dots }}{\vartheta}}
+    {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
 \]
 
 \[
@@ -466,158 +466,5 @@ the singleton sequence containing $x$.
     {\vgctx[T=\TeqT{x = y}] 
     \Downarrow \result}
 \]
-
-% Old rules, some useful 
-
-% \[
-% \inferrule*[Left=\textsc{ (Apply) }]
-%     {\inferrule* {}
-%     {
-%     \veval{e_{i}}{\vartheta_{i}}
-%     \and 
-%     1 \leq i \leq n
-%     }}
-%     {\veval{\lambda \vartheta_{1}, \dots \vartheta_{i}. e }{K(\vartheta_{1}, \dots \vartheta_{i})}}
-% \]
-
-% % \begin{mathpar}
-% %     \inferrule*[Left=\textsc{ (G-Ctx-Stuck) }]
-% %     {\inferrule*{\EquationTempStuck}{\CtxToRho}
-% %     \and 
-% %     \inferrule*{}{\EvalGeSucc}
-% %     }
-% %     {\GeEqCtxEval}
-% % \end{mathpar}
-
-% % Which of the above two do you prefer? 
-
-% \nr{The notation below has multiple horizontal lines.  That makes it a
-% derivation, not a rule.  I'm having trouble figuring out what's being
-% said here.}
-
-
-
-% \mkevaljudgementcmd{GeCtxEqEval}{\vtuple{\rho, \`T', eq; g}}{v}
-
-% \newcommand\GeEqStuckRule{%
-% \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
-% {\GeCtxStuckRule[Right]}
-% {\GeCtxEqEval}
-% }
-
-% \mpar{\GeEqStuckRule}
-
-% \nr{If you're trying to pluck an equation out of a list of things, try
-% ``$\T \cdot \eq \cdot \T'$.''}
-
-% % Gotta fix the stacking. 
-
-% \newcommand\GeCtxSuccRule[1][Left]{%
-% \inferrule*[#1=\textsc{ (G-Ctx-Succ) }]
-%     {\inferrule*{}{\EquationSuccess} 
-%     \and 
-%     \inferrule*{}{\EvalGeSucc[\rhohat]}
-%     }
-%     {\GeEqCtxEval}
-% }
-
-% \mpar{\GeCtxSuccRule}
-
-
-% \newcommand\GeEqSuccRule{%
-% \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
-%     {\inferrule*{}{\GeCtxSuccRule[Right]} 
-%     }
-%     {\GeCtxEqEval}
-% }
-
-% \mpar{\GeEqSuccRule}
-
-
-% \mkevaljudgementcmd{GeEqCtxEvalFail}{\vtuple{\rho, eq \cdot \T, g}}{\fail}
-% \mkevaljudgementcmd{GeCtxEqEvalFail}{\vtuple{\rho, \T, eq; g}}{\fail}
-
-% \newcommand\GeCtxFailRule[1][Left]{%
-% \inferrule*[#1=\textsc{ (G-Ctx-Fail) }]
-%     {\inferrule*{}{\EquationReject} 
-%     }
-%     {\GeEqCtxEvalFail}
-% }
-
-%     \mpar{\GeCtxFailRule}
-
-% \newcommand\GeEqFailRule{%
-% \inferrule*[Left=\textsc{ (G-Eq-Fail) }]
-%     {\inferrule*{}{\GeCtxFailRule[Right]} 
-%     }
-%     {\GeCtxEqEvalFail}
-% }
-
-% \mpar{\GeEqFailRule}
-
-% \mkevaljudgementcmd{GeExpSucc}{\vtuple{\rho, \T, e; g}}{v}
-% \mkevaljudgementcmd{GeExpFail}{\vtuple{\rho, \T, e; g}}{\fail}
-
-% \newcommand\GeExpFailRule{%
-% \inferrule*[Left=\textsc{ (G-Exp-Fail) }]
-%     {\EvalSucc[\fail]}
-%     {\GeExpFail}
-% }
-
-% \mpar{\GeExpFailRule}
-
-% \newcommand\GeExpSuccRule{%
-% \inferrule*[Left=\textsc{ (G-Eq-Succ) }]
-%     {\EvalSucc[v']
-%     \and 
-%     \EvalGeSucc}
-%     {\GeExpSucc}
-% }
-
-% \mpar{\GeExpSuccRule}
-
-
-
-
-% % \begin{mathpar}
-% % \inferrule*[Left=\textsc{G-Ctx-Stuck}]
-% %     {\inferrule*[Left=\textsc{FormalVar}]
-% %       {\texttt{x} \in dom \rho}
-% %       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
-% %      \and 1 \neq 0 \and
-% %      \inferrule*[Right=\textsc{Literal}]
-% %        {\EvalGeSucc}
-% %        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
-% %     }
-% %     {\GeCtxStuck}
-% % \end{mathpar}
-
-% % \begin{mathpar}
-% %   \inferrule*[Left=\textsc{IfTrue}]
-% %     {\inferrule*[Left=\textsc{FormalVar}]
-% %       {\texttt{x} \in dom \rho}
-% %       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
-% %      \and 1 \neq 0 \and
-% %      \inferrule*[Right=\textsc{Literal}]
-% %        {\ }
-% %        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
-% %     }
-% %     {\evalr{\textsc{if}(\textsc{var}(\texttt{x}), 
-% %                         \textsc{lit}(\texttt{2}),
-% %                         \textsc{lit}(\texttt{3}))}
-% %      \Downarrow \evalr{2} 
-% %     }
-% %   \end{mathpar}
-
-% % A series of equations is either is solved to produce a value or gets stuck. 
-% % A single sub-equation of the form x = e , where eq is an equation or an
-% % expression, either is solved to produce an environment or gets stuck. 
-
-% % An equation x = e can only be solved if e contains no unbound logical variables. 
-
-% % \it{In progress}
-% % $$
-% % (\tt{if} \; \tt{fi}) \triangleq (\tt{wrong})
-% % $$
 
 \end{document}
