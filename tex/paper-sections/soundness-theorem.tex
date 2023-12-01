@@ -9,7 +9,21 @@ rewrite rules $R$ in order $O_{1}$ and applying our big-step rules in order
 $O_{2}$ to $t$ and $t^{-}$ respectively yeilds equivalent results. 
 
 In mathspeak: 
-\[\forall t \in V,\; t^{-} \in \Vminus. \; 
-\exists \; O_{1} \; O_{2}. \; \rm{s.t.} \;  O_{1}R(t) = O_{2}S(t')
-\]
+% \[\forall t \in V,\; t^{-} \in \Vminus. \; 
+% \exists \; O_{1} \; O_{2}. \; \rm{s.t.} \;  O_{1}R(t) = O_{2}S(t^{-})
+% \]
+
+% Ordered subset
+% exists subset s.t. applying them successively to this term gives ... 
+\[
+    \exists r_{1} \dots r_{n} \in R, s_{1} \dots s_{m} \in S .\;
+  r_{n} \circ \dots \circ r_{1}(t) = s_{m} \circ \dots \circ s_{1}(t^{-})
+  \]
+% Make t and t- equivalent explicity 
+
+% Let O_1(t) be the function that applies rules in R to t in 
+% the order \mathcal{O}_1
+% Think of O1, O2 as permutations 
+% R = \{r_{1}, ..., r_{n}\}
+% S = \{s_{1}, ..., s_{m}\}
 \end{document}
