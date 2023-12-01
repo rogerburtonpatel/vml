@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  25 NOV 2023 00:23
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  1 DEC 2023 11:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -645,15 +645,31 @@ Package: mathpartir 2016/02/24 version 1.3.2 Math Paragraph for Typesetting Infe
 \mpr@hlist=\box97
 \mpr@vlist=\box98
 \mpr@right=\box99
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/graphics/rotating.sty
+Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
+)
+\c@r@tfl@t=\count317
+\rotFPtop=\skip135
+\rotFPbot=\skip136
+\rot@float@box=\box100
+\rot@mess@toks=\toks56
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/was/upgreek.sty
+Package: upgreek 2003/02/12 v2.0 (WaS)
+Package upgreek Info: Using Euler Roman for upright Greek on input line 31.
+\symugrf@m=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `ugrf@m' in version `bold'
+(Font)                  U/eur/m/n --> U/eur/b/n on input line 38.
 )) (/usr/local/texlive/2023/texmf-dist/tex/latex/mdwtools/syntax.sty
 Package: syntax 1996/05/17 1.07 Syntax typesetting (MDW)
-\grammarparsep=\skip135
+\grammarparsep=\skip137
 \grammarindent=\dimen288
-\sdstartspace=\skip136
-\sdendspace=\skip137
-\sdmidskip=\skip138
-\sdtokskip=\skip139
-\sdfinalskip=\skip140
+\sdstartspace=\skip138
+\sdendspace=\skip139
+\sdmidskip=\skip140
+\sdtokskip=\skip141
+\sdfinalskip=\skip142
 \sdrulewidth=\dimen289
 \sdcirclediam=\dimen290
 \sdindent=\dimen291
@@ -661,9 +677,9 @@ Package: syntax 1996/05/17 1.07 Syntax typesetting (MDW)
 Package: relsize 2013/03/29 ver 4.1
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/simplebnf/simplebnf.sty (/usr/local/texlive/2023/texmf-dist/tex/latex/tabularray/tabularray.sty
 Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
-\l__tblr_a_int=\count317
-\l__tblr_c_int=\count318
-\l__tblr_r_int=\count319
+\l__tblr_a_int=\count318
+\l__tblr_c_int=\count319
+\l__tblr_r_int=\count320
 \l__tblr_d_dim=\dimen292
 \l__tblr_h_dim=\dimen293
 \l__tblr_o_dim=\dimen294
@@ -674,29 +690,29 @@ Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
 \l__tblr_t_dim=\dimen299
 \l__tblr_v_dim=\dimen300
 \l__tblr_w_dim=\dimen301
-\l__tblr_a_box=\box100
-\l__tblr_b_box=\box101
-\l__tblr_c_box=\box102
-\l__tblr_d_box=\box103
-\g__tblr_table_count_int=\count320
-\c@rownum=\count321
-\c@colnum=\count322
-\c@rowcount=\count323
-\c@colcount=\count324
+\l__tblr_a_box=\box101
+\l__tblr_b_box=\box102
+\l__tblr_c_box=\box103
+\l__tblr_d_box=\box104
+\g__tblr_table_count_int=\count321
+\c@rownum=\count322
+\c@colnum=\count323
+\c@rowcount=\count324
+\c@colcount=\count325
 \abovesep=\dimen302
 \belowsep=\dimen303
 \leftsep=\dimen304
 \rightsep=\dimen305
-\g_tblr_level_int=\count325
-\g__tblr_data_row_key_count_int=\count326
-\g__tblr_data_column_key_count_int=\count327
-\g__tblr_data_cell_key_count_int=\count328
-\g__tblr_array_int=\count329
-\l__tblr_key_count_int=\count330
-\l__tblr_key_quotient_int=\count331
-\l__tblr_key_quotient_two_int=\count332
-\l__tblr_key_remainder_int=\count333
-\g__tblr_data_str_value_count_int=\count334
+\g_tblr_level_int=\count326
+\g__tblr_data_row_key_count_int=\count327
+\g__tblr_data_column_key_count_int=\count328
+\g__tblr_data_cell_key_count_int=\count329
+\g__tblr_array_int=\count330
+\l__tblr_key_count_int=\count331
+\l__tblr_key_quotient_int=\count332
+\l__tblr_key_quotient_two_int=\count333
+\l__tblr_key_remainder_int=\count334
+\g__tblr_data_str_value_count_int=\count335
 \rulewidth=\dimen306
 \l__tblr_strut_dp_dim=\dimen307
 \l__tblr_strut_ht_dim=\dimen308
@@ -705,32 +721,32 @@ Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
 \g__tblr_cell_head_dim=\dimen311
 \g__tblr_cell_foot_dim=\dimen312
 \l__column_target_dim=\dimen313
-\l__tblr_caption_box=\box104
-\l__tblr_caption_left_box=\box105
-\l__tblr_row_head_box=\box106
-\l__tblr_row_foot_box=\box107
+\l__tblr_caption_box=\box105
+\l__tblr_caption_left_box=\box106
+\l__tblr_row_head_box=\box107
+\l__tblr_row_foot_box=\box108
 \l__tblr_row_head_foot_dim=\dimen314
 \tablewidth=\dimen315
-\l__tblr_table_firsthead_box=\box108
-\l__tblr_table_middlehead_box=\box109
-\l__tblr_table_lasthead_box=\box110
-\l__tblr_table_firstfoot_box=\box111
-\l__tblr_table_middlefoot_box=\box112
-\l__tblr_table_lastfoot_box=\box113
+\l__tblr_table_firsthead_box=\box109
+\l__tblr_table_middlehead_box=\box110
+\l__tblr_table_lasthead_box=\box111
+\l__tblr_table_firstfoot_box=\box112
+\l__tblr_table_middlefoot_box=\box113
+\l__tblr_table_lastfoot_box=\box114
 \l__tblr_remain_height_dim=\dimen316
-\l__tblr_long_from_int=\count335
-\l__tblr_long_to_int=\count336
-\l__tblr_curr_i_int=\count337
-\l__tblr_prev_i_int=\count338
-\l__tblr_table_page_int=\count339
-\l__tblr_table_head_box=\box114
-\l__tblr_table_foot_box=\box115
+\l__tblr_long_from_int=\count336
+\l__tblr_long_to_int=\count337
+\l__tblr_curr_i_int=\count338
+\l__tblr_prev_i_int=\count339
+\l__tblr_table_page_int=\count340
+\l__tblr_table_head_box=\box115
+\l__tblr_table_foot_box=\box116
 \l__tblr_table_head_foot_dim=\dimen317
 \l__tblr_table_head_body_foot_dim=\dimen318
-\l__tblr_table_box=\box116
-\l__tblr_table_hlines_box=\box117
-\l__tblr_hline_box=\box118
-\l__tblr_row_box=\box119
+\l__tblr_table_box=\box117
+\l__tblr_table_hlines_box=\box118
+\l__tblr_hline_box=\box119
+\l__tblr_row_box=\box120
 \l__tblr_col_o_wd_dim=\dimen319
 \l__tblr_col_b_wd_dim=\dimen320
 \l__tblr_hline_leftskip_dim=\dimen321
@@ -739,9 +755,9 @@ Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
 \l__tblr_row_dp_dim=\dimen324
 \l__tblr_row_abovesep_dim=\dimen325
 \l__tblr_row_belowsep_dim=\dimen326
-\l__tblr_row_vlines_box=\box120
-\l__tblr_vline_box=\box121
-\l__tblr_cell_box=\box122
+\l__tblr_row_vlines_box=\box121
+\l__tblr_vline_box=\box122
+\l__tblr_cell_box=\box123
 \l__row_upper_dim=\dimen327
 \l__row_lower_dim=\dimen328
 \l__row_vpace_dim=\dimen329
@@ -749,34 +765,34 @@ Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
 \l__tblr_vline_belowskip_dim=\dimen331
 \l__tblr_cell_wd_dim=\dimen332
 \l__tblr_cell_ht_dim=\dimen333
-\l__tblr_diag_box=\box123
+\l__tblr_diag_box=\box124
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mathtools.sty
 Package: mathtools 2022/06/29 v1.29 mathematical typesetting tools
  (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count340
-\calc@Bcount=\count341
+\calc@Acount=\count341
+\calc@Bcount=\count342
 \calc@Adimen=\dimen334
 \calc@Bdimen=\dimen335
-\calc@Askip=\skip141
-\calc@Bskip=\skip142
+\calc@Askip=\skip143
+\calc@Bskip=\skip144
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count342
-\calc@Cskip=\skip143
+\calc@Ccount=\count343
+\calc@Cskip=\skip145
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mhsetup.sty
 Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
 )
-\g_MT_multlinerow_int=\count343
+\g_MT_multlinerow_int=\count344
 \l_MT_multwidth_dim=\dimen336
-\origjot=\skip144
+\origjot=\skip146
 \l_MT_shortvdotswithinadjustabove_dim=\dimen337
 \l_MT_shortvdotswithinadjustbelow_dim=\dimen338
 \l_MT_above_intertext_sep=\dimen339
 \l_MT_below_intertext_sep=\dimen340
 \l_MT_above_shortintertext_sep=\dimen341
 \l_MT_below_shortintertext_sep=\dimen342
-\xmathstrut@box=\box124
+\xmathstrut@box=\box125
 \xmathstrut@dim=\dimen343
 )
 Package: simplebnf 2023-11-25 v1.0.0 A simple package to format Backus–Naur form
@@ -840,17 +856,17 @@ LaTeX Font Info:    ... okay on input line 18.
 
 (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count344
+\scratchcounter=\count345
 \scratchdimen=\dimen346
-\scratchbox=\box125
-\nofMPsegments=\count345
-\nofMParguments=\count346
-\everyMPshowfont=\toks56
-\MPscratchCnt=\count347
+\scratchbox=\box126
+\nofMPsegments=\count346
+\nofMParguments=\count347
+\everyMPshowfont=\toks57
+\MPscratchCnt=\count348
 \MPscratchDim=\dimen347
-\MPnumerator=\count348
-\makeMPintoPDFobject=\count349
-\everyMPtoPDFconversion=\toks57
+\MPnumerator=\count349
+\makeMPintoPDFobject=\count350
+\everyMPtoPDFconversion=\toks58
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -888,15 +904,15 @@ Package rerunfilecheck Info: File `syntax-judgement-P.out' has not changed.
 (rerunfilecheck)             Checksum: 87CD432C8F572C320D7A7ABD5FBEFCA5;73.
  ) 
 Here is how much of TeX's memory you used:
- 25019 strings out of 476025
- 481571 string characters out of 5790016
+ 25294 strings out of 476025
+ 485499 string characters out of 5790016
  1896388 words of memory out of 5000000
- 45048 multiletter control sequences out of 15000+600000
- 524026 words of font info for 74 fonts, out of 8000000 for 9000
+ 45310 multiletter control sequences out of 15000+600000
+ 526007 words of font info for 81 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  117i,10n,118p,520b,871s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on tex-out/syntax-judgement-P.pdf (1 page, 122417 bytes).
+Output written on tex-out/syntax-judgement-P.pdf (1 page, 122421 bytes).
 PDF statistics:
  76 PDF objects out of 1000 (max. 8388607)
  50 compressed objects within 1 object stream

@@ -46,19 +46,20 @@ We present a grammar of $V^{-}$:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+    | $\tt{val} \; x \; \tt{=} \; \ealpha$ : bind name to expression
     ;;
-    $e$ : \textsf{Expressions} ::=
+    $\ealpha$ : \textsf{Expressions} ::=
     | $x, y, z$ : names
-    | $\tt{if} \; \galpha \; \bracketed{[] \galpha} \; \tt{fi}$ : if-fi 
-    | $K \bracketed{e}$ : value constructor application 
-    | $e_1 \; e_2$ : function application 
+    % Question: ebnf braces vs. 
+    | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $K \bracketed{\ealpha}$ : value constructor application 
+    | $\ealphaone \; \ealphatwo$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
-    | $e; \; \galpha$ : intermediate expression 
-    | $\tt{E} \bracketed{x} \tt{.} \galpha$ : existential 
-    | $e_1 = e_2; \; \galpha$ : equation 
+    | $\ealpha; \; \galpha$ : intermediate expression 
+    | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
+    | $\ealphaone = \ealphatwo; \; \galpha$ : equation 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 
@@ -168,7 +169,7 @@ and is not a value constructor name or a reserved word.
     $\rho$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
-    $e$& An expression \\ 
+    $\ealpha$& An expression \\ 
     $g$& A guarded expression \\
     \uppsidown& Inability to compile to a decision tree; a compile time error \\
 \bottomrule
@@ -266,11 +267,11 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Eval-Expseq) }]
     {\inferrule* {}
     {
-    \veval{e}{\valpha}
+    \veval{\ealpha}{\valpha}
     \and
     \veval{g}{\result}
     }}
-    {\vgctx[Expr=e;\; g] 
+    {\vgctx[Expr=\ealpha;\; g] 
     \Downarrow \result}
 \]
 \subsubsection{Shifting an equation to the context}
@@ -291,10 +292,10 @@ the singleton sequence containing $x$.
     x,\;y \; \rm{are distinct and fresh}
     \\\\
     \vgctx[Rhoext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-          T=\eqTT{x = e_{1} \cdot y = e_{2} \cdot x = y}]
+          T=\eqTT{x = \ealphaone \cdot y = \ealphatwo \cdot x = y}]
     \Downarrow \result 
     }}
-    {\vgctx[T=\TeqT{e_{1} = e_{2}}] 
+    {\vgctx[T=\TeqT{\ealphaone = \ealphatwo}] 
     \Downarrow \result}
 \]
 
@@ -302,13 +303,13 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNameExp) }]
     {\inferrule* {}
     {
-    \veval{e}{\valpha}
+    \veval{\ealpha}{\valpha}
     \and 
     \vgctx[Rhoext=\bracketed{x \mapsto \valpha},
            T=\T \cdot \T']
     \Downarrow \result'
     }}
-    {\vgctx[T=\TeqT{x = e}] 
+    {\vgctx[T=\TeqT{x = \ealpha}] 
     \Downarrow \result'}
 \]
 
@@ -387,23 +388,23 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Fail) }]
     {K \neq K'}
-    {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K'(e'_{1}, \dots e'_{n})}] 
+    {\vgctx[T=\TeqT{K(\ealphaone, \dots \ealphan) = K'(\ealphaone', \dots \ealphan')}] 
     \Downarrow \reject}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Arity-Fail) }]
     {n \neq m}
-    {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K(e'_{1}, \dots e'_{m})}] 
+    {\vgctx[T=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots e_{\alpha_{m}}')}] 
     \Downarrow \reject}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Succ) }]
     {
-    \vgctx[T=\eqTT{\lbrack e_{i}=e'_{i} \; \vert \; 1 \leq i \leq n \rbrack}] 
+    \vgctx[T=\eqTT{\lbrack \ealphai=\ealphai' \; \vert \; 1 \leq i \leq n \rbrack}] 
     \Downarrow \result}
-    {\vgctx[T=\TeqT{K(e_{1}, \dots e_{n}) = K(e'_{1}, \dots e'_{n})}] 
+    {\vgctx[T=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots \ealphan')}] 
     \Downarrow \result}
 \]
 
@@ -441,11 +442,11 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
     {\inferrule* {}
     {
-    \veval{e_{i}}{\vartheta_{i}}
+    \veval{\ealphai}{\vartheta_{i}}
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(e_{1}, \dots e_{n})}{K(\vartheta_{1}, \dots \vartheta_{i})}}
+    {\veval{K(\ealphaone, \dots \ealphan)}{K(\vartheta_{1}, \dots \vartheta_{i})}}
 \]
 
 \section{The very suspect rule from question 5}

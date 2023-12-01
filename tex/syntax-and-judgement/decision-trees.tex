@@ -37,7 +37,7 @@ We present a grammar of $D$, the language of decision trees:
     [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
     | $\alpha$ : match node 
     | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-    | $\tt{let} \; x \; \tt{=} \; \mathit{knf} \; \tt{in} \; \Dalpha$ : let-bind a name
+    | $\tt{let} \; x \; \tt{=} \; e \; \tt{in} \; \Dalpha$ : let-bind a name
     ;;
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 
