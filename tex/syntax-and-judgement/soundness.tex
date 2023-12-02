@@ -1,9 +1,16 @@
 \documentclass{article}
 \usepackage{amsmath}
+%\usepackage{vmlmacros}  %% NR not getting his code to work with vmlmacros
 \title{On Soundness Proofs}
+
 
 \input{jforms}
 
+
+\providecommand\Vminus{\ensuremath{V^-}}
+
+\parindent=0pt
+\parskip=0.7\baselineskip
 
 \begin{document}
 
@@ -37,6 +44,15 @@ $$\vmrun[]\text,$$
 then
 $$\vrun[vterm=\translation{\close\rho\context g},vresult=\vartheta]\text.$$
 \end{quote}
+
+To~prove:
+\begin{itemize}
+\item
+The \closefun\ function is sound.
+\item
+Evaluation in \Vminus\ is deterministic.
+\end{itemize}
+
 
 \end{document}
 

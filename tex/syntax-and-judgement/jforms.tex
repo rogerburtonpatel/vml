@@ -1,8 +1,9 @@
 \usepackage{keyval}
 
+
 \makeatletter
 \newcommand\defcomponent[2]{%
-  \define@key{nr}{#1}{\@nameuse{setmyval@#1}{##1}}%
+  \define@key{state}{#1}{\@nameuse{setmyval@#1}{##1}}%
   \@namedef{setmyval@#1}##1{\@namedef{myval@#1}{##1}}%
   \@nameuse{setmyval@#1}{\ensuremath{#2}}%
 }
@@ -22,15 +23,15 @@
 \newcommand\emptycontext{\varepsilon}
 \newcommand\emptyenv{\mathord{\{\,\}}}
 
-\newcommand\vmrun[1][]{%
-  {\setkeys{nr}{#1}%
+\newcommand\vmrun[1][]{%  run V-minus code
+  {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{env}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
 
 \defcomponent{vterm}{e}
 \defcomponent{vresult}{e'}
-\newcommand\vrun[1][]{%
-  {\setkeys{nr}{#1}%
+\newcommand\vrun[1][]{% run Verse code
+  {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{vterm} \mathrel{\rightarrow^*} \c{vresult}}}}
 
