@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath}
+\title{On Soundness Proofs}
+
+\input{jforms}
+
+
+\begin{document}
+
+\maketitle
+
+
+\noindent
+\emph{Soundness}: Whenever
+$$\vmrun[env=\emptyenv,context=\emptycontext]\text,$$
+then
+$$\vrun[vterm=\translation{g},vresult=\vartheta]\text.$$
+
+
+
+\newcommand\closefun{\ensuremath{\mathit{close}}}
+\newcommand\close[3]{\closefun(#1,#2,#3)}
+
+Idea for the proof: define function $\closefun$ that converts an
+environment, context, and guarded expression to a closed guarded
+expression.
+We expect
+$$\vmrun[env=\emptyenv,context=\emptycontext,term=\close\rho\context g]$$
+if and only if
+$$\vmrun[]\text.$$
+Given \closefun, 
+the induction hypothesis for our soundness proof can be something like
+this:
+\begin{quote}
+Whenever 
+$$\vmrun[]\text,$$
+then
+$$\vrun[vterm=\translation{\close\rho\context g},vresult=\vartheta]\text.$$
+\end{quote}
+
+\end{document}
+
