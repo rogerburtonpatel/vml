@@ -19,18 +19,6 @@ We present a grammar of $D$, the language of decision trees:
 
 \begin{center}
   \begin{bnf}
-    $P$ : \textsf{Programs} ::=
-    $\bracketed{d}$ : definition
-    ;;
-    $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x  \tt{=} \; e$ : bind name to expression
-    ;;
-    $e$ : \textsf{Expressions} ::=
-    | $x$ : name
-    | \Dalpha : decision trees 
-    | $K \bracketed{e}$ : value constructor application 
-    | $e_1 \; e_2$ : function application 
-    ;;
     \Dalpha : \textsf{Decision Tree} ::= 
     $\tt{case} \; x \; \tt{of} \; 
     \bracketed{\vert \; K\bracketed{x} \; \tt{=>} \; \Dalpha}
@@ -39,12 +27,18 @@ We present a grammar of $D$, the language of decision trees:
     | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
     | $\tt{let} \; x \; \tt{=} \; e \; \tt{in} \; \Dalpha$ : let-bind a name
     ;;
-    $K$ : \textsf{Value Constructors} ::=
-    \cons : cons 
-    | \tt{[]} : empty list 
-    | $\tt{\#}x$ : name beginning with \tt{\#}
-    | \tt{A-Z}$x$ : name beggining with capital letter
-    | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+    $e$ : \textsf{Expressions} ::=
+    | $x$ : name
+    | $\mathcal{D}_{e}$ : decision trees 
+    | $K \bracketed{e}$ : value constructor application 
+    | $e_1 \; e_2$ : function application 
+    ;;
+    % $K$ : \textsf{Value Constructors} ::=
+    % \cons : cons 
+    % | \tt{[]} : empty list 
+    % | $\tt{\#}x$ : name beginning with \tt{\#}
+    % | \tt{A-Z}$x$ : name beggining with capital letter
+    % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
   \end{bnf}
 \end{center}
 

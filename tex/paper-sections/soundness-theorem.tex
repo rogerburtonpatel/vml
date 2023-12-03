@@ -8,7 +8,8 @@
 % rewrite rules $R$ in order $O_{1}$ and applying our big-step rules in order 
 % $O_{2}$ to $t$ and $t^{-}$ respectively yeilds equivalent results. 
 
-English: Whenever $\vgctx \Downarrow \valpha$, and $g$ is equivalent to 
+English: Whenever $\vgctx \Downarrow \valpha$, and $\galpha$ is equivalent to 
+a Verse expression $e$, then $e$ rewrites to $\valpha$. 
 
 In mathspeak: 
 % \[\forall t \in V,\; t^{-} \in \Vminus. \; 
@@ -17,10 +18,10 @@ In mathspeak:
 
 % Ordered subset
 % exists subset s.t. applying them successively to this term gives ... 
-\[
-    \exists r_{1} \dots r_{n} \in R, s_{1} \dots s_{m} \in S .\;
-  r_{n} \circ \dots \circ r_{1}(t) = s_{m} \circ \dots \circ s_{1}(t^{-})
-  \]
+% \[
+%     \exists r_{1} \dots r_{n} \in R, s_{1} \dots s_{m} \in S .\;
+%   r_{n} \circ \dots \circ r_{1}(t) = s_{m} \circ \dots \circ s_{1}(t^{-})
+  % \]
 % Make t and t- equivalent explicity 
 
 % Let O_1(t) be the function that applies rules in R to t in 
