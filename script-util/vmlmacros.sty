@@ -59,7 +59,7 @@
 \newcommand\arrowe{\rightarrow e}
 
 \newcommand\galpha{\ensuremath{g_{\alpha}}}
-\newcommand\ealpha{\ensuremath{e_{\alpha}}}
+\newcommand\ealpha[1][]{\ensuremath{e_{\alpha_{#1}}}}
 \newcommand\ealphaone{\ensuremath{e_{\alpha_{1}}}}
 \newcommand\ealphatwo{\ensuremath{e_{\alpha_{2}}}}
 \newcommand\ealphan{\ensuremath{e_{\alpha_{n}}}}
@@ -173,15 +173,11 @@
 
 \makeatother
 
-\defcomponent{Rho}{\rho}
-\defcomponent{T}{\context}
-\defcomponent{Expr}{e}
-\defcomponent{Rhoext}{}
-
 \defcomponent{env}{\rho}
 \defcomponent{context}{\context}
-\defcomponent{term}{g}
+\defcomponent{term}{\galpha}
 \defcomponent{result}{\result}
+\defcomponent{envext}{}
 
 
 \newcommand\emptycontext{\varepsilon}
@@ -190,7 +186,7 @@
 \newcommand\vmrun[1][]{%  run V-minus code
   {\setkeys{state}{#1}%
    \let\c=\component
-   \ensuremath{\c{env}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
+   \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
 
 \defcomponent{vterm}{e}
 \defcomponent{vresult}{e'}

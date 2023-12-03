@@ -206,8 +206,8 @@ and is not a value constructor name or a reserved word.
     
 \subsection{Expressions}
 
-    \newcommand\EvalE{\vmrun[Expr=\alpha] \Downarrow \vartheta}
-    \newcommand\EvalGe{\vmrun \Downarrow \result}
+    \newcommand\EvalE{\vmrun[term=\alpha]}
+    \newcommand\EvalGe{\vmrun}
     \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression
     in core Verse evaluates to produce possibly-empty sequence of values. In
     \Vminus, values depend on the form of abstract expression $\alpha.$ If
@@ -251,14 +251,14 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vmrun[context=\emptyseq,result=\vartheta]}
-    {\vmrun[context=\emptyseq, Expr=\arrowe,result=\vartheta]}
+    {\vmrun[context=\emptyseq,term=e,result=\vartheta]}
+    {\vmrun[context=\emptyseq, term=\arrowe,result=\vartheta]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
     {\vmrun[env=\rho\{x \mapsto \bot \}]}
-    {\vmrun[Expr=\exists x.\; \galpha]}
+    {\vmrun[term=\exists x.\; \galpha]}
 \]
 
 \[
@@ -269,7 +269,7 @@ the singleton sequence containing $x$.
     \and
     \veval{\galpha}{\result}
     }}
-    {\vmrun[Expr=\alpha;\; \galpha]}
+    {\vmrun[term=\alpha;\; \galpha]}
 \]
 \subsubsection{Shifting an equation to the context}
 \[
@@ -277,7 +277,7 @@ the singleton sequence containing $x$.
     {\inferrule*{\vmrun[context=eq \cdot \context]}
     {}
     }
-    {\vmrun[Expr=eq; \; \galpha]}
+    {\vmrun[term=eq; \; \galpha]}
 \]
 
 \subsubsection{Evaluating with different types of equations}
@@ -288,7 +288,7 @@ the singleton sequence containing $x$.
     {
     x,\;y \; \rm{are distinct and fresh}
     \\\\
-    \vmrun[Rhoext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
+    \vmrun[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
           context=\eqTT{x = \alpha_{1} \cdot y = \alpha_{2} \cdot x = y}]}}
     {\vmrun[context=\TeqT{\alpha_{1} = \alpha_{2}}]}
 \]
@@ -299,7 +299,7 @@ the singleton sequence containing $x$.
     {
     \veval{\alpha}{\valpha}
     \and 
-    \vmrun[Rhoext=\bracketed{x \mapsto \valpha},
+    \vmrun[envext=\bracketed{x \mapsto \valpha},
            context=\context \cdot \context',result=\result']}}
     {\vmrun[context=\TeqT{x = \alpha},result=\result']}
 \]
@@ -349,7 +349,7 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \bot, \; \rho(y) = \valpha
     \\\\
-    \vmrun[Rhoext=\bracketed{x \mapsto \valpha},
+    \vmrun[envext=\bracketed{x \mapsto \valpha},
            context=\context \cdot \context',result=\result']}}
     {\vmrun[context=\TeqT{x = y},result=\result']}
 \]

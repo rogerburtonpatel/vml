@@ -46,21 +46,22 @@ We present a grammar of $V^{-}$:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; \ealpha$ : bind name to expression
+    | $\tt{val} \; x \; \tt{=} \; ealph$ : bind name to expression
     ;;
     $\ealpha$ : \textsf{Expressions} ::=
     | $x, y, z$ : names
-    | $\alpha$ : final results
     % Question: ebnf braces vs. 
     | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
     | $K \bracketed{\ealpha}$ : value constructor application 
-    | $\ealphaone \; \ealphatwo$ : function application 
+    | $\ealpha[1] \; \ealpha[2]$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
     | $\ealpha; \; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-    | $\ealphaone = \ealphatwo; \; \galpha$ : equation 
+    | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
+    ;;
+    $v$ : Values ::= $K(v)$ : value constructor application 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 
@@ -207,13 +208,13 @@ and is not a value constructor name or a reserved word.
     
 \subsection{Expressions}
 
-    \newcommand\EvalE{\vmrun[Expr=\alpha] \Downarrow \vartheta}
-    \newcommand\EvalGe{\vmrun \Downarrow \result}
-    \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} 
-    An expression in core Verse evaluates to produce possibly-empty sequence of 
-    values. In \Vminus, values depend on $\alpha.$ If $\alpha$ is a Verse-like 
-    expression, \valpha will be a value sequence. If it is an ML-like 
-    expression, it will be a single value. 
+    \newcommand\EvalE{\vmrun[term=\alpha]}
+    \newcommand\EvalGe{\vmrun}
+    \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression
+    in core Verse evaluates to produce possibly-empty sequence of values. In
+    \Vminus, values depend on the form of abstract expression $\alpha.$ If
+    $\alpha$ is a Verse-like expression, \valpha will be a value sequence. If it
+    is an ML-like expression, it will be a single value. 
 
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a possibly-empty sequence of values or reject. 
@@ -252,36 +253,33 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vmrun[context=\emptyseq] \Downarrow \vartheta}
-    {\vmrun[context=\emptyseq, Expr=\arrowe] 
-    \Downarrow \vartheta}
+    {\vmrun[context=\emptyseq,term=\alpha,result=\vartheta]}
+    {\vmrun[context=\emptyseq, term=\rightarrow \alpha,result=\vartheta]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
-    {\vmrun[env=\rho\{x \mapsto \bot \}] \Downarrow \result}
-    {\vmrun[Expr=\exists x.\; \galpha] 
-    \Downarrow \result}
+    {\vmrun[env=\rho\{x \mapsto \bot \}]}
+    {\vmrun[term=\exists x.\; \galpha]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Expseq) }]
     {\inferrule* {}
     {
-    \veval{\ealpha}{\valpha}
+    \veval{ealph}{\valpha}
     \and
     \veval{\galpha}{\result}
     }}
-    {\vmrun[Expr=\ealpha;\; \galpha] 
-    \Downarrow \result}
+    {\vmrun[term=ealph;\; \galpha]}
 \]
 \subsubsection{Shifting an equation to the context}
 \[
 \inferrule*[Left=\textsc{ (G-Move-To-Ctx) }]
-    {\inferrule*{\vmrun[context=eq \cdot \context] 
-                 \Downarrow \result}{}
+    {\inferrule*{\vmrun[context=eq \cdot \context]}
+    {}
     }
-    {\vmrun[Expr=eq; \; \galpha] \Downarrow \result}
+    {\vmrun[term=eq; \; \galpha]}
 \]
 
 \subsubsection{Evaluating with different types of equations}
@@ -292,26 +290,20 @@ the singleton sequence containing $x$.
     {
     x,\;y \; \rm{are distinct and fresh}
     \\\\
-    \vmrun[Rhoext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-          context=\eqTT{x = \ealphaone \cdot y = \ealphatwo \cdot x = y}]
-    \Downarrow \result 
-    }}
-    {\vmrun[context=\TeqT{\ealphaone = \ealphatwo}] 
-    \Downarrow \result}
+    \vmrun[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
+          context=\eqTT{x = \ealpha[1] \cdot y = \ealpha[2] \cdot x = y}]}}
+    {\vmrun[context=\TeqT{\ealpha[1] = \ealpha[2]}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-EqNameExp) }]
     {\inferrule* {}
     {
-    \veval{\ealpha}{\valpha}
+    \veval{ealph}{\valpha}
     \and 
-    \vmrun[Rhoext=\bracketed{x \mapsto \valpha},
-           context=\context \cdot \context']
-    \Downarrow \result'
-    }}
-    {\vmrun[context=\TeqT{x = \ealpha}] 
-    \Downarrow \result'}
+    \vmrun[envext=\bracketed{x \mapsto \valpha},
+           context=\context \cdot \context',result=\result']}}
+    {\vmrun[context=\TeqT{x = ealph},result=\result']}
 \]
 
 \[
@@ -322,11 +314,8 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \valpha, \; \rho(y) = \valpha
     \\\\ 
-    \vmrun[context=\TT]
-    \Downarrow \result
-    }}
-    {\vmrun[context=\TeqT{x = y}] 
-    \Downarrow \result}
+    \vmrun[context=\TT]}}
+    {\vmrun[context=\TeqT{x = y}]}
 \]
 
 \[
@@ -338,8 +327,7 @@ the singleton sequence containing $x$.
     \rho(x) = \valpha, \; \rho(y) = \valpha'
     \\\\
     \valpha \neq \valpha'}}
-    {\vmrun[context=\TeqT{x = y}] 
-    \Downarrow \reject}
+    {\vmrun[context=\TeqT{x = y},result=\reject]}
 \]
 
 \[
@@ -363,50 +351,47 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \bot, \; \rho(y) = \valpha
     \\\\
-    \vmrun[Rhoext=\bracketed{x \mapsto \valpha},
-           context=\context \cdot \context']
-    \Downarrow \result'}}
-    {\vmrun[context=\TeqT{x = y}] 
-    \Downarrow \result'}
+    \vmrun[envext=\bracketed{x \mapsto \valpha},
+           context=\context \cdot \context',result=\result']}}
+    {\vmrun[context=\TeqT{x = y},result=\result']}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Single-Fail) }]
     {K \neq K'}
-    {\vmrun[context=\TeqT{K = K'}] 
-    \Downarrow \reject}
+    {\vmrun[context=\TeqT{K = K'},result=\reject]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Single-Succ) }]
-    {\vmrun[context=\TT] 
-    \Downarrow \result}
-    {\vmrun[context=\TeqT{K= K}] 
-    \Downarrow \result}
+    {\vmrun[context=\TT]}
+    {\vmrun[context=\TeqT{K= K}]}
 \]
 
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Fail) }]
     {K \neq K'}
-    {\vmrun[context=\TeqT{K(\ealphaone, \dots \ealphan) = K'(\ealphaone', \dots \ealphan')}] 
-    \Downarrow \reject}
+    {\vmrun[context=\TeqT{K(\ealpha[1], \dots 
+            \ealpha[n]) = K'(\ealpha[1]', \dots \ealpha[n]')},
+            result=\reject]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Arity-Fail) }]
     {n \neq m}
-    {\vmrun[context=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots e_{\alpha_{m}}')}] 
-    \Downarrow \reject}
+    {\vmrun[context=\TeqT{K(\ealpha[1], \dots 
+            \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[m]')},
+            result=\reject]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Succ) }]
     {
-    \vmrun[context=\eqTT{\lbrack \ealphai=\ealphai' \; \vert \; 1 \leq i \leq n \rbrack}] 
-    \Downarrow \result}
-    {\vmrun[context=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots \ealphan')}] 
-    \Downarrow \result}
+    \vmrun[context=\eqTT{\lbrack \ealpha[i]=\ealpha[i]' \; 
+           \vert \; 1 \leq i \leq n \rbrack}]}
+    {\vmrun[context=\TeqT{K(\ealpha[1], \dots 
+            \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[n]')}]}
 \]
 
 \subsection{Evaluating General Expressions}
@@ -427,7 +412,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Reject) }]
     {\inferrule* {}
-    {\vmrun[] \Downarrow \reject}
+    {\vmrun[result=\reject]}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
     {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
@@ -443,29 +428,11 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
     {\inferrule* {}
     {
-    \veval{\ealphai}{\vartheta_{i}}
+    \veval{\ealpha[i]}{\vartheta_{i}}
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(\ealphaone, \dots \ealphan)}{K(\vartheta_{1}, \dots \vartheta_{i})}}
+    {\veval{K(\ealpha[1], \dots \ealpha[n])}{K(\vartheta_{1}, 
+    \dots \vartheta_{i})}}
 \]
-
-\section{The very suspect rule from question 5}
-\[
-\inferrule*[Left=\textsc{ (EqNames-Bots-Succ) }]
-    {\inferrule* {}
-    {
-    x,\;y \in \dom \rho
-    \\\\
-    \rho(x) = \bot, \; \rho(y) = \bot
-    \\\\
-    \rm{Either} \; x \; \rm{or} \; y \; \rm{appears in} \; \context, \; \context'
-    \\\\
-    \vmrun[context=\TeqT{x = y}] 
-    \Downarrow \result 
-    }}
-    {\vmrun[context=\TeqT{x = y}] 
-    \Downarrow \result}
-\]
-
 \end{document}
