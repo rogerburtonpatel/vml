@@ -48,7 +48,8 @@
 % Context 
 \newcommand\rhohat{\hat{\rho}}
 \newcommand\tempstuck[1][\bracketed{eq}]{\tt{?t.}\it{#1}}
-\newcommand\T{\mathcal{T}}
+\newcommand\context{\mathcal{T}}
+
 
 % Singletons 
 \newcommand\fail{\bf{fail}}
@@ -76,9 +77,9 @@
 
 % Wrapping forms 
 \newcommand\iffi[1]{\textsc{if} \; [\; #1 \; ] \; \textsc{fi}}
-\newcommand\TeqT[1]{\T \cdot #1 \cdot \T'}
-\newcommand\eqTT[1]{#1 \cdot \T \cdot \T'}
-\newcommand\TT{\T \cdot \T'}
+\newcommand\TeqT[1]{\context \cdot #1 \cdot \context'}
+\newcommand\eqTT[1]{#1 \cdot \context \cdot \context'}
+\newcommand\TT{\context \cdot \context'}
 
 % Shortcuts 
 
@@ -98,7 +99,7 @@
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
 % \newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
-\newcommand{\veval}[2]{\rho; \; \T \vdash #1 \Downarrow #2}
+\newcommand{\veval}[2]{\rho; \; \context \vdash #1 \Downarrow #2}
 
 \newcommand{\showvjudgement}[3][Right]{%
   \[\inferrule*[#1=\textsc{ (#2) }]%
@@ -162,7 +163,6 @@
 
 
 \makeatletter
-
 \newcommand\defcomponent[2]{%
   \define@key{state}{#1}{\@nameuse{setmyval@#1}{##1}}%
   \@namedef{setmyval@#1}##1{\@namedef{myval@#1}{##1}}%
@@ -174,22 +174,38 @@
 \makeatother
 
 \defcomponent{Rho}{\rho}
-\defcomponent{T}{\T}
+\defcomponent{T}{\context}
 \defcomponent{Expr}{e}
 \defcomponent{Rhoext}{}
-% \newcommand\norunning{\ensuremath{\mathord{\bullet}}}
-% \defcomponent{queue}{Q}
-% \defcomponent{heap}{H}
-% \defcomponent{jsheap}{J}
-% \defcomponent{mc}{M}
-%\defcomponent{cont}{K}
-% \newcommand\running[1]{\ensuremath{\ast#1}}
 
-\newcommand\vctx[1][]{%
-  {\tracingall\setkeys{state}{#1}%
+\defcomponent{env}{\rho}
+\defcomponent{context}{\context}
+\defcomponent{term}{g}
+\defcomponent{result}{\result}
+
+
+\newcommand\emptycontext{\varepsilon}
+\newcommand\emptyenv{\mathord{\{\,\}}}
+
+\newcommand\vmrun[1][]{%  run V-minus code
+  {\setkeys{state}{#1}%
    \let\c=\component
-   \ensuremath{\c{Rho}\c{Rhoext}; \; \c{T} \vdash \c{Expr}}}}
-   \newcommand\vgctx[1][]{\vctx[Expr=\galpha,#1]}
+   \ensuremath{\c{env}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
+
+\defcomponent{vterm}{e}
+\defcomponent{vresult}{e'}
+\newcommand\vrun[1][]{% run Verse code
+  {\setkeys{state}{#1}%
+   \let\c=\component
+   \ensuremath{\c{vterm} \mathrel{\rightarrow^*} \c{vresult}}}}
+
+\newcommand\translation[2][]{\ensuremath{#1[\![#2]\!]}}
+
+% \newcommand\vmrun[1][]{%
+%   {\tracingall\setkeys{state}{#1}%
+%    \let\c=\component
+%    \ensuremath{\c{Rho}\c{Rhoext}; \; \c{T} \vdash \c{Expr}}}}
+%    \newcommand\vmrun[1][]{\vmrun[Expr=\galpha,#1]}
 
 
 \newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
@@ -217,27 +233,6 @@
 
 % \let\shuffleicon=\shuffle
 % \def\shuffle{\hfill\shuffleicon\mbox{\hskip 0.5em}\parfillskip=0pt}
-
-% Inference rule formatting for use later
-
-% \begin{mathpar}
-%   \inferrule*[Left=\textsc{IfTrue}]
-%     {\inferrule*[Left=\textsc{FormalVar}]
-%       {\texttt{x} \in dom \rho}
-%       {\evalr{\textsc{var}(\texttt{x})} \Downarrow \evalr{1}}
-%      \and 1 \neq 0 \and
-%      \inferrule*[Right=\textsc{Literal}]
-%        {\ }
-%        {\evalr{\textsc{lit}(\texttt{2})} \Downarrow \evalr{2}} 
-%     }
-%     {\evalr{\textsc{if}(\textsc{var}(\texttt{x}), 
-%                         \textsc{lit}(\texttt{2}),
-%                         \textsc{lit}(\texttt{3}))}
-%      \Downarrow \evalr{2} 
-%     }
-%   \end{mathpar}
-
-% \newcommand\hstate[1][]{\anystate[running=\running{R},mc=K,#1]}
 
 
 

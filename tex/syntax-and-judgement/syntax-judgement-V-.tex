@@ -207,9 +207,9 @@ and is not a value constructor name or a reserved word.
     
 \subsection{Expressions}
 
-    \newcommand\EvalE{\vctx[Expr=\alpha] \Downarrow \vartheta}
-    \newcommand\EvalGe{\vgctx \Downarrow \result}
-    \newcommand\GNoTree{\vgctx \rightsquigarrow \uppsidown} 
+    \newcommand\EvalE{\vmrun[Expr=\alpha] \Downarrow \vartheta}
+    \newcommand\EvalGe{\vmrun \Downarrow \result}
+    \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} 
     An expression in core Verse evaluates to produce possibly-empty sequence of 
     values. In \Vminus, values depend on $\alpha.$ If $\alpha$ is a Verse-like 
     expression, \valpha will be a value sequence. If it is an ML-like 
@@ -252,15 +252,15 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vctx[T=\emptyseq] \Downarrow \vartheta}
-    {\vgctx[T=\emptyseq, Expr=\arrowe] 
+    {\vmrun[context=\emptyseq] \Downarrow \vartheta}
+    {\vmrun[context=\emptyseq, Expr=\arrowe] 
     \Downarrow \vartheta}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
-    {\vgctx[Rho=\rho\{x \mapsto \bot \}] \Downarrow \result}
-    {\vgctx[Expr=\exists x.\; \galpha] 
+    {\vmrun[env=\rho\{x \mapsto \bot \}] \Downarrow \result}
+    {\vmrun[Expr=\exists x.\; \galpha] 
     \Downarrow \result}
 \]
 
@@ -272,16 +272,16 @@ the singleton sequence containing $x$.
     \and
     \veval{\galpha}{\result}
     }}
-    {\vgctx[Expr=\ealpha;\; \galpha] 
+    {\vmrun[Expr=\ealpha;\; \galpha] 
     \Downarrow \result}
 \]
 \subsubsection{Shifting an equation to the context}
 \[
 \inferrule*[Left=\textsc{ (G-Move-To-Ctx) }]
-    {\inferrule*{\vgctx[T=eq \cdot \T] 
+    {\inferrule*{\vmrun[context=eq \cdot \context] 
                  \Downarrow \result}{}
     }
-    {\vctx[Expr=eq; \; \galpha] \Downarrow \result}
+    {\vmrun[Expr=eq; \; \galpha] \Downarrow \result}
 \]
 
 \subsubsection{Evaluating with different types of equations}
@@ -292,11 +292,11 @@ the singleton sequence containing $x$.
     {
     x,\;y \; \rm{are distinct and fresh}
     \\\\
-    \vgctx[Rhoext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-          T=\eqTT{x = \ealphaone \cdot y = \ealphatwo \cdot x = y}]
+    \vmrun[Rhoext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
+          context=\eqTT{x = \ealphaone \cdot y = \ealphatwo \cdot x = y}]
     \Downarrow \result 
     }}
-    {\vgctx[T=\TeqT{\ealphaone = \ealphatwo}] 
+    {\vmrun[context=\TeqT{\ealphaone = \ealphatwo}] 
     \Downarrow \result}
 \]
 
@@ -306,11 +306,11 @@ the singleton sequence containing $x$.
     {
     \veval{\ealpha}{\valpha}
     \and 
-    \vgctx[Rhoext=\bracketed{x \mapsto \valpha},
-           T=\T \cdot \T']
+    \vmrun[Rhoext=\bracketed{x \mapsto \valpha},
+           context=\context \cdot \context']
     \Downarrow \result'
     }}
-    {\vgctx[T=\TeqT{x = \ealpha}] 
+    {\vmrun[context=\TeqT{x = \ealpha}] 
     \Downarrow \result'}
 \]
 
@@ -322,10 +322,10 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \valpha, \; \rho(y) = \valpha
     \\\\ 
-    \vgctx[T=\TT]
+    \vmrun[context=\TT]
     \Downarrow \result
     }}
-    {\vgctx[T=\TeqT{x = y}] 
+    {\vmrun[context=\TeqT{x = y}] 
     \Downarrow \result}
 \]
 
@@ -338,7 +338,7 @@ the singleton sequence containing $x$.
     \rho(x) = \valpha, \; \rho(y) = \valpha'
     \\\\
     \valpha \neq \valpha'}}
-    {\vgctx[T=\TeqT{x = y}] 
+    {\vmrun[context=\TeqT{x = y}] 
     \Downarrow \reject}
 \]
 
@@ -350,8 +350,8 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \bot, \; \rho(y) = \bot
     \\\\
-    x,\;y \; \rm{do not appear in} \; \T, \; \T'}}
-    {\vgctx[T=\TeqT{x = y}] 
+    x,\;y \; \rm{do not appear in} \; \context, \; \context'}}
+    {\vmrun[context=\TeqT{x = y}] 
     \rightsquigarrow \uppsidown}
 \]
 
@@ -363,25 +363,25 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \bot, \; \rho(y) = \valpha
     \\\\
-    \vgctx[Rhoext=\bracketed{x \mapsto \valpha},
-           T=\T \cdot \T']
+    \vmrun[Rhoext=\bracketed{x \mapsto \valpha},
+           context=\context \cdot \context']
     \Downarrow \result'}}
-    {\vgctx[T=\TeqT{x = y}] 
+    {\vmrun[context=\TeqT{x = y}] 
     \Downarrow \result'}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Single-Fail) }]
     {K \neq K'}
-    {\vgctx[T=\TeqT{K = K'}] 
+    {\vmrun[context=\TeqT{K = K'}] 
     \Downarrow \reject}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Single-Succ) }]
-    {\vgctx[T=\TT] 
+    {\vmrun[context=\TT] 
     \Downarrow \result}
-    {\vgctx[T=\TeqT{K= K}] 
+    {\vmrun[context=\TeqT{K= K}] 
     \Downarrow \result}
 \]
 
@@ -389,23 +389,23 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Fail) }]
     {K \neq K'}
-    {\vgctx[T=\TeqT{K(\ealphaone, \dots \ealphan) = K'(\ealphaone', \dots \ealphan')}] 
+    {\vmrun[context=\TeqT{K(\ealphaone, \dots \ealphan) = K'(\ealphaone', \dots \ealphan')}] 
     \Downarrow \reject}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Arity-Fail) }]
     {n \neq m}
-    {\vgctx[T=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots e_{\alpha_{m}}')}] 
+    {\vmrun[context=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots e_{\alpha_{m}}')}] 
     \Downarrow \reject}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Succ) }]
     {
-    \vgctx[T=\eqTT{\lbrack \ealphai=\ealphai' \; \vert \; 1 \leq i \leq n \rbrack}] 
+    \vmrun[context=\eqTT{\lbrack \ealphai=\ealphai' \; \vert \; 1 \leq i \leq n \rbrack}] 
     \Downarrow \result}
-    {\vgctx[T=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots \ealphan')}] 
+    {\vmrun[context=\TeqT{K(\ealphaone, \dots \ealphan) = K(\ealphaone', \dots \ealphan')}] 
     \Downarrow \result}
 \]
 
@@ -420,14 +420,14 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
-    {\vgctx[] \Downarrow \vartheta}
+    {\vmrun[] \Downarrow \vartheta}
     {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Reject) }]
     {\inferrule* {}
-    {\vgctx[] \Downarrow \reject}
+    {\vmrun[] \Downarrow \reject}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
     {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
@@ -459,12 +459,12 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \bot, \; \rho(y) = \bot
     \\\\
-    \rm{Either} \; x \; \rm{or} \; y \; \rm{appears in} \; \T, \; \T'
+    \rm{Either} \; x \; \rm{or} \; y \; \rm{appears in} \; \context, \; \context'
     \\\\
-    \vgctx[T=\TeqT{x = y}] 
+    \vmrun[context=\TeqT{x = y}] 
     \Downarrow \result 
     }}
-    {\vgctx[T=\TeqT{x = y}] 
+    {\vmrun[context=\TeqT{x = y}] 
     \Downarrow \result}
 \]
 
