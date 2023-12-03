@@ -10,6 +10,8 @@
 *.log
 *.fls
 *.pdf
+/tex-out/*
+/tex/syntax-judgement/tex-out/*
 # binaries and linking
 /build/*
 /bin/vml

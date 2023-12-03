@@ -48,8 +48,8 @@
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
     | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-    | $\ttbraced{p \; \tt{when} \; e }$ : side condition
-    | $\ttbraced{\tt{oneof} \; p_{1} \; p_{2} }$ : or-pattern 
+    % | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+    | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
     | $\ttbraced{p \tt{;} \bracketed{b \vert \ttbraced{p  <- e}}}$ : pattern guard
     ;;
     $K$ : \textsf{Value Constructors} ::=
