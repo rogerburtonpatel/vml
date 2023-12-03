@@ -35,18 +35,22 @@
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{(val} \; x \; e\tt{)}$ : bind name to expression
+    | $\ttbraced{\tt{val} \; x \; e}$ : bind name to expression
     ;;
     $e$ : \textsf{Expressions} ::=
     | $x$ : name
-    | $\tt{(case} \; e \; \bracketed{\tt{[} p \; e \tt{]}} \tt{)}$ : case expression 
+    | $\ttbraced{\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}}$ : case expression 
     | $K \bracketed{e}$ : value constructor application 
-    | $e_1 \; e_2$ : function application 
+    ;;
+    $b$ : Boolean expressions ::=
+     $\mathit{placeholder}$ : any $e$ that evaluates to a boolean 
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
-    | $\tt{(}K \; \bracketed{p}\tt{)}$ : value constructor application 
-    | $\tt{(}p \; \tt{when} \; e \tt{)}$ : side condition
+    | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
+    | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+    | $\ttbraced{\tt{oneof} \; p_{1} \; p_{2} }$ : or-pattern 
+    | $\ttbraced{p \tt{;} \bracketed{b \vert \ttbraced{p  <- e}}}$ : pattern guard
     ;;
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 

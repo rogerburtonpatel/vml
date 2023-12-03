@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1701448891 "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" "syntax-judgement-P.pdf" "syntax-judgement-P" 1701448892 0
-  "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" 1701448891 9054 be79c9d565aaafecec8d450c0cd7cf38 ""
+["pdflatex"] 1701582613 "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" "syntax-judgement-P.pdf" "syntax-judgement-P" 1701582614 0
+  "/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex/syntax-and-judgement/syntax-judgement-P.tex" 1701582612 9270 efae9bbc6c41038c885c618ee076d641 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -28,6 +28,7 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1136768653 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmti7.tfm" 1136768653 1492 86331993fe614793f5e7e755835c31c5 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1136768653 768 1321e9409b4137d6fb428ac9dc956269 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm" 1136768653 768 d7b9a2629a0c353102ad947dc9221d49 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1248133631 32080 340ef9bf63678554ee606688e7b5339d ""
@@ -190,10 +191,10 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1697079000 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1697078929 7883462 3cdb9b88b26eed1a52476da67d50fa9b ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "syntax-judgement-P.tex" 1701448891 9054 be79c9d565aaafecec8d450c0cd7cf38 ""
-  "tex-out/syntax-judgement-P.aux" 1701448892 657 f82fb2343980e07ce6918a9ce074c46d "pdflatex"
-  "tex-out/syntax-judgement-P.out" 1701448892 73 87cd432c8f572c320d7a7abd5fbefca5 "pdflatex"
-  "vmlmacros.sty" 1701448752 6797 10cf04b85a4d0d0e1e5cf2872eb9953d ""
+  "syntax-judgement-P.tex" 1701582612 9270 efae9bbc6c41038c885c618ee076d641 ""
+  "tex-out/syntax-judgement-P.aux" 1701582614 657 f82fb2343980e07ce6918a9ce074c46d "pdflatex"
+  "tex-out/syntax-judgement-P.out" 1701582614 73 87cd432c8f572c320d7a7abd5fbefca5 "pdflatex"
+  "vmlmacros.sty" 1701582458 6570 fa586a7117461e102d9fbc127b818f7a ""
   (generated)
   "syntax-judgement-P.pdf"
   "tex-out/syntax-judgement-P.aux"
