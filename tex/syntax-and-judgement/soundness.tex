@@ -1,13 +1,7 @@
 \documentclass{article}
 \usepackage{amsmath}
-%\usepackage{vmlmacros}  %% NR not getting his code to work with vmlmacros
+\usepackage{vmlmacros}
 \title{On Soundness Proofs}
-
-
-\input{jforms}
-
-
-\providecommand\Vminus{\ensuremath{V^-}}
 
 \parindent=0pt
 \parskip=0.7\baselineskip
@@ -16,23 +10,26 @@
 
 \maketitle
 
-
 \noindent
 \emph{Soundness}: Whenever
 $$\vmrun[env=\emptyenv,context=\emptycontext]\text,$$
 then
-$$\vrun[vterm=\translation{g},vresult=\vartheta]\text.$$
-
+$$\vrun[vterm=\translation{\galpha},vresult=\vartheta]\text.$$
 
 
 \newcommand\closefun{\ensuremath{\mathit{close}}}
-\newcommand\close[3]{\closefun(#1,#2,#3)}
+
+\newcommand\close[1][]{% run Verse code
+{\setkeys{state}{#1}%
+\let\c=\component
+\ensuremath{\closefun(\c{env}\c{envext}, \c{context}, \c{term})}}}
+
 
 Idea for the proof: define function $\closefun$ that converts an
 environment, context, and guarded expression to a closed guarded
 expression.
 We expect
-$$\vmrun[env=\emptyenv,context=\emptycontext,term=\close\rho\context g]$$
+$$\emptyenv; \emptyseq \vdash \close \Downarrow r$$ % vmrun -> tex capacity err
 if and only if
 $$\vmrun[]\text.$$
 Given \closefun, 
@@ -42,7 +39,7 @@ this:
 Whenever 
 $$\vmrun[]\text,$$
 then
-$$\vrun[vterm=\translation{\close\rho\context g},vresult=\vartheta]\text.$$
+$$\vrun[vterm=\translation{\close},vresult=\vartheta]\text.$$
 \end{quote}
 
 To~prove:
@@ -53,6 +50,57 @@ The \closefun\ function is sound.
 Evaluation in \Vminus\ is deterministic.
 \end{itemize}
 
+\section{Important sections}
+
+\begin{quote}
+    Whenever 
+    $$\vmrun[]\text,$$
+    then
+    $$\vmrun[context=\emptyseq,term=\context; \galpha]\text.$$
+\end{quote}
+
+\begin{quote}
+    Whenever 
+    $$\vmrun[envext=\bracketed{x \mapsto \bot}, context=\emptyseq]\text,$$
+    then
+    $$\vmrun[context=\emptyseq,term={\exists x.\; \galpha}]\text.$$
+\end{quote}
+
+\begin{quote}
+    Whenever 
+    $$\vmrun[envext=\bracketed{x \mapsto \valpha'}, context=\emptyseq]\text,$$
+    then
+    $$\vmrun[envext=\bracketed{x \mapsto \bot}, context=\emptyseq,
+            term={x=\valpha'; \; \galpha}]\text.$$
+\end{quote}
+
+\bigskip
+
+Translating these ideas to laws for \closefun: 
+
+\bigskip
+
+\begin{align}
+    \close[env=\emptyenv, context=\emptyseq]   &\rightarrow \galpha \\
+    % \close[context=\TeqT{e_{1} = e_{2}}]      &\rightarrow \close[context=\TT, 
+    %        term = {e_{1} = e_{2};\;\galpha}] \\
+    \close &\rightarrow \close[context=\emptyseq, term={\context; \galpha}] 
+    \rm{ when \context is non-empty} \\
+    \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq] &\rightarrow 
+    \close[term={\exists x.\; \galpha}] \\
+    \close[envext=\bracketed{x \mapsto \valpha'}, context=\emptyseq] &\rightarrow
+    \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq,
+    term={x=\valpha'; \; \galpha}]
+\end{align}
+
+\bigskip
+
+Question: how can we prove soundness of \closefun when order of the $\rho$
+transformations is nondeterministic? I.e. how will we know that expanding a
+guarded expression into a $\rho$ and a \context will and then closing 
+that guarded expression with that $\rho$ and \context will produce equivalent 
+results? Basically, I'm worried an $\exists$ will be put before where it should
+be. 
 
 \end{document}
 
