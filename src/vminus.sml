@@ -1,6 +1,6 @@
 structure VMinus :> sig 
   type name = string 
-  datatype 'a vcon = USERDEFINED of name * 'a vcon list | ALPHA of 'a | TRUE | FALSE 
+  datatype 'a vcon = K of name * 'a vcon list | ALPHA of 'a | TRUE | FALSE 
   datatype 'a value = VALPHA of 'a vcon (* expressions return values *)
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
@@ -20,7 +20,7 @@ end
   = 
 struct 
   (* type name = string
-  datatype vcon = CONS | NIL | USERDEFINED of name | INT of int
+  datatype vcon = CONS | NIL | K of name | INT of int
   datatype exp = NAME of name 
                | IF_FI of exp guarded_exp list 
                | VCONAPP of vcon * exp list 
@@ -32,7 +32,7 @@ struct
   datatype def = DEF of name * exp *)
   (* idea: qualify many more things with a 'a. *)
   type name = string 
-  datatype 'a vcon = USERDEFINED of name * 'a vcon list | ALPHA of 'a | TRUE | FALSE 
+  datatype 'a vcon = K of name * 'a vcon list | ALPHA of 'a | TRUE | FALSE 
   datatype 'a value = VALPHA of 'a vcon (* expressions return values *)
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
@@ -58,7 +58,7 @@ struct
        of (ALPHA a1, ALPHA a2) => a1 = a2
         | (TRUE, TRUE)         => true 
         | (FALSE, FALSE)         => true 
-        | (USERDEFINED (n, vs), USERDEFINED (n', vs')) => 
+        | (K (n, vs), K (n', vs')) => 
             n = n' andalso ListPair.all eqval (map VALPHA vs, map VALPHA vs')
         | (_, _) => false)
 
@@ -92,14 +92,14 @@ struct
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
       | VCONAPP (con, []) => VALPHA con
-      | VCONAPP (USERDEFINED (n, []), es) => 
-          VALPHA (USERDEFINED (n, List.map ((fn VALPHA vc => vc) o (eval rho)) 
+      | VCONAPP (K (n, []), es) => 
+          VALPHA (K (n, List.map ((fn VALPHA vc => vc) o (eval rho)) 
                                         es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application"
 
-  fun strOfVcon (USERDEFINED (n, vcs)) = 
+  fun strOfVcon (K (n, vcs)) = 
         let val vcss = List.foldl (fn (vc, acc) => strOfVcon vc ^ acc) "" vcs
         in "(n " ^ vcss ^ ")"
         end 
