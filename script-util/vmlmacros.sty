@@ -67,6 +67,8 @@
 \newcommand\ealphai{\ensuremath{e_{\alpha_{i}}}}
 \newcommand\Dalpha{\ensuremath{\mathcal{D}_\alpha}}
 \newcommand\valpha{\ensuremath{\vartheta}}
+\newcommand\Rho{\ensuremath{\rho}}
+\newcommand\Rhoprime{\ensuremath{\rho'}}
 
 \newcommand\uppsidown{
     \raisebox{1.25ex}{
@@ -99,8 +101,8 @@
 % \newcommand\veval[3]
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
-% \newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
-\newcommand{\veval}[2]{\rho; \; \context \vdash #1 \Downarrow #2}
+\newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
+% \newcommand{\veval}[2]{\rho; \; \context \vdash #1 \Downarrow #2}
 
 \newcommand{\showvjudgement}[3][Right]{%
   \[\inferrule*[#1=\textsc{ (#2) }]%
@@ -179,6 +181,8 @@
 \defcomponent{term}{\galpha}
 \defcomponent{result}{\result}
 \defcomponent{envext}{}
+\defcomponent{newenv}{\rho'}
+\defcomponent{eq}{\eq}
 
 
 \newcommand\emptycontext{\varepsilon}
@@ -188,6 +192,13 @@
   {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
+
+\newcommand\eqrefine[1][]{%  equation refines environment
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\langle \c{env}\c{envext}, \c{eq} \rangle \rightarrowtail \c{newenv}}}}
+
+\newcommand\eqfail{\eqrefine[newenv=\dagger]}
 
 \defcomponent{vterm}{e}
 \defcomponent{vresult}{e'}
