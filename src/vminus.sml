@@ -1,21 +1,27 @@
 structure VMinus :> sig 
   type name = string 
-  datatype 'a vcon = K of name * 'a vcon list | ALPHA of 'a | TRUE | FALSE 
-  datatype 'a value = VALPHA of 'a vcon (* expressions return values *)
+  datatype 'a vcon = K of name * 'a value list | TRUE | FALSE 
+  and 'a value = VALPHA of 'a | VCON of 'a vcon (* expressions return values *)
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
   exception NameNotBound of name 
 
-  datatype exp = E of exp exp'
-  and 'a exp' = NAME of name 
+
+  type core_exp = Core.core_exp
+
+  datatype 'a exp = NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of 'a vcon * 'a exp' list (* where we get 'a *)
-              | FUNAPP  of 'a exp' * 'a exp' list 
-      and 'a guarded_exp = ARROWALPHA of 'a exp' 
-                      | EXPSEQ of 'a exp' * 'a guarded_exp 
+              | VCONAPP of Core.vcon * 'a exp list
+              | FUNAPP  of 'a exp * 'a exp
+      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a
+                      | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
+                      | S_EXISTS of name * 'a sugared_guarded_exp
+                      | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
+      and 'a guarded_exp = ARROWALPHA of 'a
+                      | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
-                      | EQN    of name * 'a exp' * 'a guarded_exp
-  datatype 'a def = DEF of name * 'a exp'
+                      | EQN    of name * 'a exp * 'a guarded_exp
+  datatype 'a def = DEF of name * 'a exp
 end 
   = 
 struct 
@@ -32,38 +38,45 @@ struct
   datatype def = DEF of name * exp *)
   (* idea: qualify many more things with a 'a. *)
   type name = string 
-  datatype 'a vcon = K of name * 'a vcon list | ALPHA of 'a | TRUE | FALSE 
-  datatype 'a value = VALPHA of 'a vcon (* expressions return values *)
+  datatype 'a vcon = K of name * 'a value list | TRUE | FALSE 
+  and 'a value = VALPHA of 'a | VCON of 'a vcon (* expressions return values *)
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
   exception NameNotBound of name 
   exception Todo of string 
   
-  datatype exp = E of exp exp'
-  and 'a exp' = NAME of name 
+  type core_exp = Core.core_exp
+  datatype 'a exp = NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of 'a vcon * 'a exp' list 
-              | FUNAPP  of 'a exp' * 'a exp' list 
-      and 'a guarded_exp = ARROWALPHA of 'a exp'
-                      | EXPSEQ of 'a exp' * 'a guarded_exp 
+              | VCONAPP of Core.vcon * 'a exp list
+              | FUNAPP  of 'a exp * 'a exp
+      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a
+                      | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
+                      | S_EXISTS of name * 'a sugared_guarded_exp
+                      | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
+      and 'a guarded_exp = ARROWALPHA of 'a
+                      | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
-                      | EQN    of name * 'a exp' * 'a guarded_exp
-  datatype 'a def = DEF of name * 'a exp'
+                      | EQN    of name * 'a exp * 'a guarded_exp
+  datatype 'a def = DEF of name * 'a exp
 
-  fun boolOfValue (VALPHA FALSE) = false 
+  fun boolOfValue (VCON FALSE) = false 
     | boolOfValue _              = true
 
-  fun eqval (VALPHA a, VALPHA a') = 
-      (case (a, a')
-       of (ALPHA a1, ALPHA a2) => a1 = a2
-        | (TRUE, TRUE)         => true 
-        | (FALSE, FALSE)         => true 
+  fun eqval (VALPHA a, VALPHA a')  = raise Impossible.unimp "compare two alphas"
+    | eqval (VCON v1, VCON v2)     = 
+      (case (v1, v2)
+       of (TRUE, TRUE)             => true 
+        | (FALSE, FALSE)           => true 
         | (K (n, vs), K (n', vs')) => 
-            n = n' andalso ListPair.all eqval (map VALPHA vs, map VALPHA vs')
-        | (_, _) => false)
+            n = n' andalso ListPair.all eqval (vs, vs')
+        | (_, _)   => false)
+    | eqval (_, _) =  false 
 
-  fun solve rho g = 
-    case g of ARROWALPHA a => VAL (eval rho a)
+
+
+  fun solve (rho : 'a value option Env.env) g = 
+    case g of ARROWALPHA a => VAL (VALPHA a)
             | EXPSEQ (e, g') => 
                 if (boolOfValue (eval rho e)) then solve rho g' else REJECT 
             | EXISTS (n, g') => solve (Env.bind (n, NONE, rho)) g'
@@ -79,7 +92,7 @@ struct
                                    then REJECT 
                                    else solve (Env.bind (n, SOME v, rho)) g')
                                    end
-  and eval rho e = 
+  and eval (rho : 'a value option Env.env) e = 
     case e 
       of NAME n => 
         if not (Env.binds (rho, n))
@@ -91,19 +104,20 @@ struct
        | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
-      | VCONAPP (con, []) => VALPHA con
-      | VCONAPP (K (n, []), es) => 
-          VALPHA (K (n, List.map ((fn VALPHA vc => vc) o (eval rho)) 
-                                        es))
+      | VCONAPP (Core.TRUE, []) => VCON TRUE
+      | VCONAPP (Core.FALSE, []) => VCON FALSE 
+      | VCONAPP (Core.K n, []) => VCON (K (n, []))
+      | VCONAPP (Core.K n, es) => VCON (K (n, map (eval rho) es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application"
 
-  fun strOfVcon (K (n, vcs)) = 
-        let val vcss = List.foldl (fn (vc, acc) => strOfVcon vc ^ acc) "" vcs
-        in "(n " ^ vcss ^ ")"
-        end 
-  | strOfVcon (ALPHA a) = raise Todo "print an alpha"
-  | strOfVcon TRUE =  "true"
-  | strOfVcon FALSE = "false"
+  fun strOfValue (VALPHA a) = raise Impossible.unimp "print alpha"
+    | strOfValue (VCON v) = (case v of   
+       (K (n, vcs)) => 
+         let val vcss = foldl (fn (vc, acc) => strOfValue vc ^ " " ^ acc) "" vcs
+         in n ^ " " ^ vcss
+         end 
+    | TRUE  => "true"
+    | FALSE => "false")
 end

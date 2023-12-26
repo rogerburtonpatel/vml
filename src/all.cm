@@ -14,12 +14,13 @@ group is
   Unit.sml
   error-sig.sml
   error-module.sml
-   (****** VML ******)
+  (* **** languages **** *)
+  core-lang.sml
+  decision-tree.sml
+  (****** VML ******)
   vminus.sml
   pplus.sml
   guard.sml
   guardsort.sml
   test-guard-sort.sml
 
-  (* **** languages **** *)
-  decision-tree.sml

@@ -68,7 +68,7 @@ does not contain whitespace, a bracket, or parenthesis,
 and is not a value constructor name or a reserved word.
 
 
-We then present three languages that build off of this core: 
+We then present three language extensions that build off of this core: 
 \Pplus, the language of patterns, \Vminus, the language of 
 verse-like equations, and $D$, the language of decision trees. 
 
@@ -87,7 +87,7 @@ verse-like equations, and $D$, the language of decision trees.
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
-    | $e; \; \galpha$ : intermediate core expression 
+    | $\ealpha; \; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
     | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
     % ;;
