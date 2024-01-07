@@ -1,0 +1,96 @@
+/*
+ocaml pattern match RB tree 
+
+type color = Red | Black
+type 'a tree = Empty | Tree of color * 'a tree * 'a * 'a tree
+
+let rebalance t = match t with
+    | Tree (Black, Tree (Red, Tree (Red, a, x, b), y, c), z, d)
+    | Tree (Black, Tree (Red, a, x, Tree (Red, b, y, c)), z, d)                                  
+    | Tree (Black, a, x, Tree (Red, Tree (Red, b, y, c), z, d))
+    | Tree (Black, a, x, Tree (Red, b, y, Tree (Red, c, z, d)))
+        ->  Tree (Red, Tree (Black, a, x, b), y, Tree (Black, c, z, d))
+    | _ -> t (* the 'catch-all' case if no previous pattern matches *)
+
+*/
+
+// vminus: 
+
+val rebalance = \t. if 
+E a b c x y z. t = one (
+    Tree (Black, Tree (Red, Tree (Red, a, x, b), y, c), z, d)
+    | Tree (Black, Tree (Red, a, x, Tree (Red, b, y, c)), z, d)                                  
+    | Tree (Black, a, x, Tree (Red, Tree (Red, b, y, c), z, d))
+    | Tree (Black, a, x, Tree (Red, b, y, Tree (Red, c, z, d)))); 
+      -> Tree (Red, Tree (Black, a, x, b), y, Tree (Black, c, z, d))
+|| -> t
+fi 
+
+// sml pattern-matched functions and their equivalents
+/*
+fun moreThanOne (_::_::_) = true
+| moreThanOne _ = false;
+*/
+
+// declaring underscores is ugly. we'll sugar this out. 
+val moreThanOne = \l. if 
+E _1 _2 _3. l = (_1::_2::_3); -> true
+|| -> false 
+fi 
+
+// better 
+val moreThanOne = \l. if 
+l = _::_::_; -> true 
+|| -> false 
+fi 
+
+/*
+fun genericFilter (_, []) = []
+| genericFilter (test, x :: l) =
+if test x then x :: genericFilter (test, l) else genericFilter (test, l);
+*/
+
+// using choice here is nice. the arrow is a little cumbersome. 
+val genericFilter = \test xs. 
+    if 
+        xs = []; -> [] 
+    || E x l. xs = x::l; -> one (test x; -> x::genericFilter test l 
+                                       | -> genericFilter test l)
+    fi 
+
+// you could also write this as 
+val genericFilter = \test xs. 
+    if 
+       xs = []; -> [] 
+    || E x l. xs = x::l; -> if test x; -> x::genericFilter test l 
+                                    || -> genericFilter test l fi 
+    fi 
+
+// this is my favorite 
+val genericFilter = \test xs. 
+    if xs = []; -> [] 
+    || E x l. xs = x::l; test x; -> x::genericFilter test l 
+    || -> genericFilter test l 
+    fi 
+
+/* 
+eval: 
+... 
+    if xs = []; -> [] 
+    || E x l. xs = x::l; test x; -> x::genericFilter test l 
+    || -> genericFilter test l 
+    fi 
+/*
+
+
+// as core verse, actually quite lovely: 
+/* 
+
+E genericFilter. genericFilter = \test xs. 
+    one(xs = []; []
+        | E x l. xs = x::l; test x; x::genericFilter test l
+        | genericFilter test l)
+
+*/
+
+// you'd want some sugar for the first line with a `fun`.

@@ -14,7 +14,7 @@ structure Core :> sig
   val boolOfCoreValue : core_value -> bool 
   val strOfCoreExp    : core_exp -> string 
   val strOfCoreValue  : core_value -> string 
-
+  val strBuilderOfVconApp : ('a -> string) -> vcon -> 'a list -> string
 end 
   = 
 struct 

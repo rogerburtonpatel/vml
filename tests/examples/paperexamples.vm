@@ -1,0 +1,22 @@
+// ex 1. solvable? 
+E x y z. x = PAIR (y, 3); x = PAIR (2, z); -> y
+
+
+// function backtracking: impossible 
+first := \p. E a b. p = PAIR (a, b); -> a
+
+E x y. x = PAIR (y, 5); 2 = first (x); -> y
+
+
+// choice. becomes PAIR (PAIR (3, 5), PAIR (3, 7))
+E x. x = (7 | 5); -> PAIR (3, x) 
+
+// more choice; multiple results 
+E x y. x = (7 | 22); y = (31 | 5); PAIR (x, y)
+
+// fail 
+E x. x = fail; 33
+
+// choice with local propegation 
+E x. (x = 3; x + 1) | (x = 4; x + 4)
+
