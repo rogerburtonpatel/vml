@@ -5,19 +5,21 @@ structure VMinus :> sig
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
   exception NameNotBound of name 
-
+  exception Cycle of string 
 
   type core_exp = Core.core_exp
 
-  datatype 'a exp = NAME of name 
+  datatype 'a exp = 
+              ALPHA of 'a 
+              |  NAME of name 
               | IF_FI of 'a guarded_exp list 
               | VCONAPP of Core.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
-      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a
+      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
                       | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
                       | S_EXISTS of name * 'a sugared_guarded_exp
                       | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
-      and 'a guarded_exp = ARROWALPHA of 'a
+      and 'a guarded_exp = ARROWALPHA of 'a exp 
                       | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
@@ -43,18 +45,21 @@ struct
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
   exception NameNotBound of name 
+  exception Cycle of string 
   exception Todo of string 
   
   type core_exp = Core.core_exp
-  datatype 'a exp = NAME of name 
+  datatype 'a exp = 
+                ALPHA of 'a 
+              | NAME of name 
               | IF_FI of 'a guarded_exp list 
               | VCONAPP of Core.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
-      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a
+      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
                       | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
                       | S_EXISTS of name * 'a sugared_guarded_exp
                       | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
-      and 'a guarded_exp = ARROWALPHA of 'a
+      and 'a guarded_exp = ARROWALPHA of 'a exp 
                       | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
@@ -74,9 +79,9 @@ struct
     | eqval (_, _) =  false 
 
 
-
+(* 
   fun solve (rho : 'a value option Env.env) g = 
-    case g of ARROWALPHA a => VAL (VALPHA a)
+    case g of ARROWALPHA e => VAL (eval rho e)
             | EXPSEQ (e, g') => 
                 if (boolOfValue (eval rho e)) then solve rho g' else REJECT 
             | EXISTS (n, g') => solve (Env.bind (n, NONE, rho)) g'
@@ -94,7 +99,8 @@ struct
                                    end
   and eval (rho : 'a value option Env.env) e = 
     case e 
-      of NAME n => 
+      of ALPHA a => VALPHA a 
+        | NAME n => 
         if not (Env.binds (rho, n))
         then raise NameNotBound (n ^ " in expr")
         else (case (Env.find (n, rho)) 
@@ -110,7 +116,7 @@ struct
       | VCONAPP (Core.K n, es) => VCON (K (n, map (eval rho) es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
-      | FUNAPP (fe, es) => raise Todo "eval function application"
+      | FUNAPP (fe, es) => raise Todo "eval function application" *)
 
   fun strOfValue (VALPHA a) = "alpha"
     | strOfValue (VCON v) = (case v of   
@@ -120,18 +126,21 @@ struct
          end 
     | TRUE  => "true"
     | FALSE => "false")
+  and optValStr (SOME v) = strOfValue v 
+    | optValStr NONE     = "NONE"
 
-    fun gexpString (ARROWALPHA a) = "'a"
-    | gexpString (EXPSEQ (e, ge)) = expString e ^ "; " ^ gexpString ge
-    | gexpString (EXISTS (x, ge)) = "∃" ^ x ^ ". " ^ gexpString ge
-    | gexpString (EQN (x, e, ge)) = 
+    fun gexpString (ARROWALPHA e) = expString e
+      | gexpString (EXPSEQ (e, ge)) = expString e ^ "; " ^ gexpString ge
+      | gexpString (EXISTS (x, ge)) = "∃" ^ x ^ ". " ^ gexpString ge
+      | gexpString (EQN (x, e, ge)) = 
                     x ^ " = " ^ expString e ^ "; " ^ gexpString ge 
-    and expString (NAME n) = n
-    | expString (IF_FI ges) = "if " ^ ListUtil.join gexpString "[]" ges ^ " fi"
-    | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
-    | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
+    and expString (ALPHA a) = "'a"
+      | expString (NAME n) = n
+      | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
+      | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
+      | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
     and optExpString (SOME e) = "SOME " ^ expString e 
-    | optExpString NONE       = "NONE"
+    | optExpString    NONE    = "NONE"
 
 
   (* sorting and solving *)
@@ -152,12 +161,13 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
     let fun unknown n = not ((Env.binds (rho, n))
                         andalso (isSome (Env.find (n, rho))))
         fun has_unbound_names e = 
-          case e of NAME name => unknown name 
+          case e of ALPHA a => f a 
+           | NAME name => unknown name 
            | VCONAPP (v, es) => List.exists has_unbound_names es
            | FUNAPP (e1, e2) => has_unbound_names e1 orelse has_unbound_names e2 
            | IF_FI gs => List.exists has_unbound_gexp gs
         and has_unbound_gexp g = 
-          case g of ARROWALPHA a    => f a 
+          case g of ARROWALPHA e    => has_unbound_names e
                   | EXISTS (_, g')  => has_unbound_gexp g'
                   | EXPSEQ (e', g') => has_unbound_names e' 
                                        orelse has_unbound_gexp g'
@@ -172,34 +182,67 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
      we're not done, solve explodes. *)
   fun solve (rho_: 'a lvar_env) (stuckFn : 'a -> bool) gexpr = 
   (* chooseAndSolve reduces g and expands rho.  *)
-    let fun chooseAndSolve rho g changed = 
-      case g of ar as ARROWALPHA a   => (ar, rho, changed)
-              | EXISTS (n, g') => (g', Env.bind (n, NONE, rho), true)
+    let datatype reject = OK | FAIL
+     fun chooseAndSolve rho g changed = 
+      case g of ar as ARROWALPHA e   => (ar, rho, changed, OK)
+              | EXISTS (n, g') => (g', Env.bind (n, NONE, rho), true, OK)
               (* if e is stuck, move on. if we can do e, do e. yes changed. *)
               | EXPSEQ (e, g') => if stuck rho stuckFn e
                                   then chooseAndSolve rho g' changed
                                   else (case eval rho e 
-                                    of VCON FALSE => (g, rho, false) (* rejection *)
-                                     | _ => (g', rho, true))
+                                    of VCON FALSE => (g, rho, false, FAIL) (* rejection *)
+                                     | _ => (g', rho, true, OK))
               | EQN (n, e, g') => if (stuck rho stuckFn (NAME n)) 
-                                   orelse stuck rho stuckFn e
-                                  then chooseAndSolve rho g' changed 
-                                  else let val rhs = SOME (eval rho e) 
-                                       in (g', Env.bind (n, rhs, rho), true)
+                                   andalso stuck rho stuckFn e
+                                  then 
+                                  chooseAndSolve rho g' changed 
+                                  else 
+                                  let val rhs = SOME (eval rho e) 
+                                       in 
+                                       (g', Env.bind (n, rhs, rho), true, OK)
                                        end 
     fun solve' rho g = 
-    let 
-    val (g', rho', changed) = chooseAndSolve rho g false 
-    in case g' of ARROWALPHA a => (VAL (VALPHA a), rho')
-       | nontrivial_gex  => 
+    let val (g', rho', changed, reject) = chooseAndSolve rho g false 
+    in case (g', reject) 
+      of (_, FAIL)         => REJECT
+       | (ARROWALPHA e, _) => 
+       VAL (eval rho' e)
+       | (nontrivial_gex, _)  => 
                 if not changed 
-                then raise Cycle ("cannot sort " ^ gexpString gexpr 
+                  then raise Cycle ("cannot sort " ^ gexpString gexpr 
                                   ^ " because it contains a cycle"
                                   ^ " of logical variables.")
-                else solve' rho' g'
+                else 
+                solve' rho' g'
     end 
     in solve' rho_ gexpr
     end 
+      and eval (rho : 'a lvar_env) e = 
+    case e 
+      of ALPHA a => VALPHA a 
+        | NAME n => 
+        if not (Env.binds (rho, n))
+        then raise NameNotBound (n ^ " in expr")
+        else (case (Env.find (n, rho)) 
+                of NONE   => raise NameNotBound (n ^ " bound to bottom in " ^ ((Env.toString optValStr rho) ^ "\n"))
+                 | SOME v => v)
+       | IF_FI [] => raise Match
+       (* TODO CHANGE THIS LAMBDA *)
+       | IF_FI (g::gs) => (case solve rho (fn x => true) g
+                            of VAL v => v
+                            | REJECT => eval rho (IF_FI gs))
+      | VCONAPP (Core.TRUE, [])  => VCON TRUE
+      | VCONAPP (Core.FALSE, []) => VCON FALSE 
+      | VCONAPP (Core.K n, [])   => VCON (K (n, []))
+      | VCONAPP (Core.K n, es)   => VCON (K (n, map (eval rho) es))
+      | VCONAPP _ => 
+              raise Impossible.impossible "erroneous vcon argument application"
+      | FUNAPP (fe, es) => raise Todo "eval function application"
+
+  (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EXISTS ("y", EQN ("y", VCONAPP (Core.TRUE, []), EQN ("x", NAME "y", ARROWALPHA (NAME "x"))))))])) ) *)
+
+  val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EQN ("x", VCONAPP (Core.TRUE, []), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))])))
+
 
   (* and sortBindings rho gexpr = 
     let fun sortBindings' (EXISTS (e, ge)) = EXISTS (e, sortBindings' ge)
