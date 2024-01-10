@@ -1,9 +1,13 @@
-local open VMinus in 
+structure VMTest = struct 
 
+  structure A = VMFn(Alpha)
+  local open A in 
 
   (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EXISTS ("y", EQN ("y", VCONAPP (Core.TRUE, []), EQN ("x", NAME "y", ARROWALPHA (NAME "x"))))))])) ) *)
 
   (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EQN ("x", VCONAPP (Core.TRUE, []), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))]))) *)
+  
+  (* oh for a parser *)
   val cycle_ge = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))
 
   val cycle_but_good_ge = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", NAME "x", EQN ("y", (VCONAPP (Core.K "3", [])), ARROWALPHA (NAME "x")))))))
@@ -45,6 +49,5 @@ local open VMinus in
   val () = Unit.checkExpectWith strOfValue "sorting good_y_rhs2"
           (fn () => solveempty good_y_rhs2)
          (VCON (K ("7", [])))
-
-
+  end 
 end 

@@ -1,4 +1,4 @@
-structure VMinus :> sig 
+signature VMinus = sig  
   type name = string 
   datatype 'a vcon = K of name * 'a value list | TRUE | FALSE 
   and 'a value = VALPHA of 'a | VCON of 'a vcon (* expressions return values *)
@@ -30,10 +30,11 @@ structure VMinus :> sig
   val expString : 'a exp -> string 
   val eval      : 'a value option Env.env -> 'a exp -> 'a value 
   val solve      : 'a value option Env.env -> 'a guarded_exp -> 'a result
-   
+
 end 
-  = 
-struct 
+
+functor VMFn (A : ALPHA) :> VMinus = struct  
+
   (* type name = string
   datatype vcon = CONS | NIL | K of name | INT of int
   datatype exp = NAME of name 
@@ -75,7 +76,7 @@ struct
   fun boolOfValue (VCON FALSE) = false 
     | boolOfValue _              = true
 
-  fun eqval (VALPHA a, VALPHA a')  = raise Impossible.unimp "compare two alphas"
+  fun eqval (VALPHA a, VALPHA a')  = A.eqval a a'
     | eqval (VCON v1, VCON v2)     = 
       (case (v1, v2)
        of (TRUE, TRUE)             => true 
@@ -194,9 +195,9 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
   end 
 
   (* todo: this. *)
-  val stuckFn : 'a -> bool = fn x => raise Impossible.unimp "examine an alpha"
+  val stuckFn : 'a -> bool = A.stuckFn 
 
-  val alphaEvaluator: 'a -> 'b = fn x => raise Impossible.unimp "evaluate an alpha"
+  val alphaEvaluator: 'a -> 'b = A.alphaEvaluator
 
   (* solve repeatedly calls chooseAndSolve until we're done or 
     until we reach a fixed point. if nothing changes and 

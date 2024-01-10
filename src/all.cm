@@ -17,6 +17,8 @@ group is
   (* **** languages **** *)
   core-lang.sml
   decision-tree.sml
+  (****** The Alpha-Language ******)
+  alpha.sml 
   (****** VML ******)
   vminus.sml
   pplus.sml
@@ -24,4 +26,5 @@ group is
   guardsort.sml
   test-guard-sort.sml
   vminus-test.sml
+  vminus.sml
 

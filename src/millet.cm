@@ -24,6 +24,8 @@ group is
   guardsort.sml
   test-guard-sort.sml
   vminus-test.sml
+  (****** The Alpha-Language ******)
+  alpha.sml 
 
 
   main.sml
