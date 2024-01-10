@@ -10,7 +10,7 @@ signature VMinus = sig
   type core_exp = Core.core_exp
 
   datatype 'a exp = 
-              ALPHA of 'a 
+                 ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
               | VCONAPP of Core.vcon * 'a exp list

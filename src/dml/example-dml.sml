@@ -1,5 +1,4 @@
 exception NoMatch 
-
 type vcon = string 
 datatype data = CON of vcon * data list
 
@@ -17,7 +16,8 @@ fun len l = (case l of CON (x1, x2) =>
                         | "nil" => 1
                         | _ => raise NoMatch))
 
-fun len l = (case l of CON (x1, x2) => let val x3 = x1 in 
+fun len l = (case l of CON (x1, x2) => 
+                let val x3 = x1 in 
                     (case x3 of "cons" => 
                         let val x4 = x2 in 
                         (case x2 of [x5, x6] => 1 + len x6
