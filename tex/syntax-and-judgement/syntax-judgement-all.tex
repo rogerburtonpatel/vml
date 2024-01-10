@@ -79,6 +79,7 @@ verse-like equations, and $D$, the language of decision trees.
 \begin{center}
     \begin{bnf}
     $\ealpha$ : \textsf{$\alpha$-Expressions} ::=
+    | $\alpha$ : terminating alpha
     | $x, y, z$ : names
     % Question: ebnf braces vs. 
     | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
@@ -86,7 +87,7 @@ verse-like equations, and $D$, the language of decision trees.
     | $\ealpha[1] \; \ealpha[2]$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
-    $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
+    $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
     | $\ealpha; \; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
     | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
