@@ -34,7 +34,7 @@ mlton: $(BIN)/vml.opt
 	@: do nothing, and say nothing about doing nothing
 
 $(BIN)/vml.opt: $(MLBS) $(SRCS)
-	mlton -output $@ -verbose 1 main.mlb
+	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 main.mlb
 
 %.mlb: %.cm
 	cm2mlb $^ > $@ || rm -f $@

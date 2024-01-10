@@ -78,6 +78,9 @@ struct
         | (_, _)   => false)
     | eqval (_, _) =  false 
 
+  fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
+
 
 (* 
   fun solve (rho : 'a value option Env.env) g = 
@@ -126,8 +129,13 @@ struct
          end 
     | TRUE  => "true"
     | FALSE => "false")
-  and optValStr (SOME v) = strOfValue v 
-    | optValStr NONE     = "NONE"
+    
+    
+    val _ = optString  : ('a -> string) -> 'a option -> string 
+    val _ = strOfValue : 'a value -> string
+
+    fun optValStr v = optString strOfValue v
+    (* val optValStr = optString strOfValue *)
 
     fun gexpString (ARROWALPHA e) = expString e
       | gexpString (EXPSEQ (e, ge)) = expString e ^ "; " ^ gexpString ge
@@ -158,8 +166,9 @@ i.e. do I have all the names I need to evaluate this expression?
 f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
 val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool = 
   fn rho => fn f => fn ex => 
-    let fun unknown n = not ((Env.binds (rho, n))
-                        andalso (isSome (Env.find (n, rho))))
+    let fun unknown n = if not (Env.binds (rho, n)) then raise NameNotBound n 
+                        else (Env.binds (rho, n))
+                              andalso (not (isSome (Env.find (n, rho))))
         fun has_unbound_names e = 
           case e of ALPHA a => f a 
            | NAME name => unknown name 
@@ -177,33 +186,38 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
     in has_unbound_names ex 
   end 
 
+  val stuckFn : 'a -> bool = fn x => true
+
   (* solve repeatedly calls chooseAndSolve until we're done or 
     until we reach a fixed point. if nothing changes and 
      we're not done, solve explodes. *)
-  fun solve (rho_: 'a lvar_env) (stuckFn : 'a -> bool) gexpr = 
-  (* chooseAndSolve reduces g and expands rho.  *)
+  fun solve (rho_: 'a lvar_env) gexpr = 
+  (* chooseAndSolve reduces g and expands rho. 
+  if it finds something it can't solve yet, 
+  it skips it and add it to buildRest. *)
     let datatype reject = OK | FAIL
-     fun chooseAndSolve rho g changed = 
-      case g of ar as ARROWALPHA e   => (ar, rho, changed, OK)
-              | EXISTS (n, g') => (g', Env.bind (n, NONE, rho), true, OK)
+     fun chooseAndSolve rho g buildRest changed = 
+      case g of ar as ARROWALPHA e   => (ar, rho, buildRest, changed, OK)
+              | EXISTS (n, g') => (g', Env.bind (n, NONE, rho), buildRest, true, OK)
               (* if e is stuck, move on. if we can do e, do e. yes changed. *)
               | EXPSEQ (e, g') => if stuck rho stuckFn e
-                                  then chooseAndSolve rho g' changed
+                                  then chooseAndSolve rho g' (fn rest => buildRest (EXPSEQ (e, rest))) changed
                                   else (case eval rho e 
-                                    of VCON FALSE => (g, rho, false, FAIL) (* rejection *)
-                                     | _ => (g', rho, true, OK))
+                                    of VCON FALSE => (g, rho, buildRest, false, FAIL) (* rejection *)
+                                     | _ => (g', rho, buildRest, true, OK))
               | EQN (n, e, g') => if (stuck rho stuckFn (NAME n)) 
                                    andalso stuck rho stuckFn e
                                   then 
-                                  chooseAndSolve rho g' changed 
+                                  chooseAndSolve rho g' (fn rest => buildRest (EQN (n, e, rest))) changed 
                                   else 
                                   let val rhs = SOME (eval rho e) 
                                        in 
-                                       (g', Env.bind (n, rhs, rho), true, OK)
+                                       (g', Env.bind (n, rhs, rho), buildRest, true, OK)
                                        end 
     fun solve' rho g = 
-    let val (g', rho', changed, reject) = chooseAndSolve rho g false 
-    in case (g', reject) 
+    let val (g', rho', buildRest, changed, reject) = chooseAndSolve rho g (fn x => x) false 
+        val leftover = buildRest g' 
+    in case (leftover, reject) 
       of (_, FAIL)         => REJECT
        | (ARROWALPHA e, _) => 
        VAL (eval rho' e)
@@ -213,7 +227,7 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                                   ^ " because it contains a cycle"
                                   ^ " of logical variables.")
                 else 
-                solve' rho' g'
+                solve' rho' leftover
     end 
     in solve' rho_ gexpr
     end 
@@ -224,11 +238,12 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
         if not (Env.binds (rho, n))
         then raise NameNotBound (n ^ " in expr")
         else (case (Env.find (n, rho)) 
-                of NONE   => raise NameNotBound (n ^ " bound to bottom in " ^ ((Env.toString optValStr rho) ^ "\n"))
+                of NONE   => 
+                raise NameNotBound (n ^ " bound to bottom in " ^ ((Env.toString optValStr rho) ^ "\n"))
                  | SOME v => v)
        | IF_FI [] => raise Match
        (* TODO CHANGE THIS LAMBDA *)
-       | IF_FI (g::gs) => (case solve rho (fn x => true) g
+       | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
       | VCONAPP (Core.TRUE, [])  => VCON TRUE
@@ -241,8 +256,50 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
 
   (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EXISTS ("y", EQN ("y", VCONAPP (Core.TRUE, []), EQN ("x", NAME "y", ARROWALPHA (NAME "x"))))))])) ) *)
 
-  val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EQN ("x", VCONAPP (Core.TRUE, []), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))])))
+  (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EQN ("x", VCONAPP (Core.TRUE, []), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))]))) *)
+  val cycle_ge = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))
 
+
+  val cycle_but_good_ge = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", NAME "x", EQN ("y", (VCONAPP (Core.K "3", [])), ARROWALPHA (NAME "x")))))))
+  val unbound_x_lhs = (EQN ("x", (VCONAPP (Core.K "3", [])), ARROWALPHA (VCONAPP (Core.K "4", []))))
+  
+  val unbound_y_rhs = (EXISTS ("x", EQN ("x", NAME "y", ARROWALPHA (VCONAPP (Core.K "4", [])))))
+  
+  val late_y_rhs = (EXISTS ("x", EQN ("x", NAME "y", EXISTS ("y", EQN ("y", (VCONAPP (Core.K "3", [])), ARROWALPHA (NAME "x"))))))
+  val late_y_rhs2 = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", (VCONAPP (Core.K "7", [])), ARROWALPHA (NAME "x"))))))
+  
+  val good_y_rhs  = (EXISTS ("x", EXISTS ("y", EQN ("y", (VCONAPP (Core.K "3", [])), EQN ("x", NAME "y", ARROWALPHA (NAME "x"))))))
+  val good_y_rhs2 = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", (VCONAPP (Core.K "7", [])), ARROWALPHA (NAME "x"))))))
+  
+  val exist_unordered       = (EXISTS ("x", EQN ("x", (VCONAPP (Core.K "3", [])), EXISTS ("y", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))
+  val exist_unordered_cmplx = (EXISTS ("x", EQN ("x", (VCONAPP (Core.K "3", [])), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))
+
+  fun solveempty g = eval Env.empty (IF_FI [g])
+
+
+  val () = Unit.checkExpectWith strOfValue "solving late_y_rhs2"
+         (fn () => solveempty late_y_rhs2)
+         (VCON (K ("7", [])))
+
+  val _ = solveempty late_y_rhs2
+         
+  val () = Unit.checkExnWith strOfValue "sorting unbound_x_lhs"
+          (fn () => solveempty unbound_x_lhs)
+          
+  val () = Unit.checkExnWith strOfValue "sorting unbound_y_rhs"
+          (fn () => solveempty unbound_y_rhs)
+
+  val () = Unit.checkExnWith strOfValue "sorting late_y_rhs"
+          (fn () => solveempty late_y_rhs)
+
+  val () = Unit.checkExpectWith strOfValue "sorting good_y_rhs"
+          (fn () => solveempty good_y_rhs)
+         (VCON (K ("3", [])))
+
+  val () = Unit.checkExpectWith strOfValue "sorting good_y_rhs2"
+          (fn () => solveempty good_y_rhs2)
+         (VCON (K ("7", [])))
+          
 
   (* and sortBindings rho gexpr = 
     let fun sortBindings' (EXISTS (e, ge)) = EXISTS (e, sortBindings' ge)
@@ -252,7 +309,7 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
             moveIndependentsWith rho_ binder_acc (fn gexp => gexp) false gex
           (* val () = print ("intermediate sort: \n"
                           ^ "lhs: " 
-                          ^ gexpString (bind_builder (ARROWEXP (NAME "")))
+                          ^ gexpString (bind_builder (ARROWALPHA (NAME "")))
                           ^ "\n rhs: " ^ gexpString leftover
                           ^ "\n rho: " ^ Env.toString optExpString rho'
                           ^ "\n") *)
@@ -411,7 +468,7 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
             moveIndependentsWith rho_ binder_acc (fn gexp => gexp) false gex
           (* val () = print ("intermediate sort: \n"
                           ^ "lhs: " 
-                          ^ gexpString (bind_builder (ARROWEXP (NAME "")))
+                          ^ gexpString (bind_builder (ARROWALPHA (NAME "")))
                           ^ "\n rhs: " ^ gexpString leftover
                           ^ "\n rho: " ^ Env.toString optExpString rho'
                           ^ "\n") *)
