@@ -24,6 +24,13 @@ structure VMinus :> sig
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
   datatype 'a def = DEF of name * 'a exp
+
+  val strOfValue : 'a value -> string 
+  val gexpString : 'a guarded_exp -> string 
+  val expString : 'a exp -> string 
+  val eval      : 'a value option Env.env -> 'a exp -> 'a value 
+  val solve      : 'a value option Env.env -> 'a guarded_exp -> 'a result
+   
 end 
   = 
 struct 
@@ -186,7 +193,10 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
     in has_unbound_names ex 
   end 
 
-  val stuckFn : 'a -> bool = fn x => true
+  (* todo: this. *)
+  val stuckFn : 'a -> bool = fn x => raise Impossible.unimp "examine an alpha"
+
+  val alphaEvaluator: 'a -> 'b = fn x => raise Impossible.unimp "evaluate an alpha"
 
   (* solve repeatedly calls chooseAndSolve until we're done or 
     until we reach a fixed point. if nothing changes and 
@@ -233,7 +243,7 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
     end 
       and eval (rho : 'a lvar_env) e = 
     case e 
-      of ALPHA a => VALPHA a 
+      of ALPHA a => VALPHA (alphaEvaluator a) 
         | NAME n => 
         if not (Env.binds (rho, n))
         then raise NameNotBound (n ^ " in expr")
@@ -242,7 +252,6 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                 raise NameNotBound (n ^ " bound to bottom in " ^ ((Env.toString optValStr rho) ^ "\n"))
                  | SOME v => v)
        | IF_FI [] => raise Match
-       (* TODO CHANGE THIS LAMBDA *)
        | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
@@ -254,52 +263,6 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application"
 
-  (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EXISTS ("y", EQN ("y", VCONAPP (Core.TRUE, []), EQN ("x", NAME "y", ARROWALPHA (NAME "x"))))))])) ) *)
-
-  (* val _ = print (strOfValue (eval Env.empty (IF_FI [(EXISTS ("x", EQN ("x", VCONAPP (Core.TRUE, []), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))]))) *)
-  val cycle_ge = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))
-
-
-  val cycle_but_good_ge = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", NAME "x", EQN ("y", (VCONAPP (Core.K "3", [])), ARROWALPHA (NAME "x")))))))
-  val unbound_x_lhs = (EQN ("x", (VCONAPP (Core.K "3", [])), ARROWALPHA (VCONAPP (Core.K "4", []))))
-  
-  val unbound_y_rhs = (EXISTS ("x", EQN ("x", NAME "y", ARROWALPHA (VCONAPP (Core.K "4", [])))))
-  
-  val late_y_rhs = (EXISTS ("x", EQN ("x", NAME "y", EXISTS ("y", EQN ("y", (VCONAPP (Core.K "3", [])), ARROWALPHA (NAME "x"))))))
-  val late_y_rhs2 = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", (VCONAPP (Core.K "7", [])), ARROWALPHA (NAME "x"))))))
-  
-  val good_y_rhs  = (EXISTS ("x", EXISTS ("y", EQN ("y", (VCONAPP (Core.K "3", [])), EQN ("x", NAME "y", ARROWALPHA (NAME "x"))))))
-  val good_y_rhs2 = (EXISTS ("x", EXISTS ("y", EQN ("x", NAME "y", EQN ("y", (VCONAPP (Core.K "7", [])), ARROWALPHA (NAME "x"))))))
-  
-  val exist_unordered       = (EXISTS ("x", EQN ("x", (VCONAPP (Core.K "3", [])), EXISTS ("y", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))
-  val exist_unordered_cmplx = (EXISTS ("x", EQN ("x", (VCONAPP (Core.K "3", [])), EXISTS ("y", EQN ("y", NAME "x", EXISTS ("z", EQN ("y", NAME "x", EXISTS ("w", EQN ("y", NAME "x", EXISTS ("a", EQN ("y", NAME "x", ARROWALPHA (NAME "x"))))))))))))
-
-  fun solveempty g = eval Env.empty (IF_FI [g])
-
-
-  val () = Unit.checkExpectWith strOfValue "solving late_y_rhs2"
-         (fn () => solveempty late_y_rhs2)
-         (VCON (K ("7", [])))
-
-  val _ = solveempty late_y_rhs2
-         
-  val () = Unit.checkExnWith strOfValue "sorting unbound_x_lhs"
-          (fn () => solveempty unbound_x_lhs)
-          
-  val () = Unit.checkExnWith strOfValue "sorting unbound_y_rhs"
-          (fn () => solveempty unbound_y_rhs)
-
-  val () = Unit.checkExnWith strOfValue "sorting late_y_rhs"
-          (fn () => solveempty late_y_rhs)
-
-  val () = Unit.checkExpectWith strOfValue "sorting good_y_rhs"
-          (fn () => solveempty good_y_rhs)
-         (VCON (K ("3", [])))
-
-  val () = Unit.checkExpectWith strOfValue "sorting good_y_rhs2"
-          (fn () => solveempty good_y_rhs2)
-         (VCON (K ("7", [])))
-          
 
   (* and sortBindings rho gexpr = 
     let fun sortBindings' (EXISTS (e, ge)) = EXISTS (e, sortBindings' ge)

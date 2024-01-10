@@ -22,4 +22,5 @@ $(SML_LIB)/basis/basis.mlb
   guard.sml
   guardsort.sml
   test-guard-sort.sml
+  vminus-test.sml
 

@@ -23,4 +23,5 @@ group is
   guard.sml
   guardsort.sml
   test-guard-sort.sml
+  vminus-test.sml
 

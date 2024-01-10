@@ -13,6 +13,8 @@ structure Main = struct
   fun spaces n = implode (List.tabulate (n, fn _ => #" "))
   fun pad n s = s ^ spaces (Int.max (0, n - size s))
 
+  val () = Unit.report ()
+
 (* 
   fun usage () =
     ( app eprint ["Usage:\n  ", arg0, " <from>-<to> [file]\n"]

@@ -198,9 +198,6 @@ val () = Unit.checkExpectWith gexpString "sorting good_y_rhs2"
          (fn () => sort_guard (fst good_y_rhs2))
          (fst good_y_rhs2)
 
-val () = Unit.report ()
-
-
 fun checkSort sorted_check test' = 
   let val (test, test_status) = test' 
   in 
