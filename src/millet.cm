@@ -31,3 +31,5 @@ group is
   main.sml
 
   tree-of-vminus.sml
+  vminus-of-p.sml
+  freshnames.sml

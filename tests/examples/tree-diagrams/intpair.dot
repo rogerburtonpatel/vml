@@ -1,0 +1,19 @@
+digraph {
+  N0 [label="TEST $r1"]
+  N1 [label="let $r100 = $r1[1]"]
+  N2 [label="TEST $r100"]
+  N3 [label="let $r101 = $r1[2]"]
+  N4 [label="TEST $r101"]
+  N5 [label="MATCH true with {  }"]
+  N4 -> N5 [label="3/0"]
+  N6 [label="MATCH false with {  }"]
+  N4 -> N6 [label="otherwise"]
+  N3 -> N4 
+  N2 -> N3 [label="2/0"]
+  N7 [label="MATCH false with {  }"]
+  N2 -> N7 [label="otherwise"]
+  N1 -> N2 
+  N0 -> N1 [label="PAIR/2"]
+  N8 [label="MATCH false with {  }"]
+  N0 -> N8 [label="otherwise"]
+}

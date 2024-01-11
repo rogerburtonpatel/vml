@@ -22,13 +22,13 @@ fi
 NEWML="$1"
 
 
-if $(!test -f "all.cm"); then 
+if $(! test -f "all.cm"); then 
     >&2 echo "all.cm not found!"
     exit 1
-elif $(!test -f "millet.cm"); then 
+elif $(! test -f "millet.cm"); then 
     >&2 echo "millet.cm not found!"
     exit 1
-elif $(!test -f "all.mlb"); then 
+elif $(! test -f "all.mlb"); then 
     >&2 echo "all.mlb not found!"
     exit 1
 fi
@@ -36,5 +36,17 @@ fi
 grep -qxF "  $NEWML" all.cm    || printf "  $NEWML\n" >> "all.cm"
 grep -qxF "  $NEWML" millet.cm || printf "  $NEWML\n" >> "millet.cm"
 grep -qxF "  $NEWML" all.mlb   || printf "  $NEWML\n" >> "all.mlb"
+
+if $(! test -f "$NEWML"); then 
+header="structure Name :> sig 
+
+end 
+  =
+struct 
+
+end
+"
+    printf %s "$header" >> "$NEWML"
+fi 
 
 code "$NEWML"
