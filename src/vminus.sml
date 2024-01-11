@@ -145,9 +145,9 @@ functor VMFn (A : ALPHA) :> VMinus = struct
     fun optValStr v = optString strOfValue v
     (* val optValStr = optString strOfValue *)
 
-    fun gexpString (ARROWALPHA e) = expString e
+    fun gexpString (ARROWALPHA e) = "-> " ^ expString e
       | gexpString (EXPSEQ (e, ge)) = expString e ^ "; " ^ gexpString ge
-      | gexpString (EXISTS (x, ge)) = "∃" ^ x ^ ". " ^ gexpString ge
+      | gexpString (EXISTS (x, ge)) = "∃ " ^ x ^ ". " ^ gexpString ge
       | gexpString (EQN (x, e, ge)) = 
                     x ^ " = " ^ expString e ^ "; " ^ gexpString ge 
     and expString (ALPHA a) = "'a"

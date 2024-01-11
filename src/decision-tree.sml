@@ -53,7 +53,7 @@ struct
 
 
     val testTree = TEST ("r1", [(("C1", 2), MATCH "foo"), (("C1", 2), MATCH "foo")], SOME (MATCH "Foo"))
-    val () = print (emitTree testTree)
+    (* val () = print (emitTree testTree) *)
 
 end
 

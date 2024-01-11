@@ -13,9 +13,12 @@ $(SML_LIB)/basis/basis.mlb
   Unit.sml
   error-sig.sml
   error-module.sml
+  freshnames.sml
   
   core-lang.sml
   decision-tree.sml
+  
+  alpha.sml 
   
   vminus.sml
   pplus.sml
@@ -24,10 +27,6 @@ $(SML_LIB)/basis/basis.mlb
   test-guard-sort.sml
   vminus-test.sml
   vminus.sml
-  
-  alpha.sml 
-
 
   tree-of-vminus.sml
   vminus-of-p.sml
-  freshnames.sml
