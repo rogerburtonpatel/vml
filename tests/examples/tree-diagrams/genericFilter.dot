@@ -1,0 +1,12 @@
+digraph {
+  N0 [label="TEST $r1"]
+  N1 [label="MATCH '() with {  }"]
+  N0 -> N1 [label="'()/0"]
+  N2 [label="let $r100 = $r1[1]"]
+  N3 [label="let $r101 = $r1[2]"]
+  N4 [label="MATCH (if (test xr) 
+('cons x (generi ... with { x |--> $r100, xr |--> $r101 }"]
+  N3 -> N4 
+  N2 -> N3 
+  N0 -> N2 [label="cons/2"]
+}

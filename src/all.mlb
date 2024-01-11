@@ -27,3 +27,5 @@ $(SML_LIB)/basis/basis.mlb
   
   alpha.sml 
 
+
+  tree-of-vminus.sml

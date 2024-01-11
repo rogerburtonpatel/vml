@@ -1,4 +1,4 @@
-structure Tree :> sig 
+structure DecisionTree :> sig 
   type name = string 
   type exp
   type vcon = string 

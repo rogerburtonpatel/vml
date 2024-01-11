@@ -28,3 +28,4 @@ group is
   vminus-test.sml
   vminus.sml
 
+  tree-of-vminus.sml

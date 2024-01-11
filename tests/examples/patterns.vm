@@ -77,8 +77,9 @@ val genericFilter = \test xs.
 eval: 
 ... 
     if xs = []; -> [] 
-    || E x l. xs = x::l; test x; -> x::genericFilter test l 
-    || -> genericFilter test l 
+    || E x l. xs = x::l; 
+        if test x; -> x::genericFilter test l 
+                || -> genericFilter test l fi 
     fi 
 /*
 
