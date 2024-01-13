@@ -30,3 +30,4 @@ $(SML_LIB)/basis/basis.mlb
 
   tree-of-vminus.sml
   vminus-of-p.sml
+  verse.sml

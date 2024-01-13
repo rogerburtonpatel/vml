@@ -33,3 +33,4 @@ group is
   tree-of-vminus.sml
   vminus-of-p.sml
   freshnames.sml
+  verse.sml
