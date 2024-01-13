@@ -9,14 +9,13 @@ struct
   exception Todo of string 
 
 
-  fun vmOfP (expr : P.exp) = 
-    let fun vmOfP' (rho: string Set.set) (e : P.exp) = 
+  fun vmOfP (e : P.exp) = 
       case e of P.NAME n => VM.NAME n 
-              | P.VCONAPP (vc, es) => VM.VCONAPP (vc, List.map (vmOfP' rho) es)
+              | P.VCONAPP (vc, es) => VM.VCONAPP (vc, List.map vmOfP es)
               | P.FUNAPP (e1, e2)  => VM.FUNAPP (raise Todo "function must bind names from p to vminus")
               | P.CASE (scrutinee, branches) => 
                 let val e' = vmOfP scrutinee 
-                        val _ = print ((VM.expString e') ^ "\n")
+                        (* val _ = print ((VM.expString e') ^ "\n") *)
                     val (pats, rhss) = ListPair.unzip branches 
                     val (alreadyName, name) = 
                           (case e' of VM.NAME n => (true, n) 
@@ -26,19 +25,16 @@ struct
                       | translatePat (P.CONAPP (n, ps)) = 
                                       VM.VCONAPP (Core.K n, map translatePat ps)
                     (* find unbound names in a pattern *)
-                    fun patFreeNames (P.PNAME n) = 
-                                         if Set.member (n, rho) then [n] else []
+                    fun patFreeNames (P.PNAME n) = [n]
                       | patFreeNames (P.CONAPP (vc, ps)) = 
                                          List.concat (List.map patFreeNames ps)
                     (* introduce them as necessary with existentials *)
                     (* bind them - ns comes from patFreeNames *)
-                    fun introduceExistentials ns g = List.foldl VM.EXISTS g ns
-                    (* todo check if fold direction is right *)
-                    (* depends on future invariant of lhs == a name *)
+                    fun introduceExistentials ns g = List.foldr VM.EXISTS g ns
+                    (* gexpOfPat depends on future invariant of lhs == a name *)
                     fun gexpOfPat p e' = 
                       let val freenames = patFreeNames p
-                          val rho' = Set.union' [Set.fromList freenames, rho]
-                          val rhs' = VM.ARROWALPHA (vmOfP' rho e')
+                          val rhs' = VM.ARROWALPHA (vmOfP e')
                           (* Would call translatePat p "lhs'", but 
                              the language server calls it a 
                              value-restriction error. *)
@@ -54,8 +50,6 @@ struct
                     else VM.IF_FI [VM.EXISTS (name, VM.EQN (name, e', 
                                    VM.ARROWALPHA (VM.IF_FI internal)))] 
                 end 
-    in vmOfP' Set.empty expr 
-    end 
 
   val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
   (* val _ = print ((VM.expString (vmOfP pempty)) ^ "\n") *)
@@ -63,6 +57,9 @@ struct
     (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"]), P.NAME "x")
   ])
   val _ = print ((VM.expString (vmOfP psome)) ^ "\n")
+
+  val _ = print ((VM.strOfValue (VM.eval Env.empty (vmOfP psome))) ^ "\n")
+
 
 
   structure D = DecisionTree

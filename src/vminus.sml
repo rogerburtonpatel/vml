@@ -199,6 +199,12 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
 
   val alphaEvaluator: 'a -> 'b = A.alphaEvaluator
 
+
+  (* TODO: bindWith, which takes a thing with names and a value 
+     and returns a bound thing or fails.
+     
+     refactor solve logic a bit. *)
+
   (* solve repeatedly calls chooseAndSolve until we're done or 
     until we reach a fixed point. if nothing changes and 
      we're not done, solve explodes. *)
@@ -211,55 +217,60 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
       OK of 'b guarded_exp * 'b lvar_env * 'b builder * status | REJ
       and status = CHANGED | UNCHANGED
       withtype 'b builder = ('b guarded_exp -> 'b guarded_exp)
-     fun chooseAndSolve rho g buildRest status = 
-      case g of ar as ARROWALPHA e => OK (ar, rho, buildRest, status)
-              | EXISTS (n, g')     => let val rho' = Env.bind (n, NONE, rho) 
-                                      in OK (g', rho', buildRest, CHANGED) 
-                                      end 
+        fun chooseAndSolve rho g buildRest status = 
+         case g of ar as ARROWALPHA e => OK (ar, rho, buildRest, status)
+                 | EXISTS (n, g')     => let val rho' = Env.bind (n, NONE, rho) 
+                                         in OK (g', rho', buildRest, CHANGED) 
+                                         end 
               (* if e is stuck, move on. if we can do e, do e. yes status. *)
               | EXPSEQ (e, g') => 
-              if stuck rho stuckFn e
-              then  let fun builder rest = buildRest (EXPSEQ (e, rest)) 
-                    in  chooseAndSolve rho g' builder status
-                    end
-              else (case eval rho e of VCON FALSE => REJ
-                                     | _ => OK (g', rho, buildRest, CHANGED))
+                if stuck rho stuckFn e
+                then  let fun builder rest = buildRest (EXPSEQ (e, rest)) 
+                      in  chooseAndSolve rho g' builder status
+                      end
+                else (case eval rho e of VCON FALSE => REJ
+                                      | _ => OK (g', rho, buildRest, CHANGED))
               | EQN (n, e, g') => 
-                  if (stuck rho stuckFn (NAME n)) 
-                      andalso stuck rho stuckFn e
-                  then let fun builder rest = buildRest (EQN (n, e, rest))
+                let val nstuck   = stuck rho stuckFn (NAME n)
+                    val rhsstuck = stuck rho stuckFn e
+                in 
+                  (case (nstuck, rhsstuck) of 
+                  (true, true) => 
+                        let fun builder rest = buildRest (EQN (n, e, rest))
                         in  chooseAndSolve rho g' builder status
                         end 
-                  else 
+                | (false, true) =>  raise Todo "bind rhs"
+                | _ => 
                     let val rhs  = eval rho e
                         val rho' = Env.bind (n, SOME rhs, rho)
                     in  if not (binds rho n) 
                         then OK (g', rho', buildRest, CHANGED)
                         else 
                           (case Env.find (n, rho)
-                            of NONE => OK (g', rho', buildRest, CHANGED)
+                            of NONE   => OK (g', rho', buildRest, CHANGED)
                              | SOME v => if (eqval (v, rhs)) 
                                          then OK (g', rho, buildRest, UNCHANGED) 
                                          else REJ)
-                    end 
-    fun solve' rho g = 
-    case chooseAndSolve rho g (fn x => x) UNCHANGED  
-      of REJ => REJECT 
-      | OK (g', rho', buildRest, status) =>
-      let val leftover = buildRest g' in 
-      (case leftover
-        of ARROWALPHA e  => 
-        VAL (eval rho' e)
-        | nontrivial_gex  => 
-                  if status = UNCHANGED
-                    then raise Cycle ("cannot sort " ^ gexpString gexpr 
-                                    ^ " because it contains a cycle"
-                                    ^ " of logical variables.")
-                  else 
-                  solve' rho' leftover)
-                  end 
-    in solve' rho_ gexpr
-    end 
+                    end) 
+                end 
+        fun solve' rho g = 
+          case chooseAndSolve rho g (fn x => x) UNCHANGED  
+            of REJ => REJECT 
+            | OK (g', rho', buildRest, status) =>
+            let val leftover = buildRest g' in 
+            (case leftover
+              of ARROWALPHA e  => 
+              VAL (eval rho' e)
+              | nontrivial_gex  => 
+                        if status = UNCHANGED
+                          then raise Cycle ("cannot sort " ^ gexpString gexpr 
+                                          ^ " because it contains a cycle"
+                                          ^ " of logical variables.")
+                        else 
+                        solve' rho' leftover)
+                        end 
+        in solve' rho_ gexpr
+        end 
       and eval (rho : 'a lvar_env) e = 
           case e 
             of ALPHA a => VALPHA (alphaEvaluator a) 
@@ -282,6 +293,23 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                raise Impossible.impossible "erroneous vcon argument application"
             | FUNAPP (fe, es) => raise Todo "eval function application"
 
+                  (* if (stuck rho stuckFn (NAME n)) 
+                      andalso stuck rho stuckFn e
+                  then let fun builder rest = buildRest (EQN (n, e, rest))
+                        in  chooseAndSolve rho g' builder status
+                        end 
+                  else 
+                    let val rhs  = eval rho e
+                        val rho' = Env.bind (n, SOME rhs, rho)
+                    in  if not (binds rho n) 
+                        then OK (g', rho', buildRest, CHANGED)
+                        else 
+                          (case Env.find (n, rho)
+                            of NONE => OK (g', rho', buildRest, CHANGED)
+                             | SOME v => if (eqval (v, rhs)) 
+                                         then OK (g', rho, buildRest, UNCHANGED) 
+                                         else REJ)
+                    end  *)
 
   (* and sortBindings rho gexpr = 
     let fun sortBindings' (EXISTS (e, ge)) = EXISTS (e, sortBindings' ge)
