@@ -14,7 +14,7 @@ structure Verse :> sig
                | PRIMOP of primop 
                | SEQ of value list 
                | LAMBDA of name * exp  
-  and primop = ADD of int * int | GT of int * int 
+  and primop = ADD | GT 
 end 
   =
 struct 
@@ -33,7 +33,7 @@ struct
                | PRIMOP of primop 
                | SEQ of value list 
                | LAMBDA of name * exp  
-  and primop = ADD of int * int | GT of int * int 
+  and primop = ADD | GT 
 
   val la = "⟨"
   val ra = "⟩"
@@ -49,7 +49,7 @@ struct
   
   fun unparse (VAL v) = unparseVal v
     | unparse (EXPSEQ ((EQEXP e), e')) = unparse e ^ "; " ^ unparse e'
-    | unparse (EXPSEQ ((ASSIGN (v, e)), e')) = unparse e ^ "; " ^ unparse e'
+    | unparse (EXPSEQ ((ASSIGN (v, e)), e')) = unparseVal v ^ " = " ^ unparse e ^ "; " ^ unparse e'
     | unparse (EXISTS (n, e)) = exists ^ n ^ ". " ^ unparse e
     | unparse FAIL = "fail"
     | unparse (CHOICE (e1, e2)) = unparse e1 ^ " | " ^ unparse e2
@@ -62,9 +62,8 @@ struct
         | HNF h   => 
           (case h 
             of INT i => Int.toString i
-            | PRIMOP (ADD (i1, i2)) => "add " ^ stringSeq Int.toString [i1, i2]
-            | PRIMOP (GT (i1, i2))  =>  "g "  ^ stringSeq Int.toString [i1, i2]
+            | PRIMOP ADD => "add "
+            | PRIMOP GT  =>  "g " 
             | SEQ vs => stringSeq unparseVal vs
             | LAMBDA (n, body) => lam ^ n ^ ". " ^ unparse body))
-
 end

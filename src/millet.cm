@@ -30,7 +30,7 @@ group is
 
   main.sml
 
-  tree-of-vminus.sml
-  vminus-of-p.sml
   freshnames.sml
   verse.sml
+  translation.sml
+  uverse.sml

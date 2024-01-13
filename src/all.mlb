@@ -28,6 +28,6 @@ $(SML_LIB)/basis/basis.mlb
   vminus-test.sml
   vminus.sml
 
-  tree-of-vminus.sml
-  vminus-of-p.sml
   verse.sml
+  translation.sml
+  uverse.sml

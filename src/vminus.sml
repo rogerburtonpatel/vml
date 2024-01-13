@@ -205,64 +205,82 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
   fun solve (rho_: 'a lvar_env) gexpr = 
   (* chooseAndSolve reduces g and expands rho. 
   if it finds something it can't solve yet, 
-  it skips it and add it to buildRest. *)
-    let datatype reject = OK | FAIL
-     fun chooseAndSolve rho g buildRest changed = 
-      case g of ar as ARROWALPHA e   => (ar, rho, buildRest, changed, OK)
-              | EXISTS (n, g') => (g', Env.bind (n, NONE, rho), buildRest, true, OK)
-              (* if e is stuck, move on. if we can do e, do e. yes changed. *)
-              | EXPSEQ (e, g') => if stuck rho stuckFn e
-                                  then chooseAndSolve rho g' (fn rest => buildRest (EXPSEQ (e, rest))) changed
-                                  else (case eval rho e 
-                                    of VCON FALSE => (g, rho, buildRest, false, FAIL) (* rejection *)
-                                     | _ => (g', rho, buildRest, true, OK))
-              | EQN (n, e, g') => if (stuck rho stuckFn (NAME n)) 
-                                   andalso stuck rho stuckFn e
-                                  then 
-                                  chooseAndSolve rho g' (fn rest => buildRest (EQN (n, e, rest))) changed 
-                                  else 
-                                  let val rhs = SOME (eval rho e) 
-                                       in 
-                                       (g', Env.bind (n, rhs, rho), buildRest, true, OK)
-                                       end 
+  it skips it and add it to buildRest, 
+  which lets solve look at the skipped part later. *)
+    let datatype 'b solution = 
+      OK of 'b guarded_exp * 'b lvar_env * 'b builder * status | REJ
+      and status = CHANGED | UNCHANGED
+      withtype 'b builder = ('b guarded_exp -> 'b guarded_exp)
+     fun chooseAndSolve rho g buildRest status = 
+      case g of ar as ARROWALPHA e => OK (ar, rho, buildRest, status)
+              | EXISTS (n, g')     => let val rho' = Env.bind (n, NONE, rho) 
+                                      in OK (g', rho', buildRest, CHANGED) 
+                                      end 
+              (* if e is stuck, move on. if we can do e, do e. yes status. *)
+              | EXPSEQ (e, g') => 
+              if stuck rho stuckFn e
+              then  let fun builder rest = buildRest (EXPSEQ (e, rest)) 
+                    in  chooseAndSolve rho g' builder status
+                    end
+              else (case eval rho e of VCON FALSE => REJ
+                                     | _ => OK (g', rho, buildRest, CHANGED))
+              | EQN (n, e, g') => 
+                  if (stuck rho stuckFn (NAME n)) 
+                      andalso stuck rho stuckFn e
+                  then let fun builder rest = buildRest (EQN (n, e, rest))
+                        in  chooseAndSolve rho g' builder status
+                        end 
+                  else 
+                    let val rhs  = eval rho e
+                        val rho' = Env.bind (n, SOME rhs, rho)
+                    in  if not (binds rho n) 
+                        then OK (g', rho', buildRest, CHANGED)
+                        else 
+                          (case Env.find (n, rho)
+                            of NONE => OK (g', rho', buildRest, CHANGED)
+                             | SOME v => if (eqval (v, rhs)) 
+                                         then OK (g', rho, buildRest, UNCHANGED) 
+                                         else REJ)
+                    end 
     fun solve' rho g = 
-    let val (g', rho', buildRest, changed, reject) = chooseAndSolve rho g (fn x => x) false 
-        val leftover = buildRest g' 
-    in case (leftover, reject) 
-      of (_, FAIL)         => REJECT
-       | (ARROWALPHA e, _) => 
-       VAL (eval rho' e)
-       | (nontrivial_gex, _)  => 
-                if not changed 
-                  then raise Cycle ("cannot sort " ^ gexpString gexpr 
-                                  ^ " because it contains a cycle"
-                                  ^ " of logical variables.")
-                else 
-                solve' rho' leftover
-    end 
+    case chooseAndSolve rho g (fn x => x) UNCHANGED  
+      of REJ => REJECT 
+      | OK (g', rho', buildRest, status) =>
+      let val leftover = buildRest g' in 
+      (case leftover
+        of ARROWALPHA e  => 
+        VAL (eval rho' e)
+        | nontrivial_gex  => 
+                  if status = UNCHANGED
+                    then raise Cycle ("cannot sort " ^ gexpString gexpr 
+                                    ^ " because it contains a cycle"
+                                    ^ " of logical variables.")
+                  else 
+                  solve' rho' leftover)
+                  end 
     in solve' rho_ gexpr
     end 
       and eval (rho : 'a lvar_env) e = 
-    case e 
-      of ALPHA a => VALPHA (alphaEvaluator a) 
-        | NAME n => 
-        if not (Env.binds (rho, n))
-        then raise NameNotBound (n ^ " in expr")
-        else (case (Env.find (n, rho)) 
-                of NONE   => 
-                raise NameNotBound (n ^ " bound to bottom in " ^ ((Env.toString optValStr rho) ^ "\n"))
-                 | SOME v => v)
-       | IF_FI [] => raise Match
-       | IF_FI (g::gs) => (case solve rho g
-                            of VAL v => v
-                            | REJECT => eval rho (IF_FI gs))
-      | VCONAPP (Core.TRUE, [])  => VCON TRUE
-      | VCONAPP (Core.FALSE, []) => VCON FALSE 
-      | VCONAPP (Core.K n, [])   => VCON (K (n, []))
-      | VCONAPP (Core.K n, es)   => VCON (K (n, map (eval rho) es))
-      | VCONAPP _ => 
-              raise Impossible.impossible "erroneous vcon argument application"
-      | FUNAPP (fe, es) => raise Todo "eval function application"
+          case e 
+            of ALPHA a => VALPHA (alphaEvaluator a) 
+              | NAME n => 
+              if not (Env.binds (rho, n))
+              then raise NameNotBound (n ^ " in expr")
+              else (case (Env.find (n, rho)) 
+                      of NONE   => 
+                      raise NameNotBound (n ^ " bound to bottom in " ^ 
+                                         ((Env.toString optValStr rho) ^ "\n"))
+                      | SOME v  => v)
+            | IF_FI []      => raise Match
+            | IF_FI (g::gs) => (case solve rho g
+                                  of VAL v => v
+                                  | REJECT => eval rho (IF_FI gs))
+            | VCONAPP (Core.TRUE,  []) => VCON TRUE
+            | VCONAPP (Core.FALSE, []) => VCON FALSE 
+            | VCONAPP (Core.K n, es)   => VCON (K (n, map (eval rho) es))
+            | VCONAPP _ => 
+               raise Impossible.impossible "erroneous vcon argument application"
+            | FUNAPP (fe, es) => raise Todo "eval function application"
 
 
   (* and sortBindings rho gexpr = 
