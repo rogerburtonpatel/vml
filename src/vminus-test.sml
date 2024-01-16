@@ -32,7 +32,7 @@ structure VMTest = struct
 
   val () = Unit.checkExpectWith A.valString "solving late_y_rhs2"
          (fn () => solveempty late_y_rhs2)
-         (A.VCON (K ("7", [])))
+         (A.VCON (A.K ("7", [])))
 
   val _ = solveempty late_y_rhs2
          
@@ -47,11 +47,11 @@ structure VMTest = struct
 
   val () = Unit.checkExpectWith A.valString "solving good_y_rhs"
           (fn () => solveempty good_y_rhs)
-         (A.VCON (K ("3", [])))
+         (A.VCON (A.K ("3", [])))
 
   val () = Unit.checkExpectWith A.valString "solving good_y_rhs2"
           (fn () => solveempty good_y_rhs2)
-         (A.VCON (K ("7", [])))
+         (A.VCON (A.K ("7", [])))
 
   val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
   (* val _ = print ((A.A.EXpString (vmOfP pempty)) ^ "\n") *)
