@@ -14,6 +14,8 @@ structure Env :> sig
 
   val toString : ('a -> string) -> 'a env -> string
   val <+> : 'a env * 'a env -> 'a env  (* BPC, chap 5 *)
+  val merge : ('a * 'a -> 'a) -> 'a env * 'a env -> 'a env
+              (* resolver function *)
 end
   =
 struct
@@ -25,7 +27,7 @@ struct
 
   exception NotFound of name
   fun not_found x =
-    ( TextIO.output (TextIO.stdErr, String.concat ["Name not found: ", x, "\n"])
+    ( TextIO.output (TextIO.stdErr, concat ["Name not found: ", x, "\n"])
     ; raise NotFound x
     )
   fun find (name, []) = not_found name
@@ -36,7 +38,7 @@ struct
     | binds ((x', _)::env, x) = x = x' orelse binds (env, x)
 
   (* to turn on environment debugging, change `val find_debug` to `val find` *)
-  val find = fn (x, rho) => find (x, rho)
+  val find_debug = fn (x, rho) => find (x, rho)
     handle e =>
       ( app eprint ["Environment binds:"]
       ; app (fn (y, _) => app eprint [" ", y]) rho
@@ -45,13 +47,19 @@ struct
       )
     
   fun toString elem rho =
-    let fun binding (x, a) = String.concat [x, " |--> ", elem a]
-    in  String.concat ["{ ", String.concatWith ", " (map binding rho), " }"]
+    let fun binding (x, a) = concat [x, " |--> ", elem a]
+    in  concat ["{ ", String.concatWith ", " (map binding rho), " }"]
     end
 
 
   infix 6 <+>
   fun pairs <+> pairs' = pairs' @ pairs
+
+  fun merge resolver ([], rho) = rho
+    | merge resolver ((n1, x)::xs, rho) = 
+      if not (binds (rho, n1))
+      then (n1, x)::(merge resolver (xs, rho))
+      else (n1, resolver (x, find (n1, rho)))::(merge resolver (xs, rho))
 
 end
   

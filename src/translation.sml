@@ -1,13 +1,16 @@
-structure Translation :> sig 
-
+structure Translation : sig
+  type 'a vmFnType
+  val vmOfP : PPlus.exp -> 'a vmFnType
 end 
   =
 struct 
   structure P = PPlus 
   structure VM = VMFn(Alpha)
   structure V  = Verse 
-  exception Todo of string 
+  type 'a vmFnType = 'a VM.exp
 
+
+  exception Todo of string 
 
   fun vmOfP (e : P.exp) = 
       case e of P.NAME n => VM.NAME n 
@@ -58,7 +61,7 @@ struct
   ])
   val _ = print ((VM.expString (vmOfP psome)) ^ "\n")
 
-  val _ = print ((VM.strOfValue (VM.eval Env.empty (vmOfP psome))) ^ "\n")
+  val _ = print ((VM.valString (VM.eval Env.empty (vmOfP psome))) ^ "\n")
 
 
 

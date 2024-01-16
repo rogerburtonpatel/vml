@@ -25,7 +25,7 @@ signature VMinus = sig
                       | EQN    of name * 'a exp * 'a guarded_exp
   datatype 'a def = DEF of name * 'a exp
 
-  val strOfValue : 'a value -> string 
+  val valString : 'a value -> string 
   val gexpString : 'a guarded_exp -> string 
   val expString : 'a exp -> string 
   val eval      : 'a value option Env.env -> 'a exp -> 'a value 
@@ -129,21 +129,19 @@ functor VMFn (A : ALPHA) :> VMinus = struct
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application" *)
 
-  fun strOfValue (VALPHA a) = "alpha"
-    | strOfValue (VCON v) = (case v of   
-       (K (n, vcs)) => 
-         let val vcss = foldl (fn (vc, acc) => strOfValue vc ^ " " ^ acc) "" vcs
-         in n ^ " " ^ vcss
-         end 
+  fun valString (VALPHA a) = "alpha"
+    | valString (VCON v) = (case v of   
+       (K (n, vs)) => 
+        Core.strBuilderOfVconApp valString (Core.K n) vs 
     | TRUE  => "true"
     | FALSE => "false")
     
     
     val _ = optString  : ('a -> string) -> 'a option -> string 
-    val _ = strOfValue : 'a value -> string
+    val _ = valString : 'a value -> string
 
-    fun optValStr v = optString strOfValue v
-    (* val optValStr = optString strOfValue *)
+    fun optValStr v = optString valString v
+    (* val optValStr = optString valString *)
 
     fun gexpString (ARROWALPHA e) = "-> " ^ expString e
       | gexpString (EXPSEQ (e, ge)) = expString e ^ "; " ^ gexpString ge
@@ -167,6 +165,13 @@ functor VMFn (A : ALPHA) :> VMinus = struct
 
   fun exists_in n (rho: 'a lvar_env) = 
     Env.binds (rho, n) andalso isSome (Env.find (n, rho))
+    (* todo use this more! *)
+
+  fun lvarEnvMerge (rho1 : 'a lvar_env) (rho2 : 'a lvar_env) = 
+    Env.merge (fn (SOME x, SOME y)   => SOME x
+                | (NONE,   SOME x)   => SOME x
+                | (SOME x, NONE)     => SOME x
+                | (NONE,   NONE)     => NONE) (rho1, rho2)
 
 
 (* stuck says: can I solve this with the information I have now? 
@@ -200,10 +205,25 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
   val alphaEvaluator: 'a -> 'b = A.alphaEvaluator
 
 
-  (* TODO: bindWith, which takes a thing with names and a value 
-     and returns a bound thing or fails.
-     
-     refactor solve logic a bit. *)
+  fun valIn (rho : 'a lvar_env) n = 
+    if exists_in n rho 
+    then (Env.find (n, rho))
+    else NONE 
+
+  (* bindWith takes an envrionment, an expression, and a value 
+     and returns a refined environment with names in the expression
+     bound to corresponding parts of the value or fails. *)
+
+
+    
+
+  (* datatype 'a exp = 
+                 ALPHA of 'a 
+              |  NAME of name 
+              | IF_FI of 'a guarded_exp list 
+              | VCONAPP of Core.vcon * 'a exp list
+              | FUNAPP  of 'a exp * 'a exp *)
+
 
   (* solve repeatedly calls chooseAndSolve until we're done or 
     until we reach a fixed point. if nothing changes and 
@@ -213,10 +233,9 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
   if it finds something it can't solve yet, 
   it skips it and add it to buildRest, 
   which lets solve look at the skipped part later. *)
-    let datatype 'b solution = 
-      OK of 'b guarded_exp * 'b lvar_env * 'b builder * status | REJ
-      and status = CHANGED | UNCHANGED
-      withtype 'b builder = ('b guarded_exp -> 'b guarded_exp)
+    let datatype 'b solution = OK of 'b | REJ
+        and status = CHANGED | UNCHANGED
+      (* withtype 'b builder = ('b guarded_exp -> 'b guarded_exp) *)
         fun chooseAndSolve rho g buildRest status = 
          case g of ar as ARROWALPHA e => OK (ar, rho, buildRest, status)
                  | EXISTS (n, g')     => let val rho' = Env.bind (n, NONE, rho) 
@@ -239,7 +258,12 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                         let fun builder rest = buildRest (EQN (n, e, rest))
                         in  chooseAndSolve rho g' builder status
                         end 
-                | (false, true) =>  raise Todo "bind rhs"
+                | (false, true) => 
+                 let val nval = valOf (Env.find (n, rho)) 
+                 in (case bindWith rho (e, nval)
+                      of OK rho' => OK (g', rho', buildRest, CHANGED)
+                             | _ => REJ)
+                 end
                 | _ => 
                     let val rhs  = eval rho e
                         val rho' = Env.bind (n, SOME rhs, rho)
@@ -253,6 +277,43 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                                          else REJ)
                     end) 
                 end 
+        and bindWith (rho : 'a lvar_env) (e : 'a exp, v : 'a value) = 
+        let val _ = print ("Env entering bindWith: " ^ (Env.toString optValStr rho) ^ "\n") 
+            val _ = print ("bindwith on " ^ expString e ^ ", " ^ valString v ^ "\n")
+            in 
+          case (e, v) 
+            of (NAME n, _) => 
+                let val nval = valIn rho n 
+                    val _ = print ("VAL of " ^ n ^ ": " ^ optValStr nval ^ "\n")
+                in if isSome nval 
+                  then if (eqval ((valOf nval), v)) then OK rho else REJ
+                  else OK (Env.bind (n, SOME v, rho))
+                end 
+            | (VCONAPP (Core.K n, es), VCON (K (n', vs))) => 
+                if n <> n'
+                  orelse List.length es <> List.length vs
+                then REJ 
+                else 
+                  (* need to use the same environment, preventing bad name duplication *)
+                  let val solns = 
+                    foldr (fn ((ex, vl), OK rho') => 
+                            (case bindWith rho' (ex, vl) 
+                              of OK rho'' => OK (lvarEnvMerge rho'' rho')
+                              | _ => REJ)
+                           | _ => REJ) 
+                    (OK rho) (ListPair.zip (es, vs))
+                  (* List.map (bindWith rho) (ListPair.zip (es, vs)) *)
+                      (* fun envSolutionConcat zs = 
+                            foldr (fn (OK rho1, OK rho2) => 
+                                        OK (lvarEnvMerge rho1 rho2)
+                                      | _                => REJ) 
+                                  (OK rho) zs *)
+                  val x = solns
+                  val _ =  print (case x of OK r => "ENV: " ^ (Env.toString optValStr r) ^ "\n" | REJ => "REJ")
+                  in x 
+                  end 
+              | _ => if eqval (eval rho e, v) then OK rho else REJ
+    end 
         fun solve' rho g = 
           case chooseAndSolve rho g (fn x => x) UNCHANGED  
             of REJ => REJECT 

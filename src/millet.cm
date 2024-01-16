@@ -22,8 +22,6 @@ group is
   pplus.sml
   guard.sml
   guardsort.sml
-  test-guard-sort.sml
-  vminus-test.sml
   (****** The Alpha-Language ******)
   alpha.sml 
 
@@ -34,3 +32,7 @@ group is
   verse.sml
   translation.sml
   uverse.sml
+
+  test-guard-sort.sml
+  vminus-test.sml
+  

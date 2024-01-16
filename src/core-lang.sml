@@ -50,8 +50,8 @@ struct
   fun strBuilderOfVconApp f n args = 
       case (n, args)
       of (K n, vs) =>
-        let val vcss = foldr (fn (vc, acc) => f vc ^ " " ^ acc) "" vs
-        in n ^ " " ^ vcss
+        let val vcss = foldr (fn (vc, acc) => " " ^ f vc ^ acc) "" vs
+        in n ^ vcss
         end 
     | (TRUE, [])  =>  "true"
     | (FALSE, []) =>  "false"

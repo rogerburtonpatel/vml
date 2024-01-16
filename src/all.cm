@@ -25,10 +25,12 @@ group is
   pplus.sml
   guard.sml
   guardsort.sml
-  test-guard-sort.sml
-  vminus-test.sml
   vminus.sml
 
   verse.sml
-  translation.sml
   uverse.sml
+
+  translation.sml
+  test-guard-sort.sml
+  vminus-test.sml
+  
