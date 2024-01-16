@@ -1,9 +1,9 @@
 structure VMTest = struct 
 
-  structure A = VMFn(Alpha)
   structure P = PPlus 
 
   structure T = Translation
+  structure A = Translation.VM
 
   (* val _ = print (valString (eval Env.empty (IF_FI [(A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", A.VCONAPP (Core.TRUE, []), A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.NAME "x"))))))])) ) *)
 

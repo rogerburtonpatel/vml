@@ -1,6 +1,7 @@
 structure Translation : sig
   type 'a vmFnType
   val vmOfP : PPlus.exp -> 'a vmFnType
+  structure VM : VMinus
 end 
   =
 struct 
