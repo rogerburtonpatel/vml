@@ -5,7 +5,7 @@ structure Translation : sig
 end 
   =
 struct 
-  structure P = PPlus 
+  structure P  = PPlus 
   structure VM = VMFn(Alpha)
   structure V  = Verse 
   type 'a vmFnType = 'a VM.exp
