@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{vmlmacros}
+\begin{document}
+One interesting aspect- in ways, a piece of found or emergent behavior- 
+of Verse equations' flexibility with names is their ability to double bind a 
+pattern name. Consider this code: 
+
+\begin{verbatim}
+    case (1, 1)
+        of (x, x) => "I wish"
+         | _ => "Naturally, this will not even compile"
+    
+\end{verbatim}
+
+Indeed, we would need a side condition: 
+\begin{verbatim}
+    case (1, 1)
+        of (x, x') when x = x' => "This works"
+         | _ => "Now I won't even exist"
+    
+\end{verbatim}
+
+Or a pattern guard: 
+
+\begin{verbatim}
+    case (1, 1)
+        of (x, x')
+            , x = x' => "This works"
+        | _ => "Now I won't even exist"
+
+    
+\end{verbatim}
+\Vminus (and subsequently Verse) actually has no trouble with this: 
+\[
+    \exists x.\; \mathit{PAIR}\; 1\; 1\; = \mathit{PAIR}\; x\; x; -> x 
+\]
+
+Because binding is done one bit at a time, x is first bound to 1, then 
+\textit{checked} if it is bound to 1. Binding and assertion being a 
+single, unified construct has its advantages. 
+
+\end{document}

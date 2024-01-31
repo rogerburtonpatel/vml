@@ -33,10 +33,12 @@ matching but does not require logical variables at runtime.
 
 this is better than:
 
-The introduction of equation solving as a novel paradigm for data deconstruction 
-within the new programming language Verse (Peyton Jones et al., 2023) necessarily begs questions: What are the advantages of the new system? In what ways is it more or 
-less expressive than pattern matching? And, for our purposes: What is the smallest subset of 
-the Verse calculus that is as expressive as pattern matching? 
+The introduction of equation solving as a novel paradigm for data deconstruction
+within the new programming language Verse (Peyton Jones et al., 2023)
+necessarily begs questions: What are the advantages of the new system? In what
+ways is it more or less expressive than pattern matching? And, for our purposes:
+What is the smallest subset of the Verse calculus that is as expressive as
+pattern matching? 
 
 
 We go on to claim that there are no programs generatable with the subset that cannot be created 
