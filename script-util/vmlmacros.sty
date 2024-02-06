@@ -104,6 +104,7 @@
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
 \newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
+\newcommand{\vevalext}[3]{\langle \rho#1,  #2 \rangle \Downarrow #3}
 % \newcommand{\veval}[2]{\rho; \; \context \vdash #1 \Downarrow #2}
 
 \newcommand{\showvjudgement}[3][Right]{%
@@ -181,6 +182,7 @@
 \defcomponent{env}{\rho}
 \defcomponent{context}{\context}
 \defcomponent{term}{\galpha}
+\defcomponent{guard}{g}
 \defcomponent{result}{\result}
 \defcomponent{envext}{}
 \defcomponent{newenv}{\rho'}
@@ -195,6 +197,12 @@
    \let\c=\component
    \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
 
+\newcommand\vmrung[1][]{%  run V-minus code with normal g
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guard} \Downarrow \c{result}}}}
+ 
+
 \newcommand\eqrefine[1][]{%  equation refines environment
   {\setkeys{state}{#1}%
   \let\c=\component
@@ -205,21 +213,11 @@
 \defcomponent{vterm}{e}
 \defcomponent{vresult}{e'}
 
-% \newcommand\vrun[1][]{% run Verse code
-%   {\setkeys{state}{#1}%
-%    \let\c=\component
-%    \ensuremath{\c{vterm} \mathrel{\rightarrow^*} \c{vresult}}}}
 \newcommand\vrun[1][]{% run Verse code
   {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{vterm} \mathrel{\rightarrow^{*}} \c{vresult}}}}
 \newcommand\translation[2][]{\ensuremath{#1[\![#2]\!]}}
-
-% \newcommand\vmrun[1][]{%
-%   {\tracingall\setkeys{state}{#1}%
-%    \let\c=\component
-%    \ensuremath{\c{Rho}\c{Rhoext}; \; \c{T} \vdash \c{Expr}}}}
-%    \newcommand\vmrun[1][]{\vmrun[Expr=\galpha,#1]}
 
 
 \newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}

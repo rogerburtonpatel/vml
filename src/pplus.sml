@@ -2,12 +2,15 @@ structure PPlus :> sig
   type name = string 
   type vcon = Core.vcon 
   datatype exp = NAME of name 
-               | CASE of exp * (pattern * exp) list 
+               | CASE of exp * (toplevelpattern * exp) list 
                | VCONAPP of vcon * exp list 
                | FUNAPP  of exp * exp 
+      and toplevelpattern =   PAT of pattern 
+                            (* | WHEN   of toplevelpattern * exp *)
+                            | ORPAT of pattern list 
+                            | PATGUARD of toplevelpattern * (pattern * exp list) * exp
       and pattern =     PNAME of name
                       | CONAPP of name * pattern list 
-                      (* | WHEN   of pattern * exp *)
   datatype def = DEF of name * exp
 
   val expString : exp -> string
@@ -17,21 +20,33 @@ struct
   type name = string 
   type vcon = Core.vcon 
   datatype exp = NAME of name 
-               | CASE of exp * (pattern * exp) list 
+               | CASE of exp * (toplevelpattern * exp) list 
                | VCONAPP of vcon * exp list 
                | FUNAPP  of exp * exp 
+      and toplevelpattern =   PAT of pattern 
+                            (* | WHEN   of toplevelpattern * exp *)
+                            | ORPAT of pattern list 
+                            | PATGUARD of toplevelpattern * (pattern * exp list) * exp
       and pattern =     PNAME of name
                       | CONAPP of name * pattern list 
-                      (* | WHEN   of pattern * exp *)
   datatype def = DEF of name * exp
 
   fun expString (NAME n) = n
     | expString (CASE (e, branches)) = 
-      let fun patString (PNAME n) = n 
+      let 
+          fun tlpatString (PAT p) = patString p
+            | tlpatString (ORPAT []) = Impossible.impossible "empty orpat"
+            | tlpatString (ORPAT [_]) = Impossible.impossible "singleton orpat"
+            | tlpatString (ORPAT ps) = 
+                        patString (hd ps) ^ 
+                            (foldr (fn (p, acc) => "| " ^ patString p ^ acc) "" 
+                            (tl ps))
+            | tlpatString (PATGUARD (tlp, steps, res)) = Impossible.unimp "todo"
+          and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
                                 Core.strBuilderOfVconApp patString (Core.K n) ps
           fun branchString (p, ex) = 
-                                     patString p ^ " => " ^ expString ex
+                                     tlpatString p ^ " => " ^ expString ex
           in "case " ^ expString e ^ " of " ^ 
           (if null branches 
           then "" 
