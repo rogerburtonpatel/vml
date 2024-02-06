@@ -17,6 +17,8 @@ group is
   freshnames.sml
   (* **** languages **** *)
   core-lang.sml
+  vminus-noalpha.sml
+  vminus-arrow.sml
   decision-tree.sml
   (****** The Alpha-Language ******)
   alpha.sml 
@@ -33,4 +35,3 @@ group is
   translation.sml
   test-guard-sort.sml
   vminus-test.sml
-  

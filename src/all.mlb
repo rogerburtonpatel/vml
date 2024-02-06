@@ -16,6 +16,8 @@ $(SML_LIB)/basis/basis.mlb
   freshnames.sml
   
   core-lang.sml
+  vminus-noalpha.sml
+  vminus-arrow.sml
   decision-tree.sml
   
   alpha.sml 
@@ -32,4 +34,3 @@ $(SML_LIB)/basis/basis.mlb
 
   test-guard-sort.sml
   vminus-test.sml
-  

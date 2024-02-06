@@ -1,12 +1,14 @@
 structure Translation : sig
   type 'a vmFnType
   val vmOfP : PPlus.exp -> 'a vmFnType
+  val vmSimpleOfP : PPlus.exp -> VMinusSimple.exp 
   structure VM : VMinus
 end 
   =
 struct 
   structure P  = PPlus 
   structure VM = VMFn(Alpha)
+  structure VMS = VMinusSimple
   structure V  = Verse 
   type 'a vmFnType = 'a VM.exp
 
@@ -54,6 +56,49 @@ struct
                     else VM.IF_FI [VM.EXISTS (name, VM.EQN (name, e', 
                                    VM.ARROWALPHA (VM.IF_FI internal)))] 
                 end 
+
+  fun vmSimpleOfP (e : P.exp) = 
+      case e of P.NAME n => VMS.NAME n 
+              | P.VCONAPP (vc, es) => VMS.VCONAPP (vc, List.map vmSimpleOfP es)
+              | P.FUNAPP (e1, e2)  => VMS.FUNAPP (raise Todo "function must bind names from p to VMSinus")
+              | P.CASE (scrutinee, branches) => 
+                let val e' = vmSimpleOfP scrutinee 
+                        (* val _ = print ((VMS.expString e') ^ "\n") *)
+                    val (pats, rhss) = ListPair.unzip branches 
+                    val (alreadyName, name) = 
+                          (case e' of VMS.NAME n => (true, n) 
+                                    | _ => (false, FreshName.freshname ()))
+                    (* simply make a pattern look like an equation *)
+                    fun translatePat (P.PNAME n)        = VMS.NAME n 
+                      | translatePat (P.CONAPP (n, ps)) = 
+                                      VMS.VCONAPP (Core.K n, map translatePat ps)
+                    (* find unbound names in a pattern *)
+                    fun patFreeNames (P.PNAME n) = [n]
+                      | patFreeNames (P.CONAPP (vc, ps)) = 
+                                         List.concat (List.map patFreeNames ps)
+                    (* introduce them as necessary with existentials *)
+                    (* bind them - ns comes from patFreeNames *)
+                    fun introduceExistentials ns g = List.foldr VMS.EXISTS g ns
+                    (* gexpOfPat depends on future invariant of lhs == a name *)
+                    fun gexpOfPat p e' = 
+                      let val freenames = patFreeNames p
+                          val rhs' = VMS.ARROWEXP (vmSimpleOfP e')
+                          (* Would call translatePat p "lhs'", but 
+                             the language server calls it a 
+                             value-restriction error. *)
+                          val bind = VMS.EQN (name, translatePat p, rhs')
+                      in introduceExistentials freenames bind
+                      end 
+                    val internal =   (List.foldr 
+                                     (fn ((pat, rhs), gs) => 
+                                         (gexpOfPat pat rhs)::gs) 
+                                    [] branches)
+                in  if alreadyName 
+                    then VMS.IF_FI internal
+                    else VMS.IF_FI [VMS.EXISTS (name, VMS.EQN (name, e', 
+                                   VMS.ARROWEXP (VMS.IF_FI internal)))] 
+                end 
+
 
   val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
   (* val _ = print ((VM.expString (vmOfP pempty)) ^ "\n") *)

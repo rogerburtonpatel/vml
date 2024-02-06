@@ -1,7 +1,7 @@
 structure VMTest = struct 
 
   structure P = PPlus 
-
+  structure VMS = VMinusSimple
   structure T = Translation
   structure A = Translation.VM
 
@@ -59,9 +59,27 @@ structure VMTest = struct
     (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"]), P.NAME "x")
   ])
 
+(* todo freshname issue here *)
     val () = Unit.checkExpectWith A.expString "translating psome"
           (fn () => T.vmOfP psome)
          (T.vmOfP psome)
+
+  val () = print (
+    "Pplus expression \n" ^ P.expString psome ^ "\n"
+    ^ "translates to VminusSimple expression \n"
+    ^ VMS.expString (T.vmSimpleOfP psome)
+    ^ "\n"
+  )
+
+  val unsolvable  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (Core.K "3", [])), A.EQN ("y", (A.VCONAPP (Core.K "4", [])), A.ARROWALPHA (A.NAME "y"))))))
+  val unsolvable2  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "y"))))))
+
+  val () = Unit.checkExnWith A.valString "solving unsolvable"
+          (fn () => solveempty unsolvable)
+
+  val () = Unit.checkExnWith A.valString "solving unsolvable"
+          (fn () => solveempty unsolvable2)
+
 (* 
     val () = Unit.checkA.EXpectWith valString "translating psome"
           (fn () => evalempty (vmOfP psome))

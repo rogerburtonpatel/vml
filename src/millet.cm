@@ -16,6 +16,8 @@ group is
   error-module.sml
   (* **** languages **** *)
   core-lang.sml
+  vminus-noalpha.sml
+  vminus-arrow.sml
   decision-tree.sml
   (****** VML ******)
   vminus.sml
@@ -35,4 +37,3 @@ group is
 
   test-guard-sort.sml
   vminus-test.sml
-  
