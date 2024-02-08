@@ -2,9 +2,9 @@
 \ProvidesPackage{vmlmacros}[2011/02/23 v1.0 Custom VML macros.]
 % Thank you Norman Ramsey and Cheng Shao for the foundation needed for these!
 \RequirePackage{amsmath}
-\RequirePackage[top=0.2in,bottom=0.3in]{geometry}
+\RequirePackage{geometry}
 \RequirePackage{amsthm}
-\RequirePackage{amssymb}
+% \RequirePackage{amssymb}
 \RequirePackage{tikz}
 \RequirePackage{graphicx}
 \RequirePackage{ebproof}
@@ -224,9 +224,6 @@
 
     % rough opsem-based stuff: to change
 \newcommand{\br}[1]{\langle #1 \rangle}
-\newcommand{\state}[4]{\langle {#1,#2,#3,#4} \rangle}
-\newcommand{\evalr}[2][{}]{\state{#2}{\xi#1}{\phi}{\rho#1}}
-
 
 % Listings color 
 \definecolor{eclipseBlue}{RGB}{42,0.0,255}
