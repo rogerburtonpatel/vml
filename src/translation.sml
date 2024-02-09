@@ -20,12 +20,13 @@ struct
               | P.VCONAPP (vc, es) => VM.VCONAPP (vc, List.map vmOfP es)
               | P.FUNAPP (e1, e2)  => VM.FUNAPP (vmOfP e1, vmOfP e2)
               | P.CASE (scrutinee, branches) => 
-                let val e' = vmOfP scrutinee 
+                let val freshNameGen = FreshName.freshNameGenGen ()
+                    val e' = vmOfP scrutinee 
                         (* val _ = print ((VM.expString e') ^ "\n") *)
                     val (pats, rhss) = ListPair.unzip branches 
                     val (alreadyName, name) = 
                           (case e' of VM.NAME n => (true, n) 
-                                    | _ => (false, FreshName.freshname ()))
+                                    | _ => (false, freshNameGen ()))
                     (* simply make a pattern look like an equation *)
                     fun translateTlPat (P.PAT p) = translatePat p
                       | translateTlPat _ = Impossible.unimp "todo"
@@ -66,12 +67,13 @@ struct
               | P.VCONAPP (vc, es) => VMS.VCONAPP (vc, List.map vmSimpleOfP es)
               | P.FUNAPP (e1, e2)  => VMS.FUNAPP (vmSimpleOfP e1, vmSimpleOfP e2)
               | P.CASE (scrutinee, branches) => 
-                let val e' = vmSimpleOfP scrutinee 
+                let val freshNameGen = FreshName.freshNameGenGen ()
+                    val e' = vmSimpleOfP scrutinee 
                         (* val _ = print ((VMS.expString e') ^ "\n") *)
                     val (pats, rhss) = ListPair.unzip branches 
                     val (alreadyName, name) = 
                           (case e' of VMS.NAME n => (true, n) 
-                                    | _ => (false, FreshName.freshname ()))
+                                    | _ => (false, freshNameGen ()))
                     (* simply make a pattern look like an equation *)
                     fun translateTlPat (P.PAT p) = translatePat p
                       | translateTlPat _ = Impossible.unimp "todo"
@@ -131,7 +133,7 @@ struct
     let fun treeOfGuardedExp (VM.ARROWALPHA e)   = D.MATCH (translateExp e)
           | treeOfGuardedExp (VM.EXISTS (n, g')) = treeOfGuardedExp g'
           | treeOfGuardedExp (VM.EXPSEQ (e, g')) = 
-              let val freshname = FreshName.freshname () 
+              let val freshname = FreshName.freshNameGenGen () ()
                   val (fail : D.exp) = raise Todo "failure"
               in 
               D.LET (freshname, translateExp e, D.IF (freshname, treeOfGuardedExp g', treeOfGs gs))

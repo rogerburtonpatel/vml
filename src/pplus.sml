@@ -31,6 +31,15 @@ struct
                       | CONAPP of name * pattern list 
   datatype def = DEF of name * exp
 
+  (* fun eval rho e = 
+    case e 
+      of NAME n => Env.find rho n 
+       | VCONAPP (Core.TRUE,  []) => Core.TRUE 
+       | VCONAPP (Core.FALSE, []) => Core.FALSE 
+       | VCONAPP (Core.K n, es)   => Core.K (n, map (eval rho) es)
+       | VCONAPP _ => 
+               raise Impossible.impossible "erroneous vcon argument application" *)
+
   fun expString (NAME n) = n
     | expString (CASE (e, branches)) = 
       let 

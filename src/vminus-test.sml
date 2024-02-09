@@ -56,12 +56,12 @@ structure VMTest = struct
   val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
   (* val _ = print ((A.A.EXpString (vmOfP pempty)) ^ "\n") *)
   val psome = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [
-    (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"]), P.NAME "x")
+    (P.PAT (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"])), P.NAME "x")
   ])
 
 (* todo freshname issue here *)
     val () = Unit.checkExpectWith A.expString "translating psome"
-          (fn () => T.vmOfP psome)
+         (fn () => T.vmOfP psome)
          (T.vmOfP psome)
 
   val () = print (

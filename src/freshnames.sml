@@ -1,11 +1,13 @@
 structure FreshName :> sig 
-val freshname : unit -> string
+  val freshNameGenGen : unit -> (unit -> string)
+  (* returns a fresh name generator *)
 end 
   =
 struct 
 
-  val counter = ref 0
-
-  fun freshname () = (counter := !counter + 1 ; "__x" ^ Int.toString (!counter))
+  fun freshNameGenGen () = 
+    let val counter = ref 0 
+    in fn () => (counter := !counter + 1 ; "__x" ^ Int.toString (!counter))
+    end 
 
 end
