@@ -10,7 +10,9 @@ structure Core :> sig
                   | IF_THEN_ELSE of core_exp * core_exp * core_exp 
                   | LAMBDA of name * core_exp 
                   | FUNAPP of core_exp * core_exp 
+
   val evalcore        : core_value Env.env -> core_exp -> core_value
+  val eqval           : core_value * core_value -> bool
   val boolOfCoreValue : core_value -> bool 
   val strOfCoreExp    : core_exp -> string 
   val strOfCoreValue  : core_value -> string 
@@ -70,4 +72,6 @@ struct
   fun strOfCoreValue (VCON (v, vals)) = strBuilderOfVconApp strOfCoreValue v vals 
 
 
+  fun eqval (VCON (v1, vs), VCON (v2, vs'))     = 
+      v1 = v2 andalso ListPair.all eqval (vs, vs')
 end
