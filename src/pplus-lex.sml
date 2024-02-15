@@ -13,6 +13,7 @@ structure PplusLex : sig
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
+    | RESERVED of string
 
     (* must do one line at a time *)
   val token : token LexerCombinators.producer
@@ -55,6 +56,7 @@ struct
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
+    | RESERVED of string
 
   fun bracketLexer token
     =  char #"(" >> succeed (LEFT  ROUND)
@@ -119,12 +121,12 @@ struct
     | rightString CURLY = "}"
 
 
-  fun tokenString QUOTE     = Char.toString (chr(96))
-    | tokenString (VCON n)  = n
-    | tokenString (NAME n)  = n
-    | tokenString (LEFT b)  = leftString b
-    | tokenString (RIGHT b) = rightString b
-
+  fun tokenString QUOTE        = Char.toString (chr(96))
+    | tokenString (VCON n)     = n
+    | tokenString (NAME n)     = n
+    | tokenString (LEFT b)     = leftString b
+    | tokenString (RIGHT b)    = rightString b
+    | tokenString (RESERVED s) = s
 end
 
 
