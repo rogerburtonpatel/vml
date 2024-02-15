@@ -46,22 +46,24 @@ fun duplicatename [] = NONE
         duplicatename xs
 (* <boxed values 96>=                           *)
 val _ = duplicatename : name list -> name option
-fun disjointUnion (envs: 'a Env.env list) =
+(* fun disjointUnion (envs: 'a Env.env list) =
   let val env = Env.concat envs
   in  case duplicatename (map fst env)
         of NONE => env
          | SOME x => raise DisjointUnionFailed x
-  end
+  end *)
 
   exception Doesn'tMatch
 
-  fun match (CONAPP (k, ps), Core.VCON (Core.K k', vs)) =
+  (* fun match (CONAPP (k, ps), Core.VCON (Core.K k', vs)) =
      if k = k' then
        disjointUnion (ListPair.mapEq match (ps, vs))
      else
        raise Doesn'tMatch
   | match (CONAPP _, _) = raise Doesn'tMatch
-  | match (PNAME x,   v) = Env.bind (x, v, Env.empty)
+  | match (PNAME x,   v) = Env.bind (x, v, Env.empty) *)
+
+
 (* <boxed values 147>=                          *)
 (* val _ = op match         : pat * value -> value env (* or raises Doesn'tMatch *)
 val _ = op disjointUnion : 'a env list -> 'a env *)
@@ -82,17 +84,19 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function")
 
-      | CASE (ex, (p, e) :: choices) =>
-          let val scrutinee = eval rho ex
+      | CASE (ex, (p, e) :: choices) => Impossible.unimp "eval case"
+          (* let val scrutinee = eval rho ex *)
 
         (* val _ = op match : pat * value -> value env
         val _ = op <+>   : 'a env * 'a env -> 'a env *)
-             val rho' = match (p, v)
+            
+             (* val rho' = match (p, v)
              in  eval (e, rho <+> rho')
              end
              handle Doesn'tMatch => eval rho (CASE (LITERAL v, choices))
         | CASE (_, []) =>
-            raise Match
+            raise Match *)
+
         (* <more alternatives for [[ev]] for \nml\ and \uml>= *)
                 (* | ev (CASE (LITERAL v, 
                         (p, e) :: choices)) =
@@ -111,7 +115,7 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
                         patString (hd ps) ^ 
                             (foldr (fn (p, acc) => "| " ^ patString p ^ acc) "" 
                             (tl ps))
-            | tlpatString (PATGUARD (tlp, steps, res)) = Impossible.unimp "todo"
+            | tlpatString (PATGUARD (tlp, steps)) = Impossible.unimp "todo"
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
                                 Core.strBuilderOfVconApp patString (Core.K n) ps
@@ -126,5 +130,6 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
           end
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
+
 
 end 
