@@ -20,7 +20,7 @@ structure VMinusSimple :> sig
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
                       | EQN    of name * exp * guarded_exp
-  and value = VCON of Core.vcon * value list | LAMBDA of name * exp 
+  type value = exp Core.core_value
   datatype result = VAL of value | REJECT (* guarded_exps return results *)
 
 
@@ -59,16 +59,16 @@ struct
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
                       | EQN    of name * exp * guarded_exp
-  and value = VCON of Core.vcon * value list | LAMBDA of name * exp 
+  type value = exp Core.core_value
   datatype result = VAL of value | REJECT (* guarded_exps return results *)
 
 
   datatype def = DEF of name * exp
 
-  fun boolOfValue (VCON FALSE) = false 
-    | boolOfValue _              = true
+  fun boolOfValue (Core.VCON FALSE) = false 
+    | boolOfValue _                 = true
 
-  fun eqval (VCON (v1, vs), VCON (v2, vs'))     = 
+  fun eqval (Core.VCON (v1, vs), Core.VCON (v2, vs'))     = 
       v1 = v2 andalso ListPair.all eqval (vs, vs')
     | eqval (_, _) =  false 
 
@@ -89,8 +89,8 @@ struct
     | optExpString    NONE    = "NONE"
 
 
-  fun valString (VCON (n, vs)) = Core.strBuilderOfVconApp valString n vs 
-    | valString (LAMBDA (x, body)) = 
+  fun valString (v as (Core.VCON (n, vs))) = Core.strOfCoreValue v
+    | valString (Core.LAMBDA (x, body)) = 
         Char.toString (chr 92) ^ x ^ ". " ^ expString body
 
   fun optValStr v = optString valString v
@@ -156,7 +156,7 @@ val stuck : lvar_env -> exp ->  bool =
                 then  let fun builder rest = buildRest (EXPSEQ (e, rest)) 
                       in  chooseAndSolve rho g' builder status
                       end
-                else (case eval rho e of VCON FALSE => REJ
+                else (case eval rho e of Core.VCON FALSE => REJ
                                       | _ => OK (g', rho, buildRest, CHANGED))
               | EQN (n, e, g') => 
                 let val nstuck   = stuck rho (NAME n)
@@ -198,7 +198,7 @@ val stuck : lvar_env -> exp ->  bool =
                   then if (eqval ((valOf nval), v)) then OK rho else REJ
                   else OK (Env.bind (n, SOME v, rho))
                 end 
-            | (VCONAPP (Core.K n, es), VCON (Core.K n', vs)) => 
+            | (VCONAPP (Core.K n, es), Core.VCON (Core.K n', vs)) => 
                 if n <> n'
                   orelse List.length es <> List.length vs
                 then REJ 
@@ -255,14 +255,14 @@ val stuck : lvar_env -> exp ->  bool =
             | IF_FI (g::gs) => (case solve rho g
                                   of VAL v => v
                                   | REJECT => eval rho (IF_FI gs))
-            | VCONAPP (Core.TRUE,  []) => VCON (Core.TRUE, [])
-            | VCONAPP (Core.FALSE, []) => VCON (Core.FALSE, []) 
-            | VCONAPP (Core.K n, es)   => VCON (Core.K n, map (eval rho) es)
+            | VCONAPP (Core.TRUE,  []) => Core.VCON (Core.TRUE, [])
+            | VCONAPP (Core.FALSE, []) => Core.VCON (Core.FALSE, []) 
+            | VCONAPP (Core.K n, es)  => Core.VCON (Core.K n, map (eval rho) es)
             | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
             | FUNAPP (fe, param) => 
               (case eval rho fe 
-                of LAMBDA (n, b) => 
+                of Core.LAMBDA (n, b) => 
                   let val arg = eval rho param
                       val rho' = Env.bind (n, SOME arg, rho)
                     in eval rho' b

@@ -16,6 +16,8 @@ structure Env :> sig
   val <+> : 'a env * 'a env -> 'a env  (* BPC, chap 5 *)
   val merge : ('a * 'a -> 'a) -> 'a env * 'a env -> 'a env
               (* resolver function *)
+  val concat : 'a env list -> 'a env
+
 end
   =
 struct
@@ -60,6 +62,8 @@ struct
       if not (binds (rho, n1))
       then (n1, x)::(merge resolver (xs, rho))
       else (n1, resolver (x, find (n1, rho)))::(merge resolver (xs, rho))
+
+  val concat = List.concat
 
 end
   

@@ -1,6 +1,7 @@
 %%
 \documentclass[manuscript,screen,review]{acmart}
-\usepackage{../syntax-and-judgement/vmlmacros}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
 \AtBeginDocument{%
   \providecommand\BibTeX{{%
     \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}

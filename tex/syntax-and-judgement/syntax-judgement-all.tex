@@ -543,4 +543,135 @@ the singleton sequence containing $x$.
     {\veval{\ealpha[1]\; \ealpha[2]}{\valpha}}
 \]
 
+\section{Forms of Judgement for \Pplus}
+\begin{tabular}{ll}
+    \toprule
+        \multicolumn2{l}{\emph{Metavariables}} \\
+    \midrule
+        % $v, \; v'$& value \\
+        \valpha& a metavalue produced from evaluating $\alpha$. \\
+        $eq$& equation \\ 
+        % $\tempstuck$& a temporarily-stuck equation \\
+        $\reject$& equation rejection \\
+        $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
+        rejection\\
+        \Rho& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+        $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
+        $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
+        $\ealpha$& An expression \\ 
+        $\galpha$& A guarded expression \\
+        % \uppsidown& Inability to compile to a decision tree; a compile time error \\
+    \bottomrule
+    \end{tabular}    
+    
+    \bigskip
+    
+    \begin{tabular}{ll}
+        \toprule
+            \multicolumn2{l}{\emph{Sequences}} \\
+        \midrule
+            $\emptyseq$& the empty sequence \\
+            $S_1 \cdot S_2 $&  Concatenate sequence $S_1$ and sequence $S_2$ \\
+            $x \cdot S_2 $& Cons $x$ onto sequence $S_2$ \\
+        \bottomrule
+        \end{tabular}    
+        
+        \medskip
+        
+        % \mkjudgementcmd{EquationSuccess}{\vtuple{\rho, eq}}{\rhohat REMOVE THIS}
+        % \mkjudgementcmd{EquationTempStuck}{\vtuple{\rho, eq}}{\tempstuck}
+        % \mkjudgementcmd{EquationReject}{\vtuple{\rho, eq}}{reject}
+    
+        % \showvjudgement{EquationSuccess}{\EquationSuccess}
+        % \showvjudgement{EquationTempStuck}{\EquationTempStuck}
+        % \showvjudgement{EquationReject}{\EquationReject}
+        
+        
+        
+        
+        % Success only refines the environment; that~is, when
+        % ${\vtuple{\rho, e}} \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
+        
+        
+    
+        
+        \subsection{Expressions}
+        
+        % \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
+        core Verse evaluates to produce possibly-empty sequence of values. In
+        \Vminus, values depend on the form of abstract expression $\alpha.$ If
+        $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
+        it is an ML-like expression, it will be a single value. 
+        
+        A guarded expression evaluates to produce a \bf{result}. A result is either
+        a metavalue \valpha ~or reject. 
+        
+        \[\it{r} \; \rm{::=} \; \vartheta \;|\; \reject \]
+        
+        \showvjudgement{Eval-Alpha}{\veval{\alpha}{\valpha}}
+        \showvjudgement{Eval-AlphaExpr}{\veval{\ealpha}{\valpha}}
+        \showvjudgement{Eval-Guarded-Expr}{\vmrun}
+        
+        % \bigskip
+        % If a guarded expression cannot be evaluated without producing logical 
+        % variables at runtime, it cannot be expressed as a decision tree. 
+        % This notation indicates this failure (think of \uppsidown as a fallen 
+        % tree), which results in a compile-time error. 
+        % \showvjudgement{NoTree}{\GNoTree}
+        
+        \bigskip
+    \subsection{Equations}
+    
+    In \Vminus, we solve equations (intermediate computations in a guarded
+    expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
+    authors of the original Verse paper: we pick one, attempt to solve for it, and
+    move on. 
+    
+    \rab{How do we express that \Vminus semantics preclude backtracking/logical 
+    variables at runtime?}
+    
+    Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
+    ~will either refine the environment ($\Rhoprime$) or lead to failure. We use
+    the metavariable $\dagger$ to represent failure, and an equation failing will
+    cause the top-level guarded expression to evaluate to \reject. 
+    
+    \showvjudgement{Eq-Refine}\eqrefine
+    \showvjudgement{Eq-Fail}\eqfail
+        
+        
+        \section{Sequences}
+        
+        The trivial sequence is \emptyseq. Sequences can be concatenated with infix 
+    $\cdot$. In an appropriate context, a value like $x$ stands for 
+    the singleton sequence containing $x$. 
+    
+    \begin{align*}
+        \emptyseq \cdot \ys &\equiv \ys \\
+        \ys \cdot \emptyseq &\equiv \ys \\
+        (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
+    \end{align*}
+
+
+\section{Semantics of \Pplus}
+
+\begin{itemize}
+    \item Need a new judgement form for top-level patterns?
+    \item Or, when, guards
+\end{itemize}
+
+\[
+\inferrule*[Left=\textsc{ (Case-Match) }]
+    {\vmrun[] \Downarrow \vartheta}
+    {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Case-Recurse) }]
+    {\inferrule* {}
+    {\vmrun[result=\reject]}
+    \and 
+    \veval{\iffi{\dots}}{\vartheta}}
+    {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
+\]
+
 \end{document}

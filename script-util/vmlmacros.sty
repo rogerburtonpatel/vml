@@ -4,7 +4,7 @@
 \RequirePackage{amsmath}
 \RequirePackage{geometry}
 \RequirePackage{amsthm}
-% \RequirePackage{amssymb}
+\RequirePackage{amssymb}
 \RequirePackage{tikz}
 \RequirePackage{graphicx}
 \RequirePackage{ebproof}
@@ -196,12 +196,16 @@
   {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
-
+   
 \newcommand\vmrung[1][]{%  run V-minus code with normal g
+   {\setkeys{state}{#1}%
+   \let\c=\component
+   \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guard} \Downarrow \c{result}}}}
+   
+\newcommand\prun[1][]{%  run P-plus code
   {\setkeys{state}{#1}%
-  \let\c=\component
-  \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guard} \Downarrow \c{result}}}}
- 
+    \let\c=\component
+    \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
 
 \newcommand\eqrefine[1][]{%  equation refines environment
   {\setkeys{state}{#1}%
