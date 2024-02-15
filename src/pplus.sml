@@ -84,7 +84,8 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function")
 
-      | CASE (ex, (p, e) :: choices) => Impossible.unimp "eval case"
+      | CASE (ex, (p, rhs) :: choices) => Impossible.unimp "eval case"
+      | CASE _ => Impossible.unimp "eval case"
           (* let val scrutinee = eval rho ex *)
 
         (* val _ = op match : pat * value -> value env
