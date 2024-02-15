@@ -4,7 +4,7 @@ structure LexerCombinators =
                   val show = StringEscapes.quote o implode
                  )
 
-structure PplusLex : sig
+structure VMinusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
 
   datatype token
