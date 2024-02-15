@@ -35,9 +35,9 @@ group is
   translation.sml
   test-guard-sort.sml
   vminus-test.sml
-  pplus-parse.sml
-  vminus-parser.sml
   producer.sml
   pplus-lex.sml
+  pplus-parse.sml
+  vminus-parser.sml
   vminus-lex.sml
   vminus-parse.sml
