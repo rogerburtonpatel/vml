@@ -41,3 +41,6 @@ group is
   vminus-parser.sml
   vminus-lex.sml
   vminus-parse.sml
+
+  languages.sml
+  uft.sml

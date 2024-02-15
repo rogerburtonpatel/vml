@@ -15,7 +15,6 @@ structure Main = struct
 
   val () = Unit.report ()
 
-(* 
   fun usage () =
     ( app eprint ["Usage:\n  ", arg0, " <from>-<to> [file]\n"]
     ; app eprint ["where <from> and <to> are one of these languages:\n"]
@@ -24,7 +23,6 @@ structure Main = struct
     ; OS.Process.exit OS.Process.failure
     )
 
-  
   fun run f stream = f (stream, TextIO.stdOut)
   fun errorApp f [] = Error.OK ()
     | errorApp f (x::xs) = Error.>>= (f x, fn _ => errorApp f xs)
@@ -62,6 +60,6 @@ structure Main = struct
                    Languages.description from, "\n  to ",
                    Languages.description to, "\n"]
       ; OS.Process.exit OS.Process.failure
-      ) *)
+      )
 
 end
