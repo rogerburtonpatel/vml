@@ -46,8 +46,12 @@ struct
   (**** Reader functions ****)
 
   val pplusOfFile : instream -> PPlus.def list error =
-    Impossible.unimp "parsing"
-
+    lines                    (* line list *)
+    >>> map PplusLex.tokenize_line  (* token list error list *)
+    >>> Error.list           (* token list list error *)
+    >>> Error.map List.concat (* token list error *)
+    >=> PplusParse.parse       (* def list error *)    
+    
   fun AST_P_of PPLUS = pplusOfFile
     | AST_P_of  _    = raise Backward
 

@@ -1,5 +1,5 @@
 structure PplusParse : sig
-  val parse    :  string -> PplusLex.token list Error.error
+  val parse    :  PplusLex.token list -> PPlus.def list Error.error
 end = struct
   fun parse tokens = Impossible.unimp "parser"
 end
