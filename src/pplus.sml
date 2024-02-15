@@ -15,6 +15,7 @@ structure PPlus :> sig
   datatype def = DEF of name * exp
 
   val expString : exp -> string
+  val defString : def -> string
 end 
   = 
 struct 
@@ -132,5 +133,6 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
 
+  fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
 end 
