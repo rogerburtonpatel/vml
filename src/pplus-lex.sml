@@ -87,7 +87,15 @@ struct
   fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};" c
 
 
-  fun atom x = NAME x
+  val reserved = ["val", "=", "case", "\\", ".", "of", "|", "->", "when", ";", "parse"]
+
+  fun atom x =
+    if List.exists (fn y => y = x) reserved then
+        RESERVED x
+    else if Char.isUpper (String.sub (x, 0)) then
+        VCON x
+    else
+        NAME x
 
   val whitespace = many (sat Char.isSpace one)
 
@@ -122,36 +130,9 @@ struct
 
 
   fun tokenString QUOTE        = Char.toString (chr(96))
-    | tokenString (VCON n)     = n
-    | tokenString (NAME n)     = n
+    | tokenString (VCON n)     = "vcon " ^ n
+    | tokenString (NAME n)     = "name " ^ n
     | tokenString (LEFT b)     = leftString b
     | tokenString (RIGHT b)    = rightString b
-    | tokenString (RESERVED s) = s
+    | tokenString (RESERVED s) = "reserved word " ^ s
 end
-
-
-
-(* structure OldPplusLex : sig
-  val tokenize : string -> string list
-  val parse    : string list -> PPlus.def list
-end = struct
-
-
-  fun isDelimiter c =
-    Char.isSpace c orelse Char.isAlphaNum c orelse Char.contains "([{,;)}]" c
-
-  fun tokenizeHelper acc lexeme rest =
-    case rest of
-      [] => List.rev (lexeme :: acc)
-    | c::cs =>
-        if isDelimiter c then
-          if lexeme = "" then tokenizeHelper acc (Char.toString c) cs
-          else tokenizeHelper (lexeme :: acc) (Char.toString c) cs
-        else
-          tokenizeHelper acc (lexeme ^ Char.toString c) cs
-
-  fun tokenize input =
-    tokenizeHelper [] "" (String.explode input)
-
-  fun parse tokens = Impossible.unimp "parser"
-end *)

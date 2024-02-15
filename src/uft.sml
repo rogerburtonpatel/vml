@@ -55,8 +55,12 @@ struct
   fun AST_P_of PPLUS = pplusOfFile
     | AST_P_of  _    = raise Backward
 
-  fun emitAST_P outfile _ =
-    TextIO.output(outfile, "If only I could see this tree.\n")
+  fun emitAST_P outfile =
+    app (fn d => ( TextIO.output(outfile, "\n")
+                 ; TextIO.output(outfile, PPlus.defString d)
+                 ; TextIO.output(outfile, "\n")
+                 ))
+
 
   (**** The Universal Forward Translator ****)
 

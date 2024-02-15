@@ -18,7 +18,7 @@ end = struct
   infixr 4 <$>     val op <$> = P.<$>
   infix 3 <~>      val op <~> = P.<~>
   infix 1 <|>      val op <|> = P.<|>
-  infix 3 >>        val op >> = P.>>
+  infix 5 >>        val op >> = P.>>
 
   val succeed = P.succeed
   val curry = P.curry
@@ -49,19 +49,39 @@ end = struct
 
   type 'a parser = 'a P.producer
 
-  infix 5 *>
-  fun p1 *> p2 = curry snd <$> p1 <*> p2
-  val op *> : 'a parser * 'b parser -> 'b parser = op *>
+  fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
+
+  fun barSeparated p = curry op :: <$> p <*> many (reserved "|" >> p)
+
+  val pattern = P.fix (fn pattern =>
+               A.PNAME  <$> name
+     <|> curry A.CONAPP <$> vcon <*> many pattern
+     <|> bracketed pattern
+      )
+
+  val topLevelPattern = A.PAT <$> pattern
 
 
+  fun choice exp = P.pair <$> topLevelPattern <*> reserved "->" >> exp
 
 
+  fun lookfor s p = P.ofFunction (fn tokens => (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
 
-  val exp =
-    A.NAME <$> name
+
+  val exp = P.fix (fn exp => 
+              A.NAME <$> name
+    <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp)
+    <|> bracketed exp
+     )
+  
 
   val def = 
-    reserved "val" *> (curry A.DEF <$> name <*> (reserved "=" *> exp))
+        reserved "val" >> (curry A.DEF <$> name <*> (reserved "=" >> exp))
+(*
+     -- dirty trick for testing
 
-  val parse = P.produce (many def)
+    <|> reserved "parse" >> exp >> P.succeed (A.DEF ("z", A.NAME "z"))
+*)
+
+  val parse = P.produce (curry fst <$> many def <*> eos)
 end

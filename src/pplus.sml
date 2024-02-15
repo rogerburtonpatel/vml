@@ -117,7 +117,7 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
                         patString (hd ps) ^ 
                             (foldr (fn (p, acc) => "| " ^ patString p ^ acc) "" 
                             (tl ps))
-            | tlpatString (PATGUARD (tlp, steps)) = Impossible.unimp "todo"
+            | tlpatString (PATGUARD (tlp, steps)) = Impossible.unimp "todo patguard"
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
                                 Core.strBuilderOfVconApp patString (Core.K n) ps
