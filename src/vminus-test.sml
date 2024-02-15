@@ -64,12 +64,12 @@ structure VMTest = struct
          (fn () => T.vmOfP psome)
          (T.vmOfP psome)
 
-  val () = print (
+  (* val () = print (
     "Pplus expression \n" ^ P.expString psome ^ "\n"
     ^ "translates to VminusSimple expression \n"
     ^ VMS.expString (T.vmSimpleOfP psome)
     ^ "\n"
-  )
+  ) *)
 
   val unsolvable  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (Core.K "3", [])), A.EQN ("y", (A.VCONAPP (Core.K "4", [])), A.ARROWALPHA (A.NAME "y"))))))
   val unsolvable2  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "y"))))))

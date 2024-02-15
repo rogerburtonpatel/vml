@@ -158,9 +158,9 @@ val lamexp = EXISTS ("y",
               NAME "y")))
 
 
-val _ = (eval Env.empty failexp handle Fail => (print "fail\n" ; INT 0))
+(* val _ = (eval Env.empty failexp handle Fail => (print "fail\n" ; INT 0))
 val _ = print ((unparse choiceexp) ^ "\n")
 val _ = print ((unparseVal (eval Env.empty choiceexp)) ^ "\n")
 val _ = print ((unparse lamexp) ^ "\n")
-val _ = print ((unparseVal (eval Env.empty lamexp)) ^ "\n")
+val _ = print ((unparseVal (eval Env.empty lamexp)) ^ "\n") *)
 end 

@@ -115,9 +115,9 @@ struct
   val psome = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [
     (P.PAT (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"])), P.NAME "x")
   ])
-  val _ = print ((VM.expString (vmOfP psome)) ^ "\n")
+  (* val _ = print ((VM.expString (vmOfP psome)) ^ "\n") *)
 
-  val _ = print ((VM.valString (VM.eval Env.empty (vmOfP psome))) ^ "\n")
+  (* val _ = print ((VM.valString (VM.eval Env.empty (vmOfP psome))) ^ "\n") *)
 
 
 

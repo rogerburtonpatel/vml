@@ -302,7 +302,7 @@ val cycle_but_good_ge = (EXISTS (LV "x", EXISTS (LV "y", EQN (LV "x", NAME "y", 
 
 (* COMMENT TESTS BACK IN *)
 
-val () = print ((gexpString (fst cycle_ge)) ^ " sorts to " ^ (gexpString o sort_guard o fst) cycle_ge ^ "\n")
+(* val () = print ((gexpString (fst cycle_ge)) ^ " sorts to " ^ (gexpString o sort_guard o fst) cycle_ge ^ "\n") *)
 (* val () = print (gexpString (fst cycle_but_good_ge) ^ "\n")
 val () = print ( " sorts to " ^ (gexpString o sort_guard o fst) cycle_but_good_ge ^ "\n") *)
 
