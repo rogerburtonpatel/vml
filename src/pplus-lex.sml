@@ -17,7 +17,7 @@ structure PplusLex : sig
     (* must do one line at a time *)
   val token : token LexerCombinators.producer
   val tokenize_line : string -> token list Error.error
-
+  val tokenString : token -> string 
   val leftString  : bracket_shape -> string
   val rightString : bracket_shape -> string
 end
@@ -118,6 +118,12 @@ struct
     | rightString SQUARE = "]"
     | rightString CURLY = "}"
 
+
+  fun tokenString QUOTE     = Char.toString (chr(96))
+    | tokenString (VCON n)  = n
+    | tokenString (NAME n)  = n
+    | tokenString (LEFT b)  = leftString b
+    | tokenString (RIGHT b) = rightString b
 
 end
 
