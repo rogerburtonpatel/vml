@@ -12,8 +12,7 @@ group is
   ioutil.sml      (* convenience functions for I/O *)
   listutil.sml    (* list functions missing from Moscow ML *)
   Unit.sml
-  error-sig.sml
-  error-module.sml
+  error.sml
   freshnames.sml
   (* **** languages **** *)
   core-lang.sml

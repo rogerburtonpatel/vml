@@ -11,8 +11,7 @@ $(SML_LIB)/basis/basis.mlb
   ioutil.sml      
   listutil.sml    
   Unit.sml
-  error-sig.sml
-  error-module.sml
+  error.sml
   freshnames.sml
   
   core-lang.sml
