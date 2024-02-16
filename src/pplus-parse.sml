@@ -1,8 +1,8 @@
-structure PplusParse : sig
-  val parse    :  PplusLex.token list -> PPlus.def list Error.error
+structure PPlusParse : sig
+  val parse    :  PPlusLex.token list -> PPlus.def list Error.error
 end = struct
 
-  structure L = PplusLex
+  structure L = PPlusLex
   structure A = PPlus (* AST *)
 
   fun listShow _ [] = "[]"

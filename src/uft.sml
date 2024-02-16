@@ -47,10 +47,10 @@ struct
 
   val pplusOfFile : instream -> PPlus.def list error =
     lines                    (* line list *)
-    >>> map PplusLex.tokenize_line  (* token list error list *)
+    >>> map PPlusLex.tokenize_line  (* token list error list *)
     >>> Error.list           (* token list list error *)
     >>> Error.map List.concat (* token list error *)
-    >=> PplusParse.parse       (* def list error *)    
+    >=> PPlusParse.parse       (* def list error *)    
     
   fun AST_P_of PPLUS = pplusOfFile
     | AST_P_of  _    = raise Backward

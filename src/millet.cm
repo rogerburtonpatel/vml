@@ -4,7 +4,7 @@ group is
 
   (* **** basic infrastructure **** *)
 
-  impossible.sml
+  impossible.cm   (* analog of assertion failure *)
   escapes.sml     (* character escapes for string literals *)
 
   env.sml         (* environment abstraction *)
@@ -14,33 +14,33 @@ group is
   Unit.sml
   error-sig.sml
   error-module.sml
+  freshnames.sml
   (* **** languages **** *)
   core-lang.sml
   vminus-noalpha.sml
   vminus-arrow.sml
   decision-tree.sml
+  (****** The Alpha-Language ******)
+  alpha.sml 
   (****** VML ******)
   vminus.sml
   pplus.sml
   guard.sml
   guardsort.sml
-  (****** The Alpha-Language ******)
-  alpha.sml 
+  vminus.sml
 
-
-  main.sml
-
-  freshnames.sml
   verse.sml
-  translation.sml
   uverse.sml
 
+  translation.sml
   test-guard-sort.sml
   vminus-test.sml
-  pplus-parse.sml
-  vminus-parser.sml
   producer.sml
   pplus-lex.sml
+  pplus-parse.sml
+  vminus-parser.sml
   vminus-lex.sml
-  
   vminus-parse.sml
+
+  languages.sml
+  uft.sml
