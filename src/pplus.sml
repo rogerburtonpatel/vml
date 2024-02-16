@@ -6,7 +6,7 @@ structure PPlus :> sig
                | VCONAPP of vcon * exp list 
                | FUNAPP  of exp * exp 
       and toplevelpattern =   PAT of pattern 
-                            (* | WHEN   of toplevelpattern * exp *)
+                            | WHEN   of toplevelpattern * exp
                             | ORPAT of pattern list 
                             | PATGUARD of toplevelpattern * (pattern * exp list)
       and pattern =     PNAME of name
@@ -26,7 +26,7 @@ struct
                | VCONAPP of vcon * exp list 
                | FUNAPP  of exp * exp 
       and toplevelpattern =   PAT of pattern 
-                            (* | WHEN   of toplevelpattern * exp *)
+                            | WHEN   of toplevelpattern * exp
                             | ORPAT of pattern list 
                             | PATGUARD of toplevelpattern * (pattern * exp list)
       and pattern =     PNAME of name

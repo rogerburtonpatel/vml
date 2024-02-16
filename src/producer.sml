@@ -27,6 +27,7 @@ signature PRODUCER = sig
 
   val eos : unit producer   (* end of stream *)
   val one : input producer  (* one token *)
+  val peek : 'a producer -> 'a producer
 
   (* classic EBNF, plus "one or more" *)
   val optional : 'a producer -> 'a option producer
@@ -169,14 +170,23 @@ struct
 
   fun one [] = NONE
     | one (y :: ys) = SOME (E.OK y, ys)
+  
 
   fun eos []       = SOME (E.OK (), [])
     | eos (_ :: _) = NONE
 
   fun sat p tx xs =
     case tx xs
-      of answer as SOME (E.OK y, xs) => if p y then answer else NONE
+      of answer as SOME (E.OK y, xs) => if p y then answer else 
+      let val () = print "failed sat\n" in 
+      NONE end
        | answer => answer
+
+  fun peek t [] = NONE
+    | peek t (y :: ys) = 
+        case t (y::ys)
+          of answer as SOME (E.OK x, xs) => SOME (E.OK x, y::ys)
+            | answer => answer
 
   fun maybe f tx xs =
     case tx xs

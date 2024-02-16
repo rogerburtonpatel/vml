@@ -32,6 +32,7 @@ end = struct
   val many1 = P.many1
   val sat = P.sat
   val one = P.one
+  val peek = P.peek
   val notFollowedBy = P.notFollowedBy
   val eos = P.eos
   fun flip f x y = f y x
@@ -69,28 +70,56 @@ end = struct
       )
 
   val topLevelPattern = A.PAT <$> pattern
-
+  <|> A.ORPAT <$> barSeparated pattern
 
   fun choice exp = P.pair <$> topLevelPattern <*> reserved "->" >> exp
 
 
   fun lookfor s p = P.ofFunction (fn tokens => (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
 
+  fun isVcon x =
+    let val lastPart = List.last (String.fields (curry op = #".") x)
+        val firstAfterdot = String.sub (lastPart, 0) handle Subscript => #" "
+    in  Char.isUpper firstAfterdot orelse firstAfterdot = #"#" orelse
+        String.isPrefix "make-" x
+    end
+
+  val vcon = Core.K <$> (sat isVcon vcon)
+
+
+  (* turn any single- or multi-token string into a parser for that token *)
+  fun the s =
+        let fun matchtokens toks = 
+        case toks
+          of Error.OK (t::ts) => sat (P.eq t) one >> matchtokens (Error.OK ts)
+           | _ => (app eprint ["fail: `", s, "`\n"]; Impossible.impossible "non-token in P+ parser")
+        in matchtokens (PPlusLex.tokenize_line s)
+        end
+
 
   val exp = P.fix (fn exp => 
-              A.NAME <$> name
-    <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp)
-    <|> bracketed exp
+    A.NAME <$> name
+    <|>    curry A.VCONAPP Core.TRUE  <$> sat (fn s => s = "true")  name >> succeed []
+    <|> curry A.VCONAPP Core.FALSE <$> sat (fn s => s = "false") name >> succeed []
+    <|> curry A.VCONAPP <$> vcon <*> many exp
+        (* <|> curry A.VCONAPP Core.FALSE <$> the "false" >>  succeed [] *)
+    (* <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp) *)
+    (* <|> bracketed exp *)
      )
+  
+  val topLevelPattern = P.fix (fn tlp => 
+      topLevelPattern 
+  <|> curry A.WHEN <$> tlp <~> reserved "when" <*> exp
+  )
   
 
   val def = 
         reserved "val" >> (curry A.DEF <$> name <*> (reserved "=" >> exp))
-    <|> expected "definition"
+    <|> reserved "parse" >> exp >> P.succeed (A.DEF ("z", A.NAME "z"))
+    <|> peek one >> expected "definition"
 (*
      -- dirty trick for testing
 
-    <|> reserved "parse" >> exp >> P.succeed (A.DEF ("z", A.NAME "z"))
 *)
 
   val parse = P.produce (curry fst <$> many def <*> eos)

@@ -6,7 +6,6 @@ structure LexerCombinators =
 
 structure PPlusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
-
   datatype token
     = QUOTE
     | VCON    of string
@@ -58,6 +57,8 @@ struct
     | RIGHT of bracket_shape
     | RESERVED of string
 
+  val doublequote = Char.toString (chr 96)
+
   fun bracketLexer token
     =  char #"(" >> succeed (LEFT  ROUND)
    <|> char #"[" >> succeed (LEFT  SQUARE)
@@ -87,7 +88,8 @@ struct
   fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};" c
 
 
-  val reserved = ["val", "=", "case", "\\", ".", "of", "|", "->", "when", ";", "parse"]
+  val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
+                  "->", "when", ";", "parse"]
 
   fun atom x =
     if List.exists (fn y => y = x) reserved then
@@ -129,7 +131,7 @@ struct
     | rightString CURLY = "}"
 
 
-  fun tokenString QUOTE        = Char.toString (chr(96))
+  fun tokenString QUOTE        = doublequote
     | tokenString (VCON n)     = "vcon " ^ n
     | tokenString (NAME n)     = "name " ^ n
     | tokenString (LEFT b)     = leftString b
