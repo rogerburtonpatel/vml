@@ -5,8 +5,5 @@ compile := env TEXINPUTS=$(TEXINPUTS) latexmk -g -xelatex -pdf -output-directory
 
 .PHONY: all
 
-all: full.tex
-	$(compile) $^
-
 %.pdf : %.tex
 	$(compile) $^
