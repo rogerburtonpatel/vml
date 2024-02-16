@@ -8,9 +8,11 @@ end = struct
   fun listShow _ [] = "[]"
     | listShow show xs = "[" ^ String.concatWith ", " (map show xs) ^ "]"
 
+  val showTokens = listShow L.tokenString
+
   structure P = MkListProducer(val species = "parser"
                                type input = L.token
-                               val show = listShow L.tokenString)
+                               val show = showTokens)
 
   (* parsing-combinators boilerplate *)
 
@@ -49,6 +51,13 @@ end = struct
 
   type 'a parser = 'a P.producer
 
+  (* always-error parser; useful for messages *)
+  fun expected what =
+    let fun bads ts = Error.ERROR ("looking for " ^ what ^
+                                   ", got this input: " ^ showTokens ts)
+    in  P.check ( bads <$> many one )
+    end
+
   fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
 
   fun barSeparated p = curry op :: <$> p <*> many (reserved "|" >> p)
@@ -77,6 +86,7 @@ end = struct
 
   val def = 
         reserved "val" >> (curry A.DEF <$> name <*> (reserved "=" >> exp))
+    <|> expected "definition"
 (*
      -- dirty trick for testing
 
