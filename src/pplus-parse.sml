@@ -69,10 +69,7 @@ end = struct
      <|> bracketed pattern
       )
 
-  val topLevelPattern = A.PAT <$> pattern
-  <|> A.ORPAT <$> barSeparated pattern
-
-  fun choice exp = P.pair <$> topLevelPattern <*> reserved "->" >> exp
+  (* val topLevelPattern =  *)
 
 
   fun lookfor s p = P.ofFunction (fn tokens => (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
@@ -98,20 +95,20 @@ end = struct
 
 
   val exp = P.fix (fn exp => 
-    A.NAME <$> name
-    <|>    curry A.VCONAPP Core.TRUE  <$> sat (fn s => s = "true")  name >> succeed []
-    <|> curry A.VCONAPP Core.FALSE <$> sat (fn s => s = "false") name >> succeed []
-    <|> curry A.VCONAPP <$> vcon <*> many exp
-        (* <|> curry A.VCONAPP Core.FALSE <$> the "false" >>  succeed [] *)
-    (* <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp) *)
-    (* <|> bracketed exp *)
-     )
-  
-  val topLevelPattern = P.fix (fn tlp => 
-      topLevelPattern 
-  <|> curry A.WHEN <$> tlp <~> reserved "when" <*> exp
-  )
-  
+    let val topLevelPattern = P.fix (fn topLevelPattern => A.PAT <$> pattern
+            <|> A.ORPAT <$> barSeparated pattern
+            <|> curry A.WHEN <$> topLevelPattern <~> reserved "when" <*> exp)
+        fun choice e = P.pair <$> topLevelPattern <*> reserved "->" >> e
+    in 
+      A.NAME <$> name
+      (* <|>    curry A.VCONAPP Core.TRUE  <$> sat (fn s => s = "true")  name >> succeed []
+      <|> curry A.VCONAPP Core.FALSE <$> sat (fn s => s = "false") name >> succeed [] *)
+      <|> curry A.VCONAPP <$> vcon <*> many exp
+          (* <|> curry A.VCONAPP Core.FALSE <$> the "false" >>  succeed [] *)
+      <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp)
+      (* <|> bracketed exp *)
+     end )
+    
 
   val def = 
         reserved "val" >> (curry A.DEF <$> name <*> (reserved "=" >> exp))
