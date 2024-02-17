@@ -89,7 +89,9 @@ struct
 
 
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "when", ";", "parse"]
+                  "->", "when", ";", 
+                  (* debugging *)
+                  "parse", "pat"]
 
   fun atom x =
     if List.exists (fn y => y = x) reserved then

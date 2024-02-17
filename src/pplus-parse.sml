@@ -60,8 +60,9 @@ end = struct
     end
 
   fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
-
+(* XXX TODO case K of -> out of memory *)
   fun barSeparated p = curry op :: <$> p <*> many (reserved "|" >> p)
+  fun barSeparatedMulti p = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
   val pattern = P.fix (fn pattern =>
                A.PNAME  <$> name
@@ -94,17 +95,27 @@ end = struct
         end
 
 
-  val exp = P.fix (fn exp => 
-    let val topLevelPattern = P.fix (fn topLevelPattern => A.PAT <$> pattern
-            <|> A.ORPAT <$> barSeparated pattern
-            <|> curry A.WHEN <$> topLevelPattern <~> reserved "when" <*> exp)
+  val exp = P.fix (fn exp : A.exp P.producer => 
+    let 
+    val () = print ""
+    fun guard (e : A.exp P.producer) = P.pair <$> pattern <*> reserved "<-" >> e
+        val topLevelPattern = 
+        P.fix (fn topLevelPattern => 
+        let val () = print "" in 
+          (* curry A.PATGUARD <$> topLevelPattern <~> reserved ";" <*> many (guard exp) <|> *)
+            (* curry A.WHEN <$> topLevelPattern <~> reserved "when" <*> exp <|> *)
+            A.ORPAT <$> barSeparatedMulti pattern <|>
+            A.PAT <$> pattern <|>
+            bracketed topLevelPattern
+    end
+  )
         fun choice e = P.pair <$> topLevelPattern <*> reserved "->" >> e
     in 
-      A.NAME <$> name
-      (* <|>    curry A.VCONAPP Core.TRUE  <$> sat (fn s => s = "true")  name >> succeed []
-      <|> curry A.VCONAPP Core.FALSE <$> sat (fn s => s = "false") name >> succeed [] *)
+      (* curry A.VCONAPP Core.TRUE  <$> sat (fn s => s = "true")  name >> succeed [] *)
+      (* <|> curry A.VCONAPP Core.FALSE <$> sat (fn s => s = "false") name >> succeed [] *)
+      reserved "pat" >> topLevelPattern >> succeed (A.NAME "x")
+      <|> A.NAME <$> name
       <|> curry A.VCONAPP <$> vcon <*> many exp
-          (* <|> curry A.VCONAPP Core.FALSE <$> the "false" >>  succeed [] *)
       <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp)
       (* <|> bracketed exp *)
      end )

@@ -8,7 +8,7 @@ structure PPlus :> sig
       and toplevelpattern =   PAT of pattern 
                             | WHEN   of toplevelpattern * exp
                             | ORPAT of pattern list 
-                            | PATGUARD of toplevelpattern * (pattern * exp list)
+                            | PATGUARD of toplevelpattern * (pattern * exp) list
       and pattern =     PNAME of name
                       | CONAPP of name * pattern list 
   type value = exp Core.core_value
@@ -28,7 +28,7 @@ struct
       and toplevelpattern =   PAT of pattern 
                             | WHEN   of toplevelpattern * exp
                             | ORPAT of pattern list 
-                            | PATGUARD of toplevelpattern * (pattern * exp list)
+                            | PATGUARD of toplevelpattern * (pattern * exp) list
       and pattern =     PNAME of name
                       | CONAPP of name * pattern list 
   type value = exp Core.core_value
@@ -68,7 +68,8 @@ val _ = duplicatename : name list -> name option
 (* <boxed values 147>=                          *)
 (* val _ = op match         : pat * value -> value env (* or raises Doesn'tMatch *)
 val _ = op disjointUnion : 'a env list -> 'a env *)
-  fun eval (rho : value Env.env) e = 
+
+fun eval (rho : value Env.env) e = 
     case e 
       of NAME n => Env.find (n, rho)
        | VCONAPP (Core.TRUE,  []) => Core.VCON (Core.TRUE, [])
@@ -111,23 +112,31 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
     | expString (CASE (e, branches)) = 
       let 
           fun tlpatString (PAT p) = patString p
+            | tlpatString (WHEN (p, cond)) = tlpatString p ^ " when " ^ expString cond
             | tlpatString (ORPAT []) = Impossible.impossible "empty orpat"
             | tlpatString (ORPAT [_]) = Impossible.impossible "singleton orpat"
             | tlpatString (ORPAT ps) = 
                         patString (hd ps) ^ 
-                            (foldr (fn (p, acc) => "| " ^ patString p ^ acc) "" 
+                            (foldr (fn (p, acc) => " | " ^ patString p ^ acc) "" 
                             (tl ps))
-            | tlpatString (PATGUARD (tlp, steps)) = Impossible.unimp "todo patguard"
+            | tlpatString (PATGUARD (tlp, steps)) = 
+            tlpatString tlp ^ "; " ^ 
+            (foldl (fn ((pat, ex), acc) => 
+                    acc ^ expString ex ^ "<-" ^ patString pat ^ "\n") "" steps)
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
-                                Core.strBuilderOfVconApp patString (Core.K n) ps
+                                Core.strBuilderOfVconApp 
+                                  (fn (PNAME n') => n' 
+                                      | conapp => "(" ^ patString conapp ^ ")") 
+                                  (Core.K n) 
+                                  ps
           fun branchString (p, ex) = 
-                                     tlpatString p ^ " => " ^ expString ex
+                                     tlpatString p ^ " -> " ^ expString ex
           in "case " ^ expString e ^ " of " ^ 
           (if null branches 
           then "" 
           else branchString (hd branches) ^ 
-                (foldr (fn (br, acc) => "\n| " ^ branchString br ^ acc) "\n" 
+                (foldr (fn (br, acc) => "\n| " ^ branchString br ^ acc) "" 
                  (tl branches)))
           end
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es

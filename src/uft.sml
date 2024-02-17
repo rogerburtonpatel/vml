@@ -56,8 +56,7 @@ struct
     | AST_P_of  _    = raise Backward
 
   fun emitAST_P outfile =
-    app (fn d => ( TextIO.output(outfile, "\n")
-                 ; TextIO.output(outfile, PPlus.defString d)
+    app (fn d => ( TextIO.output(outfile, PPlus.defString d)
                  ; TextIO.output(outfile, "\n")
                  ))
 

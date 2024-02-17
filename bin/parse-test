@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# Purpose: tests vml parser
+# 
+
+## Usage: parse-test
+## 
+## 
+## author: rab
+## date: Sat Feb 17 02:51:17 EST 2024
+
+
+BASEDIR=$DIRVML
+SRC=$DIRVML/src
+TESTDIR=$BASEDIR/tests/`basename $0`
+
+
+
+build ()
+{
+    cd "$BASEDIR/src/"
+
+    output=`make 2>&1`
+    if [[ "$?" -ne "0" ]]; then
+        echo $output
+        echo "Exiting on compilation failure."
+        exit 1
+    fi
+
+
+}
+
+numtests=0
+numfail=0
+FAILING=1
+
+# for people wanting to make changes: $1, $2 are arguments to a function
+update_failure () { 
+    failure=$1
+    testname=$2
+    out=$3
+    
+    if [[ "$failure" -ne "0" ]]; then 
+        >&2 echo "Failed test $testname"
+        >&2 echo "Output: "
+        >&2 echo "$out"
+        numfail=$((numfail + 1))
+        return 1
+    fi
+    return 0
+    
+}
+
+run_one_test ()
+{
+    local operation=$1
+
+        numtests=$((numtests + 1))
+        out=$(bash -ce "$operation")
+        update_failure $? $file "$out"
+                                                  
+}
+
+shopt -s nullglob
+
+run_tests () {
+    for file in $TESTDIR/*.pp; do
+        run_one_test "diff <(vml-test pplus-astp $file 2>&1) <(vml-test pplus-astp $file| vml-test pplus-astp)"
+    done
+    if [[ "$numfail" -eq "0" ]]; then 
+        echo "All tests passed."
+    else 
+        numpassed=$((numtests - $numfail))
+        echo "$numpassed / $numtests tests passed. \
+See above output for details."
+        exit 1
+    fi
+}
+
+main () {
+    build 
+    run_tests
+}
+
+main
+
+shopt -u nullglob

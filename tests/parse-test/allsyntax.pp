@@ -1,0 +1,9 @@
+val x = x
+val x = K
+val x = case x of x -> x
+val x = case x of K -> x
+val x = case x of K x y -> x
+val x = case x of K x (K y z) -> z
+val x = case x of K x (K y z) | f -> x
+val x = case x of K x (K y z) -> x | f -> x
+val x = case x of K x (K y z) -> x | f | x -> x

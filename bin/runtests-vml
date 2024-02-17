@@ -1,0 +1,80 @@
+#!/bin/bash
+# 
+# Purpose: tests all vml code based on testing files in bin
+# 
+
+## Usage: runtests-vml
+## 
+## 
+## 
+## 
+## author: rab
+## date:  Sat Feb 17 03:04:05 EDT 2024
+
+BASEDIR=$DIRVML
+
+VMLDIR=$BASEDIR/src/
+BINDIR=$BASEDIR/bin
+TESTDIR=$BASEDIR/tests
+
+numtests=0
+numfail=0
+
+build ()
+{
+    cd "$BASEDIR/src/"
+    echo "Compiling..."
+    output=`make $2 2>&1`
+    if [[ "$?" -ne "0" ]]; then
+        echo $output
+        echo "Exiting on compilation failure."
+        exit 1
+    fi
+
+}
+
+update_failure () { 
+    failure=$1
+    testname=$2
+    out=$3
+    
+    if [[ "$failure" -ne "0" ]]; then 
+        >&2 echo "Failed testing module $testname"
+        >&2 echo "Output: "
+        >&2 echo "$out"
+        numfail=$((numfail + 1))
+        return 1
+    fi
+    return 0
+    
+}
+
+runtests ()
+{
+    for dir in $TESTDIR/*/; do
+        tester=$(basename $dir)
+        if [ -f $BINDIR/$tester ]; then 
+            echo "$tester"
+            numtests=$((numtests + 1))
+            out=$($tester)
+            update_failure $? "$tester" "$out"
+        fi
+    done
+
+    if [[ "$numfail" -eq "0" ]]; then 
+        echo "All testing modules passed."
+    else 
+        numpassed=$((numtests - $numfail))
+        echo "$numpassed / $numtests testing modules passed. \
+See above output for details."
+        exit 1
+    fi
+}
+
+main ()
+{
+    build
+    runtests
+}
+
+main

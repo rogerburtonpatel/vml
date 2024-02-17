@@ -177,9 +177,7 @@ struct
 
   fun sat p tx xs =
     case tx xs
-      of answer as SOME (E.OK y, xs) => if p y then answer else 
-      let val () = print "failed sat\n" in 
-      NONE end
+      of answer as SOME (E.OK y, xs) => if p y then answer else NONE 
        | answer => answer
 
   fun peek t [] = NONE

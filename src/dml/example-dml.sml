@@ -41,4 +41,3 @@ val () = Unit.checkExpectWith Unit.intString "decision tree 2"
 val () = Unit.checkExnWith Unit.intString "decision tree 3 - non-list"
          (fn () => len conthree)
 
-val () = Unit.report ()
