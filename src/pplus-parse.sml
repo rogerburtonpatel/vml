@@ -44,7 +44,8 @@ end = struct
   val vcon      = P.maybe (fn (L.VCON  n)    => SOME n  | _ => NONE) one
   val left      = P.maybe (fn (L.LEFT s) => SOME s  | _ => NONE) one
   val right      = P.maybe (fn (L.RIGHT s) => SOME s  | _ => NONE) one
-  fun reserved s = P.maybe (fn (L.RESERVED s') => if s = s' then SOME () else NONE | _ => NONE) one
+  fun reserved s = P.maybe (fn (L.RESERVED s') => if s = s' then SOME () 
+                                                  else NONE | _ => NONE) one
 
   fun token t = sat (P.eq t) one >> succeed () (* parse any token *)
 
@@ -65,15 +66,14 @@ end = struct
   fun barSeparatedMulti p = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
   val pattern = P.fix (fn pattern =>
-               A.PNAME  <$> name
-     <|> curry A.CONAPP <$> vcon <*> many pattern
-     <|> bracketed pattern
+      curry A.CONAPP <$> vcon <*> many pattern <|>
+      A.PNAME  <$> name <|> 
+      bracketed pattern
       )
 
-  (* val topLevelPattern =  *)
 
-
-  fun lookfor s p = P.ofFunction (fn tokens => (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
+  fun lookfor s p = P.ofFunction (fn tokens => 
+                  (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
 
   fun isVcon x =
     let val lastPart = List.last (String.fields (curry op = #".") x)
@@ -82,7 +82,10 @@ end = struct
         String.isPrefix "make-" x
     end
 
-  val vcon = Core.K <$> (sat isVcon vcon)
+  val vcon = 
+    sat (fn s => s = "false") vcon >> succeed Core.FALSE <|>
+    sat (fn s => s = "true" ) vcon >> succeed Core.TRUE  <|>
+    Core.K <$> (sat isVcon vcon)
 
 
   (* turn any single- or multi-token string into a parser for that token *)
@@ -90,45 +93,54 @@ end = struct
         let fun matchtokens toks = 
         case toks
           of Error.OK (t::ts) => sat (P.eq t) one >> matchtokens (Error.OK ts)
-           | _ => (app eprint ["fail: `", s, "`\n"]; Impossible.impossible "non-token in P+ parser")
+           | _ => (app eprint ["fail: `", s, "`\n"]; 
+                   Impossible.impossible "non-token in P+ parser")
         in matchtokens (PPlusLex.tokenize_line s)
         end
 
 
   val exp = P.fix (fn exp : A.exp P.producer => 
     let 
-    val () = print ""
     fun guard (e : A.exp P.producer) = P.pair <$> pattern <*> reserved "<-" >> e
         val topLevelPattern = 
         P.fix (fn topLevelPattern => 
-        let val () = print "" in 
-          (* curry A.PATGUARD <$> topLevelPattern <~> reserved ";" <*> many (guard exp) <|> *)
-            (* curry A.WHEN <$> topLevelPattern <~> reserved "when" <*> exp <|> *)
-            A.ORPAT <$> barSeparatedMulti pattern <|>
-            A.PAT <$> pattern <|>
-            bracketed topLevelPattern
-    end
+          A.PATGUARD <$> bracketed (P.pair <$> topLevelPattern 
+                           <~> succeed L.COMMA <*> many (guard exp)) <|>
+          A.WHEN <$> bracketed (P.pair <$> topLevelPattern 
+                          <~> reserved "when" <*> exp)            <|>
+          A.ORPAT <$> barSeparatedMulti pattern                   <|>
+          A.PAT   <$> pattern                                     <|>
+          bracketed topLevelPattern
   )
-        fun choice e = P.pair <$> topLevelPattern <*> reserved "->" >> e
+    fun choice e = P.pair <$> topLevelPattern <*> reserved "->" >> e
     in 
-      (* curry A.VCONAPP Core.TRUE  <$> sat (fn s => s = "true")  name >> succeed [] *)
-      (* <|> curry A.VCONAPP Core.FALSE <$> sat (fn s => s = "false") name >> succeed [] *)
-      reserved "pat" >> topLevelPattern >> succeed (A.NAME "x")
-      <|> A.NAME <$> name
-      <|> curry A.VCONAPP <$> vcon <*> many exp
-      <|> curry A.CASE <$> reserved "case" >> exp <*> reserved "of" >> barSeparated (choice exp)
-      (* <|> bracketed exp *)
+      reserved "pat" >> topLevelPattern >> succeed (A.NAME "x")   <|> 
+      curry A.VCONAPP <$> vcon <*> many exp                       <|> 
+      A.NAME <$> name                                             <|> 
+      curry A.CASE <$> reserved "case" >> exp <*> 
+                       reserved "of" >> barSeparated (choice exp) <|> 
+      bracketed exp
      end )
     
 
   val def = 
-        reserved "val" >> (curry A.DEF <$> name <*> (reserved "=" >> exp))
-    <|> reserved "parse" >> exp >> P.succeed (A.DEF ("z", A.NAME "z"))
-    <|> peek one >> expected "definition"
+        reserved "val"   >> (curry A.DEF <$> name <*> (reserved "=" >> exp)) <|>
+        reserved "parse" >> exp >> P.succeed (A.DEF ("z", A.NAME "z"))       <|>
+        peek one         >> expected "definition"
 (*
      -- dirty trick for testing
 
 *)
+  val parse = 
+  P.produce (curry fst <$> many def <*> eos)
 
-  val parse = P.produce (curry fst <$> many def <*> eos)
+  fun parse input = 
+  let val () = 
+  (
+    ()
+    ;app eprint ["reading from token stream: \n", String.concatWith ", " (map L.tokenString input), "\n"]
+  )
+  in P.produce (curry fst <$> many def <*> eos) input 
+  end
+
 end

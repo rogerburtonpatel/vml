@@ -8,6 +8,7 @@ structure PPlusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
   datatype token
     = QUOTE
+    | COMMA 
     | VCON    of string
     | NAME    of string
     | LEFT  of bracket_shape
@@ -42,6 +43,8 @@ struct
   val one = L.one
   val notFollowedBy = L.notFollowedBy
   val eos = L.eos
+  fun member x = List.exists (fn y => x = y)
+
 
   fun char c = L.sat (L.eq c) one
 
@@ -51,6 +54,7 @@ struct
 
   datatype token
     = QUOTE
+    | COMMA 
     | VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
@@ -89,14 +93,16 @@ struct
 
 
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "when", ";", 
+                  "->", "<-", "when", ",", 
                   (* debugging *)
-                  "parse", "pat"]
+                  "parse", "pat"
+                  ]
+  val predefvcons = ["true", "false"]
 
   fun atom x =
-    if List.exists (fn y => y = x) reserved then
+    if member x reserved then
         RESERVED x
-    else if Char.isUpper (String.sub (x, 0)) then
+    else if Char.isUpper (String.sub (x, 0)) orelse (member x predefvcons) then
         VCON x
     else
         NAME x
@@ -116,6 +122,7 @@ struct
     whitespace >>
     optional comment >>
     bracketLexer   (  char #"'" >> succeed QUOTE
+                  <|> char #"," >> succeed COMMA
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )
@@ -134,9 +141,12 @@ struct
 
 
   fun tokenString QUOTE        = doublequote
+    | tokenString COMMA        = ", "
     | tokenString (VCON n)     = "vcon " ^ n
     | tokenString (NAME n)     = "name " ^ n
     | tokenString (LEFT b)     = leftString b
     | tokenString (RIGHT b)    = rightString b
     | tokenString (RESERVED s) = "reserved word " ^ s
+
 end
+

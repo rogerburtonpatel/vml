@@ -58,8 +58,8 @@ struct
         let val vcss = foldr (fn (vc, acc) => " " ^ f vc ^ acc) "" vs
         in n ^ vcss
         end 
-    | (TRUE, [])  =>  "true"
-    | (FALSE, []) =>  "false"
+    | (TRUE, [])  =>  "base true"
+    | (FALSE, []) =>  "base false"
     | (TRUE, _)   =>  Impossible.impossible "true applied to args"
     | (FALSE, _)  =>  Impossible.impossible "false applied to args"
 

@@ -112,7 +112,8 @@ fun eval (rho : value Env.env) e =
     | expString (CASE (e, branches)) = 
       let 
           fun tlpatString (PAT p) = patString p
-            | tlpatString (WHEN (p, cond)) = tlpatString p ^ " when " ^ expString cond
+            | tlpatString (WHEN (p, cond)) = "(" ^ tlpatString p ^ ")" 
+                                              ^ " when " ^ expString cond
             | tlpatString (ORPAT []) = Impossible.impossible "empty orpat"
             | tlpatString (ORPAT [_]) = Impossible.impossible "singleton orpat"
             | tlpatString (ORPAT ps) = 
@@ -120,9 +121,9 @@ fun eval (rho : value Env.env) e =
                             (foldr (fn (p, acc) => " | " ^ patString p ^ acc) "" 
                             (tl ps))
             | tlpatString (PATGUARD (tlp, steps)) = 
-            tlpatString tlp ^ "; " ^ 
+            tlpatString tlp ^ ", " ^ 
             (foldl (fn ((pat, ex), acc) => 
-                    acc ^ expString ex ^ "<-" ^ patString pat ^ "\n") "" steps)
+                    acc ^ expString ex ^ " <- " ^ patString pat ^ "\n") "" steps)
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
                                 Core.strBuilderOfVconApp 

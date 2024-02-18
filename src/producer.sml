@@ -211,12 +211,15 @@ struct
     Option.map (fn (result, xs) => (Error.join result, xs)) (p xs)
 
   fun fix mk_p =
-    let fun diverge tokens = diverge tokens
+    let 
+        fun diverge tokens = diverge tokens
         val cell = ref diverge
         val parser = mk_p (fn ts => ! cell ts)
+
                       (* delay ! until after tokens are delivered,
                          therefore until after cell is updated *)
         val _ = cell := parser
+
     in  parser
     end
 
