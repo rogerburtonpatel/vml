@@ -65,7 +65,7 @@ shopt -s nullglob
 
 run_tests () {
     for file in $TESTDIR/*.pp; do
-        run_one_test "diff -w --ignore-blank-lines <(cat $file) <(vml-test pplus-astp $file 2>&1)"
+        run_one_test "diff -w --ignore-blank-lines <(cat $file) <(dtran pplus-astp $file 2>&1)"
     done
     if [[ "$numfail" -eq "0" ]]; then 
         echo "All tests passed."

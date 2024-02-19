@@ -1,0 +1,399 @@
+\documentclass[]{article}
+\usepackage{vmlmacros}
+\usepackage{syntax}
+\usepackage{relsize}
+% \usepackage{palatino} % I don't love this, to be honest. 
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{simplebnf}
+\setcounter{secnumdepth}{1}
+
+\DeclareMathOperator{\dom}{dom}
+
+
+% \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
+\setlength{\grammarindent}{10em} % increase separation between LHS/RHS
+\setlength{\parindent}{0cm}
+\title{Syntax and Semantics of \PPlus}
+\author{Roger Burtonpatel}
+\date{February 18th, 2024}
+\begin{document}
+
+\maketitle
+
+\section{Syntax}
+
+\subsection{The Core Language}
+
+We present a grammar of \PPlus: 
+
+\bigskip
+
+% I attempted to use the grammar environment you provided. But there was either
+% something missing or something I overlooked in the example code and it would
+% not compile, despite many reducing changes I made. So I went with the
+% simplebnf package, which I quite like.  
+\begin{center}
+    \begin{bnf}
+    $P$ : \textsf{Programs} ::=
+    $\bracketed{d}$ : definition
+    ;;
+    $d$ : \textsf{Definitions} ::=
+    | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+    ;;
+    $e$ : Expressions ::= 
+    | $x, y, z$ : names
+    | $K\bracketed{e}$ : value constructor application 
+    | $\lambda x. \; e$ : lambda declaration  
+    | $e_{1} \; e_{2}$ : function application 
+    | $\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}$ : case expression 
+    ;;
+    \tlp : \textsf{Top-level Patterns} ::= $p$ : pattern 
+    | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+    | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
+    | $\ttbraced{p \; \bracketed{, \; p <- e}}$ : pattern guard
+    ;;
+    $p$ : \textsf{Patterns} ::= $x$ : name 
+    | $K \; \bracketed{p}$ : value constructor application 
+    ;;
+    $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
+    | $\lambda x. \; e$ : lambda value 
+    ;;
+    $K$ : \textsf{Value Constructors} ::=
+    | \tt{true} $\vert$ \tt{false} : booleans
+    | $\tt{\#}x$ : name beginning with \tt{\#}
+    | \tt{A-Z}$x$ : name beggining with capital letter
+    | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+    \end{bnf}
+\end{center}
+
+
+A \it{name} is any token that is not an integer literal, 
+does not contain whitespace, a bracket, or parenthesis, 
+and is not a value constructor name or a reserved word.
+
+
+\vfilbreak
+
+\section{Forms of Judgement for \PPlus:}
+\begin{tabular}{ll}
+\toprule
+    \multicolumn2{l}{\emph{Metavariables}} \\
+\midrule
+    $e$& expression \\
+    $v, \; v'$& value \\
+    $K$& value constructor \\ 
+    $p$& pattern \\ 
+    $x, y$& names \\ 
+    $g$& pattern guard \\ 
+    $gs$& list of pattern guards \\ 
+    $\dagger$& pattern match failure \\ 
+    $r$& a result, either $v$ or $\dagger$ \\ 
+    \Rho& environment: $name \rightarrow \mathcal{V}$ \\
+    \Rho\:+\:\Rhoprime& extension \\
+    $\Rho \uplus \Rho'$& disjoint union \\
+    $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
+\bottomrule
+\end{tabular}    
+
+\bigskip
+
+\begin{tabular}{ll}
+    \toprule
+        \multicolumn2{l}{\emph{Sequences}} \\
+    \midrule
+        $\emptyseq$& the empty sequence \\
+        $S_1 \cdot S_2 $&  Concatenate sequence $S_1$ and sequence $S_2$ \\
+        $x \cdot S_2 $& Cons $x$ onto sequence $S_2$ \\
+    \bottomrule
+    \end{tabular}    
+    
+    \medskip
+    
+    For the forms of judgement for pattern matching, we borrow from Ramsey
+    in our formalization [Ramsey 2023] XXX TO LINK:
+
+    \begin{align*}
+        &\pmatch \quad   \rm{ Pattern $p$ matches value $v$, 
+                              producing bindings $\rho'$;} \\
+        &\pfail  \quad\; \rm{ Pattern $p$ does not match value $v$.} 
+    \end{align*}
+
+    We invent a formalization for the extensions to pattern-matching, which
+    we call \Tlp\it{s}, based off of work by XXX FILL IN:
+
+    \begin{align*}
+        &\tlpmatch \quad   \rm{ \Tlp\, \tlp\thinspace matches value 
+                                $v$, producing bindings $\rho'$;} \\
+        &\tlpfail  \quad\; \rm{ \Tlp\, \tlp\thinspace does not match value $v$.} 
+    \end{align*}
+
+    N.B. Matching a \Tlp may evaluate an arbitrary number of
+    expressions. Matching a standard pattern may never evaluate an expression.     
+
+    We may use the metavariable $r$ as a substitute for the result of 
+    pattern matching, leaving us with two revised forms of judgement: 
+
+    \begin{align*}
+        &\pmatch[newenv=r] \\
+        &\tlpmatch[newenv=r] 
+    \end{align*}
+
+
+    \subsection{Expressions}
+    
+        An expression in \PPlus evaluates to produce a single value. 
+
+        \begin{align*}
+            &\prun
+        \end{align*}
+    
+
+    \rab{nr here includes the trick of evaluating the scrutinee in a case
+    expression to a literal and THEN beginning pattern matching. Worth
+    including? Probably. How much to borrow from BPC?}
+    
+    \bigskip 
+
+    \rab{Same thought re: +, environments, disjoint union, et al.}
+
+
+%     \section{Sequences}
+    
+%     The trivial sequence is \emptyseq. Sequences can be concatenated with infix 
+% $\cdot$. In an appropriate context, a value like $x$ stands for 
+% the singleton sequence containing $x$. 
+
+% \begin{align*}
+%     \emptyseq \cdot \ys &\equiv \ys \\
+%     \ys \cdot \emptyseq &\equiv \ys \\
+%     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
+% \end{align*}
+
+\section{Rules (Big-step Operational Semantics) for \PPlus:}
+    
+\subsection{Evaluating Expressions}
+
+
+\subsubsection{Evaluating expressions other than \tt{case}}
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Vcon-Empty) }]
+    {\ }
+    {\veval{K}{K}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Vcon-Multi) }]
+    {\inferrule* {}
+    {
+    \veval{e_{i}}{v_{i}}
+    \and 
+    1 \leq i \leq n
+    }}
+    {\veval{K(e_{1}, \dots e_{n})}{K(v_{1}, 
+    \dots v_{i})}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Name) }]
+    {x \in \dom \rho 
+    \\\\
+    \rho(x) = v}
+    {\prun[exp={\textsc{name} \;x}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Lambda-Decl) }]
+    {\ }
+    {\prun[exp={\lambda x.e}, value={\lambda x.e}]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Funapp) }]
+    {\veval{e_{1}}{\lambda x.e}
+    \\\\
+    \veval{e_{2}}{v'}
+    \\\\
+    \prun[envext=\bracketed{x \mapsto v'}]}
+    {\veval{e_{1}\; e_{2}}{v}}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (CaseScrutinee) }]
+    {\inferrule* {}
+    {\prun[value=v]}
+    \and 
+    \prun[exp=
+        {\textsc{case} \; (\textsc{literal}(v), 
+        [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+        value=v']}    
+    {\prun[exp=
+    {\textsc{case} \; (e, 
+    [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+    value=v']}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (CaseMatch) }]
+    {\inferrule* {}
+    {\tlpmatch[tlp={\tlp_{1}}, newenv=\rho']}
+    \and 
+    \prun[exp=e_{1}, env=\rho + \rho']}    
+    {\prun[exp=
+    {\textsc{case} \; (\textsc{literal}(v), 
+    [\tlp_{1} \; e_{1}], \dots, [\tlp_{n} \; e_{n}])},
+    value=v']}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (CaseFail) }]
+    {\inferrule* {}
+    {\tlpmatch[tlp={\tlp_{1}}, newenv=\dagger]}
+    \and 
+    \prun[exp={\textsc{case} \; (\textsc{literal}(v), 
+    [\tlp_{2} \; e_{2}], \dots, [\tlp_{n} \; e_{n}])},
+    value=v']}    
+    {\prun[exp=
+    {\textsc{case} \; (\textsc{literal}(v), 
+    [\tlp_{1} \; e_{1}], \dots, [\tlp_{n} \; e_{n}])},
+    value=v']}
+\]
+
+
+
+\subsection{Rules for pattern matching}
+
+
+\[
+\inferrule*[Left=\textsc{ (MatchVcon) }]
+    {\inferrule* {}
+    {
+    \pmatch[pat=p_{i}, value=v_{i}, newenv=r_{i}], \and 1 \leq i \leq m
+    \\\\
+    r = r_{1} \uplus \dots \uplus r_{m}
+    }}
+    {\pmatch[pat={K\; p_{1}, \dots 
+            p_{m}}, value={\textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])},
+            newenv=r]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (FailVcon) }]
+    {v \rm{ does not have the form } \textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])}
+    {\pmatch[pat={K\; p_{1}, \dots 
+            p_{m}}, 
+            newenv=\dagger]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (MatchBareVcon) }]
+    {\ }
+    {\pmatch[pat={K}, value={\textsc{vcon} \; (K, [])},
+            newenv=\bracketed{}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (FailBareVcon) }]
+    {v \neq {\textsc{vcon} \; (K, [])}}
+    {\pmatch[pat={K},
+            newenv=\dagger]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (MatchVar) }]
+    {\ }
+    {\pmatch[pat={x},
+            newenv=\bracketed{x \mapsto v}]}
+\]
+
+
+\section{Rules for matching Top-level Patterns}
+
+\[
+\inferrule*[Left=\textsc{ (OrSucc) }]
+    {\pmatch[pat=p_{1}]}
+    {\tlpmatch[tlp={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (OrRec) }]
+    {\pmatch[pat=p_{1}, newenv=\dagger]
+    \and 
+    \tlpmatch[tlp={\textsc{or} \; (p_{2}, \dots p_{n})}]}
+    {\tlpmatch[tlp={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (OrFail) }]
+    {\ }
+    {\tlpmatch[tlp={\textsc{or} \; (\emptyseq)}, newenv=\dagger]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (WhenMatch) }]
+    {\pmatch
+    \\\\
+    \prun[env=\Rho \uplus \Rhoprime, value=v' \and v' \neq \tt{false}]}
+    {\tlpmatch[tlp={\textsc{when} \; (p, e)}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (WhenNoMatch) }]
+    {\pfail}
+    {\tlpmatch[tlp={\textsc{when} \; (p, e)}, newenv=\dagger]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (WhenFalse) }]
+    {\pmatch
+    \\\\
+    \prun[env=\Rho \uplus \Rhoprime, value=v']  \and v' = \tt{false}}
+    {\tlpmatch[tlp={\textsc{when} \; (p, e)}, newenv=\dagger]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (GuardNoMatch) }]
+    {\tlpmatch[newenv=\dagger]}
+    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, gs)}, newenv=\dagger]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (GuardEmpty) }]
+    {\tlpmatch[newenv=r]}
+    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, \emptyseq)}, newenv=r]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (GuardFail) }]
+    {\inferrule* {}
+    {\tlpmatch[newenv=\Rhoprime]}
+    \\\\
+    \prun[env=\Rho \uplus \Rhoprime, value=v']
+    \\\\
+    \pmatch[value=v', newenv=\dagger]
+    }
+    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, (p <- e) \cdot gs)}, newenv=\dagger]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (GuardRec) }]
+    {\inferrule* {}
+    {\tlpmatch[newenv=\Rhoprime]}
+    \\\\
+    \prun[env=\Rho \uplus \Rhoprime, value=v']
+    \\\\
+    \pmatch[value=v', newenv=\rho'']
+    \\\\
+    \tlpmatch[env=\Rho \uplus \rho'', tlp={\textsc{guard} \; (\tlp, gs)},
+    newenv=r]
+    }
+    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, (p <- e) \cdot gs)}, newenv=r]}
+\]
+
+
+\end{document}

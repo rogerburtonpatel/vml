@@ -14,7 +14,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Syntax and Semantics of \Vminus with no $\alpha$}
+\title{Syntax and Semantics of \VMinus with no $\alpha$}
 \author{Roger Burtonpatel}
 \begin{document}
 
@@ -22,9 +22,9 @@
 
 \section{Syntax}
 
-\subsection{\Vminus with no $\alpha$}
+\subsection{\VMinus with no $\alpha$}
 
-We present a grammar of \Vminus, a variant of Verse with a defined
+We present a grammar of \VMinus, a variant of Verse with a defined
 decision-making construct: 
 
 \bigskip
@@ -136,7 +136,7 @@ and is not a value constructor name or a reserved word.
     \newcommand\GNoTree{\vmrung \rightsquigarrow \uppsidown} 
     
     An expression in core Verse evaluates to produce possibly-empty sequence of
-    values. In \Vminus, expressions evaluate to a single value. We will explore
+    values. In \VMinus, expressions evaluate to a single value. We will explore
     a Verse variant in which expressions may evaluate to multiple values. 
 
     
@@ -159,12 +159,12 @@ and is not a value constructor name or a reserved word.
     \bigskip
 \subsection{Equations}
 
-In \Vminus, we solve equations (intermediate computations in a guarded
+In \VMinus, we solve equations (intermediate computations in a guarded
 expression of the form \\$e_{1} = e_{2}$) in a similar way to the
 authors of the original Verse paper: we pick one, attempt to solve for it, and
 move on. 
 
-\rab{How do we express that \Vminus semantics preclude backtracking/logical 
+\rab{How do we express that \VMinus semantics preclude backtracking/logical 
 variables at runtime?}
 
 Given an environment from names to metavalues {v}s \Rho, an equation \eq

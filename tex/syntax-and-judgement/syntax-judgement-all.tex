@@ -15,7 +15,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Syntax and Semantics of \Vminus, \Pplus, and \D}
+\title{Syntax and Semantics of \VMinus, \PPlus, and \D}
 \author{Roger Burtonpatel}
 \date{December 3, 2023}
 \begin{document}
@@ -69,12 +69,12 @@ and is not a value constructor name or a reserved word.
 
 
 We then present three language extensions that build off of this core: 
-\Pplus, the language of patterns, \Vminus, the language of 
+\PPlus, the language of patterns, \VMinus, the language of 
 verse-like equations, and $D$, the language of decision trees. 
 
 \subsection{Three Language Extensions}
 
-\subsubsection{\Vminus:}
+\subsubsection{\VMinus:}
 
 \begin{center}
     \begin{bnf}
@@ -97,7 +97,7 @@ verse-like equations, and $D$, the language of decision trees.
 
 \bigskip 
 
-\subsubsection{\Pplus:}
+\subsubsection{\PPlus:}
 \begin{center}
     \begin{bnf}
 $e$ : \textsf{Expressions} ::=
@@ -202,7 +202,7 @@ $e$ : \textsf{Expressions} ::=
     
     \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
     core Verse evaluates to produce possibly-empty sequence of values. In
-    \Vminus, values depend on the form of abstract expression $\alpha.$ If
+    \VMinus, values depend on the form of abstract expression $\alpha.$ If
     $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
     it is an ML-like expression, it will be a single value. 
     
@@ -225,12 +225,12 @@ $e$ : \textsf{Expressions} ::=
     \bigskip
 \subsection{Equations}
 
-In \Vminus, we solve equations (intermediate computations in a guarded
+In \VMinus, we solve equations (intermediate computations in a guarded
 expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
 authors of the original Verse paper: we pick one, attempt to solve for it, and
 move on. 
 
-\rab{How do we express that \Vminus semantics preclude backtracking/logical 
+\rab{How do we express that \VMinus semantics preclude backtracking/logical 
 variables at runtime?}
 
 Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
@@ -543,7 +543,7 @@ the singleton sequence containing $x$.
     {\veval{\ealpha[1]\; \ealpha[2]}{\valpha}}
 \]
 
-\section{Forms of Judgement for \Pplus}
+\section{Forms of Judgement for \PPlus}
 \begin{tabular}{ll}
     \toprule
         \multicolumn2{l}{\emph{Metavariables}} \\
@@ -599,7 +599,7 @@ the singleton sequence containing $x$.
         
         % \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
         core Verse evaluates to produce possibly-empty sequence of values. In
-        \Vminus, values depend on the form of abstract expression $\alpha.$ If
+        \VMinus, values depend on the form of abstract expression $\alpha.$ If
         $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
         it is an ML-like expression, it will be a single value. 
         
@@ -622,12 +622,12 @@ the singleton sequence containing $x$.
         \bigskip
     \subsection{Equations}
     
-    In \Vminus, we solve equations (intermediate computations in a guarded
+    In \VMinus, we solve equations (intermediate computations in a guarded
     expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
     authors of the original Verse paper: we pick one, attempt to solve for it, and
     move on. 
     
-    \rab{How do we express that \Vminus semantics preclude backtracking/logical 
+    \rab{How do we express that \VMinus semantics preclude backtracking/logical 
     variables at runtime?}
     
     Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
@@ -652,7 +652,7 @@ the singleton sequence containing $x$.
     \end{align*}
 
 
-\section{Semantics of \Pplus}
+\section{Semantics of \PPlus}
 
 \begin{itemize}
     \item Need a new judgement form for top-level patterns?

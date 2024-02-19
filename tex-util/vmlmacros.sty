@@ -20,10 +20,9 @@
 \RequirePackage{listings}
 \RequirePackage{color}
 
-
 %%%%%%%%%% LANGUAGES %%%%%%%%%%
-\newcommand\Vminus{\ensuremath{V^{-}}}
-\newcommand\Pplus{\ensuremath{P^{+}}}
+\newcommand\VMinus{\ensuremath{V^{-}}}
+\newcommand\PPlus{\ensuremath{P^{+}}}
 \newcommand\D{\ensuremath{D}}
 
 %%%%%%%%%% GENERAL MATH %%%%%%%%%%
@@ -35,6 +34,13 @@
 
 %%%%%%%%%% FORMATTING %%%%%%%%%%
 \newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
+
+%%%%%%%%%% PPlus ABBREV. %%%%%%%%%%
+\newcommand\Tlp{\it{Top-level Pattern}}
+
+%%%%%%%%%% PPlus ABSTRACT SYNTAX %%%%%%%%%%
+\newcommand\tlp{\ensuremath{p^{t}}}
+
 
 %%%%%%%%%% VERSE ABSTRACT SYNTAX %%%%%%%%%%
 
@@ -183,8 +189,12 @@
 \defcomponent{context}{\context}
 \defcomponent{term}{\galpha}
 \defcomponent{guard}{g}
+\defcomponent{exp}{e}
+\defcomponent{pat}{p}
+\defcomponent{value}{v}
 \defcomponent{result}{\result}
 \defcomponent{envext}{}
+\defcomponent{tlp}{\tlp}
 \defcomponent{newenv}{\rho'}
 \defcomponent{eq}{\eq}
 
@@ -205,7 +215,22 @@
 \newcommand\prun[1][]{%  run P-plus code
   {\setkeys{state}{#1}%
     \let\c=\component
-    \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{term} \Downarrow \c{result}}}}
+    \ensuremath{\br{\c{env}\c{envext}, \c{exp}} \Downarrow \c{value}}}}
+
+  \newcommand\pmatch[1][]{%  pattern-matching judgement
+  {\setkeys{state}{#1}%
+    \let\c=\component
+    \ensuremath{\br{\c{pat}, \c{value}} \rightarrowtail \c{newenv}}}}
+
+  \newcommand\pfail{\pmatch[newenv=\dagger]}
+
+  \newcommand\tlpmatch[1][]{%  top-level-pattern-matching judgement
+  {\setkeys{state}{#1}%
+    \let\c=\component
+    \ensuremath{\br{\c{env}\c{envext}, \c{tlp}, v} \rightarrowtail \c{newenv}}}}
+
+  \newcommand\tlpfail{\tlpmatch[newenv=\dagger]}
+
 
 \newcommand\eqrefine[1][]{%  equation refines environment
   {\setkeys{state}{#1}%
