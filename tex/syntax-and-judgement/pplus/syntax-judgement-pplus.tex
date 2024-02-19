@@ -49,7 +49,7 @@ We present a grammar of \PPlus:
     | $\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}$ : case expression 
     ;;
     \tlp : \textsf{Top-level Patterns} ::= $p$ : pattern 
-    | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+    | $\ttbraced{\tlp \; \tt{when} \; e }$ : side condition
     | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
     | $\ttbraced{\tlp \; \bracketed{, \; p <- e}}$ : pattern guard
     ;;
