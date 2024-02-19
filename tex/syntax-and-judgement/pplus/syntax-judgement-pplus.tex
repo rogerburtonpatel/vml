@@ -51,7 +51,7 @@ We present a grammar of \PPlus:
     \tlp : \textsf{Top-level Patterns} ::= $p$ : pattern 
     | $\ttbraced{p \; \tt{when} \; e }$ : side condition
     | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
-    | $\ttbraced{p \; \bracketed{, \; p <- e}}$ : pattern guard
+    | $\ttbraced{\tlp \; \bracketed{, \; p <- e}}$ : pattern guard
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K \; \bracketed{p}$ : value constructor application 
