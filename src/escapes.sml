@@ -4,6 +4,9 @@ structure StringEscapes :> sig
        except the possibility of a trigraph is ignored *)
   val quote : string -> string
     (* quotes the given string as for C.  Trigraphs are supported. *)
+  val backslash : string 
+  (* exists solely to have the messed-up syntax highlighting proudced by "\\" 
+    live only in this file *)
 end
   =
 struct
@@ -20,4 +23,5 @@ struct
     in  String.concat ["\"", String.translate tx s, "\""]
     end
 
+  val backslash = "\\"
 end        

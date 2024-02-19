@@ -1,8 +1,5 @@
 signature VMinus = sig  
   type name = string 
-  datatype 'a vcon = K of name * 'a value list | TRUE | FALSE 
-  and 'a value = VALPHA of 'a | VCON of 'a vcon (* expressions return values *)
-  datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
   exception NameNotBound of name 
   exception Cycle of string 
@@ -15,6 +12,7 @@ signature VMinus = sig
               | IF_FI of 'a guarded_exp list 
               | VCONAPP of Core.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
+              | LAMBDAEXP of name * 'a exp
       and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
                       | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
                       | S_EXISTS of name * 'a sugared_guarded_exp
@@ -23,6 +21,10 @@ signature VMinus = sig
                       | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
+  and 'a vcon = K of name * 'a value list | TRUE | FALSE 
+  and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * 'a exp (* expressions return values *)
+  
+  datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
   datatype 'a def = DEF of name * 'a exp
 
   val valString : 'a value -> string 
@@ -48,21 +50,19 @@ functor VMFn (A : ALPHA) :> VMinus = struct
   datatype def = DEF of name * exp *)
   (* idea: qualify many more things with a 'a. *)
   type name = string 
-  datatype 'a vcon = K of name * 'a value list | TRUE | FALSE 
-  and 'a value = VALPHA of 'a | VCON of 'a vcon (* expressions return values *)
-  datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
 
   exception NameNotBound of name 
   exception Cycle of string 
-  exception Todo of string 
-  
+
   type core_exp = Core.core_exp
+
   datatype 'a exp = 
-                ALPHA of 'a 
-              | NAME of name 
+                 ALPHA of 'a 
+              |  NAME of name 
               | IF_FI of 'a guarded_exp list 
               | VCONAPP of Core.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
+              | LAMBDAEXP of name * 'a exp
       and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
                       | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
                       | S_EXISTS of name * 'a sugared_guarded_exp
@@ -71,10 +71,18 @@ functor VMFn (A : ALPHA) :> VMinus = struct
                       | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
+  and 'a vcon = K of name * 'a value list | TRUE | FALSE 
+  and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * ('a exp ) (* expressions return values *)
+  
+  datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
   datatype 'a def = DEF of name * 'a exp
+
 
   fun boolOfValue (VCON FALSE) = false 
     | boolOfValue _              = true
+
+  
+
 
   fun eqval (VALPHA a, VALPHA a')  = A.eqval a a'
     | eqval (VCON v1, VCON v2)     = 
@@ -129,19 +137,6 @@ functor VMFn (A : ALPHA) :> VMinus = struct
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application" *)
 
-  fun valString (VALPHA a) = "alpha"
-    | valString (VCON v) = (case v of   
-       (K (n, vs)) => 
-        Core.strBuilderOfVconApp valString (Core.K n) vs 
-    | TRUE  => "true"
-    | FALSE => "false")
-    
-    
-    val _ = optString  : ('a -> string) -> 'a option -> string 
-    val _ = valString : 'a value -> string
-
-    fun optValStr v = optString valString v
-    (* val optValStr = optString valString *)
 
     fun gexpString (ARROWALPHA e) = "-> " ^ expString e
       | gexpString (EXPSEQ (e, ge)) = expString e ^ "; " ^ gexpString ge
@@ -153,8 +148,27 @@ functor VMFn (A : ALPHA) :> VMinus = struct
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
+      | expString (LAMBDAEXP (n, body)) = 
+          StringEscapes.backslash ^ n ^ ". " ^ (expString body)
     and optExpString (SOME e) = "SOME " ^ expString e 
     | optExpString    NONE    = "NONE"
+
+  fun valString (VALPHA a) = "alpha"
+    | valString (VCON v) = (case v of   
+       (K (n, vs)) => 
+        Core.strBuilderOfVconApp valString (Core.K n) vs 
+    | TRUE  => "true"
+    | FALSE => "false")
+    | valString (LAMBDA (n, body)) = 
+        StringEscapes.backslash ^ n ^ ". " ^ (expString body)
+
+    
+    
+    val _ = optString  : ('a -> string) -> 'a option -> string 
+    val _ = valString : 'a value -> string
+
+    fun optValStr v = optString valString v
+    (* val optValStr = optString valString *)
 
 
   (* sorting and solving *)
@@ -177,7 +191,7 @@ functor VMFn (A : ALPHA) :> VMinus = struct
 (* stuck says: can I solve this with the information I have now? 
 i.e. do I have all the names I need to evaluate this expression? 
 f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
-val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool = 
+val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool = 
   fn rho => fn f => fn ex => 
     let fun unknown n = if not (Env.binds (rho, n)) then raise NameNotBound n 
                         else (Env.binds (rho, n))
@@ -187,7 +201,10 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
            | NAME name => unknown name 
            | VCONAPP (v, es) => List.exists has_unbound_names es
            | FUNAPP (e1, e2) => has_unbound_names e1 orelse has_unbound_names e2 
-           | IF_FI gs => List.exists has_unbound_gexp gs
+           | IF_FI gs => List.exists has_unbound_gexp gs  
+           | LAMBDAEXP (n, body) => 
+                  stuck (Env.bind (n, SOME (VCON TRUE), rho)) f body
+                                        (* dummy sentinel, "name is bound" *)
         and has_unbound_gexp g = 
           case g of ARROWALPHA e    => has_unbound_names e
                   | EXISTS (_, g')  => has_unbound_gexp g'
@@ -352,7 +369,15 @@ val stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
             | VCONAPP (Core.K n, es)   => VCON (K (n, map (eval rho) es))
             | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
-            | FUNAPP (fe, es) => raise Todo "eval function application"
+            | FUNAPP (fe, param) => 
+              (case eval rho fe 
+                  of LAMBDA (n, b) => 
+                    let val arg = eval rho param
+                        val rho' = Env.bind (n, SOME arg, rho)
+                      in eval rho' b
+                      end
+                  | _ => raise Core.BadFunApp "attempted to apply non-function")
+            | LAMBDAEXP (n, ex) => LAMBDA (n, ex)
 
                   (* if (stuck rho stuckFn (NAME n)) 
                       andalso stuck rho stuckFn e

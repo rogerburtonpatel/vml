@@ -5,6 +5,7 @@ structure PPlus :> sig
                | CASE of exp * (toplevelpattern * exp) list 
                | VCONAPP of vcon * exp list 
                | FUNAPP  of exp * exp 
+               | LAMBDAEXP of name * exp 
       and toplevelpattern =   PAT of pattern 
                             | WHEN   of toplevelpattern * exp
                             | ORPAT of pattern list 
@@ -25,6 +26,7 @@ struct
                | CASE of exp * (toplevelpattern * exp) list 
                | VCONAPP of vcon * exp list 
                | FUNAPP  of exp * exp 
+               | LAMBDAEXP of name * exp 
       and toplevelpattern =   PAT of pattern 
                             | WHEN   of toplevelpattern * exp
                             | ORPAT of pattern list 
@@ -37,6 +39,7 @@ struct
   infix 6 <+> 
   val op <+> = Env.<+>
   fun fst (x, y) = x
+  
 
 exception DisjointUnionFailed of name
 fun duplicatename [] = NONE
@@ -85,7 +88,7 @@ fun eval (rho : value Env.env) e =
                     in eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function")
-
+      | LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
       | CASE (ex, (p, rhs) :: choices) => Impossible.unimp "eval case"
       | CASE _ => Impossible.unimp "eval case"
           (* let val scrutinee = eval rho ex *)
@@ -108,12 +111,16 @@ fun eval (rho : value Env.env) e =
             raise RuntimeError ("'case' does not match " ^ valueString v)
         in Impossible.unimp "he"
         end  *)
+
+  fun br printer input = "(" ^ printer input ^ ")"
+  fun br' input = "(" ^ input ^ ")"
+
   fun expString (NAME n) = n
     | expString (CASE (e, branches)) = 
       let 
           fun tlpatString (PAT p) = patString p
-            | tlpatString (WHEN (p, cond)) = "(" ^ tlpatString p ^ ")" 
-                                              ^ " when " ^ expString cond
+            | tlpatString (WHEN (p, cond)) = br' (tlpatString p 
+                                              ^ " when " ^ expString cond)
             | tlpatString (ORPAT []) = Impossible.impossible "empty orpat"
             | tlpatString (ORPAT [_]) = Impossible.impossible "singleton orpat"
             | tlpatString (ORPAT ps) = 
@@ -121,14 +128,14 @@ fun eval (rho : value Env.env) e =
                             (foldr (fn (p, acc) => " | " ^ patString p ^ acc) "" 
                             (tl ps))
             | tlpatString (PATGUARD (tlp, steps)) = 
-            tlpatString tlp ^ ", " ^ 
+            br' (tlpatString tlp ^ 
             (foldl (fn ((pat, ex), acc) => 
-                    acc ^ expString ex ^ " <- " ^ patString pat ^ "\n") "" steps)
+                acc ^ ", " ^ patString pat ^ " <- " ^ expString ex ^ "") "" steps))
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
                                 Core.strBuilderOfVconApp 
                                   (fn (PNAME n') => n' 
-                                      | conapp => "(" ^ patString conapp ^ ")") 
+                                      | conapp => br patString conapp) 
                                   (Core.K n) 
                                   ps
           fun branchString (p, ex) = 
@@ -141,8 +148,9 @@ fun eval (rho : value Env.env) e =
                  (tl branches)))
           end
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
-      | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
-
+      | expString (FUNAPP (e1, e2)) = br' (expString e1 ^ " " ^ expString e2)
+      | expString (LAMBDAEXP (n, body)) = 
+            StringEscapes.backslash ^ n ^ ". " ^ (expString body)
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
 end 

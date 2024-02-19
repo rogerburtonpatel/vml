@@ -6,10 +6,11 @@ structure LexerCombinators =
 
 structure PPlusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
+  datatype specialchar   = QUOTE | COMMA | BACKSLASH | DOT
+
   datatype token
-    = QUOTE
-    | COMMA 
-    | VCON    of string
+    = SPECIAL of specialchar
+    | VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
@@ -44,6 +45,7 @@ struct
   val notFollowedBy = L.notFollowedBy
   val eos = L.eos
   fun member x = List.exists (fn y => x = y)
+  
 
 
   fun char c = L.sat (L.eq c) one
@@ -51,10 +53,10 @@ struct
 
 
   datatype bracket_shape = ROUND | SQUARE | CURLY
+  datatype specialchar = QUOTE | COMMA | BACKSLASH | DOT
 
   datatype token
-    = QUOTE
-    | COMMA 
+    = SPECIAL of specialchar
     | VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
@@ -89,11 +91,11 @@ struct
   fun intToken isDelim =
     L.check (intFromChars <$> intChars isDelim)
 
-  fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};" c
+  fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};,.\\" c
 
 
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", ",", 
+                  "->", "<-", "when", 
                   (* debugging *)
                   "parse", "pat"
                   ]
@@ -118,11 +120,16 @@ struct
 
   fun optional p = SOME <$> p <|> succeed NONE
 
+  val backslash = (chr 92)
+
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  char #"'" >> succeed QUOTE
-                  <|> char #"," >> succeed COMMA
+    bracketLexer   (  char #"'" >> succeed (SPECIAL QUOTE)
+                  <|> char #"," >> succeed (SPECIAL COMMA)
+                  <|> char backslash >> succeed (SPECIAL BACKSLASH)
+                  <|> char #"." >> succeed (SPECIAL DOT)
+                  <|> char #"," >> succeed (SPECIAL COMMA)
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )
@@ -140,8 +147,10 @@ struct
     | rightString CURLY = "}"
 
 
-  fun tokenString QUOTE        = doublequote
-    | tokenString COMMA        = ", "
+  fun tokenString (SPECIAL QUOTE)      = doublequote
+    | tokenString (SPECIAL COMMA)      = "COMMA"
+    | tokenString (SPECIAL BACKSLASH)  = "BACKSLASH"
+    | tokenString (SPECIAL DOT)        = "DOT"
     | tokenString (VCON n)     = "vcon " ^ n
     | tokenString (NAME n)     = "name " ^ n
     | tokenString (LEFT b)     = leftString b

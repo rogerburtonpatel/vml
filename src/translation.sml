@@ -19,6 +19,7 @@ struct
       case e of P.NAME n => VM.NAME n 
               | P.VCONAPP (vc, es) => VM.VCONAPP (vc, List.map vmOfP es)
               | P.FUNAPP (e1, e2)  => VM.FUNAPP (vmOfP e1, vmOfP e2)
+              | P.LAMBDAEXP (n, b)  => VM.LAMBDAEXP (n, vmOfP b)
               | P.CASE (scrutinee, branches) => 
                 let val freshNameGen = FreshName.freshNameGenGen ()
                     val e' = vmOfP scrutinee 
@@ -66,6 +67,7 @@ struct
       case e of P.NAME n => VMS.NAME n 
               | P.VCONAPP (vc, es) => VMS.VCONAPP (vc, List.map vmSimpleOfP es)
               | P.FUNAPP (e1, e2)  => VMS.FUNAPP (vmSimpleOfP e1, vmSimpleOfP e2)
+              | P.LAMBDAEXP (n, b)  => VMS.LAMBDAEXP (n, vmSimpleOfP b)
               | P.CASE (scrutinee, branches) => 
                 let val freshNameGen = FreshName.freshNameGenGen ()
                     val e' = vmSimpleOfP scrutinee 

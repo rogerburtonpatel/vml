@@ -12,6 +12,7 @@ structure VMinusSimple :> sig
               | IF_FI of guarded_exp list 
               | VCONAPP of Core.vcon * exp list
               | FUNAPP  of exp * exp
+              | LAMBDAEXP of name * exp
       (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
                       | S_EXPSEQ of  exp *  sugared_guarded_exp 
                       | S_EXISTS of name *  sugared_guarded_exp
@@ -51,6 +52,7 @@ struct
               | IF_FI of guarded_exp list 
               | VCONAPP of Core.vcon * exp list
               | FUNAPP  of exp * exp
+              | LAMBDAEXP of name * exp
       (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
                       | S_EXPSEQ of  exp *  sugared_guarded_exp 
                       | S_EXISTS of name *  sugared_guarded_exp
@@ -64,6 +66,9 @@ struct
 
 
   datatype def = DEF of name * exp
+
+  
+
 
   fun boolOfValue (Core.VCON FALSE) = false 
     | boolOfValue _                 = true
@@ -85,6 +90,8 @@ struct
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
+      | expString (LAMBDAEXP (n, body)) = 
+          StringEscapes.backslash ^ n ^ ". " ^ (expString body)
     and optExpString (SOME e) = "SOME " ^ expString e 
     | optExpString    NONE    = "NONE"
 
@@ -111,7 +118,7 @@ struct
                 | (SOME x, NONE)     => SOME x
                 | (NONE,   NONE)     => NONE) (rho1, rho2)
 
-val stuck : lvar_env -> exp ->  bool = 
+val rec stuck : lvar_env -> exp ->  bool = 
   fn rho => fn ex => 
     let fun unknown n = if not (Env.binds (rho, n)) then raise NameNotBound n 
                         else (Env.binds (rho, n))
@@ -121,6 +128,8 @@ val stuck : lvar_env -> exp ->  bool =
            | VCONAPP (v, es) => List.exists has_unbound_names es
            | FUNAPP (e1, e2) => has_unbound_names e1 orelse has_unbound_names e2 
            | IF_FI gs => List.exists has_unbound_gexp gs
+           | LAMBDAEXP (n, body) => 
+                  stuck (Env.bind (n, SOME (Core.VCON (Core.TRUE, [])), rho)) body
         and has_unbound_gexp g = 
           case g of ARROWEXP e    => has_unbound_names e
                   | EXISTS (_, g')  => has_unbound_gexp g'
@@ -267,7 +276,9 @@ val stuck : lvar_env -> exp ->  bool =
                       val rho' = Env.bind (n, SOME arg, rho)
                     in eval rho' b
                     end
-                 | _ => raise BadFunApp "attempted to apply non-function")
+                 | _ => raise BadFunApp "attempted to apply non-function")  
+                 | LAMBDAEXP (n, body) => Core.LAMBDA (n, body)
 
+  
 
 end

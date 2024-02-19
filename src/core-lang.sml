@@ -29,6 +29,8 @@ struct
   exception NameNotBound of name 
   exception BadFunApp of string 
 
+  
+
   datatype core_exp = NAME of name 
                   | VCONAPP of vcon * core_exp list
                   | IF_THEN_ELSE of core_exp * core_exp * core_exp 
@@ -58,8 +60,8 @@ struct
         let val vcss = foldr (fn (vc, acc) => " " ^ f vc ^ acc) "" vs
         in n ^ vcss
         end 
-    | (TRUE, [])  =>  "base true"
-    | (FALSE, []) =>  "base false"
+    | (TRUE, [])  =>  "true"
+    | (FALSE, []) =>  "false"
     | (TRUE, _)   =>  Impossible.impossible "true applied to args"
     | (FALSE, _)  =>  Impossible.impossible "false applied to args"
 
@@ -69,7 +71,7 @@ struct
     | strOfCoreExp (IF_THEN_ELSE (e1, e2, e3)) = 
         "if " ^ strOfCoreExp e1 ^ "then " ^ strOfCoreExp e2 ^ "else " ^ strOfCoreExp e3
     | strOfCoreExp (LAMBDAEXP (n, body)) = 
-        Char.toString (chr 92) ^ n ^ "." ^ (strOfCoreExp body) (* backslash *)
+        StringEscapes.backslash ^ n ^ ". " ^ (strOfCoreExp body) (* backslash *)
     | strOfCoreExp (FUNAPP (e1, e2)) = strOfCoreExp e1 ^ " " ^ strOfCoreExp e2
 
   fun strOfCoreValue (VCON (v, vals)) = 

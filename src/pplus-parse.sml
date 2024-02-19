@@ -40,12 +40,15 @@ end = struct
   (* utilities *)
 
   (* val int       = P.maybe (fn (L.INT   n)    => SOME n  | _ => NONE) one *)
-  val name      = P.maybe (fn (L.NAME  n)    => SOME n  | _ => NONE) one
-  val vcon      = P.maybe (fn (L.VCON  n)    => SOME n  | _ => NONE) one
-  val left      = P.maybe (fn (L.LEFT s) => SOME s  | _ => NONE) one
-  val right      = P.maybe (fn (L.RIGHT s) => SOME s  | _ => NONE) one
-  fun reserved s = P.maybe (fn (L.RESERVED s') => if s = s' then SOME () 
-                                                  else NONE | _ => NONE) one
+  val name         = P.maybe (fn (L.NAME  n)    => SOME n  | _ => NONE) one
+  val vcon         = P.maybe (fn (L.VCON  n)    => SOME n  | _ => NONE) one
+  val left         = P.maybe (fn (L.LEFT s) => SOME s  | _ => NONE) one
+  val right        = P.maybe (fn (L.RIGHT s) => SOME s  | _ => NONE) one
+  val comma        = P.maybe (fn s as (L.SPECIAL L.COMMA) => SOME s  | _ => NONE) one
+  val bslash       = P.maybe (fn s as (L.SPECIAL L.BACKSLASH) => SOME s  | _ => NONE) one
+  val dot          = P.maybe (fn s as (L.SPECIAL L.DOT) => SOME s  | _ => NONE) one
+  fun reserved s   = P.maybe (fn (L.RESERVED s') => if s = s' then SOME () 
+                                                    else NONE | _ => NONE) one
 
   fun token t = sat (P.eq t) one >> succeed () (* parse any token *)
 
@@ -101,11 +104,13 @@ end = struct
 
   val exp = P.fix (fn exp : A.exp P.producer => 
     let 
-    fun guard (e : A.exp P.producer) = P.pair <$> pattern <*> reserved "<-" >> e
+    fun guard (e : A.exp P.producer) = 
+      P.pair <$> sat (fn tok => tok = L.SPECIAL L.COMMA) one (* better way to do this? *)
+                 >> pattern <*> reserved "<-" >> e
         val topLevelPattern = 
         P.fix (fn topLevelPattern => 
           A.PATGUARD <$> bracketed (P.pair <$> topLevelPattern 
-                           <~> succeed L.COMMA <*> many (guard exp)) <|>
+                                            <*> many (guard exp)) <|>
           A.WHEN <$> bracketed (P.pair <$> topLevelPattern 
                           <~> reserved "when" <*> exp)            <|>
           A.ORPAT <$> barSeparatedMulti pattern                   <|>
@@ -116,6 +121,8 @@ end = struct
     in 
       reserved "pat" >> topLevelPattern >> succeed (A.NAME "x")   <|> 
       curry A.VCONAPP <$> vcon <*> many exp                       <|> 
+      A.FUNAPP <$> bracketed (P.pair <$> exp <*> exp)             <|> 
+      curry A.LAMBDAEXP <$> bslash >> name <~> dot <*> exp                          <|> 
       A.NAME <$> name                                             <|> 
       curry A.CASE <$> reserved "case" >> exp <*> 
                        reserved "of" >> barSeparated (choice exp) <|> 
@@ -138,7 +145,7 @@ end = struct
   let val () = 
   (
     ()
-    ;app eprint ["reading from token stream: \n", String.concatWith ", " (map L.tokenString input), "\n"]
+    (* ;app eprint ["reading from token stream: \n", String.concatWith ", " (map L.tokenString input), "\n"] *)
   )
   in P.produce (curry fst <$> many def <*> eos) input 
   end
