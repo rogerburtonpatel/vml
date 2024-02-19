@@ -1,4 +1,4 @@
-TOP := ..
+TOP := ../..
 
 BUILD=$(TOP)/build
 BIN=$(TOP)/bin
@@ -7,21 +7,19 @@ BASES=main impossible
 MLBS=$(BASES:%=%.mlb)
 CMS=$(BASES:%=%.cm)
 SRCS=$(shell echo *.sml)
-DML_SRCS=dml/example-dml.sml Unit.sml
-DML_CM=dml.cm
 
-MAINS=dtran.opt dtran
+MAINS=vminus.opt vminus
 
 .PHONY: mosml
 
-mosml: $(BIN)/dtran
+mosml: $(BIN)/vminus
 	@: do nothing, and say nothing about doing nothing
 
 .PHONY: clean
 
 clean:
 	rm -f *.ui *.uo
-	rm -f $(BIN)/vml $(BIN)/vml.opt $(BIN)/vml $(BIN)/dml-test
+	rm -f $(BIN)/vminus $(BIN)/vminus.opt
 
 .PHONY: all
 
@@ -30,23 +28,17 @@ all: $(MAINS:%=$(BIN)/%)
 
 .PHONY: mlton
 
-mlton: $(BIN)/dtran.opt
+mlton: $(BIN)/vminus.opt
 	@: do nothing, and say nothing about doing nothing
 
-$(BIN)/dtran.opt: $(MLBS) $(SRCS)
+$(BIN)/vminus.opt: $(MLBS) $(SRCS)
 	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 main.mlb
 
 %.mlb: %.cm
 	cm2mlb $^ > $@ || rm -f $@
 
-$(BIN)/dtran: $(SRCS) $(CMS)
+$(BIN)/vminus: $(SRCS) $(CMS)
 	$(TOP)/bin/mosml-compile-cm -o $@ main.cm
-
-dml-test: $(BIN)/dml-test
-	@: do nothing, and say nothing about doing nothing
-
-$(BIN)/dml-test: $(DML_SRCS) $(DML_CM)
-	$(TOP)/bin/mosml-compile-cm -o $@ $(DML_CM)
 
 millet.cm: $(CMS)
 	expand-cm main.cm > $@

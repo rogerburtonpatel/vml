@@ -1,0 +1,33 @@
+group is
+  $/basis.cm
+
+
+  (* **** basic infrastructure **** *)
+
+  impossible.sml
+  escapes.sml     (* character escapes for string literals *)
+
+  env.sml         (* environment abstraction *)
+  set.sml         (* set abstraction *)
+  ioutil.sml      (* convenience functions for I/O *)
+  listutil.sml    (* list functions missing from Moscow ML *)
+  Unit.sml
+  error.sml
+  freshnames.sml
+  (* **** languages **** *)
+  core-lang.sml
+  vminus-noalpha.sml
+  vminus-arrow.sml
+  (****** The Alpha-Language ******)
+  alpha.sml 
+  (****** VML ******)
+  vminus.sml
+  guard.sml
+  guardsort.sml
+
+  test-guard-sort.sml
+  producer.sml
+  vminus-lex.sml
+  vminus-parse.sml
+
+  main.sml

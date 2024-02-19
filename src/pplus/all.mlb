@@ -1,0 +1,45 @@
+$(SML_LIB)/basis/basis.mlb
+
+
+  (* **** basic infrastructure **** *)
+
+  impossible.sml   (* analog of assertion failure *)
+  escapes.sml     (* character escapes for string literals *)
+
+  env.sml         (* environment abstraction *)
+  set.sml         (* set abstraction *)
+  ioutil.sml      (* convenience functions for I/O *)
+  listutil.sml    (* list functions missing from Moscow ML *)
+  Unit.sml
+  error.sml
+  freshnames.sml
+  (* **** languages **** *)
+  core-lang.sml
+  vminus-noalpha.sml
+  vminus-arrow.sml
+  decision-tree.sml
+  (****** The Alpha-Language ******)
+  alpha.sml 
+  (****** VML ******)
+  vminus.sml
+  pplus.sml
+  guard.sml
+  guardsort.sml
+  vminus.sml
+
+  verse.sml
+  uverse.sml
+
+  translation.sml
+  test-guard-sort.sml
+  vminus-test.sml
+  producer.sml
+  pplus-lex.sml
+  pplus-parse.sml
+  vminus-parser.sml
+  vminus-lex.sml
+  vminus-parse.sml
+
+  languages.sml
+  uft.sml
+  pplusrun.sml
