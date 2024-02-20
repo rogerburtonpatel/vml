@@ -1,6 +1,6 @@
 version = 1
 [workspace]
-root = "millet.cm"
+root = "all.cm"
 [workspace.path-vars]
 FOO = { value = "woof" }
 BAR = { path = "bork" }

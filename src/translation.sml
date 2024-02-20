@@ -126,19 +126,20 @@ struct
   structure D = DecisionTree
   (* fun translate  *)
   (* need to sort first. big todo, but can adapt old sorting code. *)
-  fun translateExp (e : 'a VM.exp) = let val (e' : D.exp) = raise Todo "translate exps" in e' end 
+  fun dexpOfVmExp (e : 'a VM.exp) = let val (e' : D.exp) = raise Todo "translate exps" in e' end 
+  fun dexpOfVmSimpleExp (e : VMS.exp) = let val (e' : D.exp) = raise Todo "translate exps" in e' end 
 
 
-(* this is a match compiler. big todo. *)
+(* this is a match compiler. *)
   fun treeOfGs [] = D.MATCH (raise Match)
     | treeOfGs (g::gs) = 
-    let fun treeOfGuardedExp (VM.ARROWALPHA e)   = D.MATCH (translateExp e)
+    let fun treeOfGuardedExp (VM.ARROWALPHA e)   = D.MATCH (dexpOfVmExp e)
           | treeOfGuardedExp (VM.EXISTS (n, g')) = treeOfGuardedExp g'
           | treeOfGuardedExp (VM.EXPSEQ (e, g')) = 
               let val freshname = FreshName.freshNameGenGen () ()
                   val (fail : D.exp) = raise Todo "failure"
               in 
-              D.LET (freshname, translateExp e, D.IF (freshname, treeOfGuardedExp g', treeOfGs gs))
+              D.LET (freshname, dexpOfVmExp e, D.IF (freshname, treeOfGuardedExp g', treeOfGs gs))
               end 
           | treeOfGuardedExp (VM.EQN (n, VM.VCONAPP (Core.K vc, es), g')) = 
             let val arity = List.length es 
@@ -149,6 +150,32 @@ struct
             how do we normalize? well, we could put everything in a vconapp into a name. then we get something easier. *)
             (* or, we could normalize beforehand so vcons are only applied to names *)
             in D.TEST (n, [(lcon, treeOfGuardedExp g')], SOME (treeOfGs gs))
+            end 
+        | treeOfGuardedExp _ = raise Todo "finish match compilation"
+    in treeOfGuardedExp g 
+    end 
+
+
+(* this is a match compiler. *)
+  fun treeOfSimpleGs [] = D.MATCH (raise Match)
+    | treeOfSimpleGs (g::gs) = 
+    let fun treeOfGuardedExp (VMS.ARROWEXP e)   = D.MATCH (dexpOfVmSimpleExp e)
+          | treeOfGuardedExp (VMS.EXISTS (n, g')) = treeOfGuardedExp g'
+          | treeOfGuardedExp (VMS.EXPSEQ (e, g')) = 
+              let val freshname = FreshName.freshNameGenGen () ()
+                  val (fail : D.exp) = raise Todo "failure"
+              in 
+              D.LET (freshname, dexpOfVmSimpleExp e, D.IF (freshname, treeOfGuardedExp g', treeOfSimpleGs gs))
+              end 
+          | treeOfGuardedExp (VMS.EQN (n, VMS.VCONAPP (Core.K vc, es), g')) = 
+            let val arity = List.length es 
+                val lcon = (vc, arity)
+            (* Big todo: match compile es *)
+            (* ask if n is a vc/arity. if so, ask if each of es is matched to the corresponding part of vc.
+            normalization helps here, and notably functions can appear within patterns.
+            how do we normalize? well, we could put everything in a vconapp into a name. then we get something easier. *)
+            (* or, we could normalize beforehand so vcons are only applied to names *)
+            in D.TEST (n, [(lcon, treeOfGuardedExp g')], SOME (treeOfSimpleGs gs))
             end 
         | treeOfGuardedExp _ = raise Todo "finish match compilation"
     in treeOfGuardedExp g 
