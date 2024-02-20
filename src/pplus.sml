@@ -17,6 +17,8 @@ structure PPlus :> sig
 
   val expString : exp -> string
   val defString : def -> string
+
+  val runProg : def list -> unit 
 end 
   = 
 struct 
@@ -92,6 +94,19 @@ fun eval (rho : value Env.env) e =
       | CASE (ex, (p, rhs) :: choices) => Impossible.unimp "eval case"
       | CASE _ => Impossible.unimp "eval case"
           (* let val scrutinee = eval rho ex *)
+
+fun def rho (DEF (n, e)) = 
+  let val v = eval rho e
+  in Env.bind (n, v, rho)
+  end
+
+fun runProg defs = 
+(  foldl (fn (d, env) => 
+    let val rho = def env d
+    in  Env.<+> (rho, env)
+    end) Env.empty defs;
+    ())
+
 
         (* val _ = op match : pat * value -> value env
         val _ = op <+>   : 'a env * 'a env -> 'a env *)

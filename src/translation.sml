@@ -2,6 +2,7 @@ structure Translation : sig
   type 'a vmFnType
   val vmOfP : PPlus.exp -> 'a vmFnType
   val vmSimpleOfP : PPlus.exp -> VMinusSimple.exp 
+  val vmSimpleOfPdef : PPlus.def -> VMinusSimple.def
   structure VM : VMinus
 end 
   =
@@ -111,6 +112,8 @@ struct
                                    VMS.ARROWEXP (VMS.IF_FI internal)))] 
                 end 
 
+
+  fun vmSimpleOfPdef (P.DEF (n, e)) = VMS.DEF (n, vmSimpleOfP e)
 
   val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
   (* val _ = print ((VM.expString (vmOfP pempty)) ^ "\n") *)

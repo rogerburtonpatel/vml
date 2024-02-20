@@ -33,7 +33,9 @@ structure VMinusSimple :> sig
   val valString  : value -> string 
   val gexpString : guarded_exp -> string 
   val expString  : exp -> string 
+  val defString  : def -> string 
 
+  val runProg : def list -> unit 
 
 end 
   =
@@ -95,6 +97,7 @@ struct
     and optExpString (SOME e) = "SOME " ^ expString e 
     | optExpString    NONE    = "NONE"
 
+  fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
   fun valString (v as (Core.VCON (n, vs))) = Core.strOfCoreValue v
     | valString (Core.LAMBDA (x, body)) = 
@@ -279,6 +282,16 @@ val rec stuck : lvar_env -> exp ->  bool =
                  | _ => raise BadFunApp "attempted to apply non-function")  
                  | LAMBDAEXP (n, body) => Core.LAMBDA (n, body)
 
-  
+  fun def rho (DEF (n, e)) = 
+    let val v = eval rho e
+    in Env.bind (n, SOME v, rho)
+    end
+
+  fun runProg defs = 
+  (  foldl (fn (d, env) => 
+      let val rho = def env d
+      in  Env.<+> (rho, env)
+      end) Env.empty defs;
+      ())  
 
 end

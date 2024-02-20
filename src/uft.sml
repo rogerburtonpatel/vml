@@ -52,14 +52,24 @@ struct
     >>> Error.map List.concat (* token list error *)
     >=> PPlusParse.parse       (* def list error *)    
     
+  val vmsOfPP : PPlus.def list -> VMinusSimple.def list =
+  map Translation.vmSimpleOfPdef
+
   fun AST_P_of PPLUS = pplusOfFile
     | AST_P_of  _    = raise Backward
+
+  fun VMINUS_SIMPLE_of PPLUS = raise Backward 
+    | VMINUS_SIMPLE_of  _    = raise Backward
 
   fun emitAST_P outfile =
     app (fn d => ( TextIO.output(outfile, PPlus.defString d)
                  ; TextIO.output(outfile, "\n")
                  ))
 
+  fun emitVMS outfile =
+    app (fn d => ( TextIO.output(outfile, VMinusSimple.defString d)
+                 ; TextIO.output(outfile, "\n")
+                 ))
 
   (**** The Universal Forward Translator ****)
 
@@ -67,7 +77,8 @@ struct
 
   fun translate (inLang, outLang) (infile, outfile) =
     (case outLang
-       of AST_P => AST_P_of inLang >>> Error.map (emitAST_P outfile)
+       of AST_P         => AST_P_of inLang >>> Error.map (emitAST_P outfile)
+        | VMINUS_SIMPLE => VMINUS_SIMPLE_of inLang >>> Error.map (emitVMS outfile)
         | _  => raise NoTranslationTo outLang
     ) infile
     handle Backward => raise NotForward (inLang, outLang)
