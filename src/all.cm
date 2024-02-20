@@ -16,7 +16,7 @@ group is
   freshnames.sml
   (* **** languages **** *)
   core-lang.sml
-  vminus-noalpha.sml
+  vminus-simple.sml
   vminus-arrow.sml
   decision-tree.sml
   (****** The Alpha-Language ******)

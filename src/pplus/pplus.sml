@@ -95,17 +95,17 @@ fun eval (rho : value Env.env) e =
       | CASE _ => Impossible.unimp "eval case"
           (* let val scrutinee = eval rho ex *)
 
-fun def rho (DEF (n, e)) = 
-  let val v = eval rho e
-  in Env.bind (n, v, rho)
-  end
+  fun def rho (DEF (n, e)) = 
+    let val v = eval rho e
+    in Env.bind (n, v, rho)
+    end
 
-fun runProg defs = 
-(  foldl (fn (d, env) => 
-    let val rho = def env d
-    in  Env.<+> (rho, env)
-    end) Env.empty defs;
-    ())
+  fun runProg defs = 
+  (  foldl (fn (d, env) => 
+      let val rho = def env d
+      in  Env.<+> (rho, env)
+      end) Env.empty defs;
+      ())
 
 
         (* val _ = op match : pat * value -> value env
