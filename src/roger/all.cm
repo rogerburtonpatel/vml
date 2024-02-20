@@ -1,0 +1,12 @@
+group is
+  $/basis.cm
+
+  impossible.sml
+  ioutil.sml
+  listutil.sml
+
+  case-compile.sml 
+  case.sml
+  error.sml        
+  set.sml          
+  simple-case.sml
