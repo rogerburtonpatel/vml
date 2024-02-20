@@ -14,7 +14,7 @@
 /tex/syntax-judgement/tex-out/*
 # binaries and linking
 /build/*
-/bin/vml
+/bin/dtran
 /bin/vml-test
-/bin/vml.opt
+/bin/dtran.opt
 *.out
