@@ -20,3 +20,4 @@
 *.out
 bin/dtran
 bin/dtran
+bin/dtran.opt

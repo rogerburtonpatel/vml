@@ -55,11 +55,19 @@ struct
   val vmsOfPP : PPlus.def list -> VMinusSimple.def list =
   map Translation.vmSimpleOfPdef
 
+  (* val dOfVMS : VMinusSimple.def list ->  =
+  map Translation.vmSimpleOfPdef *)
+
+
   fun AST_P_of PPLUS = pplusOfFile
     | AST_P_of  _    = raise Backward
 
-  fun VMINUS_SIMPLE_of PPLUS = raise Backward 
+  fun VMINUS_SIMPLE_of PPLUS = pplusOfFile >>> Error.map vmsOfPP
     | VMINUS_SIMPLE_of  _    = raise Backward
+
+
+  fun D_of _  = Impossible.unimp "translate to a decision tree"
+
 
   fun emitAST_P outfile =
     app (fn d => ( TextIO.output(outfile, PPlus.defString d)
@@ -79,10 +87,16 @@ struct
     (case outLang
        of AST_P         => AST_P_of inLang >>> Error.map (emitAST_P outfile)
         | VMINUS_SIMPLE => VMINUS_SIMPLE_of inLang >>> Error.map (emitVMS outfile)
+        | D => D_of
         | _  => raise NoTranslationTo outLang
     ) infile
-    handle Backward => raise NotForward (inLang, outLang)
-         | NoTranslationTo outLang => raise NotForward (inLang, outLang)
+    handle Backward => 
+    let val () = IOUtil.eprint "backward" in 
+    raise NotForward (inLang, outLang) end 
+         | NoTranslationTo outLang => 
+    let val () = IOUtil.eprint "notran" in 
+         
+         raise NotForward (inLang, outLang) end
 
 
 end

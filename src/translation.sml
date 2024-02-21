@@ -79,12 +79,12 @@ struct
                                     | _ => (false, freshNameGen ()))
                     (* simply make a pattern look like an equation *)
                     fun translateTlPat (P.PAT p) = translatePat p
-                      | translateTlPat _ = Impossible.unimp "todo"
+                      | translateTlPat _ = VMS.NAME "toto translate top-level patterns"
                     and translatePat (P.PNAME n)        = VMS.NAME n 
                       | translatePat (P.CONAPP (n, ps)) = 
                                       VMS.VCONAPP (Core.K n, map translatePat ps)
                     fun tlpatFreeNames (P.PAT p) = patFreeNames p
-                      | tlpatFreeNames _ = Impossible.unimp "todo"
+                      | tlpatFreeNames _ = []
                     (* find unbound names in a pattern *)
                     and patFreeNames (P.PNAME n) = [n]
                       | patFreeNames (P.CONAPP (vc, ps)) = 
