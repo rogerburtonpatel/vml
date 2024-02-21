@@ -89,7 +89,7 @@ struct
       | gexpString (EQN (x, e, ge)) = 
                     x ^ " = " ^ expString e ^ "; " ^ gexpString ge 
     and expString (NAME n) = n
-      | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
+      | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]\n" gs ^ " fi"
       | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
       | expString (LAMBDAEXP (n, body)) = 
