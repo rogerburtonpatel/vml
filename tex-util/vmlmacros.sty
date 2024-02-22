@@ -19,7 +19,8 @@
 \RequirePackage{upgreek}
 \RequirePackage{listings}
 \RequirePackage{color}
-
+\RequirePackage{stmaryrd}
+ 
 %%%%%%%%%% LANGUAGES %%%%%%%%%%
 \newcommand\VMinus{\ensuremath{V^{-}}}
 \newcommand\PPlus{\ensuremath{P^{+}}}
@@ -30,6 +31,7 @@
 \newcommand\lt{\mathrel{<}}
 
 \newcommand{\bracketed}[1]{\{#1\}}
+\newcommand{\oxbr}[1]{\ensuremath{\llbracket#1\rrbracket}}
 \newcommand{\ttbraced}[1]{\tt{(}#1\tt{)}}
 \newcommand{\ttsqbraced}[1]{\tt{[}#1\tt{]}}
 
@@ -89,6 +91,7 @@
 
 % Wrapping forms 
 \newcommand\iffi[1]{\textsc{if} \; [\; #1 \; ] \; \textsc{fi}}
+\newcommand\iffitt[1]{\tt{if} \; #1 \; \tt{fi}}
 \newcommand\TeqT[1]{\context \cdot #1 \cdot \context'}
 \newcommand\eqTT[1]{#1 \cdot \context \cdot \context'}
 \newcommand\TT{\context \cdot \context'}
@@ -218,6 +221,17 @@
     \let\c=\component
     \ensuremath{\br{\c{env}\c{envext}, \c{exp}} \Downarrow \c{value}}}}
 
+\newcommand\ptov[1][]{%  run P-plus code
+    {\setkeys{state}{#1}%
+      \let\c=\component
+      \ensuremath{\translation[E]{\c{exp}} \rightsquigarrow \c{result}}}}
+  
+  \newcommand\pattov[1][]{%  run P-plus code
+    {\setkeys{state}{#1}%
+      \let\c=\component
+      \ensuremath{\ptran{\c{exp}} \rightsquigarrow \c{result}}}}
+  
+
   \newcommand\pmatch[1][]{%  pattern-matching judgement
   {\setkeys{state}{#1}%
     \let\c=\component
@@ -247,7 +261,9 @@
   {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{vterm} \mathrel{\rightarrow^{*}} \c{vresult}}}}
+
 \newcommand\translation[2][]{\ensuremath{#1[\![#2]\!]}}
+\newcommand\ptran[1]{\ensuremath{P[\![#1]\!]}}
 
 
 \newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
