@@ -280,26 +280,26 @@ Reminder grammar of \PPlus and \VMinus:
 
 \begin{align}
     &\ptov[exp=x, result=x] \\
-    &\ptov[exp={K \; e_{1} \dots e_{n}}, result={K \translation[E]{e_{1}} \dots \translation[E]{e_{n}}}] \\
-    &\ptov[exp={\lambda x.\; e}, result={\lambda x.\; \translation[E]{e}}] \\
-    &\ptov[exp={e_{1} \; e_{2}}, result={\translation[E]{e_{1}}\; \translation[E]{e_{2}}}] \\
-    &\ptov[exp={\tt{case} \; e\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \translation[E]{e}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   
+    &\ptov[exp={K \; e_{1} \dots e_{n}}, result={K \etran{e_{1}} \dots \etran{e_{n}}}] \\
+    &\ptov[exp={\lambda x.\; e}, result={\lambda x.\; \etran{e}}] \\
+    &\ptov[exp={e_{1} \; e_{2}}, result={\etran{e_{1}}\; \etran{e_{2}}}] \\
+    &\ptov[exp={\tt{case} \; e\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \etran{e}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   
 \end{align}
 \[
     \ptov[exp={\tt{case} \; e\;  p_{1}\;e_{1} \vert \dots \vert p_{n}\;e_{n}}, 
-    result={{\iffitt{\exists x. \; x = \translation[E]{e}; \; 
-            \iffitt{x = \ptran{p_{1}}; \rightarrow \translation[E]{e_{1}} 
-            [] \dots [] x = \ptran{p_{n}}; \rightarrow \translation[E]{e_{n}}}}}}] \; \rm{, $x$ fresh }    
+    result={{\iffitt{\exists x. \; x = \etran{e}; \; 
+            \iffitt{x = \ptran{p_{1}}; \rightarrow \etran{e_{1}} 
+            [] \dots [] x = \ptran{p_{n}}; \rightarrow \etran{e_{n}}}}}}] \; \rm{, $x$ fresh }    
 \]
 
 \begin{align}
     &\pattov[exp=x, result=x] \\
-    &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \ptran{p_{1}} \dots \ptran{e_{n}}}] \\
-    &\ptov[exp={p \; \tt{when} \; e}, result={\translation[E]{p}\tt{;} \; \ptran{e}}] \\
+    &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{e_{n}}}] \\
+&\ptov[exp={p \; \tt{when} \; e}, result={\ptran{p}\tt{;} \; \etran{e}}] \\
     &\ptov[exp={p_{1} \vert p_{2}}, result={\ptran{p_{1}} \vert \ptran{p_{2}}}] \\
     &\ptov[exp={p,  p_{1} \leftarrow e_{1}, \dots, p_{n} \leftarrow e_{n}}, 
-    result={\ptran{p}\tt{;} \ptran{p_{1}} = \translation[E]{e_{1}}\tt{;} \dots\tt{;} 
-    \ptran{p_{n}} = \translation[E]{e_{n}}}] \\
+    result={\ptran{p}\tt{;} \ptran{p_{1}} = \etran{e_{1}}\tt{;} \dots\tt{;} 
+    \ptran{p_{n}} = \etran{e_{n}}}] \\
 \end{align}
 
 
