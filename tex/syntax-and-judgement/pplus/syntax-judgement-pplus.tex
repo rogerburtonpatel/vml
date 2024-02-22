@@ -29,10 +29,6 @@ We present a grammar of \PPlus:
 
 \bigskip
 
-% I attempted to use the grammar environment you provided. But there was either
-% something missing or something I overlooked in the example code and it would
-% not compile, despite many reducing changes I made. So I went with the
-% simplebnf package, which I quite like.  
 \begin{center}
     \begin{bnf}
     $P$ : \textsf{Programs} ::=
@@ -46,15 +42,19 @@ We present a grammar of \PPlus:
     | $K\bracketed{e}$ : value constructor application 
     | $\lambda x. \; e$ : lambda declaration  
     | $e_{1} \; e_{2}$ : function application 
-    | $\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}$ : case expression 
+    | $\tt{case} \; e \; \bracketed{\ttsqbraced{p \; e}}$ : case expression 
     ;;
-    \tlp : \textsf{Top-level Patterns} ::= $p$ : pattern 
-    | $\ttbraced{\tlp \; \tt{when} \; e }$ : side condition
-    | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
-    | $\ttbraced{\tlp \; \bracketed{, \; p <- e}}$ : pattern guard
+    $p$ : \textsf{Patterns} ::= $t$ $\bracketed{\vert t}$ : term
     ;;
-    $p$ : \textsf{Patterns} ::= $x$ : name 
-    | $K \; \bracketed{p}$ : value constructor application 
+    $t$ : terms ::= $f$ \bracketed{, $f$} : factor
+    ;;
+    $f$ : factors ::= $a$ \tt{<-} $e$ : atoms from expressions 
+        | $a$ : atoms 
+    ;;
+    $a$ : atoms ::= $x$ : name 
+    | $K \; \bracketed{a}$ : value constructor application 
+    | \ttbraced{$p$}
+    | \tt{when} $e$
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
     | $\lambda x. \; e$ : lambda value 
@@ -66,6 +66,40 @@ We present a grammar of \PPlus:
     | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
     \end{bnf}
 \end{center}
+
+% \begin{center}
+%     \begin{bnf}
+%     $P$ : \textsf{Programs} ::=
+%     $\bracketed{d}$ : definition
+%     ;;
+%     $d$ : \textsf{Definitions} ::=
+%     | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+%     ;;
+%     $e$ : Expressions ::= 
+%     | $x, y, z$ : names
+%     | $K\bracketed{e}$ : value constructor application 
+%     | $\lambda x. \; e$ : lambda declaration  
+%     | $e_{1} \; e_{2}$ : function application 
+%     | $\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}$ : case expression 
+%     ;;
+%     p : \textsf{Top-level Patterns} ::= $p$ : pattern 
+%     | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+%     | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
+%     | $\ttbraced{p \; \bracketed{, \; p <- e}}$ : pattern guard
+%     ;;
+%     $p$ : \textsf{Patterns} ::= $x$ : name 
+%     | $K \; \bracketed{p}$ : value constructor application 
+%     ;;
+%     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
+%     | $\lambda x. \; e$ : lambda value 
+%     ;;
+%     $K$ : \textsf{Value Constructors} ::=
+%     | \tt{true} $\vert$ \tt{false} : booleans
+%     | $\tt{\#}x$ : name beginning with \tt{\#}
+%     | \tt{A-Z}$x$ : name beggining with capital letter
+%     | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+%     \end{bnf}
+% \end{center}
 
 
 A \it{name} is any token that is not an integer literal, 
@@ -110,7 +144,12 @@ and is not a value constructor name or a reserved word.
     
     \medskip
     
-    For the forms of judgement for pattern matching, we borrow from Ramsey
+    Our terms and forms of judgement for pattern matching are defined top-down. 
+
+    \medskip 
+
+
+    For the forms of judgement for patterns, we borrow from Ramsey
     in our formalization [Ramsey 2023] XXX TO LINK:
 
     \begin{align*}
@@ -118,26 +157,68 @@ and is not a value constructor name or a reserved word.
                               producing bindings $\rho'$;} \\
         &\pfail  \quad\; \rm{ Pattern $p$ does not match value $v$.} 
     \end{align*}
-
-    We invent a formalization for the extensions to pattern-matching, which
-    we call \Tlp\it{s}, based off of work by XXX FILL IN:
-
-    \begin{align*}
-        &\tlpmatch \quad   \rm{ \Tlp\, \tlp\thinspace matches value 
-                                $v$, producing bindings $\rho'$;} \\
-        &\tlpfail  \quad\; \rm{ \Tlp\, \tlp\thinspace does not match value $v$.} 
-    \end{align*}
-
-    N.B. Matching a \Tlp may evaluate an arbitrary number of
-    expressions. Matching a standard pattern may never evaluate an expression.     
-
     We may use the metavariable $r$ as a substitute for the result of 
-    pattern matching, leaving us with two revised forms of judgement: 
+    pattern matching, leaving us a revised form of judgement: 
 
     \begin{align*}
-        &\pmatch[newenv=r] \\
-        &\tlpmatch[newenv=r] 
+        \pmatch[newenv=r]
     \end{align*}
+
+    A \it{pattern} is the disjunction of one or more \it{terms}. 
+    A \it{term} has a similar form of judgement to a pattern ($r$ heretofore
+    stands for $\Rhoprime$ or $\dagger$): 
+
+    \begin{align*}
+        \pmatch[pat=t, newenv=r]
+    \end{align*}
+
+
+    A \it{term} is the \it{sequential conjunction} of one or more \it{factors}. 
+    That is, it is the conjuction of factors such that each factor after the 
+    first will consider information gained by \rab{word/phrasing here?} applying
+    the judgement form for factors to the prior factor. In practical terms, 
+    factors are ""evaluated"" (wrong) in sequence, with each building off the 
+    last. A factor has a similar form of judgement to a pattern or term:
+
+    \begin{align*}
+        \pmatch[pat=f, newenv=r]
+    \end{align*}
+
+    A factor is either an \it{atom} bound to an \it{expression} or a standalone
+    \it{atom}. If the atom is bound to an expression, it will match if it
+    matches with the expression. If the atom is standalone, it will match on the
+    \it{original} scrutinee of the case expression.
+
+    An atom has a similar form of judgement to a pattern, factor, and term:
+    \begin{align*}
+        \pmatch[pat=a, newenv=r]
+    \end{align*}
+
+    'True' matching begins at atoms, and is defined inductively: 
+    \begin{itemize}
+        \item A name $x$ matches any value $v$, and produces the environment 
+        $\bracketed{x \mapsto v}$. 
+        \item A value constructor $K$ applied to atoms  matches 
+        a value $v$ if $v$ is an application of $K$ to the same number of values,
+        each of which matches the corresponding atom. Its match produces 
+        the disjoint union of matching all internal atoms to all internal values. 
+        \rab{This was quick. Please help rephrease this.}
+        \item \tt{when} $e$ matches when $e$ evaluates to a value other than 
+        \tt{false}, and produces the empty environment. 
+    \end{itemize}
+
+    % We invent a formalization for the extensions to pattern-matching, which
+    % we call p\it{s}, based off of work by XXX FILL IN:
+
+    % \begin{align*}
+    %     &\pmatch \quad   \rm{ p\, p\thinspace matches value 
+    %                             $v$, producing bindings $\rho'$;} \\
+    %     &\pfail  \quad\; \rm{ p\, p\thinspace does not match value $v$.} 
+    % \end{align*}
+
+    % N.B. Matching a p may evaluate an arbitrary number of
+    % expressions. Matching a standard pattern may never evaluate an expression.     
+
 
 
     \subsection{Expressions}
@@ -238,26 +319,26 @@ and is not a value constructor name or a reserved word.
 \[
 \inferrule*[Left=\textsc{ (CaseMatch) }]
     {\inferrule* {}
-    {\tlpmatch[tlp={\tlp_{1}}, newenv=\rho']}
+    {\pmatch[pat={p_{1}}, newenv=\rho']}
     \and 
     \prun[exp=e_{1}, env=\rho + \rho']}    
     {\prun[exp=
     {\textsc{case} \; (\textsc{literal}(v), 
-    [\tlp_{1} \; e_{1}], \dots, [\tlp_{n} \; e_{n}])},
+    [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
     value=v']}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (CaseFail) }]
     {\inferrule* {}
-    {\tlpmatch[tlp={\tlp_{1}}, newenv=\dagger]}
+    {\pmatch[pat={p_{1}}, newenv=\dagger]}
     \and 
     \prun[exp={\textsc{case} \; (\textsc{literal}(v), 
-    [\tlp_{2} \; e_{2}], \dots, [\tlp_{n} \; e_{n}])},
+    [p_{2} \; e_{2}], \dots, [p_{n} \; e_{n}])},
     value=v']}    
     {\prun[exp=
     {\textsc{case} \; (\textsc{literal}(v), 
-    [\tlp_{1} \; e_{1}], \dots, [\tlp_{n} \; e_{n}])},
+    [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
     value=v']}
 \]
 
@@ -265,25 +346,26 @@ and is not a value constructor name or a reserved word.
 
 \subsection{Rules for pattern matching}
 
+\subsubsection{Atoms}
 
 \[
 \inferrule*[Left=\textsc{ (MatchVcon) }]
     {\inferrule* {}
     {
-    \pmatch[pat=p_{i}, value=v_{i}, newenv=r_{i}], \and 1 \leq i \leq m
+    \pmatch[pat=a_{i}, value=v_{i}, newenv=r_{i}], \and 1 \leq i \leq m
     \\\\
     r = r_{1} \uplus \dots \uplus r_{m}
     }}
-    {\pmatch[pat={K\; p_{1}, \dots 
-            p_{m}}, value={\textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])},
+    {\pmatch[pat={K\; a_{1}, \dots 
+            a_{m}}, value={\textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])},
             newenv=r]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (FailVcon) }]
     {v \rm{ does not have the form } \textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])}
-    {\pmatch[pat={K\; p_{1}, \dots 
-            p_{m}}, 
+    {\pmatch[pat={K\; a_{1}, \dots 
+            a_{m}}, 
             newenv=\dagger]}
 \]
 
@@ -308,28 +390,109 @@ and is not a value constructor name or a reserved word.
             newenv=\bracketed{x \mapsto v}]}
 \]
 
+\[
+\inferrule*[Left=\textsc{ (MatchWhen) }]
+    {\prun[value=v'] \and v' \neq \tt{false}}
+    {\pmatch[pat={\tt{when}\; e},
+            newenv=\bracketed{}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (FailWhen) }]
+{\prun[value=v'] \and v' = \tt{false}}
+{\pmatch[pat={\tt{when}\; e},
+            newenv=\dagger]}
+\]
+
+\subsubsection{Factors}
+
+\[
+\inferrule*[Left=\textsc{ (AtomExpMatch) }]
+{\prun[value=v'] \and \pmatch[pat=a, value=v', newenv=r]}
+{\pmatch[pat={a \leftarrow e},
+            newenv=r]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Atom) }]
+{\pmatch[pat=a, value=v, newenv=r]}
+{\pmatch[pat=a,
+            newenv=r]}
+\]
+
+\subsubsection{Terms}
+
+\[
+\inferrule*[Left=\textsc{ (FactorSingle) }]
+{\pmatch[pat=r, value=v, newenv=r]}
+{\pmatch[pat=f,
+            newenv=r]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (FactorMultiFail) }]
+{\pmatch[pat=f, newenv=\dagger]}
+{\pmatch[pat={f \cdot fs},
+            newenv=\dagger]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (FactorMultiResult) }]
+{\inferrule* {}
+{\pmatch[pat=f, newenv=\Rhoprime]}
+\\\\
+\pmatch[env=\Rho \uplus \Rhoprime, pat=fs, newenv=r]}
+{\pmatch[pat={f \cdot fs}, newenv=r]}
+\]
+
+\subsubsection{Patterns}
+
+\[
+\inferrule*[Left=\textsc{ (TermSucc) }]
+    {\pmatch[pat=t]}
+    {\pmatch[pat={t \cdot ts}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (TermRec) }]
+    {\pmatch[pat=p_{1}, newenv=\dagger]
+    \and 
+    \pmatch[pat={ts}, newenv=r]}
+    {\pmatch[pat={t \cdot ts}, newenv=r]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (TermSingle) }]
+    {\pmatch[pat=t, newenv=r]}
+    {\pmatch[pat={t}, newenv=r]}
+\]
+
+
+
 
 \section{Rules for matching Top-level Patterns}
 
 \[
 \inferrule*[Left=\textsc{ (OrSucc) }]
     {\pmatch[pat=p_{1}]}
-    {\tlpmatch[tlp={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+    {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (OrRec) }]
     {\pmatch[pat=p_{1}, newenv=\dagger]
     \and 
-    \tlpmatch[tlp={\textsc{or} \; (p_{2}, \dots p_{n})}]}
-    {\tlpmatch[tlp={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+    \pmatch[pat={\textsc{or} \; (p_{2}, \dots p_{n})}]}
+    {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
 \]
 
 
 \[
 \inferrule*[Left=\textsc{ (OrFail) }]
     {\ }
-    {\tlpmatch[tlp={\textsc{or} \; (\emptyseq)}, newenv=\dagger]}
+    {\pmatch[pat={\textsc{or} \; (\emptyseq)}, newenv=\dagger]}
 \]
 
 
@@ -338,13 +501,13 @@ and is not a value constructor name or a reserved word.
     {\pmatch
     \\\\
     \prun[env=\Rho \uplus \Rhoprime, value=v' \and v' \neq \tt{false}]}
-    {\tlpmatch[tlp={\textsc{when} \; (p, e)}]}
+    {\pmatch[pat={\textsc{when} \; (p, e)}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (WhenNoMatch) }]
     {\pfail}
-    {\tlpmatch[tlp={\textsc{when} \; (p, e)}, newenv=\dagger]}
+    {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
 \]
 
 \[
@@ -352,47 +515,47 @@ and is not a value constructor name or a reserved word.
     {\pmatch
     \\\\
     \prun[env=\Rho \uplus \Rhoprime, value=v']  \and v' = \tt{false}}
-    {\tlpmatch[tlp={\textsc{when} \; (p, e)}, newenv=\dagger]}
+    {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (GuardNoMatch) }]
-    {\tlpmatch[newenv=\dagger]}
-    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, gs)}, newenv=\dagger]}
+    {\pmatch[newenv=\dagger]}
+    {\pmatch[pat={\textsc{guard} \; (p, gs)}, newenv=\dagger]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (GuardEmpty) }]
-    {\tlpmatch[newenv=r]}
-    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, \emptyseq)}, newenv=r]}
+    {\pmatch[newenv=r]}
+    {\pmatch[pat={\textsc{guard} \; (p, \emptyseq)}, newenv=r]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (GuardFail) }]
     {\inferrule* {}
-    {\tlpmatch[newenv=\Rhoprime]}
+    {\pmatch[newenv=\Rhoprime]}
     \\\\
     \prun[env=\Rho \uplus \Rhoprime, value=v']
     \\\\
     \pmatch[value=v', newenv=\dagger]
     }
-    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, (p <- e) \cdot gs)}, newenv=\dagger]}
+    {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=\dagger]}
 \]
 
 
 \[
 \inferrule*[Left=\textsc{ (GuardRec) }]
     {\inferrule* {}
-    {\tlpmatch[newenv=\Rhoprime]}
+    {\pmatch[newenv=\Rhoprime]}
     \\\\
     \prun[env=\Rho \uplus \Rhoprime, value=v']
     \\\\
     \pmatch[value=v', newenv=\rho'']
     \\\\
-    \tlpmatch[env=\Rho \uplus \rho'', tlp={\textsc{guard} \; (\tlp, gs)},
+    \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard} \; (p, gs)},
     newenv=r]
     }
-    {\tlpmatch[tlp={\textsc{guard} \; (\tlp, (p <- e) \cdot gs)}, newenv=r]}
+    {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=r]}
 \]
 
 

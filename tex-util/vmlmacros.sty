@@ -31,6 +31,7 @@
 
 \newcommand{\bracketed}[1]{\{#1\}}
 \newcommand{\ttbraced}[1]{\tt{(}#1\tt{)}}
+\newcommand{\ttsqbraced}[1]{\tt{[}#1\tt{]}}
 
 %%%%%%%%%% FORMATTING %%%%%%%%%%
 \newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
@@ -220,7 +221,7 @@
   \newcommand\pmatch[1][]{%  pattern-matching judgement
   {\setkeys{state}{#1}%
     \let\c=\component
-    \ensuremath{\br{\c{pat}, \c{value}} \rightarrowtail \c{newenv}}}}
+    \ensuremath{\br{\c{env}\c{envext}, \c{pat}, \c{value}} \rightarrowtail \c{newenv}}}}
 
   \newcommand\pfail{\pmatch[newenv=\dagger]}
 
