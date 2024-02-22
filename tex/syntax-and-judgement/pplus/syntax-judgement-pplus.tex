@@ -466,97 +466,97 @@ and is not a value constructor name or a reserved word.
 \[
 \inferrule*[Left=\textsc{ (TermSingle) }]
     {\pmatch[pat=t, newenv=r]}
-    {\pmatch[pat={t}, newenv=r]}
+    {\pmatch[pat={t \cdot \emptyseq}, newenv=r]}
 \]
 
 
 
 
-\section{Rules for matching Top-level Patterns}
+% \section{Rules for matching Top-level Patterns}
 
-\[
-\inferrule*[Left=\textsc{ (OrSucc) }]
-    {\pmatch[pat=p_{1}]}
-    {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (OrSucc) }]
+%     {\pmatch[pat=p_{1}]}
+%     {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+% \]
 
-\[
-\inferrule*[Left=\textsc{ (OrRec) }]
-    {\pmatch[pat=p_{1}, newenv=\dagger]
-    \and 
-    \pmatch[pat={\textsc{or} \; (p_{2}, \dots p_{n})}]}
-    {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
-\]
-
-
-\[
-\inferrule*[Left=\textsc{ (OrFail) }]
-    {\ }
-    {\pmatch[pat={\textsc{or} \; (\emptyseq)}, newenv=\dagger]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (OrRec) }]
+%     {\pmatch[pat=p_{1}, newenv=\dagger]
+%     \and 
+%     \pmatch[pat={\textsc{or} \; (p_{2}, \dots p_{n})}]}
+%     {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+% \]
 
 
-\[
-\inferrule*[Left=\textsc{ (WhenMatch) }]
-    {\pmatch
-    \\\\
-    \prun[env=\Rho \uplus \Rhoprime, value=v' \and v' \neq \tt{false}]}
-    {\pmatch[pat={\textsc{when} \; (p, e)}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (WhenNoMatch) }]
-    {\pfail}
-    {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (WhenFalse) }]
-    {\pmatch
-    \\\\
-    \prun[env=\Rho \uplus \Rhoprime, value=v']  \and v' = \tt{false}}
-    {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (GuardNoMatch) }]
-    {\pmatch[newenv=\dagger]}
-    {\pmatch[pat={\textsc{guard} \; (p, gs)}, newenv=\dagger]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (GuardEmpty) }]
-    {\pmatch[newenv=r]}
-    {\pmatch[pat={\textsc{guard} \; (p, \emptyseq)}, newenv=r]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (GuardFail) }]
-    {\inferrule* {}
-    {\pmatch[newenv=\Rhoprime]}
-    \\\\
-    \prun[env=\Rho \uplus \Rhoprime, value=v']
-    \\\\
-    \pmatch[value=v', newenv=\dagger]
-    }
-    {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=\dagger]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (OrFail) }]
+%     {\ }
+%     {\pmatch[pat={\textsc{or} \; (\emptyseq)}, newenv=\dagger]}
+% \]
 
 
-\[
-\inferrule*[Left=\textsc{ (GuardRec) }]
-    {\inferrule* {}
-    {\pmatch[newenv=\Rhoprime]}
-    \\\\
-    \prun[env=\Rho \uplus \Rhoprime, value=v']
-    \\\\
-    \pmatch[value=v', newenv=\rho'']
-    \\\\
-    \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard} \; (p, gs)},
-    newenv=r]
-    }
-    {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=r]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (WhenMatch) }]
+%     {\pmatch
+%     \\\\
+%     \prun[env=\Rho \uplus \Rhoprime, value=v' \and v' \neq \tt{false}]}
+%     {\pmatch[pat={\textsc{when} \; (p, e)}]}
+% \]
+
+% \[
+% \inferrule*[Left=\textsc{ (WhenNoMatch) }]
+%     {\pfail}
+%     {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
+% \]
+
+% \[
+% \inferrule*[Left=\textsc{ (WhenFalse) }]
+%     {\pmatch
+%     \\\\
+%     \prun[env=\Rho \uplus \Rhoprime, value=v']  \and v' = \tt{false}}
+%     {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
+% \]
+
+% \[
+% \inferrule*[Left=\textsc{ (GuardNoMatch) }]
+%     {\pmatch[newenv=\dagger]}
+%     {\pmatch[pat={\textsc{guard} \; (p, gs)}, newenv=\dagger]}
+% \]
+
+% \[
+% \inferrule*[Left=\textsc{ (GuardEmpty) }]
+%     {\pmatch[newenv=r]}
+%     {\pmatch[pat={\textsc{guard} \; (p, \emptyseq)}, newenv=r]}
+% \]
+
+% \[
+% \inferrule*[Left=\textsc{ (GuardFail) }]
+%     {\inferrule* {}
+%     {\pmatch[newenv=\Rhoprime]}
+%     \\\\
+%     \prun[env=\Rho \uplus \Rhoprime, value=v']
+%     \\\\
+%     \pmatch[value=v', newenv=\dagger]
+%     }
+%     {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=\dagger]}
+% \]
+
+
+% \[
+% \inferrule*[Left=\textsc{ (GuardRec) }]
+%     {\inferrule* {}
+%     {\pmatch[newenv=\Rhoprime]}
+%     \\\\
+%     \prun[env=\Rho \uplus \Rhoprime, value=v']
+%     \\\\
+%     \pmatch[value=v', newenv=\rho'']
+%     \\\\
+%     \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard} \; (p, gs)},
+%     newenv=r]
+%     }
+%     {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=r]}
+% \]
 
 
 \end{document}
