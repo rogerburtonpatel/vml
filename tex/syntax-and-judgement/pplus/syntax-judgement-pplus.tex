@@ -43,18 +43,19 @@ We present a grammar of \PPlus:
     | $\lambda x. \; e$ : lambda declaration  
     | $e_{1} \; e_{2}$ : function application 
     | $\tt{case} \; e \; \bracketed{\ttsqbraced{p \; e}}$ : case expression 
+    | \ttbraced{$e$}
     ;;
-    $p$ : \textsf{Patterns} ::= $t$ $\bracketed{\vert t}$ : term
+    $p$ : \textsf{Patterns} ::= $t$ $\bracketed{\text{\large\texttt{\char`\|}}\mskip6mu t}$ : term
     ;;
     $t$ : terms ::= $f$ \bracketed{, $f$} : factor
     ;;
     $f$ : factors ::= $a$ \tt{<-} $e$ : atoms from expressions 
-        | $a$ : atoms 
+        | $a$ : atoms from current scrutinee
     ;;
     $a$ : atoms ::= $x$ : name 
     | $K \; \bracketed{a}$ : value constructor application 
-    | \ttbraced{$p$}
     | \tt{when} $e$
+    | \ttbraced{$p$}
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
     | $\lambda x. \; e$ : lambda value 
