@@ -79,7 +79,7 @@ struct
                                     | _ => (false, freshNameGen ()))
                     (* simply make a pattern look like an equation *)
                     fun translateTlPat (P.PAT p) = translatePat p
-                      | translateTlPat _ = VMS.NAME "toto translate top-level patterns"
+                      | translateTlPat _ = VMS.NAME "todo translate top-level patterns"
                     and translatePat (P.PNAME n)        = VMS.NAME n 
                       | translatePat (P.CONAPP (n, ps)) = 
                                       VMS.VCONAPP (Core.K n, map translatePat ps)
