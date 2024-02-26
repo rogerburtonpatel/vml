@@ -1,5 +1,5 @@
 ALL := paper 
-TOP := ../..
+TOP := ../../..
 TEXUTIL := $(TOP)/tex-util
 TEXINPUTS := .:$(TEXUTIL):
 
@@ -7,7 +7,7 @@ compile := env TEXINPUTS=$(TEXINPUTS) latexmk -g -xelatex -pdf -output-directory
 
 .PHONY: all
 
-all: full-paper.tex
+all: vminus-no-alpha.tex
 	$(compile) $^
 
 %.pdf : %.tex
