@@ -17,12 +17,12 @@ Put things here.
 
 % \begin{mathpar}
 % \inferrule*[Right=\textsc{AndShort}]
-%           {\evalr{e_1}  \Downarrow \state{v_1}{\xi'}{\phi}{\rho'}
+%           {\evalr{e_1}  \Downarrow \state{\v[1]}{\xi'}{\phi}{\rho'}
 %            \and 
-%            v_1 = 0}
+%            \v[1] = 0}
 %            {\evalr{\textsc{and}(e_1, e_2)}
 %                 \Downarrow
-%             \state{v_1}{\xi'}{\phi}{\rho'}}
+%             \state{\v[1]}{\xi'}{\phi}{\rho'}}
 % \end{mathpar}
 
 % This document doesn't add anything new yet. 
@@ -41,10 +41,10 @@ Put things here.
 
 % First, the base translation: 
 
-% \textit{Translation from P to V-style if-then-else:}
+% \textit{Translation from P to \v-style if-then-else:}
 
 % \hfill \break
-% \textit{case} \texttt{v} \textit{of} \_ $\rightarrow$ \textit{\expr}
+% \textit{case} \texttt{\v} \textit{of} \_ $\rightarrow$ \textit{\expr}
 % \hfill \break
 % $\triangleq$
 % \hfill \break
@@ -78,7 +78,7 @@ Put things here.
 % \inferrule*[Left=\textsc{TranslateWildcardBindings}]
 % {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
 % }
-%   {{\textsc{case}(\textsc{Wildcard}, v)}
+%   {{\textsc{case}(\textsc{Wildcard}, \v)}
 %    \rightarrowtail {\{\}} 
 %   }
 % \end{mathpar}
@@ -88,7 +88,7 @@ Put things here.
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateWildcardEval}]
 %     {\ }
-%       {{\textsc{case}(\textsc{Wildcard}, v, \expr)}
+%       {{\textsc{case}(\textsc{Wildcard}, \v, \expr)}
 %        \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}
 %       }
 %     \end{mathpar}
@@ -97,7 +97,7 @@ Put things here.
 %         \inferrule*[Left=\textsc{TranslateWildcardEval'}]
 %         {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
 %         }
-%           {{\textsc{case}(\textsc{Wildcard}, v, \expr)}
+%           {{\textsc{case}(\textsc{Wildcard}, \v, \expr)}
 %            \rightarrowtail \expr 
 %           }
 %         \end{mathpar}
@@ -107,18 +107,18 @@ Put things here.
 % Moving on to variables: 
 
 % \hfill \break
-% \textit{case} \texttt{v} \textit{of} $x \rightarrow$ \textit{\expr}
+% \textit{case} \texttt{\v} \textit{of} $x \rightarrow$ \textit{\expr}
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \texttt{if ($\exists x. \; x = v$) \expr \expr}
+% \texttt{if ($\exists x. \; x = \v$) \expr \expr}
 % \hfill \break
 % ------------------------
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfBindings}]
 %     {\ }
-%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = \v$)} \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
 %     }
 % \end{mathpar}
 
@@ -131,19 +131,19 @@ Put things here.
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateVarBindings}]
-%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; \expr \; \expr)}  \rightarrowtail {\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = \v$)} \; \expr \; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
 %     }
-%       {{\textsc{case}(x, v, \expr)}
-%        \rightarrowtail {\{x \longmapsto v\}}
+%       {{\textsc{case}(x, \v, \expr)}
+%        \rightarrowtail {\{x \longmapsto \v\}}
 %       }
 %     \end{mathpar}
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateVarEval}]
-%         {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto v\}}
+%         {{\textsc{Verse-If} (\texttt{($\exists x. \; x = \v$)} \; \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
 %         }
-%           {{\textsc{case}(x, v, \expr)}
-%            \rightarrowtail \expr{\{x \longmapsto v\}}
+%           {{\textsc{case}(x, \v, \expr)}
+%            \rightarrowtail \expr{\{x \longmapsto \v\}}
 %           }
 %         \end{mathpar}
     
