@@ -150,7 +150,7 @@ It~is resumed by passing it the empty tuple, so $\slicecont()$ is a message.
 \item
 $v$ is a value (JavaScript value or Haskell WHNF).
 \item
-$e$ is an unevaluated Haskell expression, thunk, or closure (all words for the same
+$\expr$ is an unevaluated Haskell expression, thunk, or closure (all words for the same
 thing).
 JavaScript calls into Haskell by constructing a closure, then asking
 GHC's run-time system to evaluate~it.
@@ -233,13 +233,13 @@ from JavaScript.)
 \]
 
 When JavaScript wants to call Haskell asynchronously, it first constructs a
-closure~$e$, then calls \texttt{eval\_async($e$)}, which forks a new
+closure~$\expr$, then calls \texttt{eval\_async($\expr$)}, which forks a new
 Haskell thread.
 \[
 \begin{array}{l@{}l}
 \multicolumn2{l}{%
-  \jstate[mc=K(e)]
-  \goesto{\mathtt{eval\_async}(e)\text{ and \texttt{return} $p$}}
+  \jstate[mc=K(\expr)]
+  \goesto{\mathtt{eval\_async}(\expr)\text{ and \texttt{return} $p$}}
   \jstate[mc=K(p),queue=\parthreads R Q,jsheap=J+\slicemessage]
 }
 \\[5pt]
@@ -247,7 +247,7 @@ Haskell thread.
 &
 p = \text{a fresh promise}\\
 &
-R = \text{\texttt{deliver} $p$ (\texttt{try} $e$)}\\
+R = \text{\texttt{deliver} $p$ (\texttt{try} $\expr$)}\\
 &
 \text{\texttt{deliver p (Left exn)}} = \text{\texttt{p.fails exn}}\\
 &
@@ -262,8 +262,8 @@ This transition specifies the following sequence of actions:
 \item
 Allocate a fresh promise~$p$.
 \item
-Fork a new thread~$R$, which will evaluate~$e$.
-(When the evaluation of~$e$ completes, $R$~will deliver the result to promise~$p$.)
+Fork a new thread~$R$, which will evaluate~$\expr$.
+(When the evaluation of~$\expr$ completes, $R$~will deliver the result to promise~$p$.)
 \item
 Ask JavaScript to grant future CPU (so that $R$ can be run).
 \item
@@ -282,10 +282,10 @@ let's assume we define an exception constructor something like this:
 data JSFault = JSFault JSValue
 instance Exception JSFault where ...
 \end{verbatim}
-The Haskell equivalent of a call \monobox{f e} to a foreign JavaScript
-function with argument~\texttt{e} can look something like this:
+The Haskell equivalent of a call \monobox{f \expr} to a foreign JavaScript
+function with argument~\texttt{\expr} can look something like this:
 \begin{verbatim}
-  do let v = haskellToJS e  -- evaluates e, converts result to JavaScript
+  do let v = haskellToJS \expr  -- evaluates \expr, converts result to JavaScript
      p <- g v               -- call to JavaScript returns a `Promise`
      m <- newEmptyMVar
      myself <- threadId

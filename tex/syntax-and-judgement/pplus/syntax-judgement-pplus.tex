@@ -35,30 +35,30 @@ We present a grammar of \PPlus:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+    | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
     ;;
-    $e$ : Expressions ::= 
+    $\expr$ : Expressions ::= 
     | $x, y, z$ : names
-    | $K\bracketed{e}$ : value constructor application 
-    | $\lambda x. \; e$ : lambda declaration  
-    | $e_{1} \; e_{2}$ : function application 
-    | $\tt{case} \; e \; \bracketed{\ttsqbraced{p \; e}}$ : case expression 
-    | \ttbraced{$e$}
+    | $K\bracketed{\expr}$ : value constructor application 
+    | $\lambda x. \; \expr$ : lambda declaration  
+    | $\expr[1] \; \expr[2]$ : function application 
+    | $\tt{case} \; \expr \; \bracketed{\ttsqbraced{p \; \expr}}$ : case expression 
+    | \ttbraced{$\expr$}
     ;;
     $p$ : \textsf{Patterns} ::= $t$ $\bracketed{\text{\large\texttt{\char`\|}}\mskip6mu t}$ : term
     ;;
     $t$ : terms ::= $f$ \bracketed{, $f$} : factor
     ;;
-    $f$ : factors ::= $a$ \tt{<-} $e$ : atoms from expressions 
+    $f$ : factors ::= $a$ \tt{<-} $\expr$ : atoms from expressions 
         | $a$ : atoms from current scrutinee
     ;;
     $a$ : atoms ::= $x$ : name 
     | $K \; \bracketed{a}$ : value constructor application 
-    | \tt{when} $e$
+    | \tt{when} $\expr$
     | \ttbraced{$p$}
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
-    | $\lambda x. \; e$ : lambda value 
+    | $\lambda x. \; \expr$ : lambda value 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | \tt{true} $\vert$ \tt{false} : booleans
@@ -74,25 +74,25 @@ We present a grammar of \PPlus:
 %     $\bracketed{d}$ : definition
 %     ;;
 %     $d$ : \textsf{Definitions} ::=
-%     | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+%     | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
 %     ;;
-%     $e$ : Expressions ::= 
+%     $\expr$ : Expressions ::= 
 %     | $x, y, z$ : names
-%     | $K\bracketed{e}$ : value constructor application 
-%     | $\lambda x. \; e$ : lambda declaration  
-%     | $e_{1} \; e_{2}$ : function application 
-%     | $\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}$ : case expression 
+%     | $K\bracketed{\expr}$ : value constructor application 
+%     | $\lambda x. \; \expr$ : lambda declaration  
+%     | $\expr[1] \; \expr[2]$ : function application 
+%     | $\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}$ : case expression 
 %     ;;
 %     p : \textsf{Top-level Patterns} ::= $p$ : pattern 
-%     | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+%     | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
 %     | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
-%     | $\ttbraced{p \; \bracketed{, \; p <- e}}$ : pattern guard
+%     | $\ttbraced{p \; \bracketed{, \; p <- \expr}}$ : pattern guard
 %     ;;
 %     $p$ : \textsf{Patterns} ::= $x$ : name 
 %     | $K \; \bracketed{p}$ : value constructor application 
 %     ;;
 %     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
-%     | $\lambda x. \; e$ : lambda value 
+%     | $\lambda x. \; \expr$ : lambda value 
 %     ;;
 %     $K$ : \textsf{Value Constructors} ::=
 %     | \tt{true} $\vert$ \tt{false} : booleans
@@ -115,12 +115,12 @@ and is not a value constructor name or a reserved word.
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
-    $e$& expression \\
+    $\expr$& expression \\
     $v, \; v'$& value \\
     $K$& value constructor \\ 
     $p$& pattern \\ 
     $x, y$& names \\ 
-    $g$& pattern guard \\ 
+    $\guard$& pattern guard \\ 
     $gs$& list of pattern guards \\ 
     $\dagger$& pattern match failure \\ 
     $r$& a result, either $v$ or $\dagger$ \\ 
@@ -204,7 +204,7 @@ and is not a value constructor name or a reserved word.
         each of which matches the corresponding atom. Its match produces 
         the disjoint union of matching all internal atoms to all internal values. 
         \rab{This was quick. Please help rephrease this.}
-        \item \tt{when} $e$ matches when $e$ evaluates to a value other than 
+        \item \tt{when} $\expr$ matches when $\expr$ evaluates to a value other than 
         \tt{false}, and produces the empty environment. 
     \end{itemize}
 
@@ -269,11 +269,11 @@ and is not a value constructor name or a reserved word.
 \inferrule*[Left=\textsc{ (Eval-Vcon-Multi) }]
     {\inferrule* {}
     {
-    \veval{e_{i}}{v_{i}}
+    \veval{\expr[i]}{v_{i}}
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(e_{1}, \dots e_{n})}{K(v_{1}, 
+    {\veval{K(\expr[1], \dots \expr[n])}{K(v_{1}, 
     \dots v_{i})}}
 \]
 
@@ -288,18 +288,18 @@ and is not a value constructor name or a reserved word.
 \[
 \inferrule*[Left=\textsc{ (Eval-Lambda-Decl) }]
     {\ }
-    {\prun[exp={\lambda x.e}, value={\lambda x.e}]}
+    {\prun[exp={\lambda x.\expr}, value={\lambda x.\expr}]}
 \]
 
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Funapp) }]
-    {\veval{e_{1}}{\lambda x.e}
+    {\veval{\expr[1]}{\lambda x.\expr}
     \\\\
-    \veval{e_{2}}{v'}
+    \veval{\expr[2]}{v'}
     \\\\
     \prun[envext=\bracketed{x \mapsto v'}]}
-    {\veval{e_{1}\; e_{2}}{v}}
+    {\veval{\expr[1]\; \expr[2]}{v}}
 \]
 
 \[
@@ -309,11 +309,11 @@ and is not a value constructor name or a reserved word.
     \and 
     \prun[exp=
         {\textsc{case} \; (\textsc{literal}(v), 
-        [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+        [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
         value=v']}    
     {\prun[exp=
-    {\textsc{case} \; (e, 
-    [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+    {\textsc{case} \; (\expr, 
+    [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
     value=v']}
 \]
 
@@ -321,11 +321,11 @@ and is not a value constructor name or a reserved word.
 \inferrule*[Left=\textsc{ (CaseMatch) }]
     {\inferrule* {}
     {\pmatch[pat={p_{1}}, newenv=\rho']}
-    \and 
-    \prun[exp=e_{1}, env=\rho + \rho']}    
+    \and
+    {\prun[exp= {\expr[1]}, env=\rho + \rho']}}
     {\prun[exp=
     {\textsc{case} \; (\textsc{literal}(v), 
-    [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+    [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
     value=v']}
 \]
 
@@ -335,11 +335,11 @@ and is not a value constructor name or a reserved word.
     {\pmatch[pat={p_{1}}, newenv=\dagger]}
     \and 
     \prun[exp={\textsc{case} \; (\textsc{literal}(v), 
-    [p_{2} \; e_{2}], \dots, [p_{n} \; e_{n}])},
+    [p_{2} \; \expr[2]], \dots, [p_{n} \; \expr[n]])},
     value=v']}    
     {\prun[exp=
     {\textsc{case} \; (\textsc{literal}(v), 
-    [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+    [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
     value=v']}
 \]
 
@@ -394,14 +394,14 @@ and is not a value constructor name or a reserved word.
 \[
 \inferrule*[Left=\textsc{ (MatchWhen) }]
     {\prun[value=v'] \and v' \neq \tt{false}}
-    {\pmatch[pat={\tt{when}\; e},
+    {\pmatch[pat={\tt{when}\; \expr},
             newenv=\bracketed{}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (FailWhen) }]
 {\prun[value=v'] \and v' = \tt{false}}
-{\pmatch[pat={\tt{when}\; e},
+{\pmatch[pat={\tt{when}\; \expr},
             newenv=\dagger]}
 \]
 
@@ -410,7 +410,7 @@ and is not a value constructor name or a reserved word.
 \[
 \inferrule*[Left=\textsc{ (AtomExpMatch) }]
 {\prun[value=v'] \and \pmatch[pat=a, value=v', newenv=r]}
-{\pmatch[pat={a \leftarrow e},
+{\pmatch[pat={a \leftarrow \expr},
             newenv=r]}
 \]
 
@@ -502,13 +502,13 @@ and is not a value constructor name or a reserved word.
 %     {\pmatch
 %     \\\\
 %     \prun[env=\Rho \uplus \Rhoprime, value=v' \and v' \neq \tt{false}]}
-%     {\pmatch[pat={\textsc{when} \; (p, e)}]}
+%     {\pmatch[pat={\textsc{when} \; (p, \expr)}]}
 % \]
 
 % \[
 % \inferrule*[Left=\textsc{ (WhenNoMatch) }]
 %     {\pfail}
-%     {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
+%     {\pmatch[pat={\textsc{when} \; (p, \expr)}, newenv=\dagger]}
 % \]
 
 % \[
@@ -516,7 +516,7 @@ and is not a value constructor name or a reserved word.
 %     {\pmatch
 %     \\\\
 %     \prun[env=\Rho \uplus \Rhoprime, value=v']  \and v' = \tt{false}}
-%     {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
+%     {\pmatch[pat={\textsc{when} \; (p, \expr)}, newenv=\dagger]}
 % \]
 
 % \[
@@ -540,7 +540,7 @@ and is not a value constructor name or a reserved word.
 %     \\\\
 %     \pmatch[value=v', newenv=\dagger]
 %     }
-%     {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=\dagger]}
+%     {\pmatch[pat={\textsc{guard} \; (p, (p <- \expr) \cdot gs)}, newenv=\dagger]}
 % \]
 
 
@@ -556,7 +556,7 @@ and is not a value constructor name or a reserved word.
 %     \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard} \; (p, gs)},
 %     newenv=r]
 %     }
-%     {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=r]}
+%     {\pmatch[pat={\textsc{guard} \; (p, (p <- \expr) \cdot gs)}, newenv=r]}
 % \]
 
 

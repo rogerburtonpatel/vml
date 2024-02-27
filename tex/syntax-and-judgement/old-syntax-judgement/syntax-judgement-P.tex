@@ -35,22 +35,22 @@
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\ttbraced{\tt{val} \; x \; e}$ : bind name to expression
+    | $\ttbraced{\tt{val} \; x \; \expr}$ : bind name to expression
     ;;
-    $e$ : \textsf{Expressions} ::=
+    $\expr$ : \textsf{Expressions} ::=
     | $x$ : name
-    | $\ttbraced{\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}}$ : case expression 
-    | $K \bracketed{e}$ : value constructor application 
+    | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
+    | $K \bracketed{\expr}$ : value constructor application 
     ;;
     $b$ : Boolean expressions ::=
-     $\mathit{placeholder}$ : any $e$ that evaluates to a boolean 
+     $\mathit{placeholder}$ : any $\expr$ that evaluates to a boolean 
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
     | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-    % | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+    % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
     | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
-    | $\ttbraced{p \tt{;} \bracketed{b \vert \ttbraced{p  <- e}}}$ : pattern guard
+    | $\ttbraced{p \tt{;} \bracketed{b \vert \ttbraced{p  <- \expr}}}$ : pattern guard
     ;;
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 
@@ -262,7 +262,7 @@ far as I can tell. }
 % appear in ALL branches of the or-pattern. 
 
 % In V-, you can have defaults to your 'or-patterns' in a way you can't so much in
-% P+, i.e. x can be a literal at the end of a list of unmatched patterns (or we
+% P+, i.\expr. x can be a literal at the end of a list of unmatched patterns (or we
 % can fail).
 
 % Example: 

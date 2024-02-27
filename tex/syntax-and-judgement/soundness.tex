@@ -82,8 +82,8 @@ Translating these ideas to laws for \closefun:
 
 \begin{align}
     \close[env=\emptyenv, context=\emptyseq]   &\rightarrow \galpha \\
-    % \close[context=\TeqT{e_{1} = e_{2}}]      &\rightarrow \close[context=\TT, 
-    %        term = {e_{1} = e_{2};\;\galpha}] \\
+    % \close[context=\TeqT{\expr[1] = \expr[2]}]      &\rightarrow \close[context=\TT, 
+    %        term = {\expr[1] = \expr[2];\;\galpha}] \\
     \close &\rightarrow \close[context=\emptyseq, term={\context; \galpha}] 
     \rm{ when \context is non-empty} \\
     \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq] &\rightarrow 
@@ -96,7 +96,7 @@ Translating these ideas to laws for \closefun:
 \bigskip
 
 Question: how can we prove soundness of \closefun when order of the $\rho$
-transformations is nondeterministic? I.e. how will we know that expanding a
+transformations is nondeterministic? I.\expr. how will we know that expanding a
 guarded expression into a $\rho$ and a \context will and then closing 
 that guarded expression with that $\rho$ and \context will produce equivalent 
 results? Basically, I'm worried an $\exists$ will be put before where it should

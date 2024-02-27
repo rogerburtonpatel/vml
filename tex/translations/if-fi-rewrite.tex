@@ -20,10 +20,10 @@ Given $\tt{guarded-exp}$:
 where each $e_k$ is a \tt{guarded-exp}, rewrites to: 
 
 $$
-(\bf{one} \; \{\translate{(e_{1}})
-\; \choice \; (\translate{e_{2}}) 
+(\bf{one} \; \{\translate{(\expr[1]})
+\; \choice \; (\translate{\expr[2]}) 
 \; \choice \; \dots \; \choice \; 
-(\translate{e_{n}}) 
+(\translate{\expr[n]}) 
 \; \choice \; \bf{wrong} \})
  \langle\rangle  \\
 $$  

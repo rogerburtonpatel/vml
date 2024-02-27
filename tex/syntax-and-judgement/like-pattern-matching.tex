@@ -3,7 +3,7 @@
 
 \begin{document}
 
-1. An equation can be solved if it has a side with no unevaluated (i.e.,
+1. An equation can be solved if it has a side with no unevaluated (i.\expr.,
 unbound) logical variables. 
 
 2. Once an equation is solved, all its logical variables are evaluated (bound,
@@ -24,7 +24,7 @@ so:
 
 guard ::= exp list 
 
-exp ::= value $\vert$ eq; e $\vert$ $\exists$ x. exp $\vert$ fail $\vert$ e1
+exp ::= value $\vert$ eq; \expr $\vert$ $\exists$ x. exp $\vert$ fail $\vert$ e1
 \choice $\;$ e2 $\vert$ v1 v2 $\vert$ one{exp} $\vert$ all{exp}
 
 eq ::= exp $\vert$ equation 
@@ -32,7 +32,7 @@ eq ::= exp $\vert$ equation
 equation ::= x = exp 
 
 
-A term eq is either an ordinary expression e, or an equation v = e; this syntax
+A term eq is either an ordinary expression \expr, or an equation v = \expr; this syntax
 ensures that equations can only occur to the left of a “; ”. 
 
 
@@ -51,17 +51,17 @@ No- we just return the result of e2.
 
 % ntegers 𝑘
 % Variables 𝑥, ~, 𝑧, 𝑓 , 𝑔
-% Programs 𝑝 ::= one{e} where fvs(𝑒) = ∅
-% Expressions 𝑒 ::= v | 𝑒𝑞; e | ∃x. e | fail | e1 e2 | v1 v2 | one{e} | all{e}
-% 𝑒𝑞 ::= e | v = e Note: “𝑒𝑞” is pronounced “expression or equation”
+% Programs 𝑝 ::= one{\expr} where fvs(𝑒) = ∅
+% Expressions 𝑒 ::= v | 𝑒𝑞; \expr | ∃x. \expr | fail | e1 e2 | v1 v2 | one{\expr} | all{\expr}
+% 𝑒𝑞 ::= \expr | v = \expr Note: “𝑒𝑞” is pronounced “expression or equation”
 % Values v ::= 𝑥 | hnf
-% Head values hnf ::= 𝑘 | 𝑜𝑝 | ⟨v1, ···, vn⟩ | 𝜆x. e
+% Head values hnf ::= 𝑘 | 𝑜𝑝 | ⟨v1, ···, vn⟩ | 𝜆x. \expr
 % Primops 𝑜𝑝 ::= gt | add
 % Concrete syntax: “ ” and “;” are right-associative.
 % “=” binds more tightly than “;”.
 % “𝜆” and “∃” each scope as far to the right as possible.
 % For example, (𝜆y. ∃x. x = 1; x + y) means (𝜆y. (∃x. ((x = 1); (x + y)))).
 % Parentheses may be used freely to aid readability and override default precedence.
-% fvs(e) means the free variables of e; in VC, 𝜆 and ∃ are the only binders.
+% fvs(\expr) means the free variables of \expr; in VC, 𝜆 and ∃ are the only binders.
 
 \end{document}

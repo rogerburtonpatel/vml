@@ -31,12 +31,12 @@ opsem.
 
 My questions are: 
 
-Do we want opsem to formally notate the evaluation of $e$ with the new bindings?
+Do we want opsem to formally notate the evaluation of $\expr$ with the new bindings?
 
 I'm putting the verse rules on top to represent how they create no bindings 
 as well. How kosher is this?
 
-I assume we need to prove Verse-if true e e is e and creates no new bindings to 
+I assume we need to prove Verse-if true \expr \expr is \expr and creates no new bindings to 
 logical variables in its scope. Am I right about this?
 
 Introduce an abstract machine semantics? uscheme in chapter 3. 
@@ -54,22 +54,22 @@ First, the base translation:
 \textit{Translation from P to V-style if-then-else:}
 
 \hfill \break
-\textit{case} \texttt{v} \textit{of} \_ $\rightarrow$ \textit{e}
+\textit{case} \texttt{v} \textit{of} \_ $\rightarrow$ \textit{\expr}
 \hfill \break
 $\triangleq$
 \hfill \break
-\texttt{if (True) e e}
+\texttt{if (True) \expr \expr}
 \hfill \break
 ------------------------
 \vspace{-10pt}
 
-TODO FIX if true e e to if true e impossible 
+TODO FIX if true \expr \expr to if true \expr impossible 
 
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfTrueBindings}]
     {\ }
-    {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+    {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
     }
 \end{mathpar}
 
@@ -77,7 +77,7 @@ TODO FIX if true e e to if true e impossible
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfTrueEval}]
     {\ }
-    {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+    {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
     }
 \end{mathpar}
 
@@ -86,7 +86,7 @@ Maybe want these as $\textsc{Verse-IfLiteralBindings}$?
 
 \begin{mathpar}
 \inferrule*[Left=\textsc{TranslateWildcardBindings}]
-{{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+{{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
 }
   {{\textsc{case}(\textsc{Wildcard}, v)}
    \rightarrowtail {\{\}} 
@@ -98,17 +98,17 @@ Maybe want these as $\textsc{Verse-IfLiteralBindings}$?
 \begin{mathpar}
     \inferrule*[Left=\textsc{TranslateWildcardEval}]
     {\ }
-      {{\textsc{case}(\textsc{Wildcard}, v, e)}
-       \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;e\; e)}
+      {{\textsc{case}(\textsc{Wildcard}, v, \expr)}
+       \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}
       }
     \end{mathpar}
 
     \begin{mathpar}
         \inferrule*[Left=\textsc{TranslateWildcardEval'}]
-        {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+        {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
         }
-          {{\textsc{case}(\textsc{Wildcard}, v, e)}
-           \rightarrowtail e 
+          {{\textsc{case}(\textsc{Wildcard}, v, \expr)}
+           \rightarrowtail \expr 
           }
         \end{mathpar}
 
@@ -117,43 +117,43 @@ Maybe want these as $\textsc{Verse-IfLiteralBindings}$?
 Moving on to variables: 
 
 \hfill \break
-\textit{case} \texttt{v} \textit{of} $x \rightarrow$ \textit{e}
+\textit{case} \texttt{v} \textit{of} $x \rightarrow$ \textit{\expr}
 \hfill \break
 $\triangleq$
 \hfill \break
-\texttt{if ($\exists x. \; x = v$) e e}
+\texttt{if ($\exists x. \; x = v$) \expr \expr}
 \hfill \break
 ------------------------
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfBindings}]
     {\ }
-    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto v\}}
     }
 \end{mathpar}
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfEval}]
     {\ }
-    {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+    {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
     }
 \end{mathpar}
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{TranslateVarBindings}]
-    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail {\{x \longmapsto v\}}
+    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; \expr \; \expr)}  \rightarrowtail {\{x \longmapsto v\}}
     }
-      {{\textsc{case}(x, v, e)}
+      {{\textsc{case}(x, v, \expr)}
        \rightarrowtail {\{x \longmapsto v\}}
       }
     \end{mathpar}
 
     \begin{mathpar}
         \inferrule*[Left=\textsc{TranslateVarEval}]
-        {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+        {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto v\}}
         }
-          {{\textsc{case}(x, v, e)}
-           \rightarrowtail e{\{x \longmapsto v\}}
+          {{\textsc{case}(x, v, \expr)}
+           \rightarrowtail \expr{\{x \longmapsto v\}}
           }
         \end{mathpar}
     
@@ -212,11 +212,11 @@ $\triangleq$
 % \end{mathpar}
 
 % \hfill \break
-% \textit{case} \texttt{scrutinee} \textit{of} \_ $\rightarrow$ \textit{e}
+% \textit{case} \texttt{scrutinee} \textit{of} \_ $\rightarrow$ \textit{\expr}
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \texttt{if (True) e}
+% \texttt{if (True) \expr}
 % \hfill \break
 
 \end{document}
