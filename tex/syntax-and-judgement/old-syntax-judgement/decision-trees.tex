@@ -25,12 +25,12 @@ We present a grammar of $D$, the language of decision trees:
     [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
     | $\alpha$ : match node 
     | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-    | $\tt{let} \; x \; \tt{=} \; e \; \tt{in} \; \Dalpha$ : let-bind a name
+    | $\tt{let} \; x \; \tt{=} \; \expr \; \tt{in} \; \Dalpha$ : let-bind a name
     ;;
-    $e$ : \textsf{Expressions} ::=
+    $\expr$ : \textsf{Expressions} ::=
     | $x$ : name
-    | $\mathcal{D}_{e}$ : decision trees 
-    | $K \bracketed{e}$ : value constructor application 
+    | $\mathcal{D}_{\expr}$ : decision trees 
+    | $K \bracketed{\expr}$ : value constructor application 
     | $e_1 \; e_2$ : function application 
     ;;
     % $K$ : \textsf{Value Constructors} ::=

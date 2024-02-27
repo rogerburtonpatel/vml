@@ -35,29 +35,29 @@ Reminder grammar of \PPlus and \VMinus:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+    | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
     ;;
-    $e$ : Expressions ::= 
+    $\expr$ : Expressions ::= 
     | $x, y, z$ : names
-    | $K\bracketed{e}$ : value constructor application 
-    | $\lambda x. \; e$ : lambda declaration  
-    | $e_{1} \; e_{2}$ : function application 
-    | $\tt{case} \; e \; \bracketed{\ttsqbraced{p \; e}}$ : case expression 
+    | $K\bracketed{\expr}$ : value constructor application 
+    | $\lambda x. \; \expr$ : lambda declaration  
+    | $\expr[1] \; \expr[2]$ : function application 
+    | $\tt{case} \; \expr \; \bracketed{\ttsqbraced{p \; \expr}}$ : case expression 
     ;;
     $p$ : \textsf{Patterns} ::= $t$ $\bracketed{\vert t}$ : term
     ;;
     $t$ : terms ::= $f$ \bracketed{, $f$} : factor
     ;;
-    $f$ : factors ::= $a$ \tt{<-} $e$ : atoms from expressions 
+    $f$ : factors ::= $a$ \tt{<-} $\expr$ : atoms from expressions 
         | $a$ : atoms 
     ;;
     $a$ : atoms ::= $x$ : name 
     | $K \; \bracketed{a}$ : value constructor application 
     | \ttbraced{$p$}
-    | \tt{when} $e$
+    | \tt{when} $\expr$
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
-    | $\lambda x. \; e$ : lambda value 
+    | $\lambda x. \; \expr$ : lambda value 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | \tt{true} $\vert$ \tt{false} : booleans
@@ -77,24 +77,24 @@ Reminder grammar of \PPlus and \VMinus:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+    | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
     ;;
-    $e$ : \textsf{Expressions} ::=
+    $\expr$ : \textsf{Expressions} ::=
     | $x, y, z$ : names
     % Question: ebnf braces vs. regular brackets
-    | $\tt{if} \; \tt{[}\; g \; \bracketed{[] g} \;\tt{]} \; \tt{fi}$ : if-fi 
-    | $K \bracketed{e}$ : value constructor application 
-    | $e_{1} \; e_{2}$ : function application 
+    | $\tt{if} \; \tt{[}\; \guard \; \bracketed{[] \guard} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $K \bracketed{\expr}$ : value constructor application 
+    | $\expr[1] \; \expr[2]$ : function application 
     ;;
-    $g$ : \textsf{Guarded Expressions} ::=  
-    $\boldsymbol{\rightarrow}e$ : terminating experession
-    | $e; \; g$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} g$ : existential 
-    | $e_{1} = e_{2}; \; g$ : equation 
-    | $\lambda x. \; e$ : lambda 
+    $\guard$ : \textsf{Guarded Expressions} ::=  
+    $\boldsymbol{\rightarrow}\expr$ : terminating experession
+    | $\expr; \; \guard$ : intermediate expression 
+    | $\exists \bracketed{x} \tt{.} \guard$ : existential 
+    | $\expr[1] = \expr[2]; \; \guard$ : equation 
+    | $\lambda x. \; \expr$ : lambda 
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
-    | $\lambda x. \; e$ : lambda 
+    | $\lambda x. \; \expr$ : lambda 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | \tt{true} $\vert$ \tt{false} : booleans
@@ -110,25 +110,25 @@ Reminder grammar of \PPlus and \VMinus:
 %     $\bracketed{d}$ : definition
 %     ;;
 %     $d$ : \textsf{Definitions} ::=
-%     | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+%     | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
 %     ;;
-%     $e$ : Expressions ::= 
+%     $\expr$ : Expressions ::= 
 %     | $x, y, z$ : names
-%     | $K\bracketed{e}$ : value constructor application 
-%     | $\lambda x. \; e$ : lambda declaration  
-%     | $e_{1} \; e_{2}$ : function application 
-%     | $\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}$ : case expression 
+%     | $K\bracketed{\expr}$ : value constructor application 
+%     | $\lambda x. \; \expr$ : lambda declaration  
+%     | $\expr[1] \; \expr[2]$ : function application 
+%     | $\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}$ : case expression 
 %     ;;
 %     p : \textsf{Top-level Patterns} ::= $p$ : pattern 
-%     | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+%     | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
 %     | $\tt \; p_{1} \; \vert \dots \vert \; p_{n}$ : or-pattern 
-%     | $\ttbraced{p \; \bracketed{, \; p <- e}}$ : pattern guard
+%     | $\ttbraced{p \; \bracketed{, \; p <- \expr}}$ : pattern guard
 %     ;;
 %     $p$ : \textsf{Patterns} ::= $x$ : name 
 %     | $K \; \bracketed{p}$ : value constructor application 
 %     ;;
 %     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
-%     | $\lambda x. \; e$ : lambda value 
+%     | $\lambda x. \; \expr$ : lambda value 
 %     ;;
 %     $K$ : \textsf{Value Constructors} ::=
 %     | \tt{true} $\vert$ \tt{false} : booleans
@@ -151,12 +151,12 @@ Reminder grammar of \PPlus and \VMinus:
 % \toprule
 %     \multicolumn2{l}{\emph{Metavariables}} \\
 % \midrule
-%     $e$& expression \\
+%     $\expr$& expression \\
 %     $v, \; v'$& value \\
 %     $K$& value constructor \\ 
 %     $p$& pattern \\ 
 %     $x, y$& names \\ 
-%     $g$& pattern guard \\ 
+%     $\guard$& pattern guard \\ 
 %     $gs$& list of pattern guards \\ 
 %     $\dagger$& pattern match failure \\ 
 %     $r$& a result, either $v$ or $\dagger$ \\ 
@@ -240,7 +240,7 @@ Reminder grammar of \PPlus and \VMinus:
 %         each of which matches the corresponding atom. Its match produces 
 %         the disjoint union of matching all internal atoms to all internal values. 
 %         \rab{This was quick. Please help rephrease this.}
-%         \item \tt{when} $e$ matches when $e$ evaluates to a value other than 
+%         \item \tt{when} $\expr$ matches when $\expr$ evaluates to a value other than 
 %         \tt{false}, and produces the empty environment. 
 %     \end{itemize}
 
@@ -280,26 +280,26 @@ Reminder grammar of \PPlus and \VMinus:
 
 \begin{align}
     &\ptov[exp=x, result=x] \\
-    &\ptov[exp={K \; e_{1} \dots e_{n}}, result={K \etran{e_{1}} \dots \etran{e_{n}}}] \\
-    &\ptov[exp={\lambda x.\; e}, result={\lambda x.\; \etran{e}}] \\
-    &\ptov[exp={e_{1} \; e_{2}}, result={\etran{e_{1}}\; \etran{e_{2}}}] \\
-    &\ptov[exp={\tt{case} \; e\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \etran{e}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   
+    &\ptov[exp={K \; \expr[1] \dots \expr[n]}, result={K \etran{\expr[1]} \dots \etran{\expr[n]}}] \\
+    &\ptov[exp={\lambda x.\; \expr}, result={\lambda x.\; \etran{\expr}}] \\
+    &\ptov[exp={\expr[1] \; \expr[2]}, result={\etran{\expr[1]}\; \etran{\expr[2]}}] \\
+    &\ptov[exp={\tt{case} \; \expr\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \etran{\expr}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   
 \end{align}
 \[
-    \ptov[exp={\tt{case} \; e\;  p_{1}\;e_{1} \vert \dots \vert p_{n}\;e_{n}}, 
-    result={{\iffitt{\exists x. \; x = \etran{e}; \; 
-            \iffitt{x = \ptran{p_{1}}; \rightarrow \etran{e_{1}} 
-            [] \dots [] x = \ptran{p_{n}}; \rightarrow \etran{e_{n}}}}}}] \; \rm{, $x$ fresh }    
+    \ptov[exp={\tt{case} \; \expr\;  p_{1}\;\expr[1] \vert \dots \vert p_{n}\;\expr[n]}, 
+    result={{\iffitt{\exists x. \; x = \etran{\expr}; \; 
+            \iffitt{x = \ptran{p_{1}}; \rightarrow \etran{\expr[1]} 
+            [] \dots [] x = \ptran{p_{n}}; \rightarrow \etran{\expr[n]}}}}}] \; \rm{, $x$ fresh }    
 \]
 
 \begin{align}
     &\pattov[exp=x, result=x] \\
-    &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{e_{n}}}] \\
-&\ptov[exp={p \; \tt{when} \; e}, result={\ptran{p}\tt{;} \; \etran{e}}] \\
+    &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{\expr[n]}}] \\
+&\ptov[exp={p \; \tt{when} \; \expr}, result={\ptran{p}\tt{;} \; \etran{\expr}}] \\
     &\ptov[exp={p_{1} \vert p_{2}}, result={\ptran{p_{1}} \vert \ptran{p_{2}}}] \\
-    &\ptov[exp={p,  p_{1} \leftarrow e_{1}, \dots, p_{n} \leftarrow e_{n}}, 
-    result={\ptran{p}\tt{;} \ptran{p_{1}} = \etran{e_{1}}\tt{;} \dots\tt{;} 
-    \ptran{p_{n}} = \etran{e_{n}}}] \\
+    &\ptov[exp={p,  p_{1} \leftarrow \expr[1], \dots, p_{n} \leftarrow \expr[n]}, 
+    result={\ptran{p}\tt{;} \ptran{p_{1}} = \etran{\expr[1]}\tt{;} \dots\tt{;} 
+    \ptran{p_{n}} = \etran{\expr[n]}}] \\
 \end{align}
 
 
@@ -332,11 +332,11 @@ Reminder grammar of \PPlus and \VMinus:
 % \inferrule*[Left=\textsc{ (Eval-Vcon-Multi) }]
 %     {\inferrule* {}
 %     {
-%     \veval{e_{i}}{v_{i}}
+%     \veval{\expr[i]}{v_{i}}
 %     \and 
 %     1 \leq i \leq n
 %     }}
-%     {\veval{K(e_{1}, \dots e_{n})}{K(v_{1}, 
+%     {\veval{K(\expr[1], \dots \expr[n])}{K(v_{1}, 
 %     \dots v_{i})}}
 % \]
 
@@ -351,18 +351,18 @@ Reminder grammar of \PPlus and \VMinus:
 % \[
 % \inferrule*[Left=\textsc{ (Eval-Lambda-Decl) }]
 %     {\ }
-%     {\prun[exp={\lambda x.e}, value={\lambda x.e}]}
+%     {\prun[exp={\lambda x.\expr}, value={\lambda x.\expr}]}
 % \]
 
 
 % \[
 % \inferrule*[Left=\textsc{ (Eval-Funapp) }]
-%     {\veval{e_{1}}{\lambda x.e}
+%     {\veval{\expr[1]}{\lambda x.\expr}
 %     \\\\
-%     \veval{e_{2}}{v'}
+%     \veval{\expr[2]}{v'}
 %     \\\\
 %     \prun[envext=\bracketed{x \mapsto v'}]}
-%     {\veval{e_{1}\; e_{2}}{v}}
+%     {\veval{\expr[1]\; \expr[2]}{v}}
 % \]
 
 % \[
@@ -372,11 +372,11 @@ Reminder grammar of \PPlus and \VMinus:
 %     \and 
 %     \prun[exp=
 %         {\textsc{case} \; (\textsc{literal}(v), 
-%         [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+%         [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
 %         value=v']}    
 %     {\prun[exp=
-%     {\textsc{case} \; (e, 
-%     [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+%     {\textsc{case} \; (\expr, 
+%     [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
 %     value=v']}
 % \]
 
@@ -385,10 +385,10 @@ Reminder grammar of \PPlus and \VMinus:
 %     {\inferrule* {}
 %     {\pmatch[pat={p_{1}}, newenv=\rho']}
 %     \and 
-%     \prun[exp=e_{1}, env=\rho + \rho']}    
+%     \prun[exp=\expr[1], env=\rho + \rho']}    
 %     {\prun[exp=
 %     {\textsc{case} \; (\textsc{literal}(v), 
-%     [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+%     [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
 %     value=v']}
 % \]
 
@@ -398,11 +398,11 @@ Reminder grammar of \PPlus and \VMinus:
 %     {\pmatch[pat={p_{1}}, newenv=\dagger]}
 %     \and 
 %     \prun[exp={\textsc{case} \; (\textsc{literal}(v), 
-%     [p_{2} \; e_{2}], \dots, [p_{n} \; e_{n}])},
+%     [p_{2} \; \expr[2]], \dots, [p_{n} \; \expr[n]])},
 %     value=v']}    
 %     {\prun[exp=
 %     {\textsc{case} \; (\textsc{literal}(v), 
-%     [p_{1} \; e_{1}], \dots, [p_{n} \; e_{n}])},
+%     [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
 %     value=v']}
 % \]
 
@@ -457,14 +457,14 @@ Reminder grammar of \PPlus and \VMinus:
 % \[
 % \inferrule*[Left=\textsc{ (MatchWhen) }]
 %     {\prun[value=v'] \and v' \neq \tt{false}}
-%     {\pmatch[pat={\tt{when}\; e},
+%     {\pmatch[pat={\tt{when}\; \expr},
 %             newenv=\bracketed{}]}
 % \]
 
 % \[
 % \inferrule*[Left=\textsc{ (FailWhen) }]
 % {\prun[value=v'] \and v' = \tt{false}}
-% {\pmatch[pat={\tt{when}\; e},
+% {\pmatch[pat={\tt{when}\; \expr},
 %             newenv=\dagger]}
 % \]
 
@@ -473,7 +473,7 @@ Reminder grammar of \PPlus and \VMinus:
 % \[
 % \inferrule*[Left=\textsc{ (AtomExpMatch) }]
 % {\prun[value=v'] \and \pmatch[pat=a, value=v', newenv=r]}
-% {\pmatch[pat={a \leftarrow e},
+% {\pmatch[pat={a \leftarrow \expr},
 %             newenv=r]}
 % \]
 
@@ -565,13 +565,13 @@ Reminder grammar of \PPlus and \VMinus:
 % %     {\pmatch
 % %     \\\\
 % %     \prun[env=\Rho \uplus \Rhoprime, value=v' \and v' \neq \tt{false}]}
-% %     {\pmatch[pat={\textsc{when} \; (p, e)}]}
+% %     {\pmatch[pat={\textsc{when} \; (p, \expr)}]}
 % % \]
 
 % % \[
 % % \inferrule*[Left=\textsc{ (WhenNoMatch) }]
 % %     {\pfail}
-% %     {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{when} \; (p, \expr)}, newenv=\dagger]}
 % % \]
 
 % % \[
@@ -579,7 +579,7 @@ Reminder grammar of \PPlus and \VMinus:
 % %     {\pmatch
 % %     \\\\
 % %     \prun[env=\Rho \uplus \Rhoprime, value=v']  \and v' = \tt{false}}
-% %     {\pmatch[pat={\textsc{when} \; (p, e)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{when} \; (p, \expr)}, newenv=\dagger]}
 % % \]
 
 % % \[
@@ -603,7 +603,7 @@ Reminder grammar of \PPlus and \VMinus:
 % %     \\\\
 % %     \pmatch[value=v', newenv=\dagger]
 % %     }
-% %     {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{guard} \; (p, (p <- \expr) \cdot gs)}, newenv=\dagger]}
 % % \]
 
 
@@ -619,7 +619,7 @@ Reminder grammar of \PPlus and \VMinus:
 % %     \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard} \; (p, gs)},
 % %     newenv=r]
 % %     }
-% %     {\pmatch[pat={\textsc{guard} \; (p, (p <- e) \cdot gs)}, newenv=r]}
+% %     {\pmatch[pat={\textsc{guard} \; (p, (p <- \expr) \cdot gs)}, newenv=r]}
 % % \]
 
 

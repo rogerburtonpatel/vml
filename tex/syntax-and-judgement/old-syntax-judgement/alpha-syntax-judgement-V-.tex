@@ -30,10 +30,10 @@ We present a grammar of $V^{-}$:
 
 % Integers \hspace{1cm} $k$ \\
 % Variables \hspace{.45cm} $x, y, z, f, \galpha$ \\
-% Programs \hspace{1cm} $p ::= \bf{one} \{ e \}$, where \ppl{fvs} $e = \emptyset$ \\
-% Expressions $e ::= v \; \vert \; eq \ppl{;} \; e$ 
+% Programs \hspace{1cm} $p ::= \bf{one} \{ \expr \}$, where \ppl{fvs} $\expr = \emptyset$ \\
+% Expressions $\expr ::= v \; \vert \; eq \ppl{;} \; \expr$ 
 % Values \hspace{1cm} $v ::= x \;\vert\; hnf$ 
-% Head Values \hspace{1cm} $hnf ::= k \;\vert\; op \;\vert\; \lambda x.\;e$ 
+% Head Values \hspace{1cm} $hnf ::= k \;\vert\; op \;\vert\; \lambda x.\;\expr$ 
 
 
 % I attempted to use the grammar environment you provided. But there was either
@@ -201,7 +201,7 @@ and is not a value constructor name or a reserved word.
     
     
     % Success only refines the environment; that~is, when
-    % ${\vtuple{\rho, e}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
+    % ${\vtuple{\rho, \expr}} \rightarrowtail{} {\rho'}$, we~expect $\rho \subseteq \rho'$.
     
     
 \subsection{Expressions}
@@ -251,7 +251,7 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vmrun[context=\emptyseq,term=e,result=\vartheta]}
+    {\vmrun[context=\emptyseq,term=\expr,result=\vartheta]}
     {\vmrun[context=\emptyseq, term=\arrowe,result=\vartheta]}
 \]
 

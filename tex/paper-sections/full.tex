@@ -41,7 +41,7 @@ in SML:
 \smllst 
 
 \begin{lstlisting}
-    case e of ...
+    case \expr of ...
 
     | NAME n => if (Env.binds (rho, n))
                 then (case Env.find (n, rho) 
@@ -62,7 +62,7 @@ refactoring cost.
 If the reader might suggest collapsing duplicate cases with if and
 \tt{isSome}/\tt{valOf}, we will present them with similarly stuffy code: 
 \begin{lstlisting}
-    case e of ...
+    case \expr of ...
 
     | NAME n => if not (Env.binds (rho, n))
                    orelse not (isSome (Env.find (n, rho)))
@@ -92,7 +92,7 @@ Now consider equivalent code in Verse:
 \verselst
 
 \begin{lstlisting}
-    $\exists$ n. e = NAME n; if (Env.binds(rho, n); $\exists$ v. SOME v = Env.find (n, rho)) 
+    $\exists$ n. \expr = NAME n; if (Env.binds(rho, n); $\exists$ v. SOME v = Env.find (n, rho)) 
                      then v
                      else raise NameNotBound n
 \end{lstlisting}
@@ -184,15 +184,15 @@ We present a syntax of \Vminus, our subset of Verse:
 \subsubsection{\Pplus:}
 \begin{center}
     \begin{bnf}
-$e$ : \textsf{Expressions} ::=
-    | $\ttbraced{\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}}$ : case expression 
+$\expr$ : \textsf{Expressions} ::=
+    | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
     | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-    % | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+    % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
     | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
-    | $\ttbraced{p \tt{;} \bracketed{e \vert \ttbraced{p  <- e}}}$ : pattern guard
+    | $\ttbraced{p \tt{;} \bracketed{\expr \vert \ttbraced{p  <- \expr}}}$ : pattern guard
     \end{bnf}
 \end{center}
     Hole: what extensions we tackle and why, a note on pattern matching
@@ -229,14 +229,14 @@ $e$ : \textsf{Expressions} ::=
 %     $\bracketed{d}$ : definition
 %     ;;
 %     $d$ : \textsf{Definitions} ::=
-%     | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+%     | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
 %     ;;
-%     $e$ : Core expressions ::= 
+%     $\expr$ : Core expressions ::= 
 %     | $x, y, z$ : names
-%     | $K\bracketed{e}$ : value constructor application 
-%     | $\tt{if} \; e_{1} \; \tt{then} \; e_{2} \; \tt{else} \; e_{3} $ : if
-%     | $\lambda x. \; e$ : lambda 
-%     | $e_{1} \; e_{2}$ : function application 
+%     | $K\bracketed{\expr}$ : value constructor application 
+%     | $\tt{if} \; \expr[1] \; \tt{then} \; \expr[2] \; \tt{else} \; e_{3} $ : if
+%     | $\lambda x. \; \expr$ : lambda 
+%     | $\expr[1] \; \expr[2]$ : function application 
 %     ;;
 %     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
 %     ;;
@@ -289,15 +289,15 @@ $e$ : \textsf{Expressions} ::=
 % \subsubsection{\Pplus:}
 % \begin{center}
 %     \begin{bnf}
-% $e$ : \textsf{Expressions} ::=
-%     | $\ttbraced{\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}}$ : case expression 
+% $\expr$ : \textsf{Expressions} ::=
+%     | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
 %     ;;
 %     $p$ : \textsf{Patterns} ::= $x$ : name 
 %     | $K$ : value constructor 
 %     | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-%     % | $\ttbraced{p \; \tt{when} \; e }$ : side condition
+%     % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
 %     | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
-%     | $\ttbraced{p \tt{;} \bracketed{e \vert \ttbraced{p  <- e}}}$ : pattern guard
+%     | $\ttbraced{p \tt{;} \bracketed{\expr \vert \ttbraced{p  <- \expr}}}$ : pattern guard
 %     \end{bnf}
 % \end{center}
 
@@ -314,10 +314,10 @@ $e$ : \textsf{Expressions} ::=
 %         [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
 %         | $\alpha$ : match node 
 %         | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-%         | $\tt{let} \; x \; \tt{=} \; e \; \tt{in} \; \Dalpha$ : let-bind a name
+%         | $\tt{let} \; x \; \tt{=} \; \expr \; \tt{in} \; \Dalpha$ : let-bind a name
 %         ;;
-%         $e$ : \textsf{Expressions} ::=
-%         | $\mathcal{D}_{e}$ : decision trees 
+%         $\expr$ : \textsf{Expressions} ::=
+%         | $\mathcal{D}_{\expr}$ : decision trees 
 %     \end{bnf}
 % \end{center}
 
@@ -382,7 +382,7 @@ $e$ : \textsf{Expressions} ::=
     
     
 %     % Success only refines the environment; that~is, when
-%     % ${\vtuple{\rho, e}} \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
+%     % ${\vtuple{\rho, \expr}} \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
     
     
 

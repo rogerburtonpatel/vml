@@ -53,7 +53,6 @@
 
 %%%%%%%%%% VERSE JUDGEMENT RULES %%%%%%%%%%
 
-%%% Symbols 
 
 % Context 
 \newcommand\rhohat{\hat{\rho}}
@@ -61,7 +60,10 @@
 \newcommand\context{\ensuremath{\mathcal{T}}}
 
 
-% Singletons 
+% Symbols 
+\newcommand\expr[1][]{\ensuremath{e_{#1}}}
+\newcommand\guard[1][]{\ensuremath{g_{#1}}}
+
 \newcommand\fail{\bf{fail}}
 \newcommand\reject{\bf{reject}}
 \newcommand\valbar{\ensuremath{v^{\alpha}}}
@@ -96,10 +98,7 @@
 
 % Shortcuts 
 
-
-
 % Latex abbreviations 
-
 
 %  Judgements 
 \newcommand{\vtuple}[1]{%
@@ -108,19 +107,19 @@
   }
   
 
-% \newcommand\veval[3]
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
 \newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
 \newcommand{\vevalext}[3]{\langle \rho#1,  #2 \rangle \Downarrow #3}
-% \newcommand{\veval}[2]{\rho; \; \context \vdash #1 \Downarrow #2}
 
+% Quick display a v- judgement form
 \newcommand{\showvjudgement}[3][Right]{%
   \[\inferrule*[#1=\textsc{ (#2) }]%
   {}      
   {#3}\]%
 }
       
+% Somewhat depricated 
 \newcommand{\mkjudgementcmd}[3]{%
   \expandafter\newcommand\csname #1\endcsname{\vjudgement{#2}{#3}}%
   }
@@ -128,6 +127,7 @@
 \newcommand{\mkevaljudgementcmd}[3]{%
   \expandafter\newcommand\csname #1\endcsname{\veval{#2}{#3}}%
   }
+
 %%%%%%%%%% TRANSLATION %%%%%%%%%%
       
       % Translation rules with oxford brackets
@@ -157,6 +157,8 @@
 \newcommand\zs{\ensuremath{\mathit{zs}}}
 \newcommand\emptyseq{\ensuremath{\varepsilon}}
 
+
+%%%%%%%%%% INFERENCE RULES %%%%%%%%%%
 
 
 % Nice judgement and rule forms
@@ -334,10 +336,3 @@
 
 % \let\shuffleicon=\shuffle
 % \def\shuffle{\hfill\shuffleicon\mbox{\hskip 0.5em}\parfillskip=0pt}
-
-
-
-
-% \newcommand\cons[2]{\ensuremath{#1\mathbin::#2}}
-\newcommand\cons{\tt{::}}
-\newcommand\parthreads[2]{\ensuremath{#1\mathbin\mid#2}}
