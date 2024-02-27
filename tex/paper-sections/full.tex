@@ -35,7 +35,7 @@ Additional Key Words and Phrases:
 \section{Introduction}
 
 The Verse language looks more expressive than pattern matching. 
-Consider the following segment from our source code for \Vminus, implemented
+Consider the following segment from our source code for \VMinus, implemented
 in SML:
 
 \smllst 
@@ -45,7 +45,7 @@ in SML:
 
     | NAME n => if (Env.binds (rho, n))
                 then (case Env.find (n, rho) 
-                        of SOME v => v 
+                        of SOME \v => \v 
                     |      NONE   => raise NameNotBound n)
                 else raise NameNotBound n 
 
@@ -53,8 +53,8 @@ in SML:
 \end{lstlisting}
 
 Between the duplicate brances and awkward nesting, this code is stuffy: it says
-much for a simple computation of "if \tt{n} is bound to \tt{SOME v} in \tt{rho},
-give me \tt{v}, otherwise throw an error." We might turn to a monad in this
+much for a simple computation of "if \tt{n} is bound to \tt{SOME \v} in \tt{rho},
+give me \tt{\v}, otherwise throw an error." We might turn to a monad in this
 situation, but if our code is not already monadic, this presents significant
 refactoring cost. 
 
@@ -92,8 +92,8 @@ Now consider equivalent code in Verse:
 \verselst
 
 \begin{lstlisting}
-    $\exists$ n. \expr = NAME n; if (Env.binds(rho, n); $\exists$ v. SOME v = Env.find (n, rho)) 
-                     then v
+    $\exists$ n. \expr = NAME n; if (Env.binds(rho, n); $\exists$ \v. SOME \v = Env.find (n, rho)) 
+                     then \v
                      else raise NameNotBound n
 \end{lstlisting}
 
@@ -109,7 +109,7 @@ both expression evaluation and attempts at unifying values with \tt{=}, is
 highly expressive: even this toy example, maddengly inelegant in the land of 
 patterns, is both simpler and (we argue) more legible in Verse. 
 
-The key to this example is that either \tt{Env.binds(rho, n)}  or \tt{SOME v =
+The key to this example is that either \tt{Env.binds(rho, n)}  or \tt{SOME \v =
 Env.find (n, rho)} can fail, and their failure is identical: it produces the
 empty sequence of values. Verse's \tt{if} construct, and its desugaring to
 \tt{one}, can test for this failure and act accordingly. This gives Verse a 
@@ -130,17 +130,17 @@ demonstrate how full Verse can be written to ""match the semantics"" of this
 subset and subsequently enjoy its performance benefits. 
 
 We make three main contributions. \bf{Our first contribution} is a syntax,
-semantics, and implementation of a subset of Verse, which we call \Vminus
-(pronounced V-minus), that imposes a few key restrictions that remove the
+semantics, and implementation of a subset of Verse, which we call \VMinus
+(pronounced \v-minus), that imposes a few key restrictions that remove the
 possiblity of logical variables at runtime. We go on
-to show that \Vminus is just Verse with syntactic restrictions, and we provide a
+to show that \VMinus is just Verse with syntactic restrictions, and we provide a
 static analysis which identifies if full Verse programs abide by those
 restrictions. 
 
 
 \bf{Our second contribution} is a comparison language, \Pplus (P-plus), which
 has pattern matching with popular extensions. We provide  a translation from
-\Pplus to \Vminus and one from \Vminus to ""an intermediate representation
+\Pplus to \VMinus and one from \VMinus to ""an intermediate representation
 involving decision trees"", and a proof that the transformations are
 semantics-preserving. 
 
@@ -149,11 +149,11 @@ beyond being as expressive as \Pplus, is in many cases able to produce more eleg
 programs. ""We also show how some extensions to \Pplus, when held alone, cannot
 express what Verse can.""
 
-\section{Restricting Verse: \Vminus}
+\section{Restricting Verse: \VMinus}
 
-We present a syntax of \Vminus, our subset of Verse: 
+We present a syntax of \VMinus, our subset of Verse: 
 
-\subsubsection{\Vminus:}
+\subsubsection{\VMinus:}
 \it{Note: I beleive we should change this to the ${\mu}$Verse syntax}
 \begin{center}
     \begin{bnf}
@@ -201,8 +201,8 @@ $\expr$ : \textsf{Expressions} ::=
 \section{Translations}
 
 \begin{itemize}
-    \item \Pplus $->$ \Vminus 
-    \item \Vminus $->$ \D
+    \item \Pplus $->$ \VMinus 
+    \item \VMinus $->$ \D
     \item "why we don't need \Pplus to \D"
 \end{itemize}
 
@@ -210,8 +210,8 @@ $\expr$ : \textsf{Expressions} ::=
 
 
 \begin{itemize}
-    \item \Vminus, and therefore Verse, is as expressive as \Pplus
-    \item \Vminus does not incur the cost of unifying logical variables at runtime 
+    \item \VMinus, and therefore Verse, is as expressive as \Pplus
+    \item \VMinus does not incur the cost of unifying logical variables at runtime 
     \item Hole: Discussion: Value generation in choice 
 \end{itemize}
 
@@ -238,7 +238,7 @@ $\expr$ : \textsf{Expressions} ::=
 %     | $\lambda x. \; \expr$ : lambda 
 %     | $\expr[1] \; \expr[2]$ : function application 
 %     ;;
-%     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
+%     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
 %     ;;
 %     $K$ : \textsf{Value Constructors} ::=
 %     % \cons : cons 
@@ -258,12 +258,12 @@ $\expr$ : \textsf{Expressions} ::=
 
 
 % We then present three language extensions that build off of this core: 
-% \Pplus, the language of patterns, \Vminus, the language of 
+% \Pplus, the language of patterns, \VMinus, the language of 
 % verse-like equations, and $D$, the language of decision trees. 
 
 % \subsection{Three Language Extensions}
 
-% \subsubsection{\Vminus:}
+% \subsubsection{\VMinus:}
 
 % \begin{center}
 %     \begin{bnf}
@@ -335,19 +335,19 @@ $\expr$ : \textsf{Expressions} ::=
 
 
 
-% \section{Forms of Judgement for $V^{-}$:}
+% \section{Forms of Judgement for $\VMinus$:}
 % \begin{tabular}{ll}
 % \toprule
 %     \multicolumn2{l}{\emph{Metavariables}} \\
 % \midrule
-%     % $v, \; v'$& value \\
+%     % $\v, \; \v'$& value \\
 %     \valpha& a metavalue produced from evaluating $\alpha$. \\
 %     $eq$& equation \\ 
 %     % $\tempstuck$& a temporarily-stuck equation \\
 %     $\reject$& equation rejection \\
 %     $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
 %     rejection\\
-%     \Rho& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+%     \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
 %     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
 %     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
 %     $\ealpha$& An expression \\ 
@@ -391,7 +391,7 @@ $\expr$ : \textsf{Expressions} ::=
     
 %     \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
 %     core Verse evaluates to produce possibly-empty sequence of values. In
-%     \Vminus, values depend on the form of abstract expression $\alpha.$ If
+%     \VMinus, values depend on the form of abstract expression $\alpha.$ If
 %     $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
 %     it is an ML-like expression, it will be a single value. 
     
@@ -414,12 +414,12 @@ $\expr$ : \textsf{Expressions} ::=
 %     \bigskip
 % \subsection{Equations}
 
-% In \Vminus, we solve equations (intermediate computations in a guarded
+% In \VMinus, we solve equations (intermediate computations in a guarded
 % expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
 % authors of the original Verse paper: we pick one, attempt to solve for it, and
 % move on. 
 
-% \rab{How do we express that \Vminus semantics preclude backtracking/logical 
+% \rab{How do we express that \VMinus semantics preclude backtracking/logical 
 % variables at runtime?}
 
 % Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
@@ -443,7 +443,7 @@ $\expr$ : \textsf{Expressions} ::=
 %     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
 % \end{align*}
 
-% \section{Rules (Big-step Operational Semantics) for $V^{-}$:}
+% \section{Rules (Big-step Operational Semantics) for $\VMinus$:}
     
 % \subsection{Evaluating Guarded Expressions}
 

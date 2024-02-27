@@ -24,7 +24,7 @@
     \centering
     \begin{tikzpicture}
         \node[circle, draw] (1) at (5,5) {\Pplus};
-        \node[circle, draw] (2) at (5.5,3.5) {$\Vminus_{\alpha}$};
+        \node[circle, draw] (2) at (5.5,3.5) {$\VMinus_{\alpha}$};
         \node[circle, draw] (3) at (5.5,2) {\Dalpha};
         \node[circle, draw] (4) at (5.5,0) {SML};
 
@@ -41,7 +41,7 @@
 \section{The Three Languages}
 
 The first of our languages is \Pplus. This is the language of patterns. We know
-we can compile patterns into decision trees. Our next language is \Vminus, the
+we can compile patterns into decision trees. Our next language is \VMinus, the
 language of equations. This uses the decision making construct \it{if-fi} to
 perform different operations based on the form of a value. 
 
@@ -54,13 +54,13 @@ Both of these languages theoretically can be compiled to our third language,
 
 The three langauges look similar: they each have value constructors and 
 a 'decision-making construct' to deal with constructed data. In \Pplus, the 
-construct is pattern-matching; in \Vminus, it is the guarded expression; 
+construct is pattern-matching; in \VMinus, it is the guarded expression; 
 in \D, it is the decision tree. 
 
-Of note in both \Vminus and \D is that the 'decision-making construct' is 
+Of note in both \VMinus and \D is that the 'decision-making construct' is 
 annotated with an $\alpha$. This annotation gives us type flexibility on the 
 right-hand side of the \it{terminating} case for each construct 
-(\tt{$\rightarrow$ exp} in \Vminus and the match node in \D.) 
+(\tt{$\rightarrow$ exp} in \VMinus and the match node in \D.) 
 
 Because of the $\alpha$, the right-hand side becomes immaterial: we don't care
 about what we're returning; we care about the decision-making construct that
@@ -73,15 +73,15 @@ other results of otherwise-equivalent trees.
 
 \section{Translation and Equivalency}
 
-We aim to translate $\Pplus$ to both $\Vminus$ and $\D$ (Figure 1). By showing both
+We aim to translate $\Pplus$ to both $\VMinus$ and $\D$ (Figure 1). By showing both
 languages can be translated to decision trees, we show both express a common
 property: that evaluation at runtime does not backtrack, i.e., no individual
 part of a value used to make decisions (called a \tt{scrutinee}) is examined
-more than once. Showing \Vminus expresses this no-backtracking property (and, by
+more than once. Showing \VMinus expresses this no-backtracking property (and, by
 extension, the "no-logical-variables-at-runtime" property, is a core aim of this
 work.)
 
-The second important translation is from $\Vminus$ to \D. Recall the $\alpha$ from
+The second important translation is from $\VMinus$ to \D. Recall the $\alpha$ from
 earlier: the polymorphic abstract type in both $\galpha$ and $\Dalpha$ shows
 an equivalence preserved by translation. 
 

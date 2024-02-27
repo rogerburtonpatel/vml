@@ -128,7 +128,7 @@ This component represents the state of a JavaScript message that is
 suspended waiting for Haskell code to return a value (most commonly a
 \texttt{Promise}). 
 The~continuation is resumed when a value is supplied, so
-$K\,v$ is a message.
+$K\,\v$ is a message.
 \item
 $J$ is the JavaScript heap, including the message queue, which we
 don't model separately.
@@ -148,7 +148,7 @@ This~continuation is unique in that it doesn't expect a meaningful
 return value. 
 It~is resumed by passing it the empty tuple, so $\slicecont()$ is a message.
 \item
-$v$ is a value (JavaScript value or Haskell WHNF).
+$\v$ is a value (JavaScript value or Haskell WHNF).
 \item
 $\expr$ is an unevaluated Haskell expression, thunk, or closure (all words for the same
 thing).
@@ -251,7 +251,7 @@ R = \text{\texttt{deliver} $p$ (\texttt{try} $\expr$)}\\
 &
 \text{\texttt{deliver p (Left exn)}} = \text{\texttt{p.fails exn}}\\
 &
-\text{\texttt{deliver p (Right v)~}} = \text{\texttt{p.succeeds v}}
+\text{\texttt{deliver p (Right \v)~}} = \text{\texttt{p.succeeds \v}}
 \\
 %
 %\begin{minipage}{0.5\linewidth}
@@ -285,8 +285,8 @@ instance Exception JSFault where ...
 The Haskell equivalent of a call \monobox{f \expr} to a foreign JavaScript
 function with argument~\texttt{\expr} can look something like this:
 \begin{verbatim}
-  do let v = haskellToJS \expr  -- evaluates \expr, converts result to JavaScript
-     p <- g v               -- call to JavaScript returns a `Promise`
+  do let \v = haskellToJS \expr  -- evaluates \expr, converts result to JavaScript
+     p <- g \v               -- call to JavaScript returns a `Promise`
      m <- newEmptyMVar
      myself <- threadId
      p.then(putMVar m, throwTo myself . JSFault) -- attach continuations to p
@@ -296,12 +296,12 @@ To~make this code work, the two continuations that contain references
 to~\texttt{m} and \texttt{myself} will have to be wrapped in
 JavaScript lambdas, something like this:
 \begin{verbatim}
-  (v => rts_eval_async(⟦putVar m⟧))
+  (\v => rts_eval_async(⟦putVar m⟧))
 \end{verbatim}
 where \texttt{⟦putVar m⟧} denotes the run-time representation of the
 Haskell closure in JavaScript. 
 
-Notes: Calls \monobox{g v} and \monobox{p.then(...)} are both
+Notes: Calls \monobox{g \v} and \monobox{p.then(...)} are both
 \emph{synchronous}.
 
 

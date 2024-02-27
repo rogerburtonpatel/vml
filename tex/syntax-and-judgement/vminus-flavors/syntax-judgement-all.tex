@@ -49,7 +49,7 @@ We present a grammar of a base language, with no decision-making constructs:
     | $\lambda x. \; e$ : lambda 
     | $\expr[1] \; \expr[2]$ : function application 
     ;;
-    $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
+    $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     % \cons : cons 
@@ -146,19 +146,19 @@ $e$ : \textsf{Expressions} ::=
 
 
 
-\section{Forms of Judgement for $V^{-}$:}
+\section{Forms of Judgement for $\VMinus$:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
-    % $v, \; v'$& value \\
+    % $\v, \; \v'$& value \\
     \valpha& a metavalue produced from evaluating $\alpha$. \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
     $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
     rejection\\
-    \Rho& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+    \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
     $\ealpha$& An expression \\ 
@@ -254,7 +254,7 @@ the singleton sequence containing $x$.
     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
 \end{align*}
 
-\section{Rules (Big-step Operational Semantics) for $V^{-}$:}
+\section{Rules (Big-step Operational Semantics) for $\VMinus$:}
     
 \subsection{Evaluating Guarded Expressions}
 
@@ -548,14 +548,14 @@ the singleton sequence containing $x$.
     \toprule
         \multicolumn2{l}{\emph{Metavariables}} \\
     \midrule
-        % $v, \; v'$& value \\
+        % $\v, \; \v'$& value \\
         \valpha& a metavalue produced from evaluating $\alpha$. \\
         $eq$& equation \\ 
         % $\tempstuck$& a temporarily-stuck equation \\
         $\reject$& equation rejection \\
         $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
         rejection\\
-        \Rho& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
+        \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
         $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
         $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
         $\ealpha$& An expression \\ 

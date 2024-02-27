@@ -32,6 +32,7 @@
 \newcommand{\bracketed}[1]{\{#1\}}
 \newcommand{\ttbraced}[1]{\tt{(}#1\tt{)}}
 \newcommand{\ttsqbraced}[1]{\tt{[}#1\tt{]}}
+\newcommand{\sqbraced}[1]{[#1]}
 
 %%%%%%%%%% FORMATTING %%%%%%%%%%
 \newcommand\vfilbreak[1][1in]{\vskip 0pt plus #1\penalty-200 \vskip 0pt plus -#1}
@@ -41,6 +42,12 @@
 
 %%%%%%%%%% PPlus ABSTRACT SYNTAX %%%%%%%%%%
 \newcommand\tlp{\ensuremath{p^{t}}}
+\newcommand\pbar{\text{\large\texttt{\char`\|}}\mskip6mu}
+\newcommand\por{\ensuremath{p_{1} \pbar p_{2}}}
+\newcommand\whene{\ensuremath{\mathit{when{e}}}}
+\newcommand\whenexpr{\ensuremath{\mathit{when} \; \expr}}
+\newcommand\pcommap{\ensuremath{p_{1}, p'}}
+\newcommand\parrowe{\ensuremath{p \leftarrow \expr}}
 
 
 %%%%%%%%%% VERSE ABSTRACT SYNTAX %%%%%%%%%%
@@ -64,11 +71,17 @@
 \newcommand\expr[1][]{\ensuremath{e_{#1}}}
 \newcommand\guard[1][]{\ensuremath{g_{#1}}}
 
+\renewcommand\v[1][]{\ensuremath{v_{#1}}}
+
 \newcommand\fail{\bf{fail}}
 \newcommand\reject{\bf{reject}}
 \newcommand\valbar{\ensuremath{v^{\alpha}}}
 \newcommand\result{\it{r}}
 \newcommand\arrowe{\rightarrow e}
+
+\newcommand\ttleftarrow{\tt{\char`\<-}}
+\newcommand\ttrightarrow{\tt{-\char`\>}}
+\newcommand\ttbackslash{\tt{\char`\\}}
 
 \newcommand\galpha{\ensuremath{g_{\alpha}}}
 \newcommand\ealpha[1][]{\ensuremath{e_{\alpha_{#1}}}}
