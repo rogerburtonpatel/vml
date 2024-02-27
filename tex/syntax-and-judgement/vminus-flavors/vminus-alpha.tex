@@ -14,7 +14,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Syntax and Semantics of \VMinus with no $\alpha$}
+\title{Syntax and Semantics of \VMinus with $\alpha$}
 \author{Roger Burtonpatel}
 \begin{document}
 
@@ -22,7 +22,7 @@
 
 \section{Syntax}
 
-\subsection{\VMinus with no $\alpha$}
+\subsection{\VMinus with $\alpha$}
 
 We present a grammar of \VMinus, a variant of Verse with a defined
 decision-making construct: 
@@ -36,24 +36,25 @@ decision-making construct:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
+    | $\tt{val} \; x \; \tt{=} \; \ealpha$ : bind name to expression
     ;;
-    $\expr$ : \textsf{Expressions} ::=
+    $\ealpha$ : \textsf{Expressions} ::=
+    | $\alpha$ : terminating alpha
     | $x, y, z$ : names
     % Question: ebnf braces vs. regular brackets
-    | $\tt{if} \; \tt{[}\; g \; \bracketed{[] g} \;\tt{]} \; \tt{fi}$ : if-fi 
-    | $K \bracketed{\expr}$ : value constructor application 
-    | $\expr[1] \; \expr[2]$ : function application 
+    | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $K \bracketed{\ealpha}$ : value constructor application 
+    | $\ealpha[1] \; \ealpha[2]$ : function application 
     ;;
-    $g$ : \textsf{Guarded Expressions} ::=  
-    $\boldsymbol{\rightarrow}\expr$ : terminating experession
-    | $\expr; \; g$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} g$ : existential 
-    | $\expr[1] = \expr[2]; \; g$ : equation 
-    | $\lambda x. \; \expr$ : lambda 
+    $\galpha$ : \textsf{Guarded Expressions} ::=  
+    $\boldsymbol{\rightarrow}\ealpha$ : terminating experession
+    | $\ealpha; \; \galpha$ : intermediate expression 
+    | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
+    | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
+    | $\lambda x. \; \ealpha$ : lambda 
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
-    | $\lambda x. \; \expr$ : lambda 
+    | $\lambda x. \; \ealpha$ : lambda 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | \tt{true} $\vert$ \tt{false} : booleans
@@ -76,6 +77,7 @@ and is not a value constructor name or a reserved word.
 
 
 
+
 \vfilbreak
 
 
@@ -94,8 +96,8 @@ and is not a value constructor name or a reserved word.
     \Rho& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
     $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
-    $\expr$& An expression \\ 
-    $g$& A guarded expression \\
+    $\ealpha$& An expression \\ 
+    $\galpha$& A guarded expression \\
     % \uppsidown& Inability to compile to a decision tree; a compile time error \\
 \bottomrule
 \end{tabular}    
@@ -126,7 +128,7 @@ and is not a value constructor name or a reserved word.
     
     
     Success only refines the environment; that~is, when
-    ${\vtuple{\rho, \expr}} \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
+    ${\vtuple{\rho, \ealpha}} \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
     
     
 
@@ -146,8 +148,8 @@ and is not a value constructor name or a reserved word.
     
     \[\it{r} \; \rm{::=} \; v \;|\; \reject \]
     
-    \showvjudgement{Eval}{\veval{\expr}{v}}
-    \showvjudgement{Eval-Guarded-Expr}{\vmrung[guard=g]}
+    \showvjudgement{Eval}{\veval{\ealpha}{v}}
+    \showvjudgement{Eval-Guarded-Expr}{\vmrung[guard=\galpha]}
     
     % \bigskip
     % If a guarded expression cannot be evaluated without producing logical 
@@ -160,7 +162,7 @@ and is not a value constructor name or a reserved word.
 \subsection{Equations}
 
 In \VMinus, we solve equations (intermediate computations in a guarded
-expression of the form \\$\expr[1] = \expr[2]$) in a similar way to the
+expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
 authors of the original Verse paper: we pick one, attempt to solve for it, and
 move on. 
 
@@ -197,36 +199,36 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vmrung[context=\emptyseq, guard=\expr]}
-    {\vmrung[context=\emptyseq, guard=\rightarrow \expr,result=v]}
+    {\vmrung[context=\emptyseq, guard=\ealpha]}
+    {\vmrung[context=\emptyseq, guard=\rightarrow \ealpha,result=v]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
     {\vmrung[env=\rho\{x \mapsto \bot \}]}
-    {\vmrung[guard=\exists x.\; g]}
+    {\vmrung[guard=\exists x.\; \galpha]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Expseq-Succ) }]
     {\inferrule* {}
     {
-    \veval{\expr}{v}
+    \veval{\ealpha}{v}
     \and
     v \neq \tt{false}
     \and
-    \veval{g}{\result}
+    \veval{\galpha}{\result}
     }}
-    {\vmrung[guard=\expr;\; g]}
+    {\vmrung[guard=\ealpha;\; \galpha]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Expseq-Fail) }]
     {\inferrule* {}
     {
-    \veval{\expr}{\tt{false}}
+    \veval{\ealpha}{\tt{false}}
     }}
-    {\vmrung[guard=\expr;\; g, result=\reject]}
+    {\vmrung[guard=\ealpha;\; \galpha, result=\reject]}
 \]
 
 
@@ -236,7 +238,7 @@ the singleton sequence containing $x$.
     {\inferrule*{\vmrung[context=eq \cdot \context]}
     {}
     }
-    {\vmrung[guard=eq; \; g]}
+    {\vmrung[guard=eq; \; \galpha]}
 \]
 
 \subsubsection{Choosing and solving an equation}
@@ -258,14 +260,14 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Single-Eq-Assoc) }]
-    {\vmrung[context=\TeqT{\expr[2] = \expr[1]}]}
-    {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
+    {\vmrung[context=\TeqT{\ealpha[2] = \ealpha[1]}]}
+    {\vmrung[context=\TeqT{\ealpha[1] = \ealpha[2]}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Multi-Eq-Assoc) }]
-    {\vmrung[context=\TeqT{\expr[2] = \expr[1] \cdot \expr[1] = \expr[2]}]}
-    {\vmrung[context=\TeqT{\expr[1] = \expr[2] \cdot \expr[2] = \expr[1]}]}
+    {\vmrung[context=\TeqT{\ealpha[2] = \ealpha[1] \cdot \ealpha[1] = \ealpha[2]}]}
+    {\vmrung[context=\TeqT{\ealpha[1] = \ealpha[2] \cdot \ealpha[2] = \ealpha[1]}]}
 \]
 
 \subsubsection{Desugaring of Complex Equations}
@@ -276,17 +278,17 @@ the singleton sequence containing $x$.
     x,\;y \; \rm{are distinct and fresh}
     \\\\
     \vmrung[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-          context=\eqTT{x = \expr[1] \cdot y = \expr[2] \cdot x = y}]}}
-    {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
+          context=\eqTT{x = \ealpha[1] \cdot y = \ealpha[2] \cdot x = y}]}}
+    {\vmrung[context=\TeqT{\ealpha[1] = \ealpha[2]}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
     {
-    \vmrung[context=\TeqT{\lbrack \expr[i]=\expr[i]' \; 
+    \vmrung[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]' \; 
            \vert \; 1 \leq i \leq n \rbrack}]}
-    {\vmrung[context=\TeqT{K(\expr[1], \dots 
-            \expr[n]) = K(\expr[1]', \dots \expr[n]')}]}
+    {\vmrung[context=\TeqT{K(\ealpha[1], \dots 
+            \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[n]')}]}
 \]
 
 \subsubsection{Refinement with different types of equations}
@@ -297,11 +299,11 @@ the singleton sequence containing $x$.
     {
     x \in \dom \rho
     \\\\
-    \veval{\expr}{v}
+    \veval{\ealpha}{v}
     \\\\
     \rho(x) = \bot
     }}
-    {\eqrefine[eq={x = \expr},newenv=\Rho\bracketed{x \mapsto v}]}
+    {\eqrefine[eq={x = \ealpha},newenv=\Rho\bracketed{x \mapsto v}]}
 \]
 
 \[
@@ -310,11 +312,11 @@ the singleton sequence containing $x$.
     {
     x \in \dom \rho
     \\\\
-    \veval{\expr}{v}
+    \veval{\ealpha}{v}
     \\\\
     \rho(x) = v
     }}
-    {\eqrefine[eq={x = \expr},newenv=\Rho\bracketed{x \mapsto v}]}
+    {\eqrefine[eq={x = \ealpha},newenv=\Rho\bracketed{x \mapsto v}]}
 \]
 
 \[
@@ -323,13 +325,13 @@ the singleton sequence containing $x$.
     {
     x \in \dom \rho
     \\\\
-    \veval{\expr}{v}
+    \veval{\ealpha}{v}
     \\\\ 
     \rho(x) = v'
     \\\\
     v \neq v'
     }}
-    {\eqrefine[eq={x = \expr},newenv=\dagger]}
+    {\eqrefine[eq={x = \ealpha},newenv=\dagger]}
 \]
 
 \[
@@ -338,7 +340,7 @@ the singleton sequence containing $x$.
     {
     x \not\in \dom \rho
     }}
-    {\eqrefine[eq={x = \expr},newenv=\dagger]}
+    {\eqrefine[eq={x = \ealpha},newenv=\dagger]}
 \]
 
 \[
@@ -404,16 +406,16 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Fail) }]
     {K \neq K'}
-    {\eqrefine[eq={K(\expr[1], \dots 
-            \expr[n]) = K'(\expr[1]', \dots \expr[n]')},
+    {\eqrefine[eq={K(\ealpha[1], \dots 
+            \ealpha[n]) = K'(\ealpha[1]', \dots \ealpha[n]')},
             newenv=\dagger]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Arity-Fail) }]
     {n \neq m}
-    {\eqrefine[eq={K(\expr[1], \dots 
-            \expr[n]) = K(\expr[1]', \dots \expr[m]')},
+    {\eqrefine[eq={K(\ealpha[1], \dots 
+            \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[m]')},
             newenv=\dagger]}
 \]
 
@@ -430,7 +432,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
     {\vmrung[] \Downarrow v}
-    {\veval{\iffi{g \; \square \; \dots}}{v}}
+    {\veval{\iffi{\galpha \; \square \; \dots}}{v}}
 \]
 
 \[
@@ -439,7 +441,7 @@ the singleton sequence containing $x$.
     {\vmrung[result=\reject]}
     \and 
     \veval{\iffi{\dots}}{v}}
-    {\veval{\iffi{g \; \square \; \dots }}{v}}
+    {\veval{\iffi{\galpha \; \square \; \dots }}{v}}
 \]
 
 \[
@@ -452,11 +454,11 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
     {\inferrule* {}
     {
-    \veval{\expr[i]}{v_{i}}
+    \veval{\ealpha[i]}{v_{i}}
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(\expr[1], \dots \expr[n])}{K(v_{1}, 
+    {\veval{K(\ealpha[1], \dots \ealpha[n])}{K(v_{1}, 
     \dots v_{i})}}
 \]
 
@@ -470,12 +472,12 @@ the singleton sequence containing $x$.
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Funapp) }]
-    {\veval{\expr[1]}{\lambda x.\expr}
+    {\veval{\ealpha[1]}{\lambda x.\ealpha}
     \\\\
-    \veval{\expr[2]}{v'}
+    \veval{\ealpha[2]}{v'}
     \\\\
-    \vevalext{\bracketed{x \mapsto v'}}{\expr}{v}}
-    {\veval{\expr[1]\; \expr[2]}{v}}
+    \vevalext{\bracketed{x \mapsto v'}}{\ealpha}{v}}
+    {\veval{\ealpha[1]\; \ealpha[2]}{v}}
 \]
 
 \end{document}
