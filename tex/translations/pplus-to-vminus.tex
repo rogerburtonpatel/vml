@@ -82,15 +82,15 @@ Reminder grammar of \PPlus and \VMinus:
     $\expr$ : \textsf{Expressions} ::=
     | $x, y, z$ : names
     % Question: ebnf braces vs. regular brackets
-    | $\tt{if} \; \tt{[}\; \guard \; \bracketed{[] \guard} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $\tt{if} \; \tt{[}\; g \; \bracketed{[] g} \;\tt{]} \; \tt{fi}$ : if-fi 
     | $K \bracketed{\expr}$ : value constructor application 
     | $\expr[1] \; \expr[2]$ : function application 
     ;;
-    $\guard$ : \textsf{Guarded Expressions} ::=  
+    $g$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\expr$ : terminating experession
-    | $\expr; \; \guard$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} \guard$ : existential 
-    | $\expr[1] = \expr[2]; \; \guard$ : equation 
+    | $\expr; \; g$ : intermediate expression 
+    | $\exists \bracketed{x} \tt{.} g$ : existential 
+    | $\expr[1] = \expr[2]; \; g$ : equation 
     | $\lambda x. \; \expr$ : lambda 
     ;;
     $v$ : Values ::= $K\bracketed{v}$ : value constructor application 
@@ -156,7 +156,7 @@ Reminder grammar of \PPlus and \VMinus:
 %     $K$& value constructor \\ 
 %     $p$& pattern \\ 
 %     $x, y$& names \\ 
-%     $\guard$& pattern guard \\ 
+%     $g$& pattern guard \\ 
 %     $gs$& list of pattern guards \\ 
 %     $\dagger$& pattern match failure \\ 
 %     $r$& a result, either $v$ or $\dagger$ \\ 

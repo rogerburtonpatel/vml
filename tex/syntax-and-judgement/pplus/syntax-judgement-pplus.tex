@@ -64,7 +64,7 @@ We present a grammar of \PPlus:
     | \tt{true} $\vert$ \tt{false} : booleans
     | $\tt{\#}x$ : name beginning with \tt{\#}
     | \tt{A-Z}$x$ : name beggining with capital letter
-    | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+    % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
     \end{bnf}
 \end{center}
 
@@ -120,7 +120,7 @@ and is not a value constructor name or a reserved word.
     $K$& value constructor \\ 
     $p$& pattern \\ 
     $x, y$& names \\ 
-    $\guard$& pattern guard \\ 
+    $g$& pattern guard \\ 
     $gs$& list of pattern guards \\ 
     $\dagger$& pattern match failure \\ 
     $r$& a result, either $v$ or $\dagger$ \\ 
