@@ -214,6 +214,7 @@
 \defcomponent{tlp}{\tlp}
 \defcomponent{newenv}{\rho'}
 \defcomponent{eq}{\eq}
+\defcomponent{name}{x}
 
 
 \newcommand\emptycontext{\varepsilon}
@@ -234,15 +235,17 @@
     \let\c=\component
     \ensuremath{\br{\c{env}\c{envext}, \c{exp}} \Downarrow \c{value}}}}
 
-\newcommand\ptov[1][]{%  run P-plus code
+\newcommand\ptov[1][]{%  translate P-plus to V-minus
     {\setkeys{state}{#1}%
       \let\c=\component
       \ensuremath{\translation[E]{\c{exp}} \rightsquigarrow \c{result}}}}
   
-  \newcommand\pattov[1][]{%  run P-plus code
+  \newcommand\pattov[1][]{%   translate patterns to V-minus
     {\setkeys{state}{#1}%
       \let\c=\component
-      \ensuremath{\ptran{\c{exp}} \rightsquigarrow \c{result}}}}
+      \ensuremath{\ptran{\c{pat}}\c{name}\c{exp} \rightsquigarrow \c{result}}}}
+
+  \newcommand\Bindings[1]{\ensuremath{\translation[B]{#1}}}
   
 
   \newcommand\pmatch[1][]{%  pattern-matching judgement

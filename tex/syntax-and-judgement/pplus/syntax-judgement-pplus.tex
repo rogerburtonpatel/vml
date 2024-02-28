@@ -124,7 +124,7 @@ and is not a value constructor name or a reserved word.
     \Rho& environment: $name \rightarrow \mathcal{\v}$ \\
     \Rho\:+\:\Rhoprime& extension \\
     $\Rho \uplus \Rho'$& disjoint union \\
-    $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
+    $\{ x \mapsto y \} $& environment with name $x$ mapping to $y$ \\
 \bottomrule
 \end{tabular}    
 
@@ -178,6 +178,13 @@ and is not a value constructor name or a reserved word.
         matches. 
     \end{itemize}
 
+    When a pattern is of the form $\textsc{vconapp} (K, p_{1}, \dots, p_{n})$,
+    each sub-pattern $p_{i}$ may introducing new variables during pattern
+    matching. Bindings for all these variables must be combined in a single 
+    environment 
+     \it{Disjoint
+    union} is an operation on two environments 
+
     \subsection{Expressions}
     
         An expression in \PPlus evaluates to produce a single value. 
@@ -187,10 +194,10 @@ and is not a value constructor name or a reserved word.
         \end{align*}
     
 
-    TODO: include case literal rule and disjoint union section "Don't
-incorporate technical material by reference. You should explain disjoint union
-and +, but not necessarily the way I did. Your proximate audience is your thesis
-committee. Your ultimate audience is PL professionals."    
+%     TODO: include case literal rule and disjoint union section "Don't
+% incorporate technical material by reference. You should explain disjoint union
+% and +, but not necessarily the way I did. Your proximate audience is your thesis
+% committee. Your ultimate audience is PL professionals."    
     \bigskip 
 
 
@@ -303,7 +310,7 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     \\\\
     r = r_{1} \uplus \dots \uplus r_{m}
     }}
-    {\pmatch[pat={\textsc{vconapp} \;(K\; p_{1}, \dots 
+    {\pmatch[pat={\textsc{vconapp} \;(K,\; p_{1}, \dots 
             p_{m})}, value={\textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])},
             newenv=r]}
 \]
@@ -313,7 +320,7 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 \[
 \inferrule*[Left=\textsc{ (FailVcon) }]
     {\v \rm{ does not have the form } \textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])}
-    {\pmatch[pat={\textsc{vconapp} \;(K\; p_{1}, \dots 
+    {\pmatch[pat={\textsc{vconapp} \;(K,\; p_{1}, \dots 
             p_{m})}, 
             newenv=\dagger]}
 \]
