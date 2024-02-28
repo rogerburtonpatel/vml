@@ -1,4 +1,4 @@
-signature VMinus = sig  
+signature VMINUS = sig  
   type name = string 
 
   exception NameNotBound of name 
@@ -13,16 +13,18 @@ signature VMinus = sig
               | VCONAPP of Core.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
-      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
-                      | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
-                      | S_EXISTS of name * 'a sugared_guarded_exp
-                      | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
       and 'a guarded_exp = ARROWALPHA of 'a exp 
                       | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
   and 'a vcon = K of name * 'a value list | TRUE | FALSE 
   and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * 'a exp (* expressions return values *)
+
+  datatype 'a sugared_guarded_exp
+    = S_ARROWALPHA of 'a exp 
+    | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
+    | S_EXISTS of name * 'a sugared_guarded_exp
+    | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
   
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
   datatype 'a def = DEF of name * 'a exp
@@ -35,7 +37,7 @@ signature VMinus = sig
 
 end 
 
-functor VMFn (A : ALPHA) :> VMinus = struct  
+functor VMFn (structure A : ALPHA) :> VMINUS = struct  
 
   (* type name = string
   datatype vcon = CONS | NIL | K of name | INT of int

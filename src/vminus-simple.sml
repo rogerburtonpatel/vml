@@ -13,10 +13,6 @@ structure VMinusSimple :> sig
               | VCONAPP of Core.vcon * exp list
               | FUNAPP  of exp * exp
               | LAMBDAEXP of name * exp
-      (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
-                      | S_EXPSEQ of  exp *  sugared_guarded_exp 
-                      | S_EXISTS of name *  sugared_guarded_exp
-                      | S_EQN    of  exp *  exp *  sugared_guarded_exp *)
       and guarded_exp = ARROWEXP of exp 
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
