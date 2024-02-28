@@ -26,7 +26,6 @@ group is
   pplus.sml
   guard.sml
   guardsort.sml
-  vminus.sml
 
   verse.sml
   uverse.sml
@@ -35,6 +34,7 @@ group is
   test-guard-sort.sml
   vminus-test.sml
   producer.sml
+  lexer-combinators.sml
   pplus-lex.sml
   pplus-parse.sml
   vminus-parser.sml
