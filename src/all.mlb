@@ -15,7 +15,7 @@ $(SML_LIB)/basis/basis.mlb
   freshnames.sml
   
   core-lang.sml
-  vminus-noalpha.sml
+  vminus-simple.sml
   vminus-arrow.sml
   decision-tree.sml
   
@@ -25,15 +25,16 @@ $(SML_LIB)/basis/basis.mlb
   pplus.sml
   guard.sml
   guardsort.sml
-  vminus.sml
 
   verse.sml
   uverse.sml
 
+  d-of-vminus.sml
   translation.sml
   test-guard-sort.sml
   vminus-test.sml
   producer.sml
+  lexer-combinators.sml
   pplus-lex.sml
   pplus-parse.sml
   vminus-parser.sml
@@ -44,3 +45,4 @@ $(SML_LIB)/basis/basis.mlb
   uft.sml
 
   main.sml
+  
