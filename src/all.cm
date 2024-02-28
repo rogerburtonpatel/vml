@@ -30,6 +30,7 @@ group is
   verse.sml
   uverse.sml
 
+  d-of-vminus.sml
   translation.sml
   test-guard-sort.sml
   vminus-test.sml
