@@ -1,3 +1,19 @@
+structure RenamedVMinus = struct
+  type name = string
+  datatype 'a exp = 
+                 ALPHA of 'a 
+              |  NAME of name 
+              | IF_FI of 'a guarded_exp list 
+              | VCONAPP of Core.vcon * 'a exp list
+              | FUNAPP  of 'a exp * 'a exp
+              | LAMBDAEXP of name * 'a exp
+      and 'a guarded_exp = GUARDED of name list * 'a guard list * 'a exp 
+      and 'a guard = CONDITION of 'a exp
+                   | EQN of name * 'a exp
+  and 'a vcon = K of name * 'a value list | TRUE | FALSE 
+  and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * 'a exp (* expressions return values *)
+end
+
 signature VMINUS = sig  
   type name = string 
 
