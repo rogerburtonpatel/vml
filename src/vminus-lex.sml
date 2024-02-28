@@ -1,9 +1,3 @@
-structure LexerCombinators =
-  MkListProducer (val species = "lexer"
-                  type input = char
-                  val show = StringEscapes.quote o implode
-                 )
-
 structure VMinusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
 
