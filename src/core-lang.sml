@@ -1,8 +1,8 @@
 structure Core :> sig 
   type name = string 
   datatype vcon  = TRUE | FALSE | K of name 
-  datatype 'a core_value = VCON of vcon   * 'a core_value list 
-                         | LAMBDA of name * 'a
+  datatype 'exp core_value = VCON of vcon   * 'exp core_value list 
+                         | LAMBDA of name * 'exp
 
   exception NameNotBound of name 
   exception BadFunApp of string 
