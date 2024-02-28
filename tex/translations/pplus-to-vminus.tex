@@ -16,7 +16,6 @@
 \setlength{\parindent}{0cm}
 \title{Translation from \PPlus to \VMinus}
 \author{Roger Burtonpatel}
-\date{February 18th, 2024}
 \begin{document}
 
 \maketitle
@@ -55,20 +54,24 @@
 \subsection{Translating Patterns}
 
 
-Translating a name with the context of a name -> name = name 
-Translating a vcon applied to zero patterns with the context of a name -> 
+Translating a name with the context of a name $\rightarrow$ name = name 
+
+Translating a vcon applied to zero patterns with the context of a name $\rightarrow$ 
 Vcon = name 
-Translating a vcon applied to one or more patterns with the context of a name ->
+
+Translating a vcon applied to one or more patterns with the context of a name $\rightarrow$
 Introduce a fresh name per pattern. Say name = K applied to fresh names,
 then translate each sub-pattern with the context of its corresponding name. 
 
-Translating (when e) with the context of a name -> e 
-Translating (p <- e) with the context of a name -> 
+Translating (when e) with the context of a name $\rightarrow$ e 
+
+Translating (p $\leftarrow$ e) with the context of a name $\rightarrow$ 
 Introduce a fresh name, bind it to e, bind it to p. 
-Translating (p, p') with the context of a name -> translate 
+
+Translating (p, p') with the context of a name $\rightarrow$ translate 
 p and p' with the context of that name, seperated by a semicolon 
 
-Translating (p1 | p2) with the context of a name -> 
+Translating (p1 | p2) with the context of a name $\rightarrow$ 
 This is the hard one. Likely need to duplicate context. 
 
 \begin{align*}
