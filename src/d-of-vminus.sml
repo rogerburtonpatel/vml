@@ -13,11 +13,8 @@ struct
   
   val emptyContext = Env.empty
 
-  fun compile context [] = Impossible.impossible "no choices"
-    | compile context (choices as (V.ARROWALPHA e :: _)) =
-         D.MATCH e
-    | compile context choices =
-        Impossible.unimp "match compiler"
+  type context = status Env.env
+
  
 (* to generate a decision-tree TEST node, we require an EQN that has a
    known name on the left and a constrcutor application on the right 
@@ -25,7 +22,40 @@ struct
    to generate an IF node, an EQN with both sides known, or an EXPSEQ with a known exp
 *)
 
-  (* val findGoodConstructorApplication :  *)
+  val matchName :
+      V.name -> (Core.vcon * 'a V.exp list) -> 'a V.guarded_exp -> 'a V.guarded_exp option
+    = fn _ => Impossible.unimp "not yet"
+  (*
+     matchName (x = y :: ys) [[x = z :: zs --> e]] = SOME [[y = z, ys = zs --> e]]
+     matchName (x = y :: ys) [[x = nil --> e]] = NONE
+   *)
+
+  val findOneConstructorApplication : context -> 'a V.guarded_exp -> V.name option
+    (* return a known name that is equal to a VCONAPP *)
+    = fn _ => Impossible.unimp "not yet"
+
+  fun findAnyConstructorApplication context [] = NONE
+    | findAnyConstructorApplication context (g::gs) =
+        case findOneConstructorApplication context g
+          of SOME answer => SOME answer
+           | NONE => findAnyConstructorApplication context gs
+  
+  val _ : context -> 'a V.guarded_exp list -> V.name option
+    = findAnyConstructorApplication
+
+  fun compile context [] = Impossible.impossible "no choices"
+    | compile context (choices as (V.ARROWALPHA e :: _)) =
+         D.MATCH e
+    | compile context choices =
+         case findAnyConstructorApplication context choices
+           of NONE => Impossible.unimp "search for a condition to test"
+            | SOME x =>
+                D.TEST ( x
+                       , Impossible.unimp "simplified g's, compiled"
+                       , Option.map (compile context)
+                                    (Impossible.unimp "g's that are 'none of the above'")
+                       )
+
 
   val compile = fn things => compile emptyContext things
      
