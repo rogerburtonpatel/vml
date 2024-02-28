@@ -1,4 +1,4 @@
-structure DecisionTree :> sig 
+signature DECISION_TREE = sig
   type name = string 
   type exp
   type vcon = string 
@@ -14,12 +14,14 @@ structure DecisionTree :> sig
                     | LET of name  * exp * 'a tree 
 
   val emitTree : 'a tree -> string 
+end
 
-
-end = 
+functor DecisionTree(type exp
+                     val expString : exp -> string) :> DECISION_TREE where type exp = exp
+  = 
 struct
   type name = string 
-  type exp  = int 
+  type exp  = exp
   type vcon = string 
   type arity = int
   type labeled_constructor = vcon * arity
@@ -34,8 +36,6 @@ struct
   exception Todo of string 
 
   fun alphaString a = "'a"
-
-  fun expString e = raise Todo "stringify an exp"
 
   fun emitTree t = 
     let fun emitCase [] default = Impossible.impossible "no patterns to match on"
@@ -52,7 +52,7 @@ struct
     end 
 
 
-    val testTree = TEST ("r1", [(("C1", 2), MATCH "foo"), (("C1", 2), MATCH "foo")], SOME (MATCH "Foo"))
+    (* val testTree = TEST ("r1", [(("C1", 2), MATCH "foo"), (("C1", 2), MATCH "foo")], SOME (MATCH "Foo")) *)
     (* val () = print (emitTree testTree) *)
 
 end
