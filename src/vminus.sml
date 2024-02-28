@@ -35,6 +35,9 @@ signature VMINUS = sig
   val eval      : 'a value option Env.env -> 'a exp -> 'a value 
   val solve      : 'a value option Env.env -> 'a guarded_exp -> 'a result
 
+  val map  : ('a -> 'b) -> 'a exp -> 'b exp
+  val gmap : ('a -> 'b) -> 'a guarded_exp -> 'b guarded_exp
+
 end 
 
 functor VMFn (structure A : ALPHA) :> VMINUS = struct  
@@ -588,5 +591,8 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
 
 (* story: parse in an exp. eval it. if it has if-fi, sort each guarded exp and solve it. *)
 (* story: parse in an exp. eval it. if it has if-fi, solve it sortingly. *)
+
+ fun map f = Impossible.unimp "change alpha"
+ fun gmap f = Impossible.unimp "change alpha"
 
 end

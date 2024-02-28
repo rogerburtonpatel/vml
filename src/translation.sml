@@ -126,7 +126,7 @@ struct
 
 
 
-  structure D = DecisionTree(type exp = int
+  structure D = DecisionTree(type 'a exp = int
                              fun expString e = raise Todo "stringify an exp"
                             )
   (* fun translate  *)
