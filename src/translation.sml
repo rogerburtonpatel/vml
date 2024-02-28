@@ -3,12 +3,12 @@ structure Translation : sig
   val vmOfP : PPlus.exp -> 'a vmFnType
   val vmSimpleOfP : PPlus.exp -> VMinusSimple.exp 
   val vmSimpleOfPdef : PPlus.def -> VMinusSimple.def
-  structure VM : VMinus
+  structure VM : VMINUS
 end 
   =
 struct 
   structure P  = PPlus 
-  structure VM = VMFn(Alpha)
+  structure VM = VMFn(structure A = Alpha)
   structure VMS = VMinusSimple
   structure V  = Verse 
   type 'a vmFnType = 'a VM.exp
@@ -126,11 +126,14 @@ struct
 
 
 
-  structure D = DecisionTree
+  structure D = DecisionTree(type exp = int
+                             fun expString e = raise Todo "stringify an exp"
+                            )
   (* fun translate  *)
   (* need to sort first. big todo, but can adapt old sorting code. *)
-  fun dexpOfVmExp (e : 'a VM.exp) = let val (e' : D.exp) = raise Todo "translate exps" in e' end 
-  fun dexpOfVmSimpleExp (e : VMS.exp) = let val (e' : D.exp) = raise Todo "translate exps" in e' end 
+
+  fun dexpOfVmExp (e : 'a VM.exp) = let val e' = raise Todo "translate exps" in e' end 
+  fun dexpOfVmSimpleExp (e : VMS.exp) = let val e' = raise Todo "translate exps" in e' end 
 
 
 (* this is a match compiler. *)
@@ -140,7 +143,7 @@ struct
           | treeOfGuardedExp (VM.EXISTS (n, g')) = treeOfGuardedExp g'
           | treeOfGuardedExp (VM.EXPSEQ (e, g')) = 
               let val freshname = FreshName.freshNameGenGen () ()
-                  val (fail : D.exp) = raise Todo "failure"
+                  val (fail) = raise Todo "failure"
               in 
               D.LET (freshname, dexpOfVmExp e, D.IF (freshname, treeOfGuardedExp g', treeOfGs gs))
               end 
@@ -166,7 +169,7 @@ struct
           | treeOfGuardedExp (VMS.EXISTS (n, g')) = treeOfGuardedExp g'
           | treeOfGuardedExp (VMS.EXPSEQ (e, g')) = 
               let val freshname = FreshName.freshNameGenGen () ()
-                  val (fail : D.exp) = raise Todo "failure"
+                  val (fail) = raise Todo "failure"
               in 
               D.LET (freshname, dexpOfVmSimpleExp e, D.IF (freshname, treeOfGuardedExp g', treeOfSimpleGs gs))
               end 
