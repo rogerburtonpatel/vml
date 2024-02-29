@@ -173,18 +173,25 @@ end
 
 
 
+signature EXTENSION = sig
+  type 'a context
+  type 'a value
+  type 'a extension
+
+  val eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) 
+end
 
 
-structure PPlusExtension = struct
+structure PPlusExtension : EXTENSION = struct
   type name = string
   type vcon = PPlus.vcon
   type pat = PPlus.toplevelpattern
-  datatype 'a exp' = CASE of 'a * (pat * 'a) list
+  datatype 'a extension = CASE of 'a * (pat * 'a) list
 
   type 'a value = 'a Core.core_value
   type 'a context = 'a value Env.env
 
-  val rec eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a exp' -> 'a value) =
+  val rec eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) =
     fn evalExp =>
     let fun go context (CASE (e, choices)) =
           let val v = evalExp context e
@@ -195,15 +202,14 @@ structure PPlusExtension = struct
 
 end
 
-structure NewPPlus' = MkCore(open PPlusExtension)
+structure NewPPlus' = MkExtended(open PPlusExtension
+                                 type vcon = Core.vcon)
 
 structure XXX =
 struct
   structure P  = NewPPlus'
   structure PX = PPlusExtension
-  fun eval' evalX rho e = 
-    let fun eval rho e = eval' (PX.eval eval) rho e
-    in 
+  fun eval rho e = 
       case e 
         of P.NAME n => Env.find (n, rho)
          | P.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
@@ -216,11 +222,36 @@ struct
                       end
                    | _ => raise Core.BadFunApp "attempted to apply non-function")
         | P.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
-        | P.E x => evalX rho x
-     end
+        | P.E x => PX.eval eval rho x
 
-  fun eval rho e = eval' (PX.eval eval) rho e
+end
 
+
+
+
+functor MkEval(structure Extended : EXTENDED
+                                         where type vcon = Core.vcon
+               structure Extension : EXTENSION
+                                         where type 'a context = 'a Core.core_value Env.env
+                                         where type 'a value = 'a Core.core_value
+               sharing type Extended.extension = Extension.extension
+               )
+  =
+struct
+  fun eval rho e = 
+      case e 
+        of Extended.NAME n => Env.find (n, rho)
+         | Extended.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
+         | Extended.FUNAPP (fe, param) => 
+                (case eval rho fe 
+                  of Core.LAMBDA (n, b) => 
+                    let val arg = eval rho param
+                        val rho' = Env.bind (n, arg, rho)
+                      in eval rho' b
+                      end
+                   | _ => raise Core.BadFunApp "attempted to apply non-function")
+        | Extended.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
+        | Extended.E x => Extension.eval eval rho x
 end
 
 
