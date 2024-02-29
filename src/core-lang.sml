@@ -1,35 +1,35 @@
-signature CORE = sig
+signature EXTENDED = sig
   type name = string 
   type vcon
-  type 'exp exp'  (* all the expressions we don't care about *)
+  type 'exp extension  (* all the expressions we don't care about *)
 
   datatype exp = NAME of name 
                | VCONAPP of vcon * exp list
                | LAMBDAEXP of name * exp 
                | FUNAPP of exp * exp 
-               | E of exp exp'  (* everything else *)
+               | E of exp extension  (* everything else *)
 end
 
-functor MkCore(type 'a exp'
-               type vcon) :> CORE where type 'a exp' = 'a exp'
-                                    and type vcon = vcon
+functor MkExtended(type 'a extension
+                   type vcon) :> EXTENDED where type 'a extension = 'a extension
+                                        and type vcon = vcon
   =
 struct
   type name = string 
   type vcon = vcon
-  type 'a exp' = 'a exp'
+  type 'a extension = 'a extension
   datatype exp = NAME of name 
                | VCONAPP of vcon * exp list
                | LAMBDAEXP of name * exp 
                | FUNAPP of exp * exp 
-               | E of exp exp'  (* everything else *)
+               | E of exp extension  (* everything else *)
 end
 
 structure NewPPlus =
-  MkCore(type name = string
+  MkExtended(type name = string
          datatype vcon = VCON of string
          datatype pat = NAME of name | APP of vcon * pat list
-         datatype 'a exp' = CASE of 'a * (pat * 'a) list)
+         datatype 'a extension = CASE of 'a * (pat * 'a) list)
 
 
 structure Core :> sig 
