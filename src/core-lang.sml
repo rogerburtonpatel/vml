@@ -25,7 +25,11 @@ struct
                | E of exp exp'  (* everything else *)
 end
 
-
+structure NewPPlus =
+  MkCore(type name = string
+         datatype vcon = VCON of string
+         datatype pat = NAME of name | APP of vcon * pat list
+         datatype 'a exp' = CASE of 'a * (pat * 'a) list)
 
 
 structure Core :> sig 

@@ -169,3 +169,60 @@ fun runProg defs =
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
 end 
+
+
+
+
+
+
+structure PPlusExtension = struct
+  type name = string
+  type vcon = PPlus.vcon
+  type pat = PPlus.toplevelpattern
+  datatype 'a exp' = CASE of 'a * (pat * 'a) list
+
+  type 'a value = 'a Core.core_value
+  type 'a context = 'a value Env.env
+
+  val rec eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a exp' -> 'a value) =
+    fn evalExp =>
+    let fun go context (CASE (e, choices)) =
+          let val v = evalExp context e
+          in  Impossible.unimp "pick the choice that matches v"
+          end
+    in  go
+    end
+
+end
+
+structure NewPPlus' = MkCore(open PPlusExtension)
+
+structure XXX =
+struct
+  structure P  = NewPPlus'
+  structure PX = PPlusExtension
+  fun eval' evalX rho e = 
+    let fun eval rho e = eval' (PX.eval eval) rho e
+    in 
+      case e 
+        of P.NAME n => Env.find (n, rho)
+         | P.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
+         | P.FUNAPP (fe, param) => 
+                (case eval rho fe 
+                  of Core.LAMBDA (n, b) => 
+                    let val arg = eval rho param
+                        val rho' = Env.bind (n, arg, rho)
+                      in eval rho' b
+                      end
+                   | _ => raise Core.BadFunApp "attempted to apply non-function")
+        | P.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
+        | P.E x => evalX rho x
+     end
+
+  fun eval rho e = eval' (PX.eval eval) rho e
+
+end
+
+
+
+
