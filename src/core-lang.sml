@@ -1,3 +1,33 @@
+signature CORE = sig
+  type name = string 
+  type vcon
+  type 'exp exp'  (* all the expressions we don't care about *)
+
+  datatype exp = NAME of name 
+               | VCONAPP of vcon * exp list
+               | LAMBDAEXP of name * exp 
+               | FUNAPP of exp * exp 
+               | E of exp exp'  (* everything else *)
+end
+
+functor MkCore(type 'a exp'
+               type vcon) :> CORE where type 'a exp' = 'a exp'
+                                    and type vcon = vcon
+  =
+struct
+  type name = string 
+  type vcon = vcon
+  type 'a exp' = 'a exp'
+  datatype exp = NAME of name 
+               | VCONAPP of vcon * exp list
+               | LAMBDAEXP of name * exp 
+               | FUNAPP of exp * exp 
+               | E of exp exp'  (* everything else *)
+end
+
+
+
+
 structure Core :> sig 
   type name = string 
   datatype vcon  = TRUE | FALSE | K of name 
