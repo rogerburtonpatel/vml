@@ -175,7 +175,7 @@ end
 
 signature EXTENSION = sig
   type 'a context
-  type 'a value
+  type 'a value = 'a Core.core_value
   type 'a extension
 
   val eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) 
@@ -202,8 +202,7 @@ structure PPlusExtension : EXTENSION = struct
 
 end
 
-structure NewPPlus' = MkExtended(open PPlusExtension
-                                 type vcon = Core.vcon)
+structure NewPPlus' = MkExtended(open PPlusExtension)
 
 structure XXX =
 struct
@@ -230,10 +229,8 @@ end
 
 
 functor MkEval(structure Extended : EXTENDED
-                                         where type vcon = Core.vcon
                structure Extension : EXTENSION
                                          where type 'a context = 'a Core.core_value Env.env
-                                         where type 'a value = 'a Core.core_value
                sharing type Extended.extension = Extension.extension
                )
   =

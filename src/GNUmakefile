@@ -34,7 +34,7 @@ mlton: $(BIN)/dtran.opt
 	@: do nothing, and say nothing about doing nothing
 
 $(BIN)/dtran.opt: $(MLBS) $(SRCS)
-	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 main.mlb
+	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 all.mlb
 
 %.mlb: %.cm
 	cm2mlb $^ > $@ || rm -f $@
