@@ -44,16 +44,16 @@ decision-making construct:
     | $\tt{if} \; \tt{[}\; g \; \bracketed{[] g} \;\tt{]} \; \tt{fi}$ : if-fi 
     | $K \bracketed{\expr}$ : value constructor application 
     | $\expr[1] \; \expr[2]$ : function application 
+    | $\lambda x. \; \expr$ : lambda delcaration 
     ;;
     $g$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\expr$ : terminating experession
     | $\expr; \; g$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} g$ : existential 
     | $\expr[1] = \expr[2]; \; g$ : equation 
-    | $\lambda x. \; \expr$ : lambda 
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-    | $\lambda x. \; \expr$ : lambda 
+    | $\lambda x. \; \expr$ : lambda value
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | \tt{true} $\vert$ \tt{false} : booleans
