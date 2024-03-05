@@ -1,0 +1,403 @@
+%%
+\documentclass[manuscript,screen,review, 12pt]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+\begin{document}
+\title{A Replacement for Pattern Matching, Inspired by Verse}
+
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+  \institution{Tufts University}
+  \streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+}
+
+\author{Norman Ramsey}
+\email{nr@cs.tufts.edu}
+\affiliation{%
+\institution{Tufts University}
+\streetaddress{419 Boston Ave}
+\city{Medford}
+\state{Massachusetts}
+\country{USA}
+\postcode{02155}
+}
+
+\author{Milod Kazerounian}
+\email{milod.mazerouniantufts.edu}
+\affiliation{%
+\institution{Tufts University}
+\streetaddress{419 Boston Ave}
+\city{Medford}
+\state{Massachusetts}
+\country{USA}
+\postcode{02155}
+}
+
+\renewcommand{\shortauthors}{Burtonpatel et al.}
+
+\begin{abstract}
+  Pattern matching is nice and has an appealing cost model, but people keep
+  extending it to make it more expressive. Verse [cite-Verse] looks very simple
+  and is surprisingly expressive, but the cost model is a challenge. Why not look
+  for a compromise?
+  \end{abstract}
+
+\maketitle
+
+\section{Introduction}
+\bigskip 
+\it{The introduction will have a motivating example. Its big idea is: Pattern
+matching is popular and well-established, but there are situations in which it
+is clunky, and where Verse may shine.}
+\bigskip 
+\begin{itemize}
+    \item \bf{P1}: 
+    \item Pattern matching uses this for that. 
+    \item Example. 
+    \item Explain example. 
+    \item \bf{P2}: 
+    \item Programmers use pattern matching. But pattern matching is not good for
+    everything. 
+    \item Consider Example. 
+    \item Explain example. 
+    \item Attempted mitigations in the past: extensions, SPJ example. 
+    \item We go futher. 
+    \item \bf{P3}: 
+    \item Contribution: 2 languages that attempt to mitigate this problem. 
+    \item Our goal: One simple, expressive, efficient decision-making construct.
+    \item One is \PPlus, the other is \VMinus. 
+    \item Example of \VMinus in action on prior example. 
+\end{itemize}
+
+
+\section{Our languages, Informally}
+
+We begin by informally introducing two small functional programming languages to
+address the issue of inflexibility of patterns: \PPlus, a language with several
+of the popular extensions to pattern matching and minimal syntactic
+restrictions, and \VMinus, which replaces pattern matching with equations like
+those in Verse [cite-Verse]. 
+
+To facilitate comparisons and proofs, the languages are each a subset of a 
+single language \U \ref{fig:U}. Asterisks (${}^{*}$) indicate components of \U which 
+belong to the sub-languages. 
+
+The keen reader will notice that the syntax of \U includes a forms for
+decision trees, which we have not yet discussed. Decision trees will be crucial
+in proving properties of efficiency of our languages, and will we be discussed
+in full in a later section. 
+
+\begin{figure}[h!p]
+    \small
+    \begin{flushleft}
+        \begin{bnf}
+        $P$ : \textsf{Programs} ::=
+        $\bracketed{d}$ : definition
+        ;;
+        $d$ : \textsf{Definitions} ::=
+        | $\mathit{val} \; x \; \mathit{=} \; \expr$ : bind name to expression
+        ;;
+        $\expr$ : Expressions ::= 
+        | $x, y, z$              : names
+        | $K\bracketed{\expr}$   : value constructor application 
+        | $\lambda x. \; \expr$  : lambda declaration  
+        | $\expr[1] \; \expr[2]$ : function application 
+    
+        | $\mathit{case} \; \expr \; \bracketed{p \; \rightarrow \; \expr}$ : $\rm{case expression}^{*}$
+        | $\mathit{if} \; \mathit{[}\; g \; 
+            \bracketed{[] g} \;\mathit{]} \; \mathit{fi}$                   : $\rm{if-fi}^{**}$
+        | $\dt$ : $\rm{decision tree}^{***}$
+            ;;
+            $p$ : $\textsf{Patterns}^{*}$ ::= 
+            $x$ : name 
+            | $K \; \bracketed{p}$          : value constructor application 
+            | $\mathit{when}\; \expr$       : side condition
+            | $p, p'$                       : pattern guard 
+            | $p \; \leftarrow \; \expr$    : pattern from explicit expression  
+            | $p_{1}\pbar p_{2}$            : or-pattern
+            ;;
+            $g$ : $\textsf{Guarded Expressions}^{**}$ ::=  
+            $\boldsymbol{\rightarrow}\expr$ : terminating experession
+            | $\expr; \; g$                 : intermediate expression 
+            | $\exists x \mathit{.} g$      : existential 
+            | $x = \expr; \; g$             : equation 
+            ;;
+            \dt : $\textsf{Decision Trees}^{***}$ ::= 
+            | $\mathit{case} \; x \; \mathit{of} \; 
+                \bracketed{\vert \; K\bracketed{x} \; \mathit{=>} \; \dt} 
+                [\vert \; x \; \mathit{=>} \dt]$                                 : $\rm{test node }^{***}$
+            | $\expr$                                                           : $\rm{match node }^{***}$
+            | $\mathit{if} \; x \; \mathit{then} \; \dt \; \mathit{else} \; \dt$  : $\rm{condition with two children }^{***}$
+            | $\mathit{let} \; x \; \mathit{=} \; \expr \; \mathit{in} \; \dt$   : $\rm{let-bind a name}^{***}$
+        ;;
+        $\v$ : Values ::= 
+          $K\bracketed{\v}$     : value constructor application 
+        | $\lambda x. \; \expr$ : lambda value 
+        ;;
+        $K$ : \textsf{Value Constructors} ::=
+        | $\mathit{true}\; \vert\; \mathit{false}$ : booleans
+        | $\mathit{\#}x$                           : name beginning with $\mathit{\#}$
+        | $\mathit{A-Z}x$                          : name beggining with capital letter
+        | $[\mathit{-}\vert\mathit{+}]
+            (\mathit{0}-\mathit{9})+$              : signed integer literal 
+        \end{bnf}
+        \medskip
+        
+        
+        \it{Concrete Syntax}: "$\lambda$" and "$\exists$" each scope as far to
+        the right as possible.
+        
+        $\hskip 8em$ For example, $(\lambda y.\> \exists x.\> x = 1;\> x + y)$ means 
+        $(\lambda y.\> (\exists x.\> ((x = 1);\> (x + y))))$.
+        
+        Parentheses may be used freely to aid readability and override default precedence.
+
+        A \it{name} is any token that is not an integer literal, does not
+        contain whitespace, a bracket, or parenthesis, and is not a value
+        constructor name or a reserved word.
+        
+        \medskip
+
+        % \bf{Desugaring of Extended Expressions}
+
+        ${}^{*}$ Indicates forms within \PPlus
+
+        ${}^{**}$ Indicates forms within \VMinus
+        
+        ${}^{***}$ Indicates forms within \D
+
+    \end{flushleft}
+    
+    \medskip
+
+    
+
+    \caption{\U, a decision-making language}
+    \Description{A BNF grammar for \U, the universal decision-making language.
+                 It includes patterns, guarded expressions, and decision trees.}
+    \label{fig:U}
+\end{figure}
+
+\newpage
+
+Most forms in \U are present in all of its subsets: Values, Value Constructors,
+Definition Forms, and most forms of expression are shared. Indeed, the
+sub-langauge, like in Verse, is just the the lambda calculus with a few extended
+forms (this time favoring value constructors over tuples). Like in Verse, every
+Lambda Calculus program is a valid \U program. 
+
+On top of this core, three languages are defined as subsets of \U. \PPlus is the
+subset of \U including Patterns and the $\mathit{case} \; \expr \; \bracketed{p
+\rightarrow \expr}$ form of case expression. \VMinus is the subset of \U
+including Guarded Expressions and \it{if-fi}. Finally, \D is the subset of \U
+that includes decision tree syntax, including the reduced case expression,
+$\mathit{case} \; x \; \mathit{of} \; \bracketed{\vert \; K\bracketed{x} \;
+\mathit{=>} \; \dt} [\vert \; x \; \mathit{=>} \dt]$. Importantly, the three are
+mutually exclusive with respect to exactly these extensions; all subsets share
+the sub-langauge and no subset has more than one of the expanded \it{case},
+\it{if-fi}, or the decision tree forms. 
+
+% \PPlus provides or-patterns, side-conditions, and pattern guards, whose
+% combination does not appear in Haskell, OCaml, Standard ML, or any other major
+% functional language. 
+% \bigskip
+% Next steps: Finish introduction of language table, say where semantics are. 
+
+
+\it{The following sections and paragraphs are written:}
+
+\begin{itemize}
+    \item \bf{Subsection: General Evaluation}
+    \item Big-step opsem with environments. 
+    \item \bf{Subsection: \PPlus}
+    \item Patterns, case, environment + disjoint union 
+\end{itemize}
+
+\it{The following sections and paragraphs are in progress:}
+\begin{itemize}
+    \item when, or-patterns, pattern guards 
+    \item \bf{Subsection: \VMinus}
+    \item Guarded expressions, new type of environment
+    \item Evaluation stragety 
+\end{itemize}
+
+\it{Finally, much has been commented out below because I am still determining
+    the order in which their appearance is most clear. After your review of this
+    initial format, I will begin to include them.}
+
+
+% Prior work has introduced extesions to pattern matching [cite, including
+% SPJ proposal for pattern guards.]
+
+% \PPlus provides or-patterns, side-conditions, and pattern guards, whose
+% combination does not appear in Haskell, OCaml, Standard ML, or any other major
+% functional language. 
+
+% \bigskip
+% interesting thoughts: 
+
+% Having a strategem for verse to decision tree is analagous to tail recursion. 
+% You have to write your code in a way that allows the optimization. 
+
+
+% Pattern matching is a well-established paradigm within functional languages, and
+% """has been the subject of significant discourse.""" \it{Appeal to authority here.}
+
+% Without pattern matching, it can be tiresome to deconstruct data using manual 
+% accessor functions. Consider the following Standard ML code: 
+% \smllst
+
+% \begin{lstlisting}
+% val rec len = fn ys => 
+%     if null ys 
+%     then 0 
+%     else let xs = tl ys 
+%          in len xs 
+%          end 
+% \end{lstlisting}
+% \it{An implementation of List.len in Standard ML that does not use pattern 
+%     matching.}
+
+% Manual checking and deconstruction, with built-in functions like \tt{null} and
+% \tt{tl}, can be both error-prone (\bf{say more on this?}) and verbose. Most
+% functional programmers likely prefer the follwing implementation of \tt{len}:
+
+% \begin{lstlisting}
+%     val rec len = fn ys => 
+%         case ys 
+%           of [] => 0
+%            | _::xs => 1 + len xs
+%     \end{lstlisting}
+
+% \it{An equivalent implementation that uses pattern matching.}
+
+% Indeed, pattern matching is quite appealing when deconstructing data, especially 
+% data that may be represented with an algebraic data type, is the primary programming problem: 
+
+
+
+% \begin{lstlisting}
+% val len = \ys. case ys 
+%                  of [] -> 0
+%                   | _::xs -> 1 + len xs
+% \end{lstlisting}
+
+
+% Figure 1 illustrates an example in which pattern matching is an elegant solution
+% to a problem (compare to equivalent Standard ML code that manually deconstructs
+% a list:)
+
+
+% Most functional programmers likely prefer the first example 
+
+% However, language designers continue to extend pattern matching 
+
+% \section{Pattern Matching as it is Now}
+% \it{Pattern matching} is defined as "checking and locating of specific sequences
+% of data of some pattern among raw data or a sequence of tokens." We will return
+% to the notion of "checking" often in this paper: pattern matching answers the
+% question "when I'm checking to see if a piece of data (called a \it{scrutinee})
+% is of the same form as a certain pattern, does that match succeed or fail?"
+
+% \it{Example}.
+
+% In addition to this checking and locating, pattern matching serves as
+% \it{assignment}: it can bind fresh variables based on the form of data and use
+% those bindings in subsequent expressions. 
+
+% \it{Example}.
+
+% Here, "checking" means "do the data match what I expect them to." Because
+% pattern matching is inherently built to match a scrutinee (pure data) with a
+% pattern, pattern matching is quite expressive in these cases. 
+
+% Because of this, most modern functional languages, especially \it{data
+% dependency languages} like Haskell or ML, \it{(is this right?)} employ pattern
+% matching as their main way to deconstruct data (citation?). 
+
+% We here explore pattern matching through the lens of \PPlus, an invented
+% language that has pattern matching along with several of its popular extensions.
+% (The examples above are written in \PPlus.) 
+% \subsection{Strengths}
+
+% - "Checking" and assignment- nice! No car, cdr 
+
+% - Nested patterns - powerful 
+
+% - Literal patterns let you mix names and values 
+
+% \subsection{Weaknesses and Proposed Mitigations}
+
+% We return to the concept of unifying "checking" with assignment, i.e. "match if
+% the data take this form, and give them names." Pattern matching succeeds here
+% when checking means "is the form of data the way I expect"; in fact, as we know,
+% assignment in general \it{is} pattern matching (figure/example?). But when
+% checking means "does this computation succeed" or "does this binding conflict
+% with a prior binding," pattern matching is at a loss, where Verse succeeds. 
+
+% Example: 
+
+
+% Pattern matching's extensions get closer to unifying "checking" and binding.
+% Here, Verse enjoys a different suite of advantages. 
+
+% First, its "or" operation (`one` with `choice`) allows for more than patterns to
+% appear as a top-level "choose this or that" construct in a match sequence; you
+% can also include arbitrary expressions. You can't do this in pattern matching's
+% version, which is an or-pattern. Simply put, saying "does this pattern match or
+% is this expression true" is easy in Verse and clunky if you use patterns. I'll
+% show examples at our meeting. 
+
+% Second, Verse can express operations out of order, letting important checks
+% appear higher up even if they are executed later. This helps program legibility.
+% Again, I have examples from the chapter I wrote today. 
+
+% Third, in a pattern-match clause, the initial data must still match an initial
+% pattern in order to enter a guard; in Verse there is no restriction. This is
+% minor, because you could simply match the data to a variable, and then enter a
+% guard-- but again, all of these advantages are in elegance and brevity, and
+% elegant that solution is not. 
+
+% Finally, mingling pattern guards with other extensions to pattern matching
+% (especially or-patterns) is a murky subject. Haskell has pattern guards and side
+% conditions, but no or-patterns. OCaml has side conditions and or-patterns, but
+% no guards. Mixing all three is (according to some readings) simply difficult for
+% implementers- including, interestingly, those of parsers. In Verse, having `one`
+% and `choice` closely tied in with the simple `e1 = e2` equation form, which by
+% itself subsumes pattern matching, side-conditions, and pattern guards, means
+% that integrating options is easy. A key theme that arises of this: Verse has
+% fewer constructs, and they are more expressive.  
+
+% \section{A Proposal, Inspired by the Verse Calculus}
+
+% \subsection{Verse Flexibility}
+% \subsection{Something else}
+% \subsection{A third thing}
+
+% \section{Verse's Equations Subsume Pattern Matching}
+
+% \subsection{Claim}
+% \subsection{Proof}
+% \subsection{Translations}
+
+% \section{(Maybe) Writing Efficient Verse Code}
+
+% \subsection{Claim}
+% \subsection{Proof}
+% \subsection{Translations}
+
+
+% \section{Citations and Bibliographies}
+
+\end{document}
+\endinput
+%%
