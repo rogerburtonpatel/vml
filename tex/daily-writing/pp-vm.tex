@@ -47,36 +47,184 @@
 \begin{abstract}
   Pattern matching is nice and has an appealing cost model, but people keep
   extending it to make it more expressive. Verse [cite-Verse] looks very simple
-  and is surprisingly expressive, but the cost model is a challenge. Why not look
-  for a compromise?
+  and is surprisingly expressive, but the cost model is a challenge. Why not
+  look for a compromise? We introduce two small functional langauges that
+  attempt to address the limitations of pattern matching in popular functional
+  languages.
   \end{abstract}
 
 \maketitle
 
 \section{Introduction}
+Pattern matching is a well-established and researched construct in functional
+programming langauges [cite, appeal to authority]. It shines in its ability to
+break down constructed data implicity, which is often much preferred to using
+explict deconstructors like Scheme's \tt{car} and \tt{cdr}. But when deciding to
+perform a terminal computation based on prior checks that don't involve a single
+value matching on a pattern, pattern matching struggles to retain its brevity.
+Consider the following algorithm on an abstract type \tt{FiniteMap}, involving a
+lookup function. This examples is a modificaiton of one borrowed from SPJ
+proposal [cite]. 
+
+\begin{center}
+\tt{lookup :: FiniteMap -> Int -> Maybe Int}
+\end{center}
+
+"The lookup returns \tt{Nothing} if the supplied key is not in the domain of the
+mapping, and (\tt{Just v}) otherwise, where v is the value that the key maps to.
+Now consider the following definition:"
+
+\begin{verbatim}
+    clunky env varl var2 | ok1 && 0k2 = val1 + val2 
+                         | otherwise = var1 + var2 
+    where m1 = lookup env var1 
+          m2 = lookup env var2
+          ok1 = isJust m1 
+          ok2 = isJust m2 
+          Just val1 = m1 
+          Just val2 = m2    
+\end{verbatim}
+
+% \begin{enumerate}
+%     \item Given two ints, look the first up in an environment which maps \tt{Int -> Maybe Int}.
+%     \item If the result of the first lookup is a \tt{Maybe Int val1}, look up the second name. 
+%     \item If the result of the second lookup is a \tt{Maybe Int val2}, return the sum of \tt{val1} and \tt{val2}. 
+%     \item If any step fails, return the sum of the inputs. 
+% \end{enumerate}
+
+The authors show how explicit pattern matching with \tt{case} may mitigate the
+verbosity of this problem:
+
+\begin{verbatim}
+    clunky env var1 var2 = 
+      case lookup env var1 of 
+        Nothing -> fail 
+        Just val1 -> 
+          case lookup env var2 of 
+            Nothing -> fail 
+            Just val2 -> val1 + val2
+    where 
+        fail = var1 + var2
+\end{verbatim}
+
+They say: 
+
+"This is a bit shorter, but hardly better. Worse, if this was just one equation
+of clunky, with others that follow, then the thing would not work at all. " 
+
+The authors' suggested mitigation is pattern gaurds, which lead to the following
+solution: 
+\begin{center}
+\begin{verbatim}
+    clunky env var2 var2    
+    | Just vall <- lookup env var1
+    , Just val2 <- lookup env var2
+    = val1 + val2
+\end{verbatim}
+\it{... other equations for clunky}
+\end{center}    
+
+\it{This is obviously better. But now consider something where you need 
+or-patterns; this fails. }
+
+We make a contribution to this problem in the form of two small functional
+languages. One, which we call \PPlus, is an attempt to unify extensions to
+pattern matching under a single, flexible language. The other, which we call
+\VMinus, takes inspiration from Verse and sidesteps the general structure of the
+\tt{case} expression entirely, opting to take a more equation-based approach in
+its decision making. We show that \PPlus and \VMinus have all the expressiveness
+of pattern matching with no additional significant runtime overhead, and we
+propose a form of writing Verse code that could lead to efficient compilation
+based on our heuristics. 
+
+% This is obviously better. But consider a new step to the algorithm, 
+% given the following function signature: 
+
+% \begin{center}
+%     \tt{fileHandleLookup :: Int -> File}
+% \end{center}
+
+% where 
+
+% \begin{center}
+%     \tt{data File = Readable Int | }
+% \end{center}
+
+% (5) 
+
+    % \begin{enumerate}
+    %     \item If a list is non-empty, take its first element. 
+    %     \item If that element is an even integer, take its SHA256 hash. 
+    %     \item If the last digit of the hash is 0, return SOME of the hash. 
+    %     \item If any step fails, return NONE. 
+    % \end{enumerate}
+    
+    % The algorithm is implemented with the following Standard ML code: 
+    
+    % \begin{lstlisting}
+    % case input 
+    %     of []      => NONE 
+    %        | x::xs => if even x 
+    %                   then let val hash = sha256 x 
+    %                         in case last_digit hash 
+    %                              of 0 => hash 
+    %                               | _ => NONE 
+    %                         end 
+    %                    else NONE 
+    % \end{lstlisting}
+    
+% \begin{lstlisting}
+% case input 
+%     of []      => NONE 
+%        | x::xs => if even x 
+%                   then let val hash = sha256 x 
+%                         in case last_digit hash 
+%                              of 0 => hash 
+%                               | _ => NONE 
+%                         end 
+%                    else NONE 
+% \end{lstlisting}
+
 \bigskip 
 \it{The introduction will have a motivating example. Its big idea is: Pattern
 matching is popular and well-established, but there are situations in which it
 is clunky, and where Verse may shine.}
 \bigskip 
-\begin{itemize}
-    \item \bf{P1}: 
-    \item Pattern matching uses this for that. 
-    \item Example. 
-    \item Explain example. 
-    \item \bf{P2}: 
-    \item Programmers use pattern matching. But pattern matching is not good for
-    everything. 
-    \item Consider Example. 
-    \item Explain example. 
-    \item Attempted mitigations in the past: extensions, SPJ example. 
-    \item We go futher. 
-    \item \bf{P3}: 
-    \item Contribution: 2 languages that attempt to mitigate this problem. 
-    \item Our goal: One simple, expressive, efficient decision-making construct.
-    \item One is \PPlus, the other is \VMinus. 
-    \item Example of \VMinus in action on prior example. 
-\end{itemize}
+
+% \begin{itemize}
+%     \item \bf{P1}: 
+%     \item Programmers use pattern matching (cite, appeal to authority). But
+%     pattern matching is not good for everything. 
+%     \item Consider Example- spj example. 
+%     \item Explain example. 
+%     \item Attempted mitigations in the past: extensions, SPJ example. 
+%     \item Need to find something where pattern guards are not good enough. 
+%     \item We go futher. 
+%     \item \bf{P2}: 
+%     \item Contribution: 2 languages that attempt to mitigate this problem. 
+%     \item Our goal: One simple, expressive, efficient decision-making construct.
+%     \item One is \PPlus, the other is \VMinus. 
+%     \item Example of \VMinus in action on prior example. 
+% \end{itemize}
+
+% \begin{itemize}
+%     \item \bf{P1}: 
+%     \item Pattern matching uses this for that. 
+%     \item Example. 
+%     \item Explain example. 
+%     \item \bf{P2}: 
+%     \item Programmers use pattern matching. But pattern matching is not good for
+%     everything. 
+%     \item Consider Example. 
+%     \item Explain example. 
+%     \item Attempted mitigations in the past: extensions, SPJ example. 
+%     \item We go futher. 
+%     \item \bf{P3}: 
+%     \item Contribution: 2 languages that attempt to mitigate this problem. 
+%     \item Our goal: One simple, expressive, efficient decision-making construct.
+%     \item One is \PPlus, the other is \VMinus. 
+%     \item Example of \VMinus in action on prior example. 
+% \end{itemize}
 
 
 \section{Our languages, Informally}
@@ -88,7 +236,7 @@ restrictions, and \VMinus, which replaces pattern matching with equations like
 those in Verse [cite-Verse]. 
 
 To facilitate comparisons and proofs, the languages are each a subset of a 
-single language \U \ref{fig:U}. Asterisks (${}^{*}$) indicate components of \U which 
+single language \U (\cref{fig:U}). Asterisks (${}^{*}$) indicate components of \U which 
 belong to the sub-languages. 
 
 The keen reader will notice that the syntax of \U includes a forms for
@@ -187,7 +335,6 @@ in full in a later section.
     \label{fig:U}
 \end{figure}
 
-\newpage
 
 Most forms in \U are present in all of its subsets: Values, Value Constructors,
 Definition Forms, and most forms of expression are shared. Indeed, the
