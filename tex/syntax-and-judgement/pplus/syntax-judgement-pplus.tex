@@ -174,7 +174,7 @@ and is not a value constructor name or a reserved word.
               value $\v$, and $p$ matches $\v$. 
         $\mathit{false}$, and produces the empty environment. 
         \item a pattern \pcommap\: matches if both $p$ and $p'$ match.
-        \item a pattern \por\: matches if either $p_{1}$ or $p_{2}$
+        \item a pattern \porp\: matches if either $p_{1}$ or $p_{2}$
         matches. 
     \end{itemize}
 
@@ -491,7 +491,7 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 \[
 \inferrule*[Left=\textsc{ (OrPatFst) }]
     {\pmatch[pat={p_{1}}]}
-    {\pmatch[pat={\por}]}
+    {\pmatch[pat={\porp}]}
 \]
 
 
@@ -500,6 +500,6 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     {\pmatch[pat=p_{1}, newenv=\dagger]
     \and 
     \pmatch[pat={p_{2}}, newenv=r]}
-    {\pmatch[pat={\por}, newenv=r]}
+    {\pmatch[pat={\porp}, newenv=r]}
 \]
 \end{document}
