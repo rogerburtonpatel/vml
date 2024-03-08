@@ -26,7 +26,7 @@
     &\Bindings{x} = \bracketed{x} \\ 
     &\Bindings{K} = \bracketed{} \\
     &\Bindings{K \; p_{1} \dots p_{n}} = \Bindings{p} \cup \dots \cup \Bindings{p_{n}} \\
-    &\Bindings{\por} = \Bindings{p_{1}} \cap \Bindings{p_{2}} \\
+    &\Bindings{\porp} = \Bindings{p_{1}} \cap \Bindings{p_{2}} \\
     &\Bindings{\pcommap} = \Bindings{p} \cup \Bindings{p'} \\
     &\Bindings{\parrowe} = \Bindings{p} \\
     &\Bindings{\whenexpr} = \bracketed{}
@@ -74,17 +74,34 @@ p and p' with the context of that name, seperated by a semicolon
 Translating (p1 | p2) with the context of a name $\rightarrow$ 
 This is the hard one. Likely need to duplicate context. 
 
+% Old version 
+% \begin{align*}
+%     &\pattov[pat=y, result={x = y}] \\
+%     &\pattov[pat=K, result={x = K}] \\
+%     &\ptran{K p_{1} \dots p_{n}}xe \rightsquigarrow \\
+%     \exists y_{1} \dots y_{n}. \; &\ptran{p_{1}}y_{1}e; \dots; \ptran{p_{n}}y_{n}e;\;
+%     x = K y_{1} \dots y_{n}, \\
+%     &\rm{$\forall i.\; 1 \leq i \leq n:\; y_{i}$ fresh} \\
+%     &\pattov[pat=\mathit{when}\; e', result=e'] \\
+%     &\pattov[pat=\pcommap, result=\ptran{p}xe;\;\ptran{p'}xe]
+% \end{align*}
+
+% New version 3/8
 \begin{align*}
-    &\pattov[pat=y, result={x = y}] \\
-    &\pattov[pat=K, result={x = K}] \\
-    &\ptran{K p_{1} \dots p_{n}}xe \rightsquigarrow \\
-    \exists y_{1} \dots y_{n}. \; &\ptran{p_{1}}y_{1}e; \dots; \ptran{p_{n}}y_{n}e;\;
+    &\pattov[pat=y, exp={}, result={x = y}] \\
+    &\pattov[pat=K, exp={}, result={x = K}] \\
+    &\ptran{K p_{1} \dots p_{n}}x \rightsquigarrow \\
+    \exists y_{1} \dots y_{n}. \; &\ptran{p_{1}}y_{1}\; o\; \dots o\; \ptran{p_{n}}y_{n}\; o\;
     x = K y_{1} \dots y_{n}, \\
     &\rm{$\forall i.\; 1 \leq i \leq n:\; y_{i}$ fresh} \\
-    &\pattov[pat=\mathit{when}\; e', result=e'] \\
-    &\pattov[pat=\pcommap, result=\ptran{p}xe;\;\ptran{p'}xe]
+    &\pattov[pat=\mathit{when}\; e', exp={}, result={\etran{e'}}] \\
+    &\pattov[pat=\pcommap, exp={}, result=\ptran{p}x\; o\;\ptran{p'}x] \\
+    &\pattov[pat=\porp, exp={}, result=(\ptran{p}x \pbar \ptran{p'}x)]
 \end{align*}
-        %     &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{\expr[n]}}] \\
+
+
+
+%     &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{\expr[n]}}] \\
 % &\ptov[exp={p \; \tt{when} \; \expr}, result={\ptran{p}\tt{;} \; \etran{\expr}}] \\
 %     &\ptov[exp={p_{1} \vert p_{2}}, result={\ptran{p_{1}} \vert \ptran{p_{2}}}] \\
 %     &\ptov[exp={p,  p_{1} \leftarrow \expr[1], \dots, p_{n} \leftarrow \expr[n]}, 
