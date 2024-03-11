@@ -262,40 +262,40 @@ of this unifying language which belong to the sub-languages.
         | $\mathit{val}\; x\; \mathit{=}\; \expr$ : bind name to expression
         ;;
         $\expr$ : Expressions ::= 
-        | $x, y, z$              : names
-        | $K\bracketed{\expr}$   : value constructor application 
+        | $x, y, z$             : names
+        | $K\bracketed{\expr}$  : value constructor application 
         | $\lambda x.\; \expr$  : lambda declaration  
         | $\expr[1]\; \expr[2]$ : function application 
     
         | $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ : $\rm{case expression}^{*}$
         | $\mathit{if}\; \mathit{[}\; g\; 
-            \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$                   : $\rm{if-fi}^{**}$
-        | $\dt$ : $\rm{decision tree}^{***}$
+            \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$                : $\rm{if-fi}^{**}$
+        | $\dt$                                                         : $\rm{decision tree}^{***}$
         ;;
         $\v$ : Values ::= 
           $K\bracketed{\v}$     : value constructor application 
-        | $\lambda x.\; \expr$ : lambda value 
+        | $\lambda x.\; \expr$  : lambda value 
         ;;
         $p$ : $\textsf{Patterns}^{*}$ ::= 
         $x$ : name 
-        | $K\; \bracketed{p}$          : value constructor application 
+        | $K\; \bracketed{p}$           : value constructor application 
         | $\mathit{when}\; \expr$       : side condition
         | $p, p'$                       : pattern guard 
-        | $p\; \leftarrow\; \expr$    : pattern from explicit expression  
+        | $p\; \leftarrow\; \expr$      : pattern from explicit expression  
         | $p_{1}\pbar p_{2}$            : or-pattern
         ;;
         $g$ : $\textsf{Guarded Expressions}^{**}$ ::=  
         $\boldsymbol{\rightarrow}\expr$ : terminating experession
-        | $\expr;\; g$                 : intermediate expression 
+        | $\expr;\; g$                  : intermediate expression 
         | $\exists x \mathit{.} g$      : existential 
-        | $x = \expr;\; g$             : equation 
+        | $x = \expr;\; g$              : equation 
         ;;
         \dt : $\textsf{Decision Trees}^{***}$ ::= 
         | $\mathit{case}\; x\; \mathit{of}\; 
             \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} 
-            [\vert\; x\; \mathit{=>} \dt]$                                 : $\rm{test node }^{***}$
-        | $\expr$                                                           : $\rm{match node }^{***}$
-        | $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$  : $\rm{condition with two children }^{***}$
+            [\vert\; x\; \mathit{=>} \dt]$                              : $\rm{test node }^{***}$
+        | $\expr$                                                       : $\rm{match node }^{***}$
+        | $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ : $\rm{condition with two children }^{***}$
         | $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$   : $\rm{let-bind a name}^{***}$
         % ;;
         % $K$ : \textsf{Value Constructors} ::=
@@ -341,6 +341,78 @@ of this unifying language which belong to the sub-languages.
                  It includes patterns, guarded expressions, and decision trees.}
     \label{fig:U}
 \end{figure}
+% \begin{table}[h]
+%     \centering
+%     \small
+%     \begin{tabular}{l l l}
+%         \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Belong to} \\
+
+%         $P$ : Programs & $\bracketed{d}$ & many definitions & \\
+%         $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & bind name to expression & \\
+%         $\expr$ : Expressions & $x, y, z$ & names & \\
+%         & $K\bracketed{\expr}$ & value constructor applied to expressions & \\
+%         & $\lambda x.\; \expr$ & lambda declaration & \\
+%         & $\expr[1]\; \expr[2]$ & function application & \\
+%         & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & $\rm{case expression}$ & \\
+%         & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & $\rm{if-fi}$ & \\
+%         & $\dt$ & $\rm{decision tree}$ & \\
+%         $\v$ : Values & $K\bracketed{\v}$ & value constructor applied to values & \\
+%         & $\lambda x.\; \expr$ & lambda value & \\
+%         $p$ : Patterns & $x$ & name & \\
+%         & $K\; \bracketed{p}$ & value constructor applied to patterns & \\
+%         & $\mathit{when}\; \expr$ & side condition & \\
+%         & $p, p'$ & pattern guard & \\
+%         & $p\; \leftarrow\; \expr$ & pattern from explicit expression & \\
+%         & $p_{1}\pbar p_{2}$ & or-pattern & \\
+%         $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & terminating expression & \\
+%         & $\expr;\; g$ & intermediate expression & \\
+%         & $\exists x \mathit{.} g$ & existential & \\
+%         & $x = \expr;\; g$ & equation & \\
+%         \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & $\rm{test node}$ & \\
+%         & $\expr$ & $\rm{match node}$ & \\
+%         & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & $\rm{condition with two children}$ & \\
+%         & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & $\rm{let-bind a name}$ & \\
+%     \end{tabular}
+%     \caption{Example LaTeX Table}
+%     \label{tab:example}
+% \end{table}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{l l l}
+        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
+        \hline
+        $P$ : Programs & $\bracketed{d}$ & \\
+        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
+        $\expr$ : Expressions & $x, y, z$ & \\
+        & $K\bracketed{\expr}$ &  \\
+        & $\lambda x.\; \expr$ & \\
+        & $\expr[1]\; \expr[2]$ & \\
+        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
+        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
+        & $\dt$ & \D \\
+        $\v$ : Values & $K\bracketed{\v}$ & \\
+        & $\lambda x.\; \expr$ & \\
+        $p$ : Patterns & $x$ & \PPlus \\
+        & $K\; \bracketed{p}$ & \PPlus \\
+        & $\mathit{when}\; \expr$ & \PPlus \\
+        & $p, p'$ & \PPlus \\
+        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
+        & $p_{1}\pbar p_{2}$ & \PPlus \\
+        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
+        & $\expr;\; g$ & \VMinus \\
+        & $\exists x \mathit{.} g$ & \VMinus \\
+        & $x = \expr;\; g$ & \VMinus \\
+        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
+        & $\expr$ & \D \\
+        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
+        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
+    \end{tabular}
+    \caption{Example LaTeX Table}
+    \label{tab:example}
+\end{table}
+
 
 
 Most syntactic categories in \U are present in all of its subsets: Values, Value
