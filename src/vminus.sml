@@ -50,7 +50,8 @@ signature VMINUS = sig
   val expString : 'a exp -> string 
   val eval      : 'a value option Env.env -> 'a exp -> 'a value 
   val solve      : 'a value option Env.env -> 'a guarded_exp -> 'a result
-
+  val eqexp      : 'a exp * 'a exp -> bool 
+  
   val map  : ('a -> 'b) -> 'a exp -> 'b exp
   val gmap : ('a -> 'b) -> 'a guarded_exp -> 'b guarded_exp
 
@@ -103,7 +104,22 @@ functor VMFn (structure A : ALPHA) :> VMINUS = struct
     | boolOfValue _              = true
 
   
+fun eqexp (ex1, ex2) = 
+  case (ex1, ex2)
+    of (ALPHA a1, ALPHA a2) => Alpha.eqval a1 a2 
+     | (NAME n1, NAME n2)   => n1 = n2
+     | (IF_FI gs1, IF_FI gs2) => ListPair.allEq eqgexp(gs1, gs2)
+     | (VCONAPP (vc1, es1), VCONAPP (vc2, es2)) => 
+        Core.eqval (Core.VCON (vc1, []), Core.VCON (vc1, []))
+        andalso 
+        ListPair.allEq eqexp (es1, es2)
+     | (FUNAPP (e1, e2), FUNAPP (e3, e4)) =>
+        ListPair.allEq eqexp ([e1, e2], [e3, e4])
+     | (LAMBDAEXP (n1, e1), LAMBDAEXP (n2, e2)) => 
+        n1 = n2 andalso eqexp (e1, e2)
+     | _ => false 
 
+and eqgexp (g1, g2) = Impossible.unimp "not yet"
 
   fun eqval (VALPHA a, VALPHA a')  = A.eqval a a'
     | eqval (VCON v1, VCON v2)     = 

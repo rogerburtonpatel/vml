@@ -96,17 +96,64 @@ val rec stuck : context -> ('a -> bool) -> 'a V.exp ->  bool =
     = fn _ => Impossible.unimp "not yet"
 
   val addEquality   : (V.name * 'a V.exp) -> 'a V.guarded_exp -> 'a V.guarded_exp option
-    = fn _ => Impossible.unimp "not yet"
+    = fn (n, e) => 
+      let exception BadEquality
+          fun reduce g = 
+            case g of 
+              ar as V.ARROWALPHA e' => ar
+            | V.EXPSEQ (e', g')     => 
+                V.EXPSEQ (e', reduce g')
+            | V.EXISTS (n', g')     => 
+                V.EXISTS (n', reduce g')
+            | V.EQN (n', e', g')    => 
+                if n = n' andalso V.eqexp (e, e')
+                then reduce g'
+                else raise BadEquality
+    in fn g =>
+      SOME (reduce g)
+      handle
+        BadEquality => NONE
+    end  
 
   val addInequality : (V.name * 'a V.exp) -> 'a V.guarded_exp -> 'a V.guarded_exp option
-    = fn _ => Impossible.unimp "not yet"
-
+    = fn (n, e) => 
+      let exception BadInequality
+          fun reduce g = 
+            case g of 
+              ar as V.ARROWALPHA e' => ar
+            | V.EXPSEQ (e', g')     => 
+                V.EXPSEQ (e', reduce g')
+            | V.EXISTS (n', g')     => 
+                V.EXISTS (n', reduce g')
+            | V.EQN (n', e', g')    => 
+                if n = n' andalso V.eqexp (e, e')
+                then raise BadInequality
+                else reduce g'
+    in fn g =>
+      SOME (reduce g)
+      handle
+        BadInequality => NONE
+    end  
+    
   val ifEq : (V.name * 'a V.exp) -> 'a D.tree -> 'a D.tree -> 'a D.tree
     = fn _ => Impossible.unimp "not yet"
 
   val nameExp : 'a V.exp -> V.name -> 'a V.guarded_exp -> 'a V.guarded_exp   
     (* nameExp (x, e) replaces all occurrences of e with x *)
-    = fn _ => Impossible.unimp "not yet"
+    = fn e => 
+    fn n => 
+    let fun replace g = 
+      case g of 
+              ar as V.ARROWALPHA e' => V.ARROWALPHA (swapIfEq e e')
+            | V.EXPSEQ (e', g') => 
+                V.EXPSEQ (swapIfEq e e', replace g')
+            | V.EXISTS (n', g') => V.EXISTS (n', replace g')
+            | V.EQN (n', e', g') => 
+                V.EQN (n', swapIfEq e e', replace g')
+
+      and swapIfEq e1 e2 = if V.eqexp (e1, e2) then (V.NAME n) else e2
+  in replace
+  end  
 
   (* addEquality   (x, e) [[x = e, g]] = SOME [[g]]
      addInequality (x, e) [[x = e, g]] = NONE
