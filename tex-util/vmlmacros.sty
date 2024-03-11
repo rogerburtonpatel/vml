@@ -283,9 +283,10 @@
    \let\c=\component
    \ensuremath{\c{vterm} \mathrel{\rightarrow^{*}} \c{vresult}}}}
 
-\newcommand\translation[2][]{\ensuremath{#1[\![#2]\!]}}
-\newcommand\etran[1]{\ensuremath{E[\![#1]\!]}}
-\newcommand\ptran[1]{\ensuremath{P[\![#1]\!]}}
+\newcommand\translation[2][]{\ensuremath{\mathcal{#1}[\![#2]\!]}}
+\newcommand\etran[1]{\translation[E]{#1}}
+\newcommand\btran[1]{\translation[B]{#1}}
+\newcommand\ptran[1]{\translation[P]{#1}}
 
 
 \newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
