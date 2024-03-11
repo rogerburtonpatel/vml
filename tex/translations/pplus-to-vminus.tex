@@ -20,9 +20,21 @@
 
 \maketitle
 
+\subsection{Domains}
+We give the names and domains of our translation functions: 
+
+\begin{align*}
+    &\mathcal{P}: Pattern\; ->\; Name\; ->\; Exp\; ->\; Guarded\; Exp \\
+    &\mathcal{E}: Exp\; ->\; Exp \\
+    &\mathcal{B}: Pattern\; ->\; Name\; Set \\
+    \end{align*}
+
+The translation functions $\mathcal{B}$, $\mathcal{E}$, and $\mathcal{P}$
+are defined case by case: 
+
 \subsection{Binding names}
 
-\begin{align}
+\begin{align*}
     &\Bindings{x} = \bracketed{x} \\ 
     &\Bindings{K} = \bracketed{} \\
     &\Bindings{K \; p_{1} \dots p_{n}} = \Bindings{p} \cup \dots \cup \Bindings{p_{n}} \\
@@ -30,49 +42,48 @@
     &\Bindings{\pcommap} = \Bindings{p} \cup \Bindings{p'} \\
     &\Bindings{\parrowe} = \Bindings{p} \\
     &\Bindings{\whenexpr} = \bracketed{}
-\end{align}
+\end{align*}
 
 \subsection{Translating Expressions}
 
 
-\begin{align}
+\begin{align*}
     &\ptov[exp=x, result=x] \\
     &\ptov[exp={K \; \expr[1] \dots \expr[n]}, result={K \etran{\expr[1]} \dots \etran{\expr[n]}}] \\
     &\ptov[exp={\lambda x.\; \expr}, result={\lambda x.\; \etran{\expr}}] \\
     &\ptov[exp={\expr[1] \; \expr[2]}, result={\etran{\expr[1]}\; \etran{\expr[2]}}] \\
-    &\ptov[exp={\tt{case} \; \expr\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \etran{\expr}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   
-\end{align}
-\[
-    \ptov[exp={\tt{case} \; \expr\;  p_{1}\;\expr[1] \vert \dots \vert p_{n}\;\expr[n]}, 
-    result={{\iffitt{\exists x. \; x = \etran{\expr}; \; 
-            \iffitt{x = \ptran{p_{1}}; \rightarrow \etran{\expr[1]} 
-            [] \dots [] x = \ptran{p_{n}}; \rightarrow \etran{\expr[n]}}}}}] \; \rm{, $x$ fresh }    
-\]
+    &\ptov[exp={\tt{case} \; \expr\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \etran{\expr}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   \\
+    &\etran{\tt{case} \; \expr\;  p_{1}\;\expr[1] \vert \dots \vert p_{n}\;\expr[n]} \\
+    &\rightsquigarrow {\iffitt{\exists x. \; x = \etran{\expr}; \; 
+            \iffitt{\exists\; \btran{p_{1}}.\; \ptran{p_{1}}x\expr[1];\;
+            []\; \dots []\; \exists\; \btran{p_{n}}.\; \ptran{p_{n}}x\expr[n]}}} \\
+    &\rm{, $x$ fresh }
+\end{align*}
 
 \rab{how do you format this so it's not terrible}
 
 \subsection{Translating Patterns}
 
 
-Translating a name with the context of a name $\rightarrow$ name = name 
+% Translating a name with the context of a name $\rightarrow$ name = name 
 
-Translating a vcon applied to zero patterns with the context of a name $\rightarrow$ 
-Vcon = name 
+% Translating a vcon applied to zero patterns with the context of a name $\rightarrow$ 
+% Vcon = name 
 
-Translating a vcon applied to one or more patterns with the context of a name $\rightarrow$
-Introduce a fresh name per pattern. Say name = K applied to fresh names,
-then translate each sub-pattern with the context of its corresponding name. 
+% Translating a vcon applied to one or more patterns with the context of a name $\rightarrow$
+% Introduce a fresh name per pattern. Say name = K applied to fresh names,
+% then translate each sub-pattern with the context of its corresponding name. 
 
-Translating (when e) with the context of a name $\rightarrow$ e 
+% Translating (when e) with the context of a name $\rightarrow$ e 
 
-Translating (p $\leftarrow$ e) with the context of a name $\rightarrow$ 
-Introduce a fresh name, bind it to e, bind it to p. 
+% Translating (p $\leftarrow$ e) with the context of a name $\rightarrow$ 
+% Introduce a fresh name, bind it to e, bind it to p. 
 
-Translating (p, p') with the context of a name $\rightarrow$ translate 
-p and p' with the context of that name, seperated by a semicolon 
+% Translating (p, p') with the context of a name $\rightarrow$ translate 
+% p and p' with the context of that name, seperated by a semicolon 
 
-Translating (p1 | p2) with the context of a name $\rightarrow$ 
-This is the hard one. Likely need to duplicate context. 
+% Translating (p1 | p2) with the context of a name $\rightarrow$ 
+% This is the hard one. Likely need to duplicate context. 
 
 % Old version 
 % \begin{align*}
@@ -87,6 +98,9 @@ This is the hard one. Likely need to duplicate context.
 % \end{align*}
 
 % New version 3/8
+
+
+
 \begin{align*}
     &\pattov[pat=y, exp={}, result={x = y}] \\
     &\pattov[pat=K, exp={}, result={x = K}] \\
@@ -99,6 +113,7 @@ This is the hard one. Likely need to duplicate context.
     &\pattov[pat=\porp, exp={}, result=(\ptran{p}x \pbar \ptran{p'}x)]
 \end{align*}
 
+\rab{The vconapp rule is a formatting disaster. How do I fix it.}
 
 
 %     &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{\expr[n]}}] \\
