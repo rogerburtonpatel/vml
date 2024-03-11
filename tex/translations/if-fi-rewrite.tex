@@ -20,11 +20,11 @@ Given $\tt{guarded-exp}$:
 where each $e_k$ is a \tt{guarded-exp}, rewrites to: 
 
 $$
-(\bf{one} \; \{\translate{(\expr[1]})
-\; \choice \; (\translate{\expr[2]}) 
-\; \choice \; \dots \; \choice \; 
+(\bf{one}\; \{\translate{(\expr[1]})
+\; \choice\; (\translate{\expr[2]}) 
+\; \choice\; \dots\; \choice\; 
 (\translate{\expr[n]}) 
-\; \choice \; \bf{wrong} \})
+\; \choice\; \bf{wrong} \})
  \langle\rangle  \\
 $$  
 
@@ -32,8 +32,8 @@ where
 
 \begin{align}    
     \translate{\tt{exp}} &= \vlambda{}{\tt{exp}} \\
-    \translate{\exists \; \tt{x.guarded-exp}} 
-    &= \exists \; \tt{x.} \; \translate{\tt{guarded-exp}} \\
+    \translate{\exists\; \tt{x.guarded-exp}} 
+    &= \exists\; \tt{x.}\; \translate{\tt{guarded-exp}} \\
     \translate{\tt{x = exp; guarded-exp}} 
     &= \tt{x = } \tt{exp}; \translate{\tt{guarded-exp}}
 \end{align}

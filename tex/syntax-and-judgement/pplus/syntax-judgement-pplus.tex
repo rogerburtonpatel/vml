@@ -14,7 +14,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Syntax and Semantics of \PPlus}
+\title{Syntax and Semantics of {\PPlus}}
 \author{Roger Burtonpatel}
 \date{February 18th, 2024}
 \begin{document}
@@ -23,7 +23,7 @@
 
 \section{Syntax}
 
-\subsection{\PPlus~ Abstract Syntax}
+\subsection{{\PPlus}~ Abstract Syntax}
 
 \bigskip
 
@@ -33,27 +33,27 @@
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\mathit{val} \; x \; \tt{=} \; \expr$ : bind name to expression
+    | $\mathit{val}\; x\; \tt{=}\; \expr$ : bind name to expression
     ;;
     $\expr$ : Expressions ::= 
     | $x, y, z$ : names
     | $K\bracketed{\expr}$ : value constructor application 
-    | $\lambda x. \; \expr$ : lambda declaration  
-    | $\expr[1] \; \expr[2]$ : function application 
-    | $\mathit{case} \; \expr \; \bracketed{p \; \rightarrow \; \expr}$ : case expression 
+    | $\lambda x.\; \expr$ : lambda declaration  
+    | $\expr[1]\; \expr[2]$ : function application 
+    | $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ : case expression 
     ;;
     $p$ : \textsf{Patterns} ::= $p_{1}\pbar p_{2}$ : or-pattern
     | $p, p'$ : pattern guard 
-    | $p \; \leftarrow \; \expr$ : pattern from explicit expression  
+    | $p\; \leftarrow\; \expr$ : pattern from explicit expression  
     | $x$ : name 
-    | $K \; \bracketed{p}$ : value constructor application 
+    | $K\; \bracketed{p}$ : value constructor application 
     | $\mathit{when}\; \expr$
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-    | $\lambda x. \; \expr$ : lambda value 
+    | $\lambda x.\; \expr$ : lambda value 
     ;;
     $K$ : \textsf{Value Constructors} ::=
-    | $\mathit{true} \;\vert\; \mathit{false}$ : booleans
+    | $\mathit{true}\; vert\; \mathit{false}$ : booleans
     | $\mathit{\#}x$ : name beginning with \tt{\#}
     | $\mathit{p-Z}x$ : name beggining with capital letter
     % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
@@ -67,7 +67,7 @@ and is not a value constructor name or a reserved word.
 
 \vfilbreak
 
-\subsection{\PPlus~ Concrete Syntax}
+\subsection{{\PPlus}~ Concrete Syntax}
 
 \bigskip
 
@@ -77,29 +77,29 @@ and is not a value constructor name or a reserved word.
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
+    | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
     ;;
     $\expr$ : Expressions ::= 
     | $x, y, z$ : names
     | $K\bracketed{\expr}$ : value constructor application 
-    | $\ttbackslash x. \; \expr$ : lambda declaration  
-    | $\expr[1] \; \expr[2]$ : function application 
-    | $\tt{case} \; \expr \; \bracketed{p \; \ttrightarrow \; \expr}$ : case expression 
+    | $\ttbackslash x.\; \expr$ : lambda declaration  
+    | $\expr[1]\; \expr[2]$ : function application 
+    | $\tt{case}\; \expr\; \bracketed{p\; \ttrightarrow\; \expr}$ : case expression 
     | \ttbraced{$\expr$}
     ;;
     $p$ : \textsf{Patterns} ::= $p_{1}\pbar p_{2}$ : or-pattern
     | $p \tt{,} p'$ : pattern guard 
-    | $p \; \leftarrow \; \expr$ : pattern from explicit expression  
+    | $p\; \leftarrow\; \expr$ : pattern from explicit expression  
     | $x$ : name 
-    | $K \; \bracketed{p}$ : value constructor application 
+    | $K\; \bracketed{p}$ : value constructor application 
     | $\tt{when}\; \expr$
     | \ttbraced{$p$}
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-    | $\ttbackslash x. \; \expr$ : lambda value 
+    | $\ttbackslash x.\; \expr$ : lambda value 
     ;;
     $K$ : \textsf{Value Constructors} ::=
-    | $\tt{true} \;\vert\; \mathit{false}$ : booleans
+    | $\tt{true}\; vert\; \mathit{false}$ : booleans
     | $\tt{\#}x$ : name beginning with \tt{\#}
     | $\tt{p-Z}x$ : name beggining with capital letter
     % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
@@ -107,13 +107,13 @@ and is not a value constructor name or a reserved word.
 \end{center}
 
 
-\section{Forms of Judgement for \PPlus:}
+\section{Forms of Judgement for {\PPlus}:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
     $\expr$& expression \\
-    $\v, \; \v'$& value \\
+    $\v,\; \v'$& value \\
     $K$& value constructor \\ 
     $p$& pattern \\ 
     $x, y$& names \\ 
@@ -187,7 +187,7 @@ and is not a value constructor name or a reserved word.
 
     \subsection{Expressions}
     
-        An expression in \PPlus evaluates to produce a single value. 
+        An expression in {\PPlus} evaluates to produce a single value. 
 
         \begin{align*}
             &\prun
@@ -202,7 +202,7 @@ and is not a value constructor name or a reserved word.
 
 
 
-\section{Rules (Big-step Operational Semantics) for \PPlus:}
+\section{Rules (Big-step Operational Semantics) for {\PPlus}:}
 
 Some of these rules are a variation on the rules found in Ramsey (2022, Section
 8.3). 
@@ -216,7 +216,7 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 \[
 \inferrule*[Left=\textsc{ (Eval-Vcon-Empty) }]
     {\ }
-    {\veval{\textsc{vcon} \; (K, \sqbraced{})}{K}}
+    {\veval{\textsc{vcon}\; (K, \sqbraced{})}{K}}
 \]
 
 \[
@@ -227,7 +227,7 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     \and 
     1 \leq i \leq n
     }}
-    {\veval{\textsc{vcon} \;(K, \expr[1], \dots \expr[n])}{K(v_{1}, 
+    {\veval{\textsc{vcon}\; K, \expr[1], \dots \expr[n])}{K(v_{1}, 
     \dots v_{i})}}
 \]
 
@@ -262,12 +262,12 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     {\prun[value=\v]}
     \and 
     \prun[exp=
-        {\textsc{case} \; (\textsc{literal}(\v), 
-        [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+        {\textsc{case}\; (\textsc{literal}(\v), 
+        [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
         value=\v']}    
     {\prun[exp=
-    {\textsc{case} \; (\expr, 
-    [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+    {\textsc{case}\; (\expr, 
+    [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
     value=\v']}
 \]
 
@@ -278,8 +278,8 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     \and
     {\prun[exp= {\expr[1]}, env=\rho + \rho']}}
     {\prun[exp=
-    {\textsc{case} \; (\textsc{literal}(\v), 
-    [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+    {\textsc{case}\; (\textsc{literal}(\v), 
+    [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
     value=\v']}
 \]
 
@@ -288,12 +288,12 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     {\inferrule* {}
     {\pmatch[pat={p_{1}}, newenv=\dagger]}
     \and 
-    \prun[exp={\textsc{case} \; (\textsc{literal}(\v), 
-    [p_{2} \; \expr[2]], \dots, [p_{n} \; \expr[n]])},
+    \prun[exp={\textsc{case}\; (\textsc{literal}(\v), 
+    [p_{2}\; \expr[2]], \dots, [p_{n}\; \expr[n]])},
     value=\v']}    
     {\prun[exp=
-    {\textsc{case} \; (\textsc{literal}(\v), 
-    [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+    {\textsc{case}\; (\textsc{literal}(\v), 
+    [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
     value=\v']}
 \]
 
@@ -310,8 +310,8 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
     \\\\
     r = r_{1} \uplus \dots \uplus r_{m}
     }}
-    {\pmatch[pat={\textsc{vconapp} \;(K,\; p_{1}, \dots 
-            p_{m})}, value={\textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])},
+    {\pmatch[pat={\textsc{vconapp}\; K,\; p_{1}, \dots 
+            p_{m})}, value={\textsc{vcon}\; (K, [v_{1}', \dots v_{m}'])},
             newenv=r]}
 \]
 
@@ -319,8 +319,8 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 
 \[
 \inferrule*[Left=\textsc{ (FailVcon) }]
-    {\v \rm{ does not have the form } \textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])}
-    {\pmatch[pat={\textsc{vconapp} \;(K,\; p_{1}, \dots 
+    {\v \rm{ does not have the form } \textsc{vcon}\; (K, [v_{1}', \dots v_{m}'])}
+    {\pmatch[pat={\textsc{vconapp}\; K,\; p_{1}, \dots 
             p_{m})}, 
             newenv=\dagger]}
 \]
@@ -328,21 +328,21 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 \[
 \inferrule*[Left=\textsc{ (MatchBareVcon) }]
     {\ }
-    {\pmatch[pat={\textsc{vconapp} \;(K, \bracketed{})}, value={\textsc{vcon} \; (K, [])},
+    {\pmatch[pat={\textsc{vconapp}\; K, \bracketed{})}, value={\textsc{vcon}\; (K, [])},
             newenv=\bracketed{}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (FailBareVcon) }]
-    {\v \neq {\textsc{vcon} \; (K, [])}}
-    {\pmatch[pat={\textsc{vconapp} \;(K, \bracketed{})},
+    {\v \neq {\textsc{vcon}\; (K, [])}}
+    {\pmatch[pat={\textsc{vconapp}\; K, \bracketed{})},
             newenv=\dagger]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (MatchVar) }]
     {\ }
-    {\pmatch[pat={\textsc{patname} \; (x)},
+    {\pmatch[pat={\textsc{patname}\; (x)},
             newenv=\bracketed{x \mapsto \v}]}
 \]
 
@@ -364,7 +364,7 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 \[
 \inferrule*[Left=\textsc{ (ArrowExpPattern) }]
 {\prun[value=\v'] \and \pmatch[pat=p, value=\v', newenv=r]}
-{\pmatch[pat={\textsc{arrowexpr} \; (p, \expr)},
+{\pmatch[pat={\textsc{arrowexpr}\; (p, \expr)},
             newenv=r]}
 \]
 

@@ -15,7 +15,7 @@
     use intermediate expressions for their boolean result to decide whether 
     to continue computation, like: 
 
-    \[\lambda y. \; \exists x. \; x = 2; \bf{x $\leq$ y}; x \]
+    \[\lambda y.\; \exists x.\; x = 2; \bf{x $\leq$ y}; x \]
 
     (The intermediate expression here is shown in bold for emphasis).
     
@@ -33,7 +33,7 @@
             $\eb$ : boolean expressions ::= \tt{true}
             | \tt{false}
             | $x, y, z$ : names 
-            | $e_{b_{1}} \; \tt{boolbinop} \; e_{b_{2}}$ 
+            | $e_{b_{1}}\; \tt{boolbinop}\; e_{b_{2}}$ 
             | $! \eb$ 
             ;;
             $\tt{boolbinop}$ : binary boolean operators ::= \tt{\&\&}
@@ -53,8 +53,8 @@
     \begin{center}
         \begin{bnf}
             $\Dalpha$ : Decision trees ::= \dots 
-            | $\tt{let} \; x \; \tt{=} \; \eb \; \tt{in} \; \Dalpha$ : let-bind a name
-            | | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
+            | $\tt{let}\; x\; \tt{=}\; \eb\; \tt{in}\; \Dalpha$ : let-bind a name
+            | | $\tt{if}\; x\; \tt{then}\; \Dalpha\; \tt{else}\; \Dalpha$ : condition with two children 
             
         \end{bnf}
     \end{center}
@@ -69,7 +69,7 @@ There are several problems to this approach:
 
 \begin{enumerate}
     \item Verse expressions don't evaluate to true and false; they evaluate to a
-          sequence of values, where the empty sequence \fail \; is used as
+          sequence of values, where the empty sequence \fail\; is used as
           falsehood. So, one would need a different representation of
           intermediate Verse expressions, somewhat defeating the purpose 
           of a universal boolean-expression form. 

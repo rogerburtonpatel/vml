@@ -15,7 +15,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Syntax and Semantics of \VMinus with $\alpha$}
+\title{Syntax and Semantics of {\VMinus} with $\alpha$}
 \author{Roger Burtonpatel}
 \date{December 3, 2023}
 \begin{document}
@@ -40,14 +40,14 @@ We present a grammar of a base language, with no decision-making constructs:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; e$ : bind name to expression
+    | $\tt{val}\; x\; \tt{=}\; e$ : bind name to expression
     ;;
     $e$ : Core expressions ::= 
     | $x, y, z$ : names
     | $K\bracketed{e}$ : value constructor application 
-    | $\tt{if} \; \expr[1] \; \tt{then} \; \expr[2] \; \tt{else} \; e_{3} $ : if
-    | $\lambda x. \; e$ : lambda 
-    | $\expr[1] \; \expr[2]$ : function application 
+    | $\tt{if}\; \expr[1]\; \tt{then}\; \expr[2]\; \tt{else}\; e_{3} $ : if
+    | $\lambda x.\; e$ : lambda 
+    | $\expr[1]\; \expr[2]$ : function application 
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
     ;;
@@ -69,12 +69,12 @@ and is not a value constructor name or a reserved word.
 
 
 We then present three language extensions that build off of this core: 
-\PPlus, the language of patterns, \VMinus, the language of 
+{\PPlus}, the language of patterns, {\VMinus}, the language of 
 verse-like equations, and $D$, the language of decision trees. 
 
 \subsection{Three Language Extensions}
 
-\subsubsection{\VMinus:}
+\subsubsection{{\VMinus}:}
 
 \begin{center}
     \begin{bnf}
@@ -82,32 +82,32 @@ verse-like equations, and $D$, the language of decision trees.
     | $\alpha$ : terminating alpha
     | $x, y, z$ : names
     % Question: ebnf braces vs. 
-    | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $\tt{if}\; \tt{[}\; \galpha\; \bracketed{[] \galpha}\; tt{]}\; \tt{fi}$ : if-fi 
     | $K \bracketed{\ealpha}$ : value constructor application 
-    | $\ealpha[1] \; \ealpha[2]$ : function application 
+    | $\ealpha[1]\; \ealpha[2]$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
-    | $\ealpha; \; \galpha$ : intermediate expression 
+    | $\ealpha;\; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-    | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
+    | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
     % ;;
     \end{bnf}
 \end{center}
 
 \bigskip 
 
-\subsubsection{\PPlus:}
+\subsubsection{{\PPlus}:}
 \begin{center}
     \begin{bnf}
 $e$ : \textsf{Expressions} ::=
-    | $\ttbraced{\tt{case} \; e \; \bracketed{\tt{[} p \; e \tt{]}}}$ : case expression 
+    | $\ttbraced{\tt{case}\; e\; \bracketed{\tt{[} p\; e \tt{]}}}$ : case expression 
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
-    | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-    % | $\ttbraced{p \; \tt{when} \; e }$ : side condition
-    | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
+    | $\ttbraced{K\; \bracketed{p}}$ : value constructor application 
+    % | $\ttbraced{p\; \tt{when}\; e }$ : side condition
+    | $\ttbraced{\tt{oneof}\; p_{1}\;  p_{2} }$ : or-pattern 
     | $\ttbraced{p \tt{;} \bracketed{e \vert \ttbraced{p  <- e}}}$ : pattern guard
     \end{bnf}
 \end{center}
@@ -120,12 +120,12 @@ $e$ : \textsf{Expressions} ::=
 \begin{center}
     \begin{bnf}
         \Dalpha : \textsf{Decision Tree} ::= 
-        $\tt{case} \; x \; \tt{of} \; 
-        \bracketed{\vert \; K\bracketed{x} \; \tt{=>} \; \Dalpha}
-        [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
+        $\tt{case}\; x\; \tt{of}\; 
+        \bracketed{\vert\; K\bracketed{x}\; \tt{=>}\; \Dalpha}
+        [\vert\; x\; \tt{=>} \Dalpha]$ : test node 
         | $\alpha$ : match node 
-        | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-        | $\tt{let} \; x \; \tt{=} \; e \; \tt{in} \; \Dalpha$ : let-bind a name
+        | $\tt{if}\; x\; \tt{then}\; \Dalpha\; \tt{else}\; \Dalpha$ : condition with two children 
+        | $\tt{let}\; x\; \tt{=}\; e\; \tt{in}\; \Dalpha$ : let-bind a name
         ;;
         $e$ : \textsf{Expressions} ::=
         | $\mathcal{D}_{e}$ : decision trees 
@@ -146,17 +146,17 @@ $e$ : \textsf{Expressions} ::=
 
 
 
-\section{Forms of Judgement for $\VMinus$:}
+\section{Forms of Judgement for ${\VMinus}$:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
-    % $\v, \; \v'$& value \\
+    % $\v,\; \v'$& value \\
     \valpha& a metavalue produced from evaluating $\alpha$. \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
-    $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
+    $\result$& $\vartheta \mid$ \reject : a result of \valpha\; or
     rejection\\
     \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -202,14 +202,14 @@ $e$ : \textsf{Expressions} ::=
     
     \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
     core Verse evaluates to produce possibly-empty sequence of values. In
-    \VMinus, values depend on the form of abstract expression $\alpha.$ If
+    {\VMinus}, values depend on the form of abstract expression $\alpha.$ If
     $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
     it is an ML-like expression, it will be a single value. 
     
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a metavalue \valpha ~or reject. 
     
-    \[\it{r} \; \rm{::=} \; \vartheta \;|\; \reject \]
+    \[\it{r}\; \rm{::=}\; \vartheta\; \; \reject \]
     
     \showvjudgement{Eval-Alpha}{\veval{\alpha}{\valpha}}
     \showvjudgement{Eval-AlphaExpr}{\veval{\ealpha}{\valpha}}
@@ -225,12 +225,12 @@ $e$ : \textsf{Expressions} ::=
     \bigskip
 \subsection{Equations}
 
-In \VMinus, we solve equations (intermediate computations in a guarded
+In {\VMinus}, we solve equations (intermediate computations in a guarded
 expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
 authors of the original Verse paper: we pick one, attempt to solve for it, and
 move on. 
 
-\rab{How do we express that \VMinus semantics preclude backtracking/logical 
+\rab{How do we express that {\VMinus} semantics preclude backtracking/logical 
 variables at runtime?}
 
 Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
@@ -254,7 +254,7 @@ the singleton sequence containing $x$.
     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
 \end{align*}
 
-\section{Rules (Big-step Operational Semantics) for $\VMinus$:}
+\section{Rules (Big-step Operational Semantics) for ${\VMinus}$:}
     
 \subsection{Evaluating Guarded Expressions}
 
@@ -301,7 +301,7 @@ the singleton sequence containing $x$.
     {\inferrule*{\vmrun[context=eq \cdot \context]}
     {}
     }
-    {\vmrun[term=eq; \; \galpha]}
+    {\vmrun[term=eq;\; \galpha]}
 \]
 
 \subsubsection{Choosing and solving an equation}
@@ -338,7 +338,7 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Desugar-EqExps) }]
     {\inferrule* {}
     {
-    x,\;y \; \rm{are distinct and fresh}
+    x,\; \; \rm{are distinct and fresh}
     \\\\
     \vmrun[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
           context=\eqTT{x = \ealpha[1] \cdot y = \ealpha[2] \cdot x = y}]}}
@@ -348,8 +348,8 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
     {
-    \vmrun[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]' \; 
-           \vert \; 1 \leq i \leq n \rbrack}]}
+    \vmrun[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]'\; 
+           \vert\; 1 \leq i \leq n \rbrack}]}
     {\vmrun[context=\TeqT{K(\ealpha[1], \dots 
             \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[n]')}]}
 \]
@@ -410,9 +410,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Vals-Succ) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \valpha, \; \rho(y) = \valpha
+    \rho(x) = \valpha,\; \rho(y) = \valpha
     }}
     {\eqrefine[eq={x = y},newenv=\rho]}
 \]
@@ -421,9 +421,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Vals-Fail) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \valpha, \; \rho(y) = \valpha'
+    \rho(x) = \valpha,\; \rho(y) = \valpha'
     \\\\
     \valpha \neq \valpha'}}
     {\eqrefine[eq={x = y},newenv=\dagger]}
@@ -433,11 +433,11 @@ the singleton sequence containing $x$.
 % \inferrule*[Left=\textsc{ (G-EqNames-Bots-Fail) }]
 %     {\inferrule* {}
 %     {
-%     x,\;y \in \dom \rho
+%     x,\;  \in \dom \rho
 %     \\\\
-%     \rho(x) = \bot, \; \rho(y) = \bot
+%     \rho(x) = \bot,\; \rho(y) = \bot
 %     \\\\
-%     x,\;y \; \rm{do not appear in} \; \context, \; \context'}}
+%     x,\; \; \rm{do not appear in}\; \context,\; \context'}}
 %     {\vmrun[context=\TeqT{x = y}] 
 %     \rightsquigarrow \uppsidown}
 % \]
@@ -446,9 +446,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-BotVal-Succ) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \bot, \; \rho(y) = \valpha
+    \rho(x) = \bot,\; \rho(y) = \valpha
     }}
     {\eqrefine[eq={x = y},newenv=\rho\bracketed{x \mapsto \valpha}]}
 \]
@@ -495,7 +495,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
     {\vmrun[] \Downarrow \vartheta}
-    {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
+    {\veval{\iffi{\galpha\; \square\; \dots}}{\vartheta}}
 \]
 
 \[
@@ -504,7 +504,7 @@ the singleton sequence containing $x$.
     {\vmrun[result=\reject]}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
-    {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
+    {\veval{\iffi{\galpha\; \square\; \dots }}{\vartheta}}
 \]
 
 \[
@@ -543,17 +543,17 @@ the singleton sequence containing $x$.
     {\veval{\ealpha[1]\; \ealpha[2]}{\valpha}}
 \]
 
-\section{Forms of Judgement for \PPlus}
+\section{Forms of Judgement for {\PPlus}}
 \begin{tabular}{ll}
     \toprule
         \multicolumn2{l}{\emph{Metavariables}} \\
     \midrule
-        % $\v, \; \v'$& value \\
+        % $\v,\; \v'$& value \\
         \valpha& a metavalue produced from evaluating $\alpha$. \\
         $eq$& equation \\ 
         % $\tempstuck$& a temporarily-stuck equation \\
         $\reject$& equation rejection \\
-        $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
+        $\result$& $\vartheta \mid$ \reject : a result of \valpha\; or
         rejection\\
         \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
         $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -599,14 +599,14 @@ the singleton sequence containing $x$.
         
         % \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
         core Verse evaluates to produce possibly-empty sequence of values. In
-        \VMinus, values depend on the form of abstract expression $\alpha.$ If
+        {\VMinus}, values depend on the form of abstract expression $\alpha.$ If
         $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
         it is an ML-like expression, it will be a single value. 
         
         A guarded expression evaluates to produce a \bf{result}. A result is either
         a metavalue \valpha ~or reject. 
         
-        \[\it{r} \; \rm{::=} \; \vartheta \;|\; \reject \]
+        \[\it{r}\; \rm{::=}\; \vartheta\; \; \reject \]
         
         \showvjudgement{Eval-Alpha}{\veval{\alpha}{\valpha}}
         \showvjudgement{Eval-AlphaExpr}{\veval{\ealpha}{\valpha}}
@@ -622,12 +622,12 @@ the singleton sequence containing $x$.
         \bigskip
     \subsection{Equations}
     
-    In \VMinus, we solve equations (intermediate computations in a guarded
+    In {\VMinus}, we solve equations (intermediate computations in a guarded
     expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
     authors of the original Verse paper: we pick one, attempt to solve for it, and
     move on. 
     
-    \rab{How do we express that \VMinus semantics preclude backtracking/logical 
+    \rab{How do we express that {\VMinus} semantics preclude backtracking/logical 
     variables at runtime?}
     
     Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
@@ -652,7 +652,7 @@ the singleton sequence containing $x$.
     \end{align*}
 
 
-\section{Semantics of \PPlus}
+\section{Semantics of {\PPlus}}
 
 \begin{itemize}
     \item Need a new judgement form for top-level patterns?
@@ -662,7 +662,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Case-Match) }]
     {\vmrun[] \Downarrow \vartheta}
-    {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
+    {\veval{\iffi{\galpha\; \square\; \dots}}{\vartheta}}
 \]
 
 \[
@@ -671,7 +671,7 @@ the singleton sequence containing $x$.
     {\vmrun[result=\reject]}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
-    {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
+    {\veval{\iffi{\galpha\; \square\; \dots }}{\vartheta}}
 \]
 
 \end{document}

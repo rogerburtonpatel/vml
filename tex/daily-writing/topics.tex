@@ -30,21 +30,21 @@ for a compromise?
     \item We go futher. 
     \item Contribution: 2 languages that attempt to mitigate this problem. 
     \item Our goal: One simple, expressive, efficient decision-making construct.
-    \item One is \PPlus, the other is \VMinus. 
-    \item Example of \VMinus in action on prior example. 
+    \item One is {\PPlus}, the other is {\VMinus}. 
+    \item Example of {\VMinus} in action on prior example. 
     \item \bf{Section 2: Languages informally}
     \item Values, most expressions: sub-language. 
-    \item We define our languages as subsets of U: \PPlus is the subset 
-    including \it{case}; \VMinus is the subset including \it{if-fi}. 
+    \item We define our languages as subsets of U: {\PPlus} is the subset 
+    including \it{case}; {\VMinus} is the subset including \it{if-fi}. 
     \item Like Verse, we also build on top of LC. Every LC program is also a
-    valid \PPlus and \VMinus program.
+    valid {\PPlus} and {\VMinus} program.
     \item \bf{Subsection: General Evaluation}
     \item Big-step opsem with environments. 
-    \item \bf{Subsection: \PPlus}
+    \item \bf{Subsection: {\PPlus}}
     \item Patterns, case, environment + disjoint union 
     \item when, or-patterns, pattern guards 
     \item
-    \item \bf{Subsection: \VMinus}
+    \item \bf{Subsection: {\VMinus}}
     \item Guarded expressions, new type of environment
     \item Evaluation stragety 
 \end{itemize}
@@ -53,15 +53,15 @@ for a compromise?
 % SPJ PATTERN GUARDS]
 
 % We introduce two small functional programming languages to address this issue:
-% \PPlus, a language with several of the popular extensions to pattern matching
-% and minimal syntactic restrictions, and \VMinus, which replaces pattern matching
+% {\PPlus}, a language with several of the popular extensions to pattern matching
+% and minimal syntactic restrictions, and {\VMinus}, which replaces pattern matching
 % with equations like those in Verse [XXX TODO CITE: Verse paper]. 
 
 % Where to include this: 
-% We also introduce \D, a language where decision making is decided purely with decision
-% trees. We will use \D to prove efficient compilation of \VMinus. 
+% We also introduce {\D}, a language where decision making is decided purely with decision
+% trees. We will use {\D} to prove efficient compilation of {\VMinus}. 
 
-% \PPlus provides or-patterns, side-conditions, and pattern guards, whose
+% {\PPlus} provides or-patterns, side-conditions, and pattern guards, whose
 % combination does not appear in Haskell, OCaml, Standard ML, or any other major
 % functional language. 
 % \bigskip
@@ -149,9 +149,9 @@ for a compromise?
 % dependency languages} like Haskell or ML, \it{(is this right?)} employ pattern
 % matching as their main way to deconstruct data (citation?). 
 
-% We here explore pattern matching through the lens of \PPlus, an invented
+% We here explore pattern matching through the lens of {\PPlus}, an invented
 % language that has pattern matching along with several of its popular extensions.
-% (The examples above are written in \PPlus.) 
+% (The examples above are written in {\PPlus}.) 
 % \subsection{Strengths}
 
 % - "Checking" and assignment- nice! No car, cdr 
@@ -243,14 +243,14 @@ for a compromise?
 %     $\bracketed{d}$ : definition
 %     ;;
 %     $d$ : \textsf{Definitions} ::=
-%     | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
+%     | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
 %     ;;
 %     $\expr$ : Core expressions ::= 
 %     | $x, y, z$ : names
 %     | $K\bracketed{\expr}$ : value constructor application 
-%     | $\tt{if} \; \expr[1] \; \tt{then} \; \expr[2] \; \tt{else} \; e_{3} $ : if
-%     | $\lambda x. \; \expr$ : lambda 
-%     | $\expr[1] \; \expr[2]$ : function application 
+%     | $\tt{if}\; \expr[1]\; \tt{then}\; \expr[2]\; \tt{else}\; e_{3} $ : if
+%     | $\lambda x.\; \expr$ : lambda 
+%     | $\expr[1]\; \expr[2]$ : function application 
 %     ;;
 %     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
 %     ;;
@@ -272,12 +272,12 @@ for a compromise?
 
 
 % We then present three language extensions that build off of this core: 
-% \PPlus, the language of patterns, \VMinus, the language of 
+% {\PPlus}, the language of patterns, {\VMinus}, the language of 
 % verse-like equations, and $D$, the language of decision trees. 
 
 % \subsection{Three Language Extensions}
 
-% \subsubsection{\VMinus:}
+% \subsubsection{{\VMinus}:}
 
 % \begin{center}
 %     \begin{bnf}
@@ -285,32 +285,32 @@ for a compromise?
 %     | $\alpha$ : terminating alpha
 %     | $x, y, z$ : names
 %     % Question: ebnf braces vs. 
-%     | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+%     | $\tt{if}\; \tt{[}\; \galpha\; \bracketed{[] \galpha}\; tt{]}\; \tt{fi}$ : if-fi 
 %     | $K \bracketed{\ealpha}$ : value constructor application 
-%     | $\ealpha[1] \; \ealpha[2]$ : function application 
+%     | $\ealpha[1]\; \ealpha[2]$ : function application 
 %     ;;
 %     $\galpha$ : \textsf{Guarded Expressions} ::=  
 %     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
-%     | $\ealpha; \; \galpha$ : intermediate expression 
+%     | $\ealpha;\; \galpha$ : intermediate expression 
 %     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-%     | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
+%     | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
 %     % ;;
 %     \end{bnf}
 % \end{center}
 
 % \bigskip 
 
-% \subsubsection{\PPlus:}
+% \subsubsection{{\PPlus}:}
 % \begin{center}
 %     \begin{bnf}
 % $\expr$ : \textsf{Expressions} ::=
-%     | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
+%     | $\ttbraced{\tt{case}\; \expr\; \bracketed{\tt{[} p\; \expr \tt{]}}}$ : case expression 
 %     ;;
 %     $p$ : \textsf{Patterns} ::= $x$ : name 
 %     | $K$ : value constructor 
-%     | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-%     % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
-%     | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
+%     | $\ttbraced{K\; \bracketed{p}}$ : value constructor application 
+%     % | $\ttbraced{p\; \tt{when}\; \expr }$ : side condition
+%     | $\ttbraced{\tt{oneof}\; p_{1}\;  p_{2} }$ : or-pattern 
 %     | $\ttbraced{p \tt{;} \bracketed{\expr \vert \ttbraced{p  <- \expr}}}$ : pattern guard
 %     \end{bnf}
 % \end{center}
@@ -323,12 +323,12 @@ for a compromise?
 % \begin{center}
 %     \begin{bnf}
 %         \Dalpha : \textsf{Decision Tree} ::= 
-%         $\tt{case} \; x \; \tt{of} \; 
-%         \bracketed{\vert \; K\bracketed{x} \; \tt{=>} \; \Dalpha}
-%         [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
+%         $\tt{case}\; x\; \tt{of}\; 
+%         \bracketed{\vert\; K\bracketed{x}\; \tt{=>}\; \Dalpha}
+%         [\vert\; x\; \tt{=>} \Dalpha]$ : test node 
 %         | $\alpha$ : match node 
-%         | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-%         | $\tt{let} \; x \; \tt{=} \; \expr \; \tt{in} \; \Dalpha$ : let-bind a name
+%         | $\tt{if}\; x\; \tt{then}\; \Dalpha\; \tt{else}\; \Dalpha$ : condition with two children 
+%         | $\tt{let}\; x\; \tt{=}\; \expr\; \tt{in}\; \Dalpha$ : let-bind a name
 %         ;;
 %         $\expr$ : \textsf{Expressions} ::=
 %         | $\mathcal{D}_{\expr}$ : decision trees 

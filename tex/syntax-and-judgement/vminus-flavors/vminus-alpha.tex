@@ -14,7 +14,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Syntax and Semantics of \VMinus with $\alpha$}
+\title{Syntax and Semantics of {\VMinus} with $\alpha$}
 \author{Roger Burtonpatel}
 \begin{document}
 
@@ -22,9 +22,9 @@
 
 \section{Syntax}
 
-\subsection{\VMinus with $\alpha$}
+\subsection{{\VMinus} with $\alpha$}
 
-We present a grammar of \VMinus, a variant of Verse with a defined
+We present a grammar of {\VMinus}, a variant of Verse with a defined
 decision-making construct: 
 
 \bigskip
@@ -36,25 +36,25 @@ decision-making construct:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; \ealpha$ : bind name to expression
+    | $\tt{val}\; x\; \tt{=}\; \ealpha$ : bind name to expression
     ;;
     $\ealpha$ : \textsf{Expressions} ::=
     | $\alpha$ : terminating alpha
     | $x, y, z$ : names
     % Question: ebnf braces vs. regular brackets
-    | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $\tt{if}\; \tt{[}\; \galpha\; \bracketed{[] \galpha}\; tt{]}\; \tt{fi}$ : if-fi 
     | $K \bracketed{\ealpha}$ : value constructor application 
-    | $\ealpha[1] \; \ealpha[2]$ : function application 
+    | $\ealpha[1]\; \ealpha[2]$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\ealpha$ : terminating experession
-    | $\ealpha; \; \galpha$ : intermediate expression 
+    | $\ealpha;\; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-    | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
-    | $\lambda x. \; \ealpha$ : lambda 
+    | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
+    | $\lambda x.\; \ealpha$ : lambda 
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-    | $\lambda x. \; \ealpha$ : lambda 
+    | $\lambda x.\; \ealpha$ : lambda 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | \tt{true} $\vert$ \tt{false} : booleans
@@ -82,16 +82,16 @@ and is not a value constructor name or a reserved word.
 
 
 
-\section{Forms of Judgement for $\VMinus$:}
+\section{Forms of Judgement for ${\VMinus}$:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
-    $\v, \; \v'$& value \\
+    $\v,\; \v'$& value \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
-    $\result$& $\v \mid$ \reject : a result of \v \; or
+    $\result$& $\v \mid$ \reject : a result of \v\; or
     rejection\\
     \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -138,7 +138,7 @@ and is not a value constructor name or a reserved word.
     \newcommand\GNoTree{\vmrung \rightsquigarrow \uppsidown} 
     
     An expression in core Verse evaluates to produce possibly-empty sequence of
-    values. In \VMinus, expressions evaluate to a single value. We will explore
+    values. In {\VMinus}, expressions evaluate to a single value. We will explore
     a Verse variant in which expressions may evaluate to multiple values. 
 
     
@@ -146,7 +146,7 @@ and is not a value constructor name or a reserved word.
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a value $\v$ or reject. 
     
-    \[\it{r} \; \rm{::=} \; \v \;|\; \reject \]
+    \[\it{r}\; \rm{::=}\; \v\; \; \reject \]
     
     \showvjudgement{Eval}{\veval{\ealpha}{\v}}
     \showvjudgement{Eval-Guarded-Expr}{\vmrung[guard=\galpha]}
@@ -161,12 +161,12 @@ and is not a value constructor name or a reserved word.
     \bigskip
 \subsection{Equations}
 
-In \VMinus, we solve equations (intermediate computations in a guarded
+In {\VMinus}, we solve equations (intermediate computations in a guarded
 expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
 authors of the original Verse paper: we pick one, attempt to solve for it, and
 move on. 
 
-\rab{How do we express that \VMinus semantics preclude backtracking/logical 
+\rab{How do we express that {\VMinus} semantics preclude backtracking/logical 
 variables at runtime?}
 
 Given an environment from names to metavalues {\v}s \Rho, an equation \eq
@@ -190,7 +190,7 @@ the singleton sequence containing $x$.
     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
 \end{align*}
 
-\section{Rules (Big-step Operational Semantics) for $\VMinus$:}
+\section{Rules (Big-step Operational Semantics) for ${\VMinus}$:}
     
 \subsection{Evaluating Guarded Expressions}
 
@@ -238,7 +238,7 @@ the singleton sequence containing $x$.
     {\inferrule*{\vmrung[context=eq \cdot \context]}
     {}
     }
-    {\vmrung[guard=eq; \; \galpha]}
+    {\vmrung[guard=eq;\; \galpha]}
 \]
 
 \subsubsection{Choosing and solving an equation}
@@ -275,7 +275,7 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (Desugar-EqExps) }]
     {\inferrule* {}
     {
-    x,\;y \; \rm{are distinct and fresh}
+    x,\; \; \rm{are distinct and fresh}
     \\\\
     \vmrung[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
           context=\eqTT{x = \ealpha[1] \cdot y = \ealpha[2] \cdot x = y}]}}
@@ -285,8 +285,8 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
     {
-    \vmrung[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]' \; 
-           \vert \; 1 \leq i \leq n \rbrack}]}
+    \vmrung[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]'\; 
+           \vert\; 1 \leq i \leq n \rbrack}]}
     {\vmrung[context=\TeqT{K(\ealpha[1], \dots 
             \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[n]')}]}
 \]
@@ -347,9 +347,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Vals-Succ) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \v, \; \rho(y) = \v
+    \rho(x) = \v,\; \rho(y) = \v
     }}
     {\eqrefine[eq={x = y},newenv=\rho]}
 \]
@@ -358,9 +358,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Vals-Fail) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \v, \; \rho(y) = \v'
+    \rho(x) = \v,\; \rho(y) = \v'
     \\\\
     \v \neq \v'}}
     {\eqrefine[eq={x = y},newenv=\dagger]}
@@ -370,11 +370,11 @@ the singleton sequence containing $x$.
 % \inferrule*[Left=\textsc{ (G-EqNames-Bots-Fail) }]
 %     {\inferrule* {}
 %     {
-%     x,\;y \in \dom \rho
+%     x,\;  \in \dom \rho
 %     \\\\
-%     \rho(x) = \bot, \; \rho(y) = \bot
+%     \rho(x) = \bot,\; \rho(y) = \bot
 %     \\\\
-%     x,\;y \; \rm{do not appear in} \; \context, \; \context'}}
+%     x,\; \; \rm{do not appear in}\; \context,\; \context'}}
 %     {\vmrung[context=\TeqT{x = y}] 
 %     \rightsquigarrow \uppsidown}
 % \]
@@ -383,9 +383,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-BotVal-Succ) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \bot, \; \rho(y) = \v
+    \rho(x) = \bot,\; \rho(y) = \v
     }}
     {\eqrefine[eq={x = y},newenv=\rho\bracketed{x \mapsto \v}]}
 \]
@@ -432,7 +432,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
     {\vmrung[] \Downarrow \v}
-    {\veval{\iffi{\galpha \; \square \; \dots}}{\v}}
+    {\veval{\iffi{\galpha\; \square\; \dots}}{\v}}
 \]
 
 \[
@@ -441,7 +441,7 @@ the singleton sequence containing $x$.
     {\vmrung[result=\reject]}
     \and 
     \veval{\iffi{\dots}}{\v}}
-    {\veval{\iffi{\galpha \; \square \; \dots }}{\v}}
+    {\veval{\iffi{\galpha\; \square\; \dots }}{\v}}
 \]
 
 \[

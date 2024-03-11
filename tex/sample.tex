@@ -59,7 +59,7 @@ Put things here.
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfTrueBindings}]
 %     {\ }
-%     {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+%     {{\textsc{Verse-If}(\texttt{True}\; \; e)}  \rightarrowtail {\{\}}
 %     }
 % \end{mathpar}
 
@@ -67,7 +67,7 @@ Put things here.
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfTrueEval}]
 %     {\ }
-%     {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+%     {{\textsc{Verse-If}(\texttt{True}\; \; e)}  \rightarrowtail e
 %     }
 % \end{mathpar}
 
@@ -76,7 +76,7 @@ Put things here.
 
 % \begin{mathpar}
 % \inferrule*[Left=\textsc{TranslateWildcardBindings}]
-% {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail {\{\}}
+% {{\textsc{Verse-If}(\texttt{True}\; \; e)}  \rightarrowtail {\{\}}
 % }
 %   {{\textsc{case}(\textsc{Wildcard}, v)}
 %    \rightarrowtail {\{\}} 
@@ -89,13 +89,13 @@ Put things here.
 %     \inferrule*[Left=\textsc{TranslateWildcardEval}]
 %     {\ }
 %       {{\textsc{case}(\textsc{Wildcard}, v, e)}
-%        \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;e\; e)}
+%        \rightarrowtail {\textsc{Verse-If}(\texttt{True}\; \; e)}
 %       }
 %     \end{mathpar}
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateWildcardEval'}]
-%         {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+%         {{\textsc{Verse-If}(\texttt{True}\; \; e)}  \rightarrowtail e
 %         }
 %           {{\textsc{case}(\textsc{Wildcard}, v, e)}
 %            \rightarrowtail e 
@@ -111,27 +111,27 @@ Put things here.
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \texttt{if ($\exists x. \; x = v$) e e}
+% \texttt{if ($\exists x.\; x = v$) e e}
 % \hfill \break
 % ------------------------
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfBindings}]
 %     {\ }
-%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\texttt{($\exists x.\; x = v$)} e\; e)}  \rightarrowtail e{\{x \longmapsto v\}}
 %     }
 % \end{mathpar}
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfEval}]
 %     {\ }
-%     {{\textsc{Verse-If}(\texttt{True} \;e\; e)}  \rightarrowtail e
+%     {{\textsc{Verse-If}(\texttt{True}\; \; e)}  \rightarrowtail e
 %     }
 % \end{mathpar}
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateVarBindings}]
-%     {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail {\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\texttt{($\exists x.\; x = v$)}\; e\; e)}  \rightarrowtail {\{x \longmapsto v\}}
 %     }
 %       {{\textsc{case}(x, v, e)}
 %        \rightarrowtail {\{x \longmapsto v\}}
@@ -140,7 +140,7 @@ Put things here.
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateVarEval}]
-%         {{\textsc{Verse-If} (\texttt{($\exists x. \; x = v$)} \; e \; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+%         {{\textsc{Verse-If} (\texttt{($\exists x.\; x = v$)}\; e\; e)}  \rightarrowtail e{\{x \longmapsto v\}}
 %         }
 %           {{\textsc{case}(x, v, e)}
 %            \rightarrowtail e{\{x \longmapsto v\}}

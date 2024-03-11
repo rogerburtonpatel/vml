@@ -35,11 +35,11 @@
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\ttbraced{\tt{val} \; x \; \expr}$ : bind name to expression
+    | $\ttbraced{\tt{val}\; x\; \expr}$ : bind name to expression
     ;;
     $\expr$ : \textsf{Expressions} ::=
     | $x$ : name
-    | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
+    | $\ttbraced{\tt{case}\; \expr\; \bracketed{\tt{[} p\; \expr \tt{]}}}$ : case expression 
     | $K \bracketed{\expr}$ : value constructor application 
     ;;
     $b$ : Boolean expressions ::=
@@ -47,9 +47,9 @@
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
-    | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-    % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
-    | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
+    | $\ttbraced{K\; \bracketed{p}}$ : value constructor application 
+    % | $\ttbraced{p\; \tt{when}\; \expr }$ : side condition
+    | $\ttbraced{\tt{oneof}\; p_{1}\;  p_{2} }$ : or-pattern 
     | $\ttbraced{p \tt{;} \bracketed{b \vert \ttbraced{p  <- \expr}}}$ : pattern guard
     ;;
     $K$ : \textsf{Value Constructors} ::=

@@ -24,7 +24,7 @@
 \email{nr@cs.tufts.edu}
 \affiliation{%
 \institution{Tufts University}
-\streetaddress{419 Boston Ave}
+\streetaddress{177 College Ave}
 \city{Medford}
 \state{Massachusetts}
 \country{USA}
@@ -35,7 +35,7 @@
 \email{milod.mazerouniantufts.edu}
 \affiliation{%
 \institution{Tufts University}
-\streetaddress{419 Boston Ave}
+\streetaddress{177 College Ave}
 \city{Medford}
 \state{Massachusetts}
 \country{USA}
@@ -45,6 +45,7 @@
 \renewcommand{\shortauthors}{Burtonpatel et al.}
 
 \begin{abstract}
+    \it{WILL BE REVISED.}
   Pattern matching is nice and has an appealing cost model, but people keep
   extending it to make it more expressive. Verse [cite-Verse] looks very simple
   and is surprisingly expressive, but the cost model is a challenge. Why not
@@ -62,7 +63,7 @@ break down constructed data implicity, which is often much preferred to using
 explict deconstructors like Scheme's \tt{car} and \tt{cdr}. But when deciding to
 perform a terminal computation based on prior checks that don't involve a single
 value matching on a pattern, pattern matching struggles to retain its brevity.
-Consider the following algorithm on an abstract type \tt{FiniteMap}, involving a
+Consider the following algorithm on an abstract type~\tt{FiniteMap}, involving a
 lookup function. This examples is a modificaiton of one borrowed from SPJ
 proposal [cite]. 
 
@@ -128,14 +129,14 @@ solution:
 or-patterns; this fails. }
 
 We make a contribution to this problem in the form of two small functional
-languages. One, which we call \PPlus, is an attempt to unify extensions to
+languages. One, which we call {\PPlus}, is an attempt to unify extensions to
 pattern matching under a single, flexible language. The other, which we call
-\VMinus, takes inspiration from Verse and sidesteps the general structure of the
-\tt{case} expression entirely, opting to take a more equation-based approach in
-its decision making. We show that \PPlus and \VMinus have all the expressiveness
-of pattern matching with no additional significant runtime overhead, and we
-propose a form of writing Verse code that could lead to efficient compilation
-based on our heuristics. 
+{\VMinus}, takes inspiration from Verse and sidesteps the general structure of
+the \tt{case} expression entirely, opting to take a more equation-based approach
+in its decision making. We show that {\PPlus} and {\VMinus} have all the
+expressiveness of pattern matching with no additional significant runtime
+overhead, and we propose a form of writing Verse code that could lead to
+efficient compilation based on our heuristics. 
 
 % This is obviously better. But consider a new step to the algorithm, 
 % given the following function signature: 
@@ -203,8 +204,8 @@ is clunky, and where Verse may shine.}
 %     \item \bf{P2}: 
 %     \item Contribution: 2 languages that attempt to mitigate this problem. 
 %     \item Our goal: One simple, expressive, efficient decision-making construct.
-%     \item One is \PPlus, the other is \VMinus. 
-%     \item Example of \VMinus in action on prior example. 
+%     \item One is {\PPlus}, the other is {\VMinus}. 
+%     \item Example of {\VMinus} in action on prior example. 
 % \end{itemize}
 
 % \begin{itemize}
@@ -222,27 +223,33 @@ is clunky, and where Verse may shine.}
 %     \item \bf{P3}: 
 %     \item Contribution: 2 languages that attempt to mitigate this problem. 
 %     \item Our goal: One simple, expressive, efficient decision-making construct.
-%     \item One is \PPlus, the other is \VMinus. 
-%     \item Example of \VMinus in action on prior example. 
+%     \item One is {\PPlus}, the other is {\VMinus}. 
+%     \item Example of {\VMinus} in action on prior example. 
 % \end{itemize}
 
 
 \section{Our languages, Informally}
 
 We begin by informally introducing two small functional programming languages to
-address the issue of inflexibility of patterns: \PPlus, a language with several
-of the popular extensions to pattern matching and minimal syntactic
-restrictions, and \VMinus, which replaces pattern matching with equations like
-those in Verse [cite-Verse]. 
+address the issue of inflexibility of patterns.
 
-To facilitate comparisons and proofs, the languages are each a subset of a 
-single language \U (\cref{fig:U}). Asterisks (${}^{*}$) indicate components of \U which 
-belong to the sub-languages. 
+{\PPlus} models standard pattern matching with common extensions. {\VMinus}
+models Verse without features that lead to unpredictable costs (backtracking and
+multiple results) [cite-Verse]. 
 
-The keen reader will notice that the syntax of \U includes a forms for
-decision trees, which we have not yet discussed. Decision trees will be crucial
-in proving properties of efficiency of our languages, and will we be discussed
-in full in a later section. 
+To aid proofs of efficiency, we also introduce a third langauge, {\D}. {\D} is a
+language of decision trees to which both {\PPlus} and {\VMinus} can be
+translated. Targets of translation are efficient in the standard technical
+sense: no value is ever scrutinized more than once (Maranget 2008).
+
+To facilitate comparisons and proofs, the languages are each a subset of a
+single unifying language(\cref{fig:U}). Asterisks (${}^{*}$) indicate components
+of this unifying language which belong to the sub-languages. 
+
+% The keen reader will notice that our syntax includes a forms for decision trees,
+% which we have not yet discussed. Decision trees will be crucial in proving
+% properties of efficiency of our languages, and will we be discussed in full in a
+% later section. 
 
 \begin{figure}[h!p]
     \small
@@ -252,51 +259,51 @@ in full in a later section.
         $\bracketed{d}$ : definition
         ;;
         $d$ : \textsf{Definitions} ::=
-        | $\mathit{val} \; x \; \mathit{=} \; \expr$ : bind name to expression
+        | $\mathit{val}\; x\; \mathit{=}\; \expr$ : bind name to expression
         ;;
         $\expr$ : Expressions ::= 
         | $x, y, z$              : names
         | $K\bracketed{\expr}$   : value constructor application 
-        | $\lambda x. \; \expr$  : lambda declaration  
-        | $\expr[1] \; \expr[2]$ : function application 
+        | $\lambda x.\; \expr$  : lambda declaration  
+        | $\expr[1]\; \expr[2]$ : function application 
     
-        | $\mathit{case} \; \expr \; \bracketed{p \; \rightarrow \; \expr}$ : $\rm{case expression}^{*}$
-        | $\mathit{if} \; \mathit{[}\; g \; 
-            \bracketed{[] g} \;\mathit{]} \; \mathit{fi}$                   : $\rm{if-fi}^{**}$
+        | $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ : $\rm{case expression}^{*}$
+        | $\mathit{if}\; \mathit{[}\; g\; 
+            \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$                   : $\rm{if-fi}^{**}$
         | $\dt$ : $\rm{decision tree}^{***}$
-            ;;
-            $p$ : $\textsf{Patterns}^{*}$ ::= 
-            $x$ : name 
-            | $K \; \bracketed{p}$          : value constructor application 
-            | $\mathit{when}\; \expr$       : side condition
-            | $p, p'$                       : pattern guard 
-            | $p \; \leftarrow \; \expr$    : pattern from explicit expression  
-            | $p_{1}\pbar p_{2}$            : or-pattern
-            ;;
-            $g$ : $\textsf{Guarded Expressions}^{**}$ ::=  
-            $\boldsymbol{\rightarrow}\expr$ : terminating experession
-            | $\expr; \; g$                 : intermediate expression 
-            | $\exists x \mathit{.} g$      : existential 
-            | $x = \expr; \; g$             : equation 
-            ;;
-            \dt : $\textsf{Decision Trees}^{***}$ ::= 
-            | $\mathit{case} \; x \; \mathit{of} \; 
-                \bracketed{\vert \; K\bracketed{x} \; \mathit{=>} \; \dt} 
-                [\vert \; x \; \mathit{=>} \dt]$                                 : $\rm{test node }^{***}$
-            | $\expr$                                                           : $\rm{match node }^{***}$
-            | $\mathit{if} \; x \; \mathit{then} \; \dt \; \mathit{else} \; \dt$  : $\rm{condition with two children }^{***}$
-            | $\mathit{let} \; x \; \mathit{=} \; \expr \; \mathit{in} \; \dt$   : $\rm{let-bind a name}^{***}$
         ;;
         $\v$ : Values ::= 
           $K\bracketed{\v}$     : value constructor application 
-        | $\lambda x. \; \expr$ : lambda value 
+        | $\lambda x.\; \expr$ : lambda value 
         ;;
-        $K$ : \textsf{Value Constructors} ::=
-        | $\mathit{true}\; \vert\; \mathit{false}$ : booleans
-        | $\mathit{\#}x$                           : name beginning with $\mathit{\#}$
-        | $\mathit{A-Z}x$                          : name beggining with capital letter
-        | $[\mathit{-}\vert\mathit{+}]
-            (\mathit{0}-\mathit{9})+$              : signed integer literal 
+        $p$ : $\textsf{Patterns}^{*}$ ::= 
+        $x$ : name 
+        | $K\; \bracketed{p}$          : value constructor application 
+        | $\mathit{when}\; \expr$       : side condition
+        | $p, p'$                       : pattern guard 
+        | $p\; \leftarrow\; \expr$    : pattern from explicit expression  
+        | $p_{1}\pbar p_{2}$            : or-pattern
+        ;;
+        $g$ : $\textsf{Guarded Expressions}^{**}$ ::=  
+        $\boldsymbol{\rightarrow}\expr$ : terminating experession
+        | $\expr;\; g$                 : intermediate expression 
+        | $\exists x \mathit{.} g$      : existential 
+        | $x = \expr;\; g$             : equation 
+        ;;
+        \dt : $\textsf{Decision Trees}^{***}$ ::= 
+        | $\mathit{case}\; x\; \mathit{of}\; 
+            \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} 
+            [\vert\; x\; \mathit{=>} \dt]$                                 : $\rm{test node }^{***}$
+        | $\expr$                                                           : $\rm{match node }^{***}$
+        | $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$  : $\rm{condition with two children }^{***}$
+        | $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$   : $\rm{let-bind a name}^{***}$
+        % ;;
+        % $K$ : \textsf{Value Constructors} ::=
+        % | $\mathit{true}\; \vert\; \mathit{false}$ : booleans
+        % | $\mathit{\#}x$                           : name beginning with $\mathit{\#}$
+        % | $\mathit{A-Z}x$                          : name beggining with capital letter
+        % | $[\mathit{-}\vert\mathit{+}]
+        %     (\mathit{0}-\mathit{9})+$              : signed integer literal 
         \end{bnf}
         \medskip
         
@@ -317,11 +324,11 @@ in full in a later section.
 
         % \bf{Desugaring of Extended Expressions}
 
-        ${}^{*}$ Indicates forms within \PPlus
+        ${}^{*}$ Indicates forms within {\PPlus}
 
-        ${}^{**}$ Indicates forms within \VMinus
+        ${}^{**}$ Indicates forms within {\VMinus}
         
-        ${}^{***}$ Indicates forms within \D
+        ${}^{***}$ Indicates forms within {\D}
 
     \end{flushleft}
     
@@ -336,24 +343,25 @@ in full in a later section.
 \end{figure}
 
 
-Most forms in \U are present in all of its subsets: Values, Value Constructors,
-Definition Forms, and most forms of expression are shared. Indeed, the
-sub-langauge, like in Verse, is just the the lambda calculus with a few extended
-forms (this time favoring value constructors over tuples). Like in Verse, every
-Lambda Calculus program is a valid \U program. 
+Most syntactic categories in \U are present in all of its subsets: Values, Value
+Constructors, Definition Forms, and most forms of expression are shared. Indeed,
+the sub-langauge, like in Verse, is just the the lambda calculus with a few
+extended syntactic categories (this time favoring value constructors over
+tuples). Like in Verse, every Lambda Calculus program is a valid \U program. 
 
-On top of this core, three languages are defined as subsets of \U. \PPlus is the
-subset of \U including Patterns and the $\mathit{case} \; \expr \; \bracketed{p
-\rightarrow \expr}$ form of case expression. \VMinus is the subset of \U
-including Guarded Expressions and \it{if-fi}. Finally, \D is the subset of \U
-that includes decision tree syntax, including the reduced case expression,
-$\mathit{case} \; x \; \mathit{of} \; \bracketed{\vert \; K\bracketed{x} \;
-\mathit{=>} \; \dt} [\vert \; x \; \mathit{=>} \dt]$. Importantly, the three are
-mutually exclusive with respect to exactly these extensions; all subsets share
-the sub-langauge and no subset has more than one of the expanded \it{case},
-\it{if-fi}, or the decision tree forms. 
+On top of this core, three languages are defined as subsets of \U. {\PPlus} is
+the subset of~\U including Patterns and the $\mathit{case}\; \expr\;
+\bracketed{p \rightarrow \expr}$ form of case expression. {\VMinus} is the
+subset of \U including Guarded Expressions and \it{if-fi}. Finally, {\D} is the
+subset of \U that includes decision tree syntax, including the reduced case
+expression, $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\;
+K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$.
+Importantly, the three are mutually exclusive with respect to exactly these
+extensions; all subsets share the sub-langauge and no subset has more than one
+of the expanded \it{case}, \it{if-fi}, or the decision tree syntactic
+categories. 
 
-% \PPlus provides or-patterns, side-conditions, and pattern guards, whose
+% {\PPlus} provides or-patterns, side-conditions, and pattern guards, whose
 % combination does not appear in Haskell, OCaml, Standard ML, or any other major
 % functional language. 
 % \bigskip
@@ -365,14 +373,14 @@ the sub-langauge and no subset has more than one of the expanded \it{case},
 \begin{itemize}
     \item \bf{Subsection: General Evaluation}
     \item Big-step opsem with environments. 
-    \item \bf{Subsection: \PPlus}
+    \item \bf{Subsection: {\PPlus}}
     \item Patterns, case, environment + disjoint union 
 \end{itemize}
 
 \it{The following sections and paragraphs are in progress:}
 \begin{itemize}
     \item when, or-patterns, pattern guards 
-    \item \bf{Subsection: \VMinus}
+    \item \bf{Subsection: {\VMinus}}
     \item Guarded expressions, new type of environment
     \item Evaluation stragety 
 \end{itemize}
@@ -385,7 +393,7 @@ the sub-langauge and no subset has more than one of the expanded \it{case},
 % Prior work has introduced extesions to pattern matching [cite, including
 % SPJ proposal for pattern guards.]
 
-% \PPlus provides or-patterns, side-conditions, and pattern guards, whose
+% {\PPlus} provides or-patterns, side-conditions, and pattern guards, whose
 % combination does not appear in Haskell, OCaml, Standard ML, or any other major
 % functional language. 
 
@@ -471,9 +479,9 @@ the sub-langauge and no subset has more than one of the expanded \it{case},
 % dependency languages} like Haskell or ML, \it{(is this right?)} employ pattern
 % matching as their main way to deconstruct data (citation?). 
 
-% We here explore pattern matching through the lens of \PPlus, an invented
+% We here explore pattern matching through the lens of {\PPlus}, an invented
 % language that has pattern matching along with several of its popular extensions.
-% (The examples above are written in \PPlus.) 
+% (The examples above are written in {\PPlus}.) 
 % \subsection{Strengths}
 
 % - "Checking" and assignment- nice! No car, cdr 
