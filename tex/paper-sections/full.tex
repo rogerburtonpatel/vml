@@ -35,7 +35,7 @@ Additional Key Words and Phrases:
 \section{Introduction}
 
 The Verse language looks more expressive than pattern matching. 
-Consider the following segment from our source code for \VMinus, implemented
+Consider the following segment from our source code for {\VMinus}, implemented
 in SML:
 
 \smllst 
@@ -130,30 +130,30 @@ demonstrate how full Verse can be written to ""match the semantics"" of this
 subset and subsequently enjoy its performance benefits. 
 
 We make three main contributions. \bf{Our first contribution} is a syntax,
-semantics, and implementation of a subset of Verse, which we call \VMinus
+semantics, and implementation of a subset of Verse, which we call {\VMinus}
 (pronounced \v-minus), that imposes a few key restrictions that remove the
 possiblity of logical variables at runtime. We go on
-to show that \VMinus is just Verse with syntactic restrictions, and we provide a
+to show that {\VMinus} is just Verse with syntactic restrictions, and we provide a
 static analysis which identifies if full Verse programs abide by those
 restrictions. 
 
 
-\bf{Our second contribution} is a comparison language, \Pplus (P-plus), which
+\bf{Our second contribution} is a comparison language, {\PPlus} (P-plus), which
 has pattern matching with popular extensions. We provide  a translation from
-\Pplus to \VMinus and one from \VMinus to ""an intermediate representation
+{\PPlus} to {\VMinus} and one from {\VMinus} to ""an intermediate representation
 involving decision trees"", and a proof that the transformations are
 semantics-preserving. 
 
 \bf{Our third contribution} is less formal: we present an argument that Verse,
-beyond being as expressive as \Pplus, is in many cases able to produce more elegant
-programs. ""We also show how some extensions to \Pplus, when held alone, cannot
+beyond being as expressive as {\PPlus}, is in many cases able to produce more elegant
+programs. ""We also show how some extensions to {\PPlus}, when held alone, cannot
 express what Verse can.""
 
-\section{Restricting Verse: \VMinus}
+\section{Restricting Verse: {\VMinus}}
 
-We present a syntax of \VMinus, our subset of Verse: 
+We present a syntax of {\VMinus}, our subset of Verse: 
 
-\subsubsection{\VMinus:}
+\subsubsection{{\VMinus}:}
 \it{Note: I beleive we should change this to the ${\mu}$Verse syntax}
 \begin{center}
     \begin{bnf}
@@ -161,15 +161,15 @@ We present a syntax of \VMinus, our subset of Verse:
     | $\alpha$ : terminating alpha
     | $x, y, z$ : names
     % Question: ebnf braces vs. 
-    | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $\tt{if}\; \tt{[}\; \galpha\; \bracketed{[] \galpha}\; tt{]}\; \tt{fi}$ : if-fi 
     | $K \bracketed{\ealpha}$ : value constructor application 
-    | $\ealpha[1] \; \ealpha[2]$ : function application 
+    | $\ealpha[1]\; \ealpha[2]$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
-    | $\ealpha; \; \galpha$ : intermediate expression 
+    | $\ealpha;\; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-    | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
+    | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
     % ;;
     \end{bnf}
 \end{center}
@@ -179,19 +179,19 @@ We present a syntax of \VMinus, our subset of Verse:
 
     Hole: Discuss- how it is different from Verse, how it is the same, and
     foreshadow static analysis tool. 
-\section{Comparing with Pattern Matching: \Pplus}
+\section{Comparing with Pattern Matching: {\PPlus}}
 
-\subsubsection{\Pplus:}
+\subsubsection{{\PPlus}:}
 \begin{center}
     \begin{bnf}
 $\expr$ : \textsf{Expressions} ::=
-    | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
+    | $\ttbraced{\tt{case}\; \expr\; \bracketed{\tt{[} p\; \expr \tt{]}}}$ : case expression 
     ;;
     $p$ : \textsf{Patterns} ::= $x$ : name 
     | $K$ : value constructor 
-    | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-    % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
-    | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
+    | $\ttbraced{K\; \bracketed{p}}$ : value constructor application 
+    % | $\ttbraced{p\; \tt{when}\; \expr }$ : side condition
+    | $\ttbraced{\tt{oneof}\; p_{1}\;  p_{2} }$ : or-pattern 
     | $\ttbraced{p \tt{;} \bracketed{\expr \vert \ttbraced{p  <- \expr}}}$ : pattern guard
     \end{bnf}
 \end{center}
@@ -201,21 +201,21 @@ $\expr$ : \textsf{Expressions} ::=
 \section{Translations}
 
 \begin{itemize}
-    \item \Pplus $->$ \VMinus 
-    \item \VMinus $->$ \D
-    \item "why we don't need \Pplus to \D"
+    \item {\PPlus} $->$ {\VMinus} 
+    \item {\VMinus} $->$ {\D}
+    \item "why we don't need {\PPlus} to {\D}"
 \end{itemize}
 
 \section{"The point"}
 
 
 \begin{itemize}
-    \item \VMinus, and therefore Verse, is as expressive as \Pplus
-    \item \VMinus does not incur the cost of unifying logical variables at runtime 
+    \item {\VMinus}, and therefore Verse, is as expressive as {\PPlus}
+    \item {\VMinus} does not incur the cost of unifying logical variables at runtime 
     \item Hole: Discussion: Value generation in choice 
 \end{itemize}
 
-% \section{Comparing with Pattern Matching: \Pplus}
+% \section{Comparing with Pattern Matching: {\PPlus}}
 
 \bigskip
 
@@ -229,14 +229,14 @@ $\expr$ : \textsf{Expressions} ::=
 %     $\bracketed{d}$ : definition
 %     ;;
 %     $d$ : \textsf{Definitions} ::=
-%     | $\tt{val} \; x \; \tt{=} \; \expr$ : bind name to expression
+%     | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
 %     ;;
 %     $\expr$ : Core expressions ::= 
 %     | $x, y, z$ : names
 %     | $K\bracketed{\expr}$ : value constructor application 
-%     | $\tt{if} \; \expr[1] \; \tt{then} \; \expr[2] \; \tt{else} \; e_{3} $ : if
-%     | $\lambda x. \; \expr$ : lambda 
-%     | $\expr[1] \; \expr[2]$ : function application 
+%     | $\tt{if}\; \expr[1]\; \tt{then}\; \expr[2]\; \tt{else}\; e_{3} $ : if
+%     | $\lambda x.\; \expr$ : lambda 
+%     | $\expr[1]\; \expr[2]$ : function application 
 %     ;;
 %     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
 %     ;;
@@ -258,12 +258,12 @@ $\expr$ : \textsf{Expressions} ::=
 
 
 % We then present three language extensions that build off of this core: 
-% \Pplus, the language of patterns, \VMinus, the language of 
+% {\PPlus}, the language of patterns, {\VMinus}, the language of 
 % verse-like equations, and $D$, the language of decision trees. 
 
 % \subsection{Three Language Extensions}
 
-% \subsubsection{\VMinus:}
+% \subsubsection{{\VMinus}:}
 
 % \begin{center}
 %     \begin{bnf}
@@ -271,32 +271,32 @@ $\expr$ : \textsf{Expressions} ::=
 %     | $\alpha$ : terminating alpha
 %     | $x, y, z$ : names
 %     % Question: ebnf braces vs. 
-%     | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+%     | $\tt{if}\; \tt{[}\; \galpha\; \bracketed{[] \galpha}\; tt{]}\; \tt{fi}$ : if-fi 
 %     | $K \bracketed{\ealpha}$ : value constructor application 
-%     | $\ealpha[1] \; \ealpha[2]$ : function application 
+%     | $\ealpha[1]\; \ealpha[2]$ : function application 
 %     ;;
 %     $\galpha$ : \textsf{Guarded Expressions} ::=  
 %     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
-%     | $\ealpha; \; \galpha$ : intermediate expression 
+%     | $\ealpha;\; \galpha$ : intermediate expression 
 %     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-%     | $\ealpha[1] = \ealpha[2]; \; \galpha$ : equation 
+%     | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
 %     % ;;
 %     \end{bnf}
 % \end{center}
 
 % \bigskip 
 
-% \subsubsection{\Pplus:}
+% \subsubsection{{\PPlus}:}
 % \begin{center}
 %     \begin{bnf}
 % $\expr$ : \textsf{Expressions} ::=
-%     | $\ttbraced{\tt{case} \; \expr \; \bracketed{\tt{[} p \; \expr \tt{]}}}$ : case expression 
+%     | $\ttbraced{\tt{case}\; \expr\; \bracketed{\tt{[} p\; \expr \tt{]}}}$ : case expression 
 %     ;;
 %     $p$ : \textsf{Patterns} ::= $x$ : name 
 %     | $K$ : value constructor 
-%     | $\ttbraced{K \; \bracketed{p}}$ : value constructor application 
-%     % | $\ttbraced{p \; \tt{when} \; \expr }$ : side condition
-%     | $\ttbraced{\tt{oneof} \; p_{1} \;, p_{2} }$ : or-pattern 
+%     | $\ttbraced{K\; \bracketed{p}}$ : value constructor application 
+%     % | $\ttbraced{p\; \tt{when}\; \expr }$ : side condition
+%     | $\ttbraced{\tt{oneof}\; p_{1}\;  p_{2} }$ : or-pattern 
 %     | $\ttbraced{p \tt{;} \bracketed{\expr \vert \ttbraced{p  <- \expr}}}$ : pattern guard
 %     \end{bnf}
 % \end{center}
@@ -309,12 +309,12 @@ $\expr$ : \textsf{Expressions} ::=
 % \begin{center}
 %     \begin{bnf}
 %         \Dalpha : \textsf{Decision Tree} ::= 
-%         $\tt{case} \; x \; \tt{of} \; 
-%         \bracketed{\vert \; K\bracketed{x} \; \tt{=>} \; \Dalpha}
-%         [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
+%         $\tt{case}\; x\; \tt{of}\; 
+%         \bracketed{\vert\; K\bracketed{x}\; \tt{=>}\; \Dalpha}
+%         [\vert\; x\; \tt{=>} \Dalpha]$ : test node 
 %         | $\alpha$ : match node 
-%         | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-%         | $\tt{let} \; x \; \tt{=} \; \expr \; \tt{in} \; \Dalpha$ : let-bind a name
+%         | $\tt{if}\; x\; \tt{then}\; \Dalpha\; \tt{else}\; \Dalpha$ : condition with two children 
+%         | $\tt{let}\; x\; \tt{=}\; \expr\; \tt{in}\; \Dalpha$ : let-bind a name
 %         ;;
 %         $\expr$ : \textsf{Expressions} ::=
 %         | $\mathcal{D}_{\expr}$ : decision trees 
@@ -335,17 +335,17 @@ $\expr$ : \textsf{Expressions} ::=
 
 
 
-% \section{Forms of Judgement for $\VMinus$:}
+% \section{Forms of Judgement for ${\VMinus}$:}
 % \begin{tabular}{ll}
 % \toprule
 %     \multicolumn2{l}{\emph{Metavariables}} \\
 % \midrule
-%     % $\v, \; \v'$& value \\
+%     % $\v,\; \v'$& value \\
 %     \valpha& a metavalue produced from evaluating $\alpha$. \\
 %     $eq$& equation \\ 
 %     % $\tempstuck$& a temporarily-stuck equation \\
 %     $\reject$& equation rejection \\
-%     $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
+%     $\result$& $\vartheta \mid$ \reject : a result of \valpha\; or
 %     rejection\\
 %     \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
 %     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -391,14 +391,14 @@ $\expr$ : \textsf{Expressions} ::=
     
 %     \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
 %     core Verse evaluates to produce possibly-empty sequence of values. In
-%     \VMinus, values depend on the form of abstract expression $\alpha.$ If
+%     {\VMinus}, values depend on the form of abstract expression $\alpha.$ If
 %     $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
 %     it is an ML-like expression, it will be a single value. 
     
 %     A guarded expression evaluates to produce a \bf{result}. A result is either
 %     a metavalue \valpha ~or reject. 
     
-%     \[\it{r} \; \rm{::=} \; \vartheta \;|\; \reject \]
+%     \[\it{r}\; \rm{::=}\; \vartheta\; \; \reject \]
     
 %     \showvjudgement{Eval-Alpha}{\veval{\alpha}{\valpha}}
 %     \showvjudgement{Eval-AlphaExpr}{\veval{\ealpha}{\valpha}}
@@ -414,12 +414,12 @@ $\expr$ : \textsf{Expressions} ::=
 %     \bigskip
 % \subsection{Equations}
 
-% In \VMinus, we solve equations (intermediate computations in a guarded
+% In {\VMinus}, we solve equations (intermediate computations in a guarded
 % expression of the form \\$\ealpha[1] = \ealpha[2]$) in a similar way to the
 % authors of the original Verse paper: we pick one, attempt to solve for it, and
 % move on. 
 
-% \rab{How do we express that \VMinus semantics preclude backtracking/logical 
+% \rab{How do we express that {\VMinus} semantics preclude backtracking/logical 
 % variables at runtime?}
 
 % Given an environment from names to metavalues {\valpha}s \Rho, an equation \eq
@@ -443,7 +443,7 @@ $\expr$ : \textsf{Expressions} ::=
 %     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
 % \end{align*}
 
-% \section{Rules (Big-step Operational Semantics) for $\VMinus$:}
+% \section{Rules (Big-step Operational Semantics) for ${\VMinus}$:}
     
 % \subsection{Evaluating Guarded Expressions}
 
@@ -478,7 +478,7 @@ $\expr$ : \textsf{Expressions} ::=
 %     {\inferrule*{\vmrun[context=eq \cdot \context]}
 %     {}
 %     }
-%     {\vmrun[term=eq; \; \galpha]}
+%     {\vmrun[term=eq;\; \galpha]}
 % \]
 
 % \subsubsection{Choosing and solving an equation}
@@ -515,7 +515,7 @@ $\expr$ : \textsf{Expressions} ::=
 % \inferrule*[Left=\textsc{ (Desugar-EqExps) }]
 %     {\inferrule* {}
 %     {
-%     x,\;y \; \rm{are distinct and fresh}
+%     x,\; \; \rm{are distinct and fresh}
 %     \\\\
 %     \vmrun[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
 %           context=\eqTT{x = \ealpha[1] \cdot y = \ealpha[2] \cdot x = y}]}}
@@ -525,8 +525,8 @@ $\expr$ : \textsf{Expressions} ::=
 % \[
 % \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
 %     {
-%     \vmrun[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]' \; 
-%            \vert \; 1 \leq i \leq n \rbrack}]}
+%     \vmrun[context=\TeqT{\lbrack \ealpha[i]=\ealpha[i]'\; 
+%            \vert\; 1 \leq i \leq n \rbrack}]}
 %     {\vmrun[context=\TeqT{K(\ealpha[1], \dots 
 %             \ealpha[n]) = K(\ealpha[1]', \dots \ealpha[n]')}]}
 % \]
@@ -587,9 +587,9 @@ $\expr$ : \textsf{Expressions} ::=
 % \inferrule*[Left=\textsc{ (G-EqNames-Vals-Succ) }]
 %     {\inferrule* {}
 %     {
-%     x,\;y \in \dom \rho
+%     x,\;  \in \dom \rho
 %     \\\\
-%     \rho(x) = \valpha, \; \rho(y) = \valpha
+%     \rho(x) = \valpha,\; \rho(y) = \valpha
 %     }}
 %     {\eqrefine[eq={x = y},newenv=\rho]}
 % \]
@@ -598,9 +598,9 @@ $\expr$ : \textsf{Expressions} ::=
 % \inferrule*[Left=\textsc{ (G-EqNames-Vals-Fail) }]
 %     {\inferrule* {}
 %     {
-%     x,\;y \in \dom \rho
+%     x,\;  \in \dom \rho
 %     \\\\
-%     \rho(x) = \valpha, \; \rho(y) = \valpha'
+%     \rho(x) = \valpha,\; \rho(y) = \valpha'
 %     \\\\
 %     \valpha \neq \valpha'}}
 %     {\eqrefine[eq={x = y},newenv=\dagger]}
@@ -610,11 +610,11 @@ $\expr$ : \textsf{Expressions} ::=
 % % \inferrule*[Left=\textsc{ (G-EqNames-Bots-Fail) }]
 % %     {\inferrule* {}
 % %     {
-% %     x,\;y \in \dom \rho
+% %     x,\;  \in \dom \rho
 % %     \\\\
-% %     \rho(x) = \bot, \; \rho(y) = \bot
+% %     \rho(x) = \bot,\; \rho(y) = \bot
 % %     \\\\
-% %     x,\;y \; \rm{do not appear in} \; \context, \; \context'}}
+% %     x,\; \; \rm{do not appear in}\; \context,\; \context'}}
 % %     {\vmrun[context=\TeqT{x = y}] 
 % %     \rightsquigarrow \uppsidown}
 % % \]
@@ -623,9 +623,9 @@ $\expr$ : \textsf{Expressions} ::=
 % \inferrule*[Left=\textsc{ (G-EqNames-BotVal-Succ) }]
 %     {\inferrule* {}
 %     {
-%     x,\;y \in \dom \rho
+%     x,\;  \in \dom \rho
 %     \\\\
-%     \rho(x) = \bot, \; \rho(y) = \valpha
+%     \rho(x) = \bot,\; \rho(y) = \valpha
 %     }}
 %     {\eqrefine[eq={x = y},newenv=\rho\bracketed{x \mapsto \valpha}]}
 % \]
@@ -672,7 +672,7 @@ $\expr$ : \textsf{Expressions} ::=
 % \[
 % \inferrule*[Left=\textsc{ (If-Fi-Success) }]
 %     {\vmrun[] \Downarrow \vartheta}
-%     {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
+%     {\veval{\iffi{\galpha\; \square\; \dots}}{\vartheta}}
 % \]
 
 % \[
@@ -681,7 +681,7 @@ $\expr$ : \textsf{Expressions} ::=
 %     {\vmrun[result=\reject]}
 %     \and 
 %     \veval{\iffi{\dots}}{\vartheta}}
-%     {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
+%     {\veval{\iffi{\galpha\; \square\; \dots }}{\vartheta}}
 % \]
 
 % \[

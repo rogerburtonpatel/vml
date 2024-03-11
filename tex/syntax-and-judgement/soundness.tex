@@ -47,7 +47,7 @@ To~prove:
 \item
 The \closefun\ function is sound.
 \item
-Evaluation in \VMinus\ is deterministic.
+Evaluation in {\VMinus}\ is deterministic.
 \end{itemize}
 
 \section{Important sections}
@@ -71,7 +71,7 @@ Evaluation in \VMinus\ is deterministic.
     $$\vmrun[envext=\bracketed{x \mapsto \valpha'}, context=\emptyseq]\text,$$
     then
     $$\vmrun[envext=\bracketed{x \mapsto \bot}, context=\emptyseq,
-            term={x=\valpha'; \; \galpha}]\text.$$
+            term={x=\valpha';\; \galpha}]\text.$$
 \end{quote}
 
 \bigskip
@@ -83,14 +83,14 @@ Translating these ideas to laws for \closefun:
 \begin{align}
     \close[env=\emptyenv, context=\emptyseq]   &\rightarrow \galpha \\
     % \close[context=\TeqT{\expr[1] = \expr[2]}]      &\rightarrow \close[context=\TT, 
-    %        term = {\expr[1] = \expr[2];\;\galpha}] \\
+    %        term = {\expr[1] = \expr[2];\; galpha}] \\
     \close &\rightarrow \close[context=\emptyseq, term={\context; \galpha}] 
     \rm{ when \context is non-empty} \\
     \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq] &\rightarrow 
     \close[term={\exists x.\; \galpha}] \\
     \close[envext=\bracketed{x \mapsto \valpha'}, context=\emptyseq] &\rightarrow
     \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq,
-    term={x=\valpha'; \; \galpha}]
+    term={x=\valpha';\; \galpha}]
 \end{align}
 
 \bigskip

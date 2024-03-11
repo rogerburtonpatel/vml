@@ -20,18 +20,18 @@ We present a grammar of $D$, the language of decision trees:
 \begin{center}
   \begin{bnf}
     \Dalpha : \textsf{Decision Tree} ::= 
-    $\tt{case} \; x \; \tt{of} \; 
-    \bracketed{\vert \; K\bracketed{x} \; \tt{=>} \; \Dalpha}
-    [\vert \; x \; \tt{=>} \Dalpha]$ : test node 
+    $\tt{case}\; x\; \tt{of}\; 
+    \bracketed{\vert\; K\bracketed{x}\; \tt{=>}\; \Dalpha}
+    [\vert\; x\; \tt{=>} \Dalpha]$ : test node 
     | $\alpha$ : match node 
-    | $\tt{if} \; x \; \tt{then} \; \Dalpha \; \tt{else} \; \Dalpha$ : condition with two children 
-    | $\tt{let} \; x \; \tt{=} \; \expr \; \tt{in} \; \Dalpha$ : let-bind a name
+    | $\tt{if}\; x\; \tt{then}\; \Dalpha\; \tt{else}\; \Dalpha$ : condition with two children 
+    | $\tt{let}\; x\; \tt{=}\; \expr\; \tt{in}\; \Dalpha$ : let-bind a name
     ;;
     $\expr$ : \textsf{Expressions} ::=
     | $x$ : name
     | $\mathcal{D}_{\expr}$ : decision trees 
     | $K \bracketed{\expr}$ : value constructor application 
-    | $e_1 \; e_2$ : function application 
+    | $e_1\; e_2$ : function application 
     ;;
     % $K$ : \textsf{Value Constructors} ::=
     % \cons : cons 

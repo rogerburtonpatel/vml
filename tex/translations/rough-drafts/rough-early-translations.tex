@@ -54,7 +54,7 @@ TODO FIX if true \expr \expr to if true \expr impossible
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfTrueBindings}]
     {\ }
-    {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
+    {{\textsc{Verse-If}(\texttt{True}\; expr\; \expr)}  \rightarrowtail {\{\}}
     }
 \end{mathpar}
 
@@ -62,7 +62,7 @@ TODO FIX if true \expr \expr to if true \expr impossible
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfTrueEval}]
     {\ }
-    {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
+    {{\textsc{Verse-If}(\texttt{True}\; expr\; \expr)}  \rightarrowtail \expr
     }
 \end{mathpar}
 
@@ -71,7 +71,7 @@ Maybe want these as $\textsc{Verse-IfLiteralBindings}$?
 
 \begin{mathpar}
 \inferrule*[Left=\textsc{TranslateWildcardBindings}]
-{{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
+{{\textsc{Verse-If}(\texttt{True}\; expr\; \expr)}  \rightarrowtail {\{\}}
 }
   {{\textsc{case}(\textsc{Wildcard}, \v)}
    \rightarrowtail {\{\}} 
@@ -84,13 +84,13 @@ Maybe want these as $\textsc{Verse-IfLiteralBindings}$?
     \inferrule*[Left=\textsc{TranslateWildcardEval}]
     {\ }
       {{\textsc{case}(\textsc{Wildcard}, \v, \expr)}
-       \rightarrowtail {\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}
+       \rightarrowtail {\textsc{Verse-If}(\texttt{True}\; expr\; \expr)}
       }
     \end{mathpar}
 
     \begin{mathpar}
         \inferrule*[Left=\textsc{TranslateWildcardEval'}]
-        {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
+        {{\textsc{Verse-If}(\texttt{True}\; expr\; \expr)}  \rightarrowtail \expr
         }
           {{\textsc{case}(\textsc{Wildcard}, \v, \expr)}
            \rightarrowtail \expr 
@@ -106,27 +106,27 @@ Moving on to variables:
 \hfill \break
 $\triangleq$
 \hfill \break
-\texttt{if ($\exists x. \; x = \v$) \expr \expr}
+\texttt{if ($\exists x.\; x = \v$) \expr \expr}
 \hfill \break
 ------------------------
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfBindings}]
     {\ }
-    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = \v$)} \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
+    {{\textsc{Verse-If} (\texttt{($\exists x.\; x = \v$)} \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
     }
 \end{mathpar}
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{Verse-IfEval}]
     {\ }
-    {{\textsc{Verse-If}(\texttt{True} \;\expr\; \expr)}  \rightarrowtail \expr
+    {{\textsc{Verse-If}(\texttt{True}\; expr\; \expr)}  \rightarrowtail \expr
     }
 \end{mathpar}
 
 \begin{mathpar}
     \inferrule*[Left=\textsc{TranslateVarBindings}]
-    {{\textsc{Verse-If} (\texttt{($\exists x. \; x = \v$)} \; \expr \; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
+    {{\textsc{Verse-If} (\texttt{($\exists x.\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
     }
       {{\textsc{case}(x, \v, \expr)}
        \rightarrowtail {\{x \longmapsto \v\}}
@@ -135,7 +135,7 @@ $\triangleq$
 
     \begin{mathpar}
         \inferrule*[Left=\textsc{TranslateVarEval}]
-        {{\textsc{Verse-If} (\texttt{($\exists x. \; x = \v$)} \; \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
+        {{\textsc{Verse-If} (\texttt{($\exists x.\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
         }
           {{\textsc{case}(x, \v, \expr)}
            \rightarrowtail \expr{\{x \longmapsto \v\}}

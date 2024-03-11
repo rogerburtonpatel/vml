@@ -31,9 +31,9 @@ We present a grammar of $V^{-}$:
 % Integers \hspace{1cm} $k$ \\
 % Variables \hspace{.45cm} $x, y, z, f, \galpha$ \\
 % Programs \hspace{1cm} $p ::= \bf{one} \{ \expr \}$, where \ppl{fvs} $\expr = \emptyset$ \\
-% Expressions $\expr ::= v \; \vert \; eq \ppl{;} \; \expr$ 
-% Values \hspace{1cm} $v ::= x \;\vert\; hnf$ 
-% Head Values \hspace{1cm} $hnf ::= k \;\vert\; op \;\vert\; \lambda x.\;\expr$ 
+% Expressions $\expr ::= v\; \vert\; eq \ppl{;}\; \expr$ 
+% Values \hspace{1cm} $v ::= x\; vert\; hnf$ 
+% Head Values \hspace{1cm} $hnf ::= k\; vert\; op\; vert\; \lambda x.\; expr$ 
 
 
 % I attempted to use the grammar environment you provided. But there was either
@@ -46,20 +46,20 @@ We present a grammar of $V^{-}$:
     $\bracketed{d}$ : definition
     ;;
     $d$ : \textsf{Definitions} ::=
-    | $\tt{val} \; x \; \tt{=} \; \alpha$ : bind name to expression
+    | $\tt{val}\; x\; \tt{=}\; \alpha$ : bind name to expression
     ;;
     $\alpha$ : \textsf{Expressions} ::=
     | $x, y, z$ : names
     % Question: ebnf braces vs. 
-    | $\tt{if} \; \tt{[}\; \galpha \; \bracketed{[] \galpha} \;\tt{]} \; \tt{fi}$ : if-fi 
+    | $\tt{if}\; \tt{[}\; \galpha\; \bracketed{[] \galpha}\; tt{]}\; \tt{fi}$ : if-fi 
     | $K \bracketed{\alpha}$ : value constructor application 
-    | $\alpha_{1} \; \alpha_{2}$ : function application 
+    | $\alpha_{1}\; \alpha_{2}$ : function application 
     ;;
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
-    | $\alpha; \; \galpha$ : intermediate expression 
+    | $\alpha;\; \galpha$ : intermediate expression 
     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
-    | $\alpha_{1} = \alpha_{2}; \; \galpha$ : equation 
+    | $\alpha_{1} = \alpha_{2};\; \galpha$ : equation 
     ;;
     $K$ : \textsf{Value Constructors} ::=
     \cons : cons 
@@ -137,8 +137,8 @@ and is not a value constructor name or a reserved word.
 % is:
 
 
-% $$\tt{E} \; lv_1 \tt{.} \; \dots \; \langle guarded\rm{-}exp \rangle \;
-% \triangleq \; \tt{E} \; lv_1 \tt{.} \; \tt{E} \tt{.} \; \dots \; \langle
+% $$\tt{E}\; lv_1 \tt{.}\; \dots\; \langle guarded\rm{-}exp \rangle\;
+% \triangleq\; \tt{E}\; lv_1 \tt{.}\; \tt{E} \tt{.}\; \dots\; \langle
     % guarded\rm{-}exp \rangle  $$
         
 \section{Refinement ordering on environments}
@@ -159,12 +159,12 @@ and is not a value constructor name or a reserved word.
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
-    % $v, \; v'$& value \\
+    % $v,\; v'$& value \\
     \valpha& a value produced from evaluating $\alpha$. \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
     $\reject$& equation rejection \\
-    $\result$& $\vartheta \mid$ \reject : a result of \valpha \; or
+    $\result$& $\vartheta \mid$ \reject : a result of \valpha\; or
     rejection\\
     $\rho$& environment: $name \rightarrow \mathcal{V}_{\bot}$ \\
     $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
@@ -210,14 +210,14 @@ and is not a value constructor name or a reserved word.
     \newcommand\EvalGe{\vmrun}
     \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression
     in core Verse evaluates to produce possibly-empty sequence of values. In
-    \VMinus, values depend on the form of abstract expression $\alpha.$ If
+    {\VMinus}, values depend on the form of abstract expression $\alpha.$ If
     $\alpha$ is a Verse-like expression, \valpha will be a value sequence. If it
     is an ML-like expression, it will be a single value. 
 
     A guarded expression evaluates to produce a \bf{result}. A result is either
     a possibly-empty sequence of values or reject. 
 
-    \[\it{r} \; \rm{::=} \; \vartheta \;|\; \reject \]
+    \[\it{r}\; \rm{::=}\; \vartheta\; \; \reject \]
 
     \showvjudgement{Eval-Expr}{\EvalE}
     \showvjudgement{Eval-Guarded-Expr}{\EvalGe}
@@ -277,7 +277,7 @@ the singleton sequence containing $x$.
     {\inferrule*{\vmrun[context=eq \cdot \context]}
     {}
     }
-    {\vmrun[term=eq; \; \galpha]}
+    {\vmrun[term=eq;\; \galpha]}
 \]
 
 \subsubsection{Evaluating with different types of equations}
@@ -286,7 +286,7 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqExps) }]
     {\inferrule* {}
     {
-    x,\;y \; \rm{are distinct and fresh}
+    x,\; \; \rm{are distinct and fresh}
     \\\\
     \vmrun[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
           context=\eqTT{x = \alpha_{1} \cdot y = \alpha_{2} \cdot x = y}]}}
@@ -308,9 +308,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Vals-Succ) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \valpha, \; \rho(y) = \valpha
+    \rho(x) = \valpha,\; \rho(y) = \valpha
     \\\\ 
     \vmrun[context=\TT]}}
     {\vmrun[context=\TeqT{x = y}]}
@@ -320,9 +320,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Vals-Fail) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \valpha, \; \rho(y) = \valpha'
+    \rho(x) = \valpha,\; \rho(y) = \valpha'
     \\\\
     \valpha \neq \valpha'}}
     {\vmrun[context=\TeqT{x = y},result=\reject]}
@@ -332,11 +332,11 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-Bots-Fail) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \bot, \; \rho(y) = \bot
+    \rho(x) = \bot,\; \rho(y) = \bot
     \\\\
-    x,\;y \; \rm{do not appear in} \; \context, \; \context'}}
+    x,\; \; \rm{do not appear in}\; \context,\; \context'}}
     {\vmrun[context=\TeqT{x = y}] 
     \rightsquigarrow \uppsidown}
 \]
@@ -345,9 +345,9 @@ the singleton sequence containing $x$.
 \inferrule*[Left=\textsc{ (G-EqNames-BotVal-Succ) }]
     {\inferrule* {}
     {
-    x,\;y \in \dom \rho
+    x,\;  \in \dom \rho
     \\\\
-    \rho(x) = \bot, \; \rho(y) = \valpha
+    \rho(x) = \bot,\; \rho(y) = \valpha
     \\\\
     \vmrun[envext=\bracketed{x \mapsto \valpha},
            context=\context \cdot \context',result=\result']}}
@@ -386,8 +386,8 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Multi-Succ) }]
     {
-    \vmrun[context=\eqTT{\lbrack \alpha_{i}=\alpha_{i}' \; 
-           \vert \; 1 \leq i \leq n \rbrack}]}
+    \vmrun[context=\eqTT{\lbrack \alpha_{i}=\alpha_{i}'\; 
+           \vert\; 1 \leq i \leq n \rbrack}]}
     {\vmrun[context=\TeqT{K(\alpha_{1}, \dots 
             \alpha_{n}) = K(\alpha_{1}', \dots \alpha_{n}')}]}
 \]
@@ -404,7 +404,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
     {\vmrun[] \Downarrow \vartheta}
-    {\veval{\iffi{\galpha \; \square \; \dots}}{\vartheta}}
+    {\veval{\iffi{\galpha\; \square\; \dots}}{\vartheta}}
 \]
 
 \[
@@ -413,7 +413,7 @@ the singleton sequence containing $x$.
     {\vmrun[result=\reject]}
     \and 
     \veval{\iffi{\dots}}{\vartheta}}
-    {\veval{\iffi{\galpha \; \square \; \dots }}{\vartheta}}
+    {\veval{\iffi{\galpha\; \square\; \dots }}{\vartheta}}
 \]
 
 \[

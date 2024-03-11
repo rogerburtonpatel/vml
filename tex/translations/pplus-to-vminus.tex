@@ -14,7 +14,7 @@
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
 \setlength{\parindent}{0cm}
-\title{Translation from \PPlus to \VMinus}
+\title{Translation from {\PPlus} to {\VMinus}}
 \author{Roger Burtonpatel}
 \begin{document}
 
@@ -37,7 +37,7 @@ are defined case by case:
 \begin{align*}
     &\Bindings{x} = \bracketed{x} \\ 
     &\Bindings{K} = \bracketed{} \\
-    &\Bindings{K \; p_{1} \dots p_{n}} = \Bindings{p} \cup \dots \cup \Bindings{p_{n}} \\
+    &\Bindings{K\; p_{1} \dots p_{n}} = \Bindings{p} \cup \dots \cup \Bindings{p_{n}} \\
     &\Bindings{\porp} = \Bindings{p_{1}} \cap \Bindings{p_{2}} \\
     &\Bindings{\pcommap} = \Bindings{p} \cup \Bindings{p'} \\
     &\Bindings{\parrowe} = \Bindings{p} \\
@@ -49,12 +49,12 @@ are defined case by case:
 
 \begin{align*}
     &\ptov[exp=x, result=x] \\
-    &\ptov[exp={K \; \expr[1] \dots \expr[n]}, result={K \etran{\expr[1]} \dots \etran{\expr[n]}}] \\
+    &\ptov[exp={K\; \expr[1] \dots \expr[n]}, result={K \etran{\expr[1]} \dots \etran{\expr[n]}}] \\
     &\ptov[exp={\lambda x.\; \expr}, result={\lambda x.\; \etran{\expr}}] \\
-    &\ptov[exp={\expr[1] \; \expr[2]}, result={\etran{\expr[1]}\; \etran{\expr[2]}}] \\
-    &\ptov[exp={\tt{case} \; \expr\;  \emptyseq}, result={{\iffitt{\exists x. \; x = \etran{\expr}; \; \iffitt{}}}}] \; \rm{, $x$ fresh }   \\
-    &\etran{\tt{case} \; \expr\;  p_{1}\;\expr[1] \vert \dots \vert p_{n}\;\expr[n]} \\
-    &\rightsquigarrow {\iffitt{\exists x. \; x = \etran{\expr}; \; 
+    &\ptov[exp={\expr[1]\; \expr[2]}, result={\etran{\expr[1]}\; \etran{\expr[2]}}] \\
+    &\ptov[exp={\tt{case}\; \expr\;  \emptyseq}, result={{\iffitt{\exists x.\; x = \etran{\expr};\; \iffitt{}}}}]\; \rm{, $x$ fresh }   \\
+    &\etran{\tt{case}\; \expr\;  p_{1}\; expr[1] \vert \dots \vert p_{n}\; expr[n]} \\
+    &\rightsquigarrow {\iffitt{\exists x.\; x = \etran{\expr};\; 
             \iffitt{\exists\; \btran{p_{1}}.\; \ptran{p_{1}}x\expr[1];\;
             []\; \dots []\; \exists\; \btran{p_{n}}.\; \ptran{p_{n}}x\expr[n]}}} \\
     &\rm{, $x$ fresh }
@@ -90,11 +90,11 @@ are defined case by case:
 %     &\pattov[pat=y, result={x = y}] \\
 %     &\pattov[pat=K, result={x = K}] \\
 %     &\ptran{K p_{1} \dots p_{n}}xe \rightsquigarrow \\
-%     \exists y_{1} \dots y_{n}. \; &\ptran{p_{1}}y_{1}e; \dots; \ptran{p_{n}}y_{n}e;\;
+%     \exists y_{1} \dots y_{n}.\; &\ptran{p_{1}}y_{1}e; \dots; \ptran{p_{n}}y_{n}e;\;
 %     x = K y_{1} \dots y_{n}, \\
 %     &\rm{$\forall i.\; 1 \leq i \leq n:\; y_{i}$ fresh} \\
 %     &\pattov[pat=\mathit{when}\; e', result=e'] \\
-%     &\pattov[pat=\pcommap, result=\ptran{p}xe;\;\ptran{p'}xe]
+%     &\pattov[pat=\pcommap, result=\ptran{p}xe;\; ptran{p'}xe]
 % \end{align*}
 
 % New version 3/8
@@ -105,19 +105,19 @@ are defined case by case:
     &\pattov[pat=y, exp={}, result={x = y}] \\
     &\pattov[pat=K, exp={}, result={x = K}] \\
     &\ptran{K p_{1} \dots p_{n}}x \rightsquigarrow \\
-    \exists y_{1} \dots y_{n}. \; &\ptran{p_{1}}y_{1}\; o\; \dots o\; \ptran{p_{n}}y_{n}\; o\;
+    \exists y_{1} \dots y_{n}.\; &\ptran{p_{1}}y_{1}\; o\; \dots o\; \ptran{p_{n}}y_{n}\; o\;
     x = K y_{1} \dots y_{n}, \\
     &\rm{$\forall i.\; 1 \leq i \leq n:\; y_{i}$ fresh} \\
     &\pattov[pat=\mathit{when}\; e', exp={}, result={\etran{e'}}] \\
-    &\pattov[pat=\pcommap, exp={}, result=\ptran{p}x\; o\;\ptran{p'}x] \\
+    &\pattov[pat=\pcommap, exp={}, result=\ptran{p}x\; o\; ptran{p'}x] \\
     &\pattov[pat=\porp, exp={}, result=(\ptran{p}x \pbar \ptran{p'}x)]
 \end{align*}
 
 \rab{The vconapp rule is a formatting disaster. How do I fix it.}
 
 
-%     &\ptov[exp={K \; p_{1} \dots p_{n}}, result={K \; \ptran{p_{1}} \dots \ptran{\expr[n]}}] \\
-% &\ptov[exp={p \; \tt{when} \; \expr}, result={\ptran{p}\tt{;} \; \etran{\expr}}] \\
+%     &\ptov[exp={K\; p_{1} \dots p_{n}}, result={K\; \ptran{p_{1}} \dots \ptran{\expr[n]}}] \\
+% &\ptov[exp={p\; \tt{when}\; \expr}, result={\ptran{p}\tt{;}\; \etran{\expr}}] \\
 %     &\ptov[exp={p_{1} \vert p_{2}}, result={\ptran{p_{1}} \vert \ptran{p_{2}}}] \\
 %     &\ptov[exp={p,  p_{1} \leftarrow \expr[1], \dots, p_{n} \leftarrow \expr[n]}, 
 %     result={\ptran{p}\tt{;} \ptran{p_{1}} = \etran{\expr[1]}\tt{;} \dots\tt{;} 
@@ -136,7 +136,7 @@ are defined case by case:
 %     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
 % \end{align*}
 
-% \section{Rules (Big-step Operational Semantics) for \PPlus:}
+% \section{Rules (Big-step Operational Semantics) for {\PPlus}:}
     
 % \subsection{Evaluating Expressions}
 
@@ -166,7 +166,7 @@ are defined case by case:
 %     {x \in \dom \rho 
 %     \\\\
 %     \rho(x) = \v}
-%     {\prun[exp={\textsc{name} \;x}]}
+%     {\prun[exp={\textsc{name}\; }]}
 % \]
 
 % \[
@@ -192,12 +192,12 @@ are defined case by case:
 %     {\prun[value=\v]}
 %     \and 
 %     \prun[exp=
-%         {\textsc{case} \; (\textsc{literal}(\v), 
-%         [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+%         {\textsc{case}\; (\textsc{literal}(\v), 
+%         [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
 %         value=\v']}    
 %     {\prun[exp=
-%     {\textsc{case} \; (\expr, 
-%     [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+%     {\textsc{case}\; (\expr, 
+%     [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
 %     value=\v']}
 % \]
 
@@ -208,8 +208,8 @@ are defined case by case:
 %     \and 
 %     \prun[exp=\expr[1], env=\rho + \rho']}    
 %     {\prun[exp=
-%     {\textsc{case} \; (\textsc{literal}(\v), 
-%     [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+%     {\textsc{case}\; (\textsc{literal}(\v), 
+%     [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
 %     value=\v']}
 % \]
 
@@ -218,12 +218,12 @@ are defined case by case:
 %     {\inferrule* {}
 %     {\pmatch[pat={p_{1}}, newenv=\dagger]}
 %     \and 
-%     \prun[exp={\textsc{case} \; (\textsc{literal}(\v), 
-%     [p_{2} \; \expr[2]], \dots, [p_{n} \; \expr[n]])},
+%     \prun[exp={\textsc{case}\; (\textsc{literal}(\v), 
+%     [p_{2}\; \expr[2]], \dots, [p_{n}\; \expr[n]])},
 %     value=\v']}    
 %     {\prun[exp=
-%     {\textsc{case} \; (\textsc{literal}(\v), 
-%     [p_{1} \; \expr[1]], \dots, [p_{n} \; \expr[n]])},
+%     {\textsc{case}\; (\textsc{literal}(\v), 
+%     [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]])},
 %     value=\v']}
 % \]
 
@@ -242,13 +242,13 @@ are defined case by case:
 %     r = r_{1} \uplus \dots \uplus r_{m}
 %     }}
 %     {\pmatch[pat={K\; a_{1}, \dots 
-%             a_{m}}, value={\textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])},
+%             a_{m}}, value={\textsc{vcon}\; (K, [v_{1}', \dots v_{m}'])},
 %             newenv=r]}
 % \]
 
 % \[
 % \inferrule*[Left=\textsc{ (FailVcon) }]
-%     {\v \rm{ does not have the form } \textsc{vcon} \; (K, [v_{1}', \dots v_{m}'])}
+%     {\v \rm{ does not have the form } \textsc{vcon}\; (K, [v_{1}', \dots v_{m}'])}
 %     {\pmatch[pat={K\; a_{1}, \dots 
 %             a_{m}}, 
 %             newenv=\dagger]}
@@ -257,13 +257,13 @@ are defined case by case:
 % \[
 % \inferrule*[Left=\textsc{ (MatchBareVcon) }]
 %     {\ }
-%     {\pmatch[pat={K}, value={\textsc{vcon} \; (K, [])},
+%     {\pmatch[pat={K}, value={\textsc{vcon}\; (K, [])},
 %             newenv=\bracketed{}]}
 % \]
 
 % \[
 % \inferrule*[Left=\textsc{ (FailBareVcon) }]
-%     {\v \neq {\textsc{vcon} \; (K, [])}}
+%     {\v \neq {\textsc{vcon}\; (K, [])}}
 %     {\pmatch[pat={K},
 %             newenv=\dagger]}
 % \]
@@ -362,22 +362,22 @@ are defined case by case:
 % % \[
 % % \inferrule*[Left=\textsc{ (OrSucc) }]
 % %     {\pmatch[pat=p_{1}]}
-% %     {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+% %     {\pmatch[pat={\textsc{or}\; (p_{1}, \dots p_{n})}]}
 % % \]
 
 % % \[
 % % \inferrule*[Left=\textsc{ (OrRec) }]
 % %     {\pmatch[pat=p_{1}, newenv=\dagger]
 % %     \and 
-% %     \pmatch[pat={\textsc{or} \; (p_{2}, \dots p_{n})}]}
-% %     {\pmatch[pat={\textsc{or} \; (p_{1}, \dots p_{n})}]}
+% %     \pmatch[pat={\textsc{or}\; (p_{2}, \dots p_{n})}]}
+% %     {\pmatch[pat={\textsc{or}\; (p_{1}, \dots p_{n})}]}
 % % \]
 
 
 % % \[
 % % \inferrule*[Left=\textsc{ (OrFail) }]
 % %     {\ }
-% %     {\pmatch[pat={\textsc{or} \; (\emptyseq)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{or}\; (\emptyseq)}, newenv=\dagger]}
 % % \]
 
 
@@ -386,13 +386,13 @@ are defined case by case:
 % %     {\pmatch
 % %     \\\\
 % %     \prun[env=\Rho \uplus \Rhoprime, value=\v' \and \v' \neq \tt{false}]}
-% %     {\pmatch[pat={\textsc{when} \; (p, \expr)}]}
+% %     {\pmatch[pat={\textsc{when}\; (p, \expr)}]}
 % % \]
 
 % % \[
 % % \inferrule*[Left=\textsc{ (WhenNoMatch) }]
 % %     {\pfail}
-% %     {\pmatch[pat={\textsc{when} \; (p, \expr)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{when}\; (p, \expr)}, newenv=\dagger]}
 % % \]
 
 % % \[
@@ -400,19 +400,19 @@ are defined case by case:
 % %     {\pmatch
 % %     \\\\
 % %     \prun[env=\Rho \uplus \Rhoprime, value=\v']  \and \v' = \tt{false}}
-% %     {\pmatch[pat={\textsc{when} \; (p, \expr)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{when}\; (p, \expr)}, newenv=\dagger]}
 % % \]
 
 % % \[
 % % \inferrule*[Left=\textsc{ (GuardNoMatch) }]
 % %     {\pmatch[newenv=\dagger]}
-% %     {\pmatch[pat={\textsc{guard} \; (p, gs)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{guard}\; (p, gs)}, newenv=\dagger]}
 % % \]
 
 % % \[
 % % \inferrule*[Left=\textsc{ (GuardEmpty) }]
 % %     {\pmatch[newenv=r]}
-% %     {\pmatch[pat={\textsc{guard} \; (p, \emptyseq)}, newenv=r]}
+% %     {\pmatch[pat={\textsc{guard}\; (p, \emptyseq)}, newenv=r]}
 % % \]
 
 % % \[
@@ -424,7 +424,7 @@ are defined case by case:
 % %     \\\\
 % %     \pmatch[value=\v', newenv=\dagger]
 % %     }
-% %     {\pmatch[pat={\textsc{guard} \; (p, (p <- \expr) \cdot gs)}, newenv=\dagger]}
+% %     {\pmatch[pat={\textsc{guard}\; (p, (p <- \expr) \cdot gs)}, newenv=\dagger]}
 % % \]
 
 
@@ -437,10 +437,10 @@ are defined case by case:
 % %     \\\\
 % %     \pmatch[value=\v', newenv=\rho'']
 % %     \\\\
-% %     \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard} \; (p, gs)},
+% %     \pmatch[env=\Rho \uplus \rho'', pat={\textsc{guard}\; (p, gs)},
 % %     newenv=r]
 % %     }
-% %     {\pmatch[pat={\textsc{guard} \; (p, (p <- \expr) \cdot gs)}, newenv=r]}
+% %     {\pmatch[pat={\textsc{guard}\; (p, (p <- \expr) \cdot gs)}, newenv=r]}
 % % \]
 
 

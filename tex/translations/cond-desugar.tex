@@ -9,10 +9,10 @@ $\mathcal{D} =$ Desugar.
 A fixed desugaring of Scheme \tt{cond} to \textit{\v}'s \texttt{if-then-else}: 
 
 \begin{align*}
-  \desugar{\tt{(cond)}} \;\; & = \;\; \tt{wrong} \\
-\desugar{\tt{(cond [} e_g \; e_a \tt{] \dots)}} \;\; 
-& = \;\; \tt{if} \;\; \desugar{e_g}  \;\; \tt{then} \;\; \desugar{e_a} \;\; 
-  \tt{else} \;\; \desugar{\tt{(cond \dots)}} \\
+  \desugar{\tt{(cond)}}\; ; & =\; ; \tt{wrong} \\
+\desugar{\tt{(cond [} e_g\; e_a \tt{] \dots)}}\; ; 
+& =\; ; \tt{if}\; ; \desugar{e_g} \; ; \tt{then}\; ; \desugar{e_a}\; ; 
+  \tt{else}\; ; \desugar{\tt{(cond \dots)}} \\
 \end{align*}
 
 where $e_g$ and $e_a$ are \it{exp}s.
@@ -23,7 +23,7 @@ where $e_g$ and $e_a$ are \it{exp}s.
 % NOTE: I beleive the translation of $e_g$ may need to introduce existentials.
 % As such, though both $e_g$ and $e_a$ are \it{exp}s on the LHS, 
 % I think the translation of $e_g$ looks more like 
-% $\exists \; \texttt{fv}(e_g). \; e_g$
+% $\exists\; \texttt{fv}(e_g).\; e_g$
 
 This translation desugars \tt{cond} into the Verse \tt{if-then-else} form, 
 which itself is syntactic sugar for \bf{one}. 
@@ -32,34 +32,34 @@ which itself is syntactic sugar for \bf{one}.
 
 Here is a translation from \tt{cond} to \bf{one}. 
 
-$$ \desugar{\tt{(cond)}} \;\;  = \;\; \tt{wrong} $$
+$$ \desugar{\tt{(cond)}}\; ;  =\; ; \tt{wrong} $$
 
-$$ \desugar{\tt{(cond [} e_{g1} \; e_{a1}\tt{]} \; \tt{[}e_{g2} \; e_{a2} 
-   \tt{] \dots [}e_{gn} \; e_{an}\tt{] )}}
-  = \;\; 
+$$ \desugar{\tt{(cond [} e_{g1}\; e_{a1}\tt{]}\; \tt{[}e_{g2}\; e_{a2} 
+   \tt{] \dots [}e_{gn}\; e_{an}\tt{] )}}
+  =\; ; 
 $$
 
-% $$ (\bf{one} \; \{(\desugar{e_{g1}} ; \; \lambda\langle\rangle.\; \desugar{e_{a1}}) \; \choice \; 
-% (\desugar{e_{g2}} ; \;\lambda\langle\rangle.\; \desugar{e_{a2}}) \; \choice \; \dots \; \choice \; 
-% (\desugar{e_{gn}} ; \;\lambda\langle\rangle.\; \desugar{e_{an}}) \; 
-% \choice \; \bf{wrong} \})\langle\rangle  \\
+% $$ (\bf{one}\; \{(\desugar{e_{g1}} ;\; \lambda\langle\rangle.\; \desugar{e_{a1}})\; \choice\; 
+% (\desugar{e_{g2}} ;\; lambda\langle\rangle.\; \desugar{e_{a2}})\; \choice\; \dots\; \choice\; 
+% (\desugar{e_{gn}} ;\; lambda\langle\rangle.\; \desugar{e_{an}})\; 
+% \choice\; \bf{wrong} \})\langle\rangle  \\
 % $$  
 
 $$
-(\bf{one} \; \{(\desugar{e_{g1}} ; \; \lambda\langle\rangle.\; \desugar{e_{a1}}) \; \choice \; 
-(\desugar{e_{g2}} ; \;\lambda\langle\rangle.\; \desugar{e_{a2}}) \; \choice \; \dots \; \choice \; (\desugar{e_{gn}} ; \;\lambda\langle\rangle.\; \desugar{e_{an}}) \; 
-\choice \; \lambda\langle\rangle.\;\bf{wrong} \})\langle\rangle  \\
+(\bf{one}\; \{(\desugar{e_{g1}} ;\; \lambda\langle\rangle.\; \desugar{e_{a1}})\; \choice\; 
+(\desugar{e_{g2}} ;\; lambda\langle\rangle.\; \desugar{e_{a2}})\; \choice\; \dots\; \choice\; (\desugar{e_{gn}} ;\; lambda\langle\rangle.\; \desugar{e_{an}})\; 
+\choice\; \lambda\langle\rangle.\; bf{wrong} \})\langle\rangle  \\
 $$  
 
 
 Inductively: 
 
 $$
-\desugar{\tt{(cond [} e_g \; e_a \tt{] \dots)}} =  \;\; 
+\desugar{\tt{(cond [} e_g\; e_a \tt{] \dots)}} = \; ; 
 $$
 
 $$
-(\bf{one} \; \{(\desugar{e_{g}} ; \; \lambda\langle\rangle.\; \desugar{e_{a}}) \;\; \choice \;\;
+(\bf{one}\; \{(\desugar{e_{g}} ;\; \lambda\langle\rangle.\; \desugar{e_{a}})\; ; \choice\; ;
 \desugar{\tt{(cond \dots)}}\})\langle\rangle  \\
 $$  
 
@@ -119,7 +119,7 @@ $$
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfTrueBindings}]
 %     {\ }
-%     {{\textsc{Verse-If}(\tt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
+%     {{\textsc{Verse-If}(\tt{True}\; expr\; \expr)}  \rightarrowtail {\{\}}
 %     }
 % \end{mathpar}
 
@@ -127,7 +127,7 @@ $$
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfTrueEval}]
 %     {\ }
-%     {{\textsc{Verse-If}(\tt{True} \;\expr\; \expr)}  \rightarrowtail \expr
+%     {{\textsc{Verse-If}(\tt{True}\; expr\; \expr)}  \rightarrowtail \expr
 %     }
 % \end{mathpar}
 
@@ -136,7 +136,7 @@ $$
 
 % \begin{mathpar}
 % \inferrule*[Left=\textsc{TranslateWildcardBindings}]
-% {{\textsc{Verse-If}(\tt{True} \;\expr\; \expr)}  \rightarrowtail {\{\}}
+% {{\textsc{Verse-If}(\tt{True}\; expr\; \expr)}  \rightarrowtail {\{\}}
 % }
 %   {{\textsc{case}(\textsc{Wildcard}, \v)}
 %    \rightarrowtail {\{\}} 
@@ -149,13 +149,13 @@ $$
 %     \inferrule*[Left=\textsc{TranslateWildcardEval}]
 %     {\ }
 %       {{\textsc{case}(\textsc{Wildcard}, \v, \expr)}
-%        \rightarrowtail {\textsc{Verse-If}(\tt{True} \;\expr\; \expr)}
+%        \rightarrowtail {\textsc{Verse-If}(\tt{True}\; expr\; \expr)}
 %       }
 %     \end{mathpar}
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateWildcardEval'}]
-%         {{\textsc{Verse-If}(\tt{True} \;\expr\; \expr)}  \rightarrowtail \expr
+%         {{\textsc{Verse-If}(\tt{True}\; expr\; \expr)}  \rightarrowtail \expr
 %         }
 %           {{\textsc{case}(\textsc{Wildcard}, \v, \expr)}
 %            \rightarrowtail \expr 
@@ -171,27 +171,27 @@ $$
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \tt{if ($\exists x. \; x = \v$) \expr \expr}
+% \tt{if ($\exists x.\; x = \v$) \expr \expr}
 % \hfill \break
 % ------------------------
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfBindings}]
 %     {\ }
-%     {{\textsc{Verse-If} (\tt{($\exists x. \; x = \v$)} \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
+%     {{\textsc{Verse-If} (\tt{($\exists x.\; x = \v$)} \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
 %     }
 % \end{mathpar}
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfEval}]
 %     {\ }
-%     {{\textsc{Verse-If}(\tt{True} \;\expr\; \expr)}  \rightarrowtail \expr
+%     {{\textsc{Verse-If}(\tt{True}\; expr\; \expr)}  \rightarrowtail \expr
 %     }
 % \end{mathpar}
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateVarBindings}]
-%     {{\textsc{Verse-If} (\tt{($\exists x. \; x = \v$)} \; \expr \; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
+%     {{\textsc{Verse-If} (\tt{($\exists x.\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
 %     }
 %       {{\textsc{case}(x, \v, \expr)}
 %        \rightarrowtail {\{x \longmapsto \v\}}
@@ -200,7 +200,7 @@ $$
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateVarEval}]
-%         {{\textsc{Verse-If} (\tt{($\exists x. \; x = \v$)} \; \expr \; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
+%         {{\textsc{Verse-If} (\tt{($\exists x.\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
 %         }
 %           {{\textsc{case}(x, \v, \expr)}
 %            \rightarrowtail \expr{\{x \longmapsto \v\}}
