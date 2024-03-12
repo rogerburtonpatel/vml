@@ -25,7 +25,8 @@ struct
   val _ = addVar : status -> V.name -> context -> context
   
   val makeKnown = addVar KNOWN
-  fun known context x = Env.find (x, context) = KNOWN
+  fun known context x = Env.binds (context, x) 
+                        andalso Env.find (x, context) = KNOWN
 
 (* to generate a decision-tree TEST node, we require an EQN that has a
    known name on the left and a constrcutor application on the right 

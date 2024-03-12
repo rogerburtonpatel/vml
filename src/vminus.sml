@@ -626,5 +626,11 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
 
  fun map f = Impossible.unimp "change alpha"
  fun gmap f = Impossible.unimp "change alpha"
+ (* fun gmap f g = 
+  case g of 
+      ar as ARROWALPHA e   => ar
+    | EXPSEQ (e, g') => Impossible.unimp "not yet"  
+    | EXISTS (n, g') => _
+    | EQN (n, e, g') => _ *)
 
 end
