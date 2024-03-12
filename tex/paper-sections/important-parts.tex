@@ -7,6 +7,10 @@
 \usepackage{simplebnf}[2023-11-25]
 \usepackage{xcolor}
 \setcounter{secnumdepth}{1}
+\usepackage{geometry}
+\geometry{width=4.5in}
+
+% \setlength{\textwidth}{4.5in}
 
 \DeclareMathOperator{\dom}{dom}
 
@@ -20,7 +24,7 @@
 \begin{document}
 
 \maketitle
-
+{\Large 
 \section{Algorithms}
 \begin{enumerate}
     \item {\VMinus} solver 
@@ -57,7 +61,6 @@
 \section{Claims and Theorems}
 
 \begin{enumerate}
-    \item 
     \item Translation from {\VMinus} to {\D} preserves semantics 
     \item Translation from {\VMinus} to Verse preserves semantics
     \item Translation from {\PPlus} to {\VMinus} preserves semantics 
@@ -69,7 +72,7 @@
     \item Translation from {\VMinus} to Verse preserves semantics
     \item Translation from {\PPlus} to {\VMinus} preserves semantics 
 \end{enumerate}
-
+}
 
 
 \end{document}
