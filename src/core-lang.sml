@@ -73,8 +73,8 @@ end
 signature EXTENDED = sig
   type name = string 
   type vcon  = Core.vcon
-    datatype 'exp value = VCON of vcon   * 'exp value list 
-                         | LAMBDA of name * 'exp
+  datatype 'exp value = VCON of vcon   * 'exp value list 
+                      | LAMBDA of name * 'exp
   type 'exp extension  (* all the expressions we don't care about *)
 
   datatype exp = NAME of name 
@@ -87,7 +87,7 @@ signature EXTENDED = sig
 
 end
 
-functor MkExtended(type 'a extension) :> EXTENDED where type 'a extension = 'a extension
+functor MkExtended(type 'a extension (*solid*) ) :> EXTENDED where type 'a extension = 'a extension
   =
 struct
   type name = string 
@@ -129,4 +129,169 @@ structure NewPPlus =
          datatype pat = NAME of name | APP of Core.vcon * pat list
          datatype 'a extension = CASE of 'a * (pat * 'a) list)
 
+structure NewVMinus =
+  (* shortcut: the expressions that can appear in a guard are the same
+     as the ones that can appear on a right-hand side *)
+  MkExtended(type name = string
+             datatype 'exp guard = CONDITION of 'exp
+                                 | EQN       of name * 'exp
+             datatype 'exp guarded = GUARDED of name list * 'exp guard list * 'exp 
+             datatype 'a extension = IF_FI of 'a guarded list)
 
+structure SpeculativeVMinus =
+  (* the expressions that can appear in a guard are _different from_
+     the ones that can appear on a right-hand side *)
+  MkExtended(type name = string
+             structure ExpressionsInGuards =
+               MkExtended(datatype 'a extension = EMPTY_EXTENSION of 'a extension)
+             structure E = ExpressionsInGuards
+             datatype guard = CONDITION of E.exp
+                            | EQN       of name * E.exp
+             datatype 'exp guarded = GUARDED of name list * guard list * 'exp 
+             datatype 'a extension = IF_FI of 'a guarded list)
+
+
+
+(*---------------*)
+
+structure Sandbox = struct
+  (*
+  expL = core + if_fi(expL)
+  expR = core + if_fi(expR)
+
+  datatype guard = CONDITION of expL
+                 | EQN       of name * expL
+
+
+  if_fi(e) = IF_FI of (name list * guard list * e) list
+  *)
+
+(*
+
+  structure ExpressionsInGuards =
+    MkExtended(datatype 'a extension = EMPTY_EXTENSION of 'a extension)
+  structure E = ExpressionsInGuards
+
+  datatype 'exp guarded = GUARDED of name list * guard list * 'exp 
+  datatype 'a if_fi = IF_FI of 'a guarded list
+
+  datatype if_fi_in_guarded = I of if_fi_in_guarded if_fi
+  datatype exp_on_rhs = EXP
+  datatype if_fi_on_rhs     = I of  if_fi
+*)
+
+end
+
+
+functor MkIf (type 'extension core) 
+  =
+struct
+  type name = string
+  datatype expL = L of expL core
+                | IF_FI of (name list * guard list * expL) list
+  and     guard = CONDITION of expL
+                | EQN       of name * expL
+
+  datatype expR = R of expR core
+                | IF_FI of (name list * guard list * expR) list
+end
+
+functor MkIfParametric (type 'extension coreL
+                        type 'extension coreR) 
+  =
+struct
+  type name = string
+  datatype 'exp guard = CONDITION of 'exp
+                      | EQN       of name * 'exp
+  datatype ('expL, 'expR) if_fi = IF_FI of (name list * 'expL guard list * 'expR) list
+
+  datatype expL = L of expL coreL
+                | IF_FI of (expL, expL) if_fi
+
+  datatype expR = R of expR coreR
+                | IF_FI of (expL, expR) if_fi
+end
+
+structure ExtensibleCore = struct
+  type name = string 
+  type vcon  = Core.vcon
+  datatype 'extension exp = NAME of name 
+                          | VCONAPP of vcon * 'extension exp list
+                          | LAMBDAEXP of name * 'extension exp 
+                          | FUNAPP of 'extension exp * 'extension exp 
+                          | E of 'extension
+end
+
+structure MultiExtension = struct
+  datatype 'e exp = CORE  of 'e exp ExtensibleCore.exp
+                  | MULTI of 'e exp list
+end
+
+structure VerseX = struct
+  (* knot-tying *)
+  datatype exp = E of exp MultiExtension.exp
+end
+
+structure VminusX = 
+  MkIfParametric(type 'a coreL = 'a ExtensibleCore.exp
+                 type 'a coreR = 'a MultiExtension.exp)
+
+  
+functor MkDecisionTreeTooSimple(type 'a core) 
+  =
+struct
+  type name = string
+  type vcon = Core.vcon
+  type arity = int
+  type labeled_constructor = vcon * arity
+
+  datatype data = CON of vcon * data list
+                  (* ^ arity *)
+  datatype pattern = VCONAPP of data * name option 
+
+  datatype path = CHILD of unit core * int
+
+  datatype tree = MATCH of tree core
+                | TEST of name * (labeled_constructor * tree) list * tree option
+                | IF of name   * tree * tree 
+                | LET of name  * path * tree 
+end
+
+functor MkDecisionTree(type 'a coreL
+                       type 'a coreR) 
+  =
+struct
+  type name = string
+  type vcon = Core.vcon
+  type arity = int
+  type labeled_constructor = vcon * arity
+  datatype data = CON of vcon * data list
+                  (* ^ arity *)
+  datatype pattern = VCONAPP of data * name option 
+
+  datatype expL = COREL of expL coreL
+                | CHILD of name * int
+
+  datatype tree = MATCH of tree coreR
+                | TEST of name * (labeled_constructor * tree) list * tree option
+                | IF of name   * tree * tree 
+                | LET of name  * expL * tree 
+
+  datatype tree = MATCH      of tree coreR
+                | TEST       of name * (labeled_constructor * tree) list * tree option
+                | IF         of name * tree * tree 
+                | LET        of name * tree coreL * tree 
+                | LET_CHILD  of name * name * int * tree 
+end
+
+(*
+  txCore  : ('a -> DEST) -> ('a core -> DEST)
+
+  structure Dest = MkDecisionTree(type 'a core = 'a MultiExtension.exp)
+
+
+  txVerse (VerseX.E (CORE e)) = txCore e
+  txVerse (VerseX.E (MULTI m)) = ... translation of multi to DEST ...
+
+
+*)
