@@ -221,18 +221,29 @@
     \rab{todo: revise}
 
     \1 Verse Dominates observer functions 
-        \2 Example. 
+    \2 Example.
+\verselst
+    \begin{lstlisting}
+        $\exists$ len. len = \ys. 
+          one {ys = $\langle \rangle$; 0
+               |  $\exists$ x xs. ys = $\langle$x, xs$\rangle$; 1 + len xs}
+    \end{lstlisting}
 
-        \[
-          \vexists{x}   
-        \]
 
     \1 Verse is comparably pleasing to PM 
+    Example above illustrates this. Likely add more. 
     \1 Full Verse allows/encourages computations that are bad, cost-wise 
         \2 Hard to predict?
         \2 Exponential?
         \2 Multiple results?
         \2 Bad how? 
+    I would say 1-2 short examples that illustrate necessity of backtracking 
+    and multiple results. Also, implementation of standard functions (zip): 
+    maybe hard to predict runtime of functions written like this. Come up with 
+    a good example. 
+
+    We outline 2 solutions for this! 
+
     \end{outline}
 \section{Simplification for Study and Synthesis}
 \begin{outline}[enumerate]
@@ -240,20 +251,36 @@
     \PPlus.
     \2 Definition of \PPlus
     \2 {\PPlus} packages common/standard extensions to PM
+    \begin{itemize}
+        \item side conditions
+        \item or-patterns 
+        \item pattern guards 
+    \end{itemize}
         \3 Examples of \PPlus. 
-    \2 \PPlus admits of strange looking patterns, but these should not be alarming. 
+    \2 \PPlus\ admits of strange looking patterns, but these should not be alarming. 
+    \3 \tt{when} within vcons 
     \2 -> Because they reduce to standard things by (direct) application of algebraic laws. 
-        \3 Laws: float out vcon 
+        \3 K (when e) p2 ... === K \_ p2 ..., when e
+        \3 when e $\leftarrow$ e === \_ <- e, when e
+        \3 Laws: float out vcon, float out from guard
+        \3 \bf{This law is applied repeatedly until we reach a fixed point.}
     \1 We want to study decision-making inspired by Verse. 
         \2 We remove obvious backtracking/multiple results (ask what the notecard says)
+        SAY WHAT CHOICE DOES. 
+        \bf{Choice forces "name knowing." Names must be known in all branches 
+        if bound to unknown variable or bound to known variable if any name 
+        is unknown}.
         \2 We add a classic decision-making construct: Guarded commands. 
+        [cite- dijkstra paper]
         \2 The result: \VMinus. 
     \1 Definition of \VMinus
     \1 Continued Discussion:
     \2 {\VMinus} admits of many of the same pleasing computations as full Verse. 
     \2 Examples of programming in \VMinus 
+    \3 Show: beautiful examples. 
     \2 {\VMinus} is at least as good as {\PPlus}? Or just as comparable? 
         Or incomparable? (Why not both?)
+    \3 \bf{This is likely motivated strongly by examples of comparable code.}
     \end{outline}
 
 IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
@@ -262,10 +289,15 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
         [Evidence that \dots efficiency]}
 \begin{outline}[enumerate]
     \1 Definition of \D 
-    \1 Examples of Decision Trees 
+    \1 Examples of Decision Trees - From Maragnet. 
+    \2 Indeed, consistent with Maragnet 
     \1 D is a simple generalization of Maragnet, et al. 
     \1 Semantics of \D 
-    \1 \D\ has a great cost model
+    \1 \D\ has a great cost model: 
+
+    \bf{A decision tree can be exponential in size but never examines a word of
+    the scrutinee more than once. }
+
     \1 Algorithm: Translation from \VMinus\ to \D\ : match compiler 
     \1 Theorem: Translation from \VMinus\ to \D\ preserves semantics 
     \2 Likely inductivey hypothesis. 1-4 sentences on proof max. 
@@ -473,41 +505,41 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 % %     \label{tab:example}
 % % \end{table}
 
-% \begin{table}[h]
-%     \centering
-%     \small
-%     \begin{tabular}{l l l}
-%         \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
-%         \hline
-%         $P$ : Programs & $\bracketed{d}$ & \\
-%         $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
-%         $\expr$ : Expressions & $x, y, z$ & \\
-%         & $K\bracketed{\expr}$ &  \\
-%         & $\lambda x.\; \expr$ & \\
-%         & $\expr[1]\; \expr[2]$ & \\
-%         & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
-%         & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
-%         & $\dt$ & \D \\
-%         $\v$ : Values & $K\bracketed{\v}$ & \\
-%         & $\lambda x.\; \expr$ & \\
-%         $p$ : Patterns & $x$ & \PPlus \\
-%         & $K\; \bracketed{p}$ & \PPlus \\
-%         & $\mathit{when}\; \expr$ & \PPlus \\
-%         & $p, p'$ & \PPlus \\
-%         & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
-%         & $p_{1}\pbar p_{2}$ & \PPlus \\
-%         $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
-%         & $\expr;\; g$ & \VMinus \\
-%         & $\vexists{x} g$ & \VMinus \\
-%         & $x = \expr;\; g$ & \VMinus \\
-%         \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
-%         & $\expr$ & \D \\
-%         & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
-%         & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
-%     \end{tabular}
-%     \caption{Example LaTeX Table}
-%     \label{tab:example}
-% \end{table}
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{l l l}
+        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
+        \hline
+        $P$ : Programs & $\bracketed{d}$ & \\
+        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
+        $\expr$ : Expressions & $x, y, z$ & \\
+        & $K\bracketed{\expr}$ &  \\
+        & $\lambda x.\; \expr$ & \\
+        & $\expr[1]\; \expr[2]$ & \\
+        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
+        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
+        & $\dt$ & \D \\
+        $\v$ : Values & $K\bracketed{\v}$ & \\
+        & $\lambda x.\; \expr$ & \\
+        $p$ : Patterns & $x$ & \PPlus \\
+        & $K\; \bracketed{p}$ & \PPlus \\
+        & $\mathit{when}\; \expr$ & \PPlus \\
+        & $p, p'$ & \PPlus \\
+        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
+        & $p_{1}\pbar p_{2}$ & \PPlus \\
+        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
+        & $\expr;\; g$ & \VMinus \\
+        & $\vexists{x} g$ & \VMinus \\
+        & $x = \expr;\; g$ & \VMinus \\
+        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
+        & $\expr$ & \D \\
+        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
+        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
+    \end{tabular}
+    \caption{Example LaTeX Table}
+    \label{tab:example}
+\end{table}
 
 
 
