@@ -57,7 +57,8 @@ signature VMINUS = sig
 
 end 
 
-functor VMFn (structure A : ALPHA) :> VMINUS = struct  
+functor VMFn (structure A : ALPHA (*sus*) ) :> VMINUS = struct  
+   (* signature ALPHA probably cannot be implemented in any useful way *)
 
   (* type name = string
   datatype vcon = CONS | NIL | K of name | INT of int
