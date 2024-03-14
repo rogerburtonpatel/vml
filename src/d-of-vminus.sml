@@ -135,7 +135,8 @@ val rec stuck : context -> ('a -> bool) -> 'a V.exp ->  bool =
       handle
         BadInequality => NONE
     end  
-    
+
+  (*  *)
   val ifEq : (V.name * 'a V.exp) -> 'a D.tree -> 'a D.tree -> 'a D.tree
     = fn _ => Impossible.unimp "not yet"
 
