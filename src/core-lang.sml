@@ -232,6 +232,80 @@ structure VerseX = struct
   datatype exp = E of exp MultiExtension.exp
 end
 
+structure MultiTransformer = struct
+  datatype 'a plus_multi = BASE of 'a
+                         | MULTI of 'a plus_multi list
+end
+
+structure VMinusTransformer = struct
+  type name = string
+  datatype 'a guard = CONDITION of 'a
+                    | EQN of name * 'a
+
+  datatype 'a plus_if_fi = BASE of 'a
+                         | IF_FI of (name list * 'a plus_if_fi guard list * 'a plus_if_fi) list
+end
+
+structure SplitVMinusTransformer = struct
+  type name = string
+  datatype 'a guard = CONDITION of 'a
+                    | EQN of name * 'a
+
+  datatype ('a, 'b) plus_split_if_fi
+       (* 'b extended with if_fi, with guards in the set "'a extended *)
+       (* with if_fi *)
+     = BASE of 'b
+     | IF_FI of (name list * ('a, 'a) plus_split_if_fi guard list * ('a, 'b) plus_split_if_fi) list
+end
+
+structure StandardTransformer = struct
+  open ExtensibleCore (* to rename a type *)
+  type 'a plus_standard = 'a exp
+end
+
+structure VMinusXXX = struct
+  open MultiTransformer  open StandardTransformer (* to make a point *)
+  open VMinusTransformer
+  open SplitVMinusTransformer
+  datatype exp = E of (exp plus_standard, exp plus_standard plus_multi) plus_split_if_fi
+end
+
+
+
+structure LanguageKnotsTied = struct
+  open MultiTransformer  open StandardTransformer (* to make a point *)
+
+  (* the point: these two languages are equivalent: *)
+  datatype exp  = E  of exp plus_standard plus_multi
+  datatype exp' = E' of exp plus_multi plus_standard
+
+  (* the conclusion: write all code to operate on language transformers,
+     tie the knot only at the end *)
+
+  (* list of transformers:
+       - standard lambda, value constructors
+       - if-fi
+       - MULTI (placeholder for the full power of Verse)
+       - decision trees
+       - case matching
+   *)
+
+   (* list of languages
+        p_plus  = p_plus + standard + case_matching
+        v_minus = v_minus + standard + if_fi
+        d       = d + standard + decision_trees
+
+      datatype p_plus = E of p_plus plus_standard plus_case_matching 
+      datatype verse  = E of verse plus_standard plus_multi
+    *)
+
+    (* translations
+          val matchCompile : ('a -> 'b) -> ('a plus_if_fi) -> ('b plus_tree)
+          val pPlusToVMinus : ('a -> 'b) -> ('a plus_case) -> ('b plus_if_fi)
+     *)
+end
+
+
 structure VminusX = 
   MkIfParametric(type 'a coreL = 'a ExtensibleCore.exp
                  type 'a coreR = 'a MultiExtension.exp)
