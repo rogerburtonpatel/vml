@@ -10,7 +10,7 @@ Given $\tt{guarded-exp}$:
 
 \begin{lstlisting}
     guarded-exp ::= exp
-                 |  $\exists$ x . guarded-exp
+                 |  $\vexists{x}$ guarded-exp
                  |  x = exp; guarded-exp
 
 \end{lstlisting}
@@ -31,9 +31,9 @@ $$
 where
 
 \begin{align}    
-    \translate{\tt{exp}} &= \vlambda{}{\tt{exp}} \\
-    \translate{\exists\; \tt{x.guarded-exp}} 
-    &= \exists\; \tt{x.}\; \translate{\tt{guarded-exp}} \\
+    \translate{\tt{exp}} &= \vlambda{}\; {\tt{exp}} \\
+    \translate{\vexists{x}\; {guarded-exp}} 
+    &= \vexists{x}\; \translate{\tt{guarded-exp}} \\
     \translate{\tt{x = exp; guarded-exp}} 
     &= \tt{x = } \tt{exp}; \translate{\tt{guarded-exp}}
 \end{align}

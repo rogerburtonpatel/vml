@@ -287,7 +287,7 @@ of this unifying language which belong to the sub-languages.
         $g$ : $\textsf{Guarded Expressions}^{**}$ ::=  
         $\boldsymbol{\rightarrow}\expr$ : terminating experession
         | $\expr;\; g$                  : intermediate expression 
-        | $\exists x \mathit{.} g$      : existential 
+        | $\vexists{x} g$      : existential 
         | $x = \expr;\; g$              : equation 
         ;;
         \dt : $\textsf{Decision Trees}^{***}$ ::= 
@@ -311,8 +311,8 @@ of this unifying language which belong to the sub-languages.
         \it{Concrete Syntax}: "$\lambda$" and "$\exists$" each scope as far to
         the right as possible.
         
-        $\hskip 8em$ For example, $(\lambda y.\> \exists x.\> x = 1;\> x + y)$ means 
-        $(\lambda y.\> (\exists x.\> ((x = 1);\> (x + y))))$.
+        $\hskip 8em$ For example, $(\lambda y.\> \vexists{x}\> x = 1;\> x + y)$ means 
+        $(\lambda y.\> (\vexists{x}\> ((x = 1);\> (x + y))))$.
         
         Parentheses may be used freely to aid readability and override default precedence.
 
@@ -366,7 +366,7 @@ of this unifying language which belong to the sub-languages.
 %         & $p_{1}\pbar p_{2}$ & or-pattern & \\
 %         $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & terminating expression & \\
 %         & $\expr;\; g$ & intermediate expression & \\
-%         & $\exists x \mathit{.} g$ & existential & \\
+%         & $\vexists{x}g$ & existential & \\
 %         & $x = \expr;\; g$ & equation & \\
 %         \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & $\rm{test node}$ & \\
 %         & $\expr$ & $\rm{match node}$ & \\
@@ -402,7 +402,7 @@ of this unifying language which belong to the sub-languages.
         & $p_{1}\pbar p_{2}$ & \PPlus \\
         $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
         & $\expr;\; g$ & \VMinus \\
-        & $\exists x \mathit{.} g$ & \VMinus \\
+        & $\vexists{x} g$ & \VMinus \\
         & $x = \expr;\; g$ & \VMinus \\
         \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
         & $\expr$ & \D \\

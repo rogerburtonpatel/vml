@@ -49,7 +49,7 @@ decision-making construct:
     $g$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\expr$ : terminating experession
     | $\expr;\; g$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} g$ : existential 
+    | $\vexists{x}g$ : existential 
     | $\expr[1] = \expr[2];\; g$ : equation 
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
@@ -204,7 +204,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
     {\vmrung[env=\rho\{x \mapsto \bot \}]}
-    {\vmrung[guard=\exists x.\; g]}
+    {\vmrung[guard=\vexists{x}\; g]}
 \]
 
 \[

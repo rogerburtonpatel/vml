@@ -92,7 +92,7 @@ Now consider equivalent code in Verse:
 \verselst
 
 \begin{lstlisting}
-    $\exists$ n. \expr = NAME n; if (Env.binds(rho, n); $\exists$ \v. SOME \v = Env.find (n, rho)) 
+    $\vexists{n}$ \expr = NAME n; if (Env.binds(rho, n); \exists \v. SOME \v = Env.find (n, rho)) 
                      then \v
                      else raise NameNotBound n
 \end{lstlisting}
@@ -168,7 +168,7 @@ We present a syntax of {\VMinus}, our subset of Verse:
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
     | $\ealpha;\; \galpha$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
+    | $\vexists{x}\galpha$ : existential 
     | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
     % ;;
     \end{bnf}
@@ -278,7 +278,7 @@ $\expr$ : \textsf{Expressions} ::=
 %     $\galpha$ : \textsf{Guarded Expressions} ::=  
 %     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
 %     | $\ealpha;\; \galpha$ : intermediate expression 
-%     | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
+%     | $\vexists{x}\galpha$ : existential 
 %     | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
 %     % ;;
 %     \end{bnf}
@@ -459,7 +459,7 @@ $\expr$ : \textsf{Expressions} ::=
 % \[
 % \inferrule*[Left=\textsc{ (Eval-Exists) }]
 %     {\vmrun[env=\rho\{x \mapsto \bot \}]}
-%     {\vmrun[term=\exists x.\; \galpha]}
+%     {\vmrun[term=\vexists{x}\; \galpha]}
 % \]
 
 % \[

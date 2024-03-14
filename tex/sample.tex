@@ -111,14 +111,14 @@ Put things here.
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \texttt{if ($\exists x.\; x = v$) e e}
+% \texttt{if ($\vexists{x}\; x = v$) e e}
 % \hfill \break
 % ------------------------
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfBindings}]
 %     {\ }
-%     {{\textsc{Verse-If} (\texttt{($\exists x.\; x = v$)} e\; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\texttt{($\vexists{x}\; x = v$)} e\; e)}  \rightarrowtail e{\{x \longmapsto v\}}
 %     }
 % \end{mathpar}
 
@@ -131,7 +131,7 @@ Put things here.
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateVarBindings}]
-%     {{\textsc{Verse-If} (\texttt{($\exists x.\; x = v$)}\; e\; e)}  \rightarrowtail {\{x \longmapsto v\}}
+%     {{\textsc{Verse-If} (\texttt{($\vexists{x}\; x = v$)}\; e\; e)}  \rightarrowtail {\{x \longmapsto v\}}
 %     }
 %       {{\textsc{case}(x, v, e)}
 %        \rightarrowtail {\{x \longmapsto v\}}
@@ -140,7 +140,7 @@ Put things here.
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateVarEval}]
-%         {{\textsc{Verse-If} (\texttt{($\exists x.\; x = v$)}\; e\; e)}  \rightarrowtail e{\{x \longmapsto v\}}
+%         {{\textsc{Verse-If} (\texttt{($\vexists{x}\; x = v$)}\; e\; e)}  \rightarrowtail e{\{x \longmapsto v\}}
 %         }
 %           {{\textsc{case}(x, v, e)}
 %            \rightarrowtail e{\{x \longmapsto v\}}

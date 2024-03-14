@@ -89,7 +89,7 @@ verse-like equations, and $D$, the language of decision trees.
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\ealpha$ : terminating $\ealpha$ 
     | $\ealpha;\; \galpha$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
+    | $\vexists{x}\galpha$ : existential 
     | $\ealpha[1] = \ealpha[2];\; \galpha$ : equation 
     % ;;
     \end{bnf}
@@ -270,7 +270,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
     {\vmrun[env=\rho\{x \mapsto \bot \}]}
-    {\vmrun[term=\exists x.\; \galpha]}
+    {\vmrun[term=\vexists{x}\; \galpha]}
 \]
 
 \[
