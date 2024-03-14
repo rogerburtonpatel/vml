@@ -171,14 +171,14 @@ $$
 % \hfill \break
 % $\triangleq$
 % \hfill \break
-% \tt{if ($\exists x.\; x = \v$) \expr \expr}
+% \tt{if ($\vexists{x}\; x = \v$) \expr \expr}
 % \hfill \break
 % ------------------------
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{Verse-IfBindings}]
 %     {\ }
-%     {{\textsc{Verse-If} (\tt{($\exists x.\; x = \v$)} \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
+%     {{\textsc{Verse-If} (\tt{($\vexists{x}\; x = \v$)} \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
 %     }
 % \end{mathpar}
 
@@ -191,7 +191,7 @@ $$
 
 % \begin{mathpar}
 %     \inferrule*[Left=\textsc{TranslateVarBindings}]
-%     {{\textsc{Verse-If} (\tt{($\exists x.\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
+%     {{\textsc{Verse-If} (\tt{($\vexists{x}\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail {\{x \longmapsto \v\}}
 %     }
 %       {{\textsc{case}(x, \v, \expr)}
 %        \rightarrowtail {\{x \longmapsto \v\}}
@@ -200,7 +200,7 @@ $$
 
 %     \begin{mathpar}
 %         \inferrule*[Left=\textsc{TranslateVarEval}]
-%         {{\textsc{Verse-If} (\tt{($\exists x.\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
+%         {{\textsc{Verse-If} (\tt{($\vexists{x}\; x = \v$)}\; \expr\; \expr)}  \rightarrowtail \expr{\{x \longmapsto \v\}}
 %         }
 %           {{\textsc{case}(x, \v, \expr)}
 %            \rightarrowtail \expr{\{x \longmapsto \v\}}

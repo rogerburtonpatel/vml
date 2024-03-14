@@ -1,4 +1,3 @@
-ALL := paper 
 TOP := ../..
 TEXUTIL := $(TOP)/tex-util
 TEXINPUTS := .:$(TEXUTIL):
@@ -7,8 +6,11 @@ compile := env TEXINPUTS=$(TEXINPUTS) latexmk -g -xelatex -pdf -output-directory
 
 .PHONY: all
 
-all: old-full-paper.tex
+all: full-paper.tex
 	$(compile) $^
+
+outline: full-outline.pdf
+	@: go
 
 %.pdf : %.tex
 	$(compile) $^

@@ -58,7 +58,7 @@ We present a grammar of $V^{-}$:
     $\galpha$ : \textsf{Guarded Expressions} ::=  
     $\boldsymbol{\rightarrow}\alpha$ : terminating $\alpha$ 
     | $\alpha;\; \galpha$ : intermediate expression 
-    | $\exists \bracketed{x} \tt{.} \galpha$ : existential 
+    | $\vexists{x}\galpha$ : existential 
     | $\alpha_{1} = \alpha_{2};\; \galpha$ : equation 
     ;;
     $K$ : \textsf{Value Constructors} ::=
@@ -258,7 +258,7 @@ the singleton sequence containing $x$.
 \[
 \inferrule*[Left=\textsc{ (Eval-Exists) }]
     {\vmrun[env=\rho\{x \mapsto \bot \}]}
-    {\vmrun[term=\exists x.\; \galpha]}
+    {\vmrun[term=\vexists{x}\; \galpha]}
 \]
 
 \[

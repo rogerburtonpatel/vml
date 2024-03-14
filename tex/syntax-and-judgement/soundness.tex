@@ -63,7 +63,7 @@ Evaluation in {\VMinus}\ is deterministic.
     Whenever 
     $$\vmrun[envext=\bracketed{x \mapsto \bot}, context=\emptyseq]\text,$$
     then
-    $$\vmrun[context=\emptyseq,term={\exists x.\; \galpha}]\text.$$
+    $$\vmrun[context=\emptyseq,term={\vexists{x}\; \galpha}]\text.$$
 \end{quote}
 
 \begin{quote}
@@ -87,7 +87,7 @@ Translating these ideas to laws for \closefun:
     \close &\rightarrow \close[context=\emptyseq, term={\context; \galpha}] 
     \rm{ when \context is non-empty} \\
     \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq] &\rightarrow 
-    \close[term={\exists x.\; \galpha}] \\
+    \close[term={\vexists{x}\; \galpha}] \\
     \close[envext=\bracketed{x \mapsto \valpha'}, context=\emptyseq] &\rightarrow
     \close[envext=\bracketed{x \mapsto \bot}, context=\emptyseq,
     term={x=\valpha';\; \galpha}]

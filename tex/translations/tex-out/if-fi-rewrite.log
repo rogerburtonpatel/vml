@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  19 OCT 2023 02:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.11)  13 MAR 2024 21:50
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -22,7 +22,7 @@ File: size10.clo 2022/07/02 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip48
 \belowcaptionskip=\skip49
 \bibindent=\dimen140
-) (/Users/rogerburtonpatel/Library/texmf/tex/latex/local/vmlmacros.sty
+) (/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex-util/vmlmacros.sty
 Package: vmlmacros 2011/02/23 v1.0 Custom VML macros.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2022/04/08 v2.17n AMS math features
@@ -645,29 +645,183 @@ Package: mathpartir 2016/02/24 version 1.3.2 Math Paragraph for Typesetting Infe
 \mpr@hlist=\box97
 \mpr@vlist=\box98
 \mpr@right=\box99
-)) (/usr/local/texlive/2023/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count317
-\lst@gtempboxa=\box100
-\lst@token=\toks56
-\lst@length=\count318
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/graphics/rotating.sty
+Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
+)
+\c@r@tfl@t=\count317
+\rotFPtop=\skip135
+\rotFPbot=\skip136
+\rot@float@box=\box100
+\rot@mess@toks=\toks56
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/was/upgreek.sty
+Package: upgreek 2003/02/12 v2.0 (WaS)
+Package upgreek Info: Using Euler Roman for upright Greek on input line 31.
+\symugrf@m=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `ugrf@m' in version `bold'
+(Font)                  U/eur/m/n --> U/eur/b/n on input line 38.
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count318
+\lst@gtempboxa=\box101
+\lst@token=\toks57
+\lst@length=\count319
 \lst@currlwidth=\dimen288
-\lst@column=\count319
-\lst@pos=\count320
+\lst@column=\count320
+\lst@pos=\count321
 \lst@lostspace=\dimen289
 \lst@width=\dimen290
-\lst@newlines=\count321
-\lst@lineno=\count322
+\lst@newlines=\count322
+\lst@lineno=\count323
 \lst@maxwidth=\dimen291
  (/usr/local/texlive/2023/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
-\c@lstnumber=\count323
-\lst@skipnumbers=\count324
-\lst@framebox=\box101
+\c@lstnumber=\count324
+\lst@skipnumbers=\count325
+\lst@framebox=\box102
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2023/02/27 1.9 listings configuration
 ))
 Package: listings 2023/02/27 1.9 (Carsten Heinz)
- (tex-out/if-fi-rewrite.aux)
+ (/Users/rogerburtonpatel/home/tufts/comp/thesis/vml/tex-util/simplebnf.sty (/usr/local/texlive/2023/texmf-dist/tex/latex/tabularray/tabularray.sty
+Package: tabularray 2023-03-01 v2023A Typeset tabulars and arrays with LaTeX3
+\l__tblr_a_int=\count326
+\l__tblr_c_int=\count327
+\l__tblr_r_int=\count328
+\l__tblr_d_dim=\dimen292
+\l__tblr_h_dim=\dimen293
+\l__tblr_o_dim=\dimen294
+\l__tblr_p_dim=\dimen295
+\l__tblr_q_dim=\dimen296
+\l__tblr_r_dim=\dimen297
+\l__tblr_s_dim=\dimen298
+\l__tblr_t_dim=\dimen299
+\l__tblr_v_dim=\dimen300
+\l__tblr_w_dim=\dimen301
+\l__tblr_a_box=\box103
+\l__tblr_b_box=\box104
+\l__tblr_c_box=\box105
+\l__tblr_d_box=\box106
+\g__tblr_table_count_int=\count329
+\c@rownum=\count330
+\c@colnum=\count331
+\c@rowcount=\count332
+\c@colcount=\count333
+\abovesep=\dimen302
+\belowsep=\dimen303
+\leftsep=\dimen304
+\rightsep=\dimen305
+\g_tblr_level_int=\count334
+\g__tblr_data_row_key_count_int=\count335
+\g__tblr_data_column_key_count_int=\count336
+\g__tblr_data_cell_key_count_int=\count337
+\g__tblr_array_int=\count338
+\l__tblr_key_count_int=\count339
+\l__tblr_key_quotient_int=\count340
+\l__tblr_key_quotient_two_int=\count341
+\l__tblr_key_remainder_int=\count342
+\g__tblr_data_str_value_count_int=\count343
+\rulewidth=\dimen306
+\l__tblr_strut_dp_dim=\dimen307
+\l__tblr_strut_ht_dim=\dimen308
+\g__tblr_cell_wd_dim=\dimen309
+\g__tblr_cell_ht_dim=\dimen310
+\g__tblr_cell_head_dim=\dimen311
+\g__tblr_cell_foot_dim=\dimen312
+\l__column_target_dim=\dimen313
+\l__tblr_caption_box=\box107
+\l__tblr_caption_left_box=\box108
+\l__tblr_row_head_box=\box109
+\l__tblr_row_foot_box=\box110
+\l__tblr_row_head_foot_dim=\dimen314
+\tablewidth=\dimen315
+\l__tblr_table_firsthead_box=\box111
+\l__tblr_table_middlehead_box=\box112
+\l__tblr_table_lasthead_box=\box113
+\l__tblr_table_firstfoot_box=\box114
+\l__tblr_table_middlefoot_box=\box115
+\l__tblr_table_lastfoot_box=\box116
+\l__tblr_remain_height_dim=\dimen316
+\l__tblr_long_from_int=\count344
+\l__tblr_long_to_int=\count345
+\l__tblr_curr_i_int=\count346
+\l__tblr_prev_i_int=\count347
+\l__tblr_table_page_int=\count348
+\l__tblr_table_head_box=\box117
+\l__tblr_table_foot_box=\box118
+\l__tblr_table_head_foot_dim=\dimen317
+\l__tblr_table_head_body_foot_dim=\dimen318
+\l__tblr_table_box=\box119
+\l__tblr_table_hlines_box=\box120
+\l__tblr_hline_box=\box121
+\l__tblr_row_box=\box122
+\l__tblr_col_o_wd_dim=\dimen319
+\l__tblr_col_b_wd_dim=\dimen320
+\l__tblr_hline_leftskip_dim=\dimen321
+\l__tblr_hline_rightskip_dim=\dimen322
+\l__tblr_row_ht_dim=\dimen323
+\l__tblr_row_dp_dim=\dimen324
+\l__tblr_row_abovesep_dim=\dimen325
+\l__tblr_row_belowsep_dim=\dimen326
+\l__tblr_row_vlines_box=\box123
+\l__tblr_vline_box=\box124
+\l__tblr_cell_box=\box125
+\l__row_upper_dim=\dimen327
+\l__row_lower_dim=\dimen328
+\l__row_vpace_dim=\dimen329
+\l__tblr_vline_aboveskip_dim=\dimen330
+\l__tblr_vline_belowskip_dim=\dimen331
+\l__tblr_cell_wd_dim=\dimen332
+\l__tblr_cell_ht_dim=\dimen333
+\l__tblr_diag_box=\box126
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2022/06/29 v1.29 mathematical typesetting tools
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count349
+\calc@Bcount=\count350
+\calc@Adimen=\dimen334
+\calc@Bdimen=\dimen335
+\calc@Askip=\skip137
+\calc@Bskip=\skip138
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count351
+\calc@Cskip=\skip139
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mhsetup.sty
+Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
+)
+\g_MT_multlinerow_int=\count352
+\l_MT_multwidth_dim=\dimen336
+\origjot=\skip140
+\l_MT_shortvdotswithinadjustabove_dim=\dimen337
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen338
+\l_MT_above_intertext_sep=\dimen339
+\l_MT_below_intertext_sep=\dimen340
+\l_MT_above_shortintertext_sep=\dimen341
+\l_MT_below_shortintertext_sep=\dimen342
+\xmathstrut@box=\box127
+\xmathstrut@dim=\dimen343
+)
+Package: simplebnf 2023-11-25 v1.0.0 A simple package to format Backus–Naur form
+\l__simplebnf_prod_sep_dim=\dimen344
+\l__simplebnf_row_sep_dim=\dimen345
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/cleveref/cleveref.sty
+Package: cleveref 2018/03/27 v0.21.4 Intelligent cross-referencing
+Package cleveref Info: `hyperref' support loaded on input line 2370.
+LaTeX Info: Redefining \cref on input line 2370.
+LaTeX Info: Redefining \Cref on input line 2370.
+LaTeX Info: Redefining \crefrange on input line 2370.
+LaTeX Info: Redefining \Crefrange on input line 2370.
+LaTeX Info: Redefining \cpageref on input line 2370.
+LaTeX Info: Redefining \Cpageref on input line 2370.
+LaTeX Info: Redefining \cpagerefrange on input line 2370.
+LaTeX Info: Redefining \Cpagerefrange on input line 2370.
+LaTeX Info: Redefining \labelcref on input line 2370.
+LaTeX Info: Redefining \labelcpageref on input line 2370.
+Package cleveref Info: `amsthm' support loaded on input line 3026.
+Package cleveref Info: `listings' support loaded on input line 3131.
+)) (tex-out/if-fi-rewrite.aux)
 \openout1 = `if-fi-rewrite.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
@@ -698,14 +852,14 @@ LaTeX Font Info:    ... okay on input line 8.
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
 * h-part:(L,W,R)=(92.14519pt, 430.00462pt, 92.14519pt)
-* v-part:(T,H,B)=(14.45377pt, 758.835pt, 21.68121pt)
+* v-part:(T,H,B)=(95.39737pt, 556.47656pt, 143.09605pt)
 * \paperwidth=614.295pt
 * \paperheight=794.96999pt
 * \textwidth=430.00462pt
-* \textheight=758.835pt
+* \textheight=556.47656pt
 * \oddsidemargin=19.8752pt
 * \evensidemargin=19.8752pt
-* \topmargin=-94.81622pt
+* \topmargin=-13.87262pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=10.0pt
@@ -725,17 +879,17 @@ LaTeX Font Info:    ... okay on input line 8.
 
 (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count325
-\scratchdimen=\dimen292
-\scratchbox=\box102
-\nofMPsegments=\count326
-\nofMParguments=\count327
-\everyMPshowfont=\toks57
-\MPscratchCnt=\count328
-\MPscratchDim=\dimen293
-\MPnumerator=\count329
-\makeMPintoPDFobject=\count330
-\everyMPtoPDFconversion=\toks58
+\scratchcounter=\count353
+\scratchdimen=\dimen346
+\scratchbox=\box128
+\nofMPsegments=\count354
+\nofMParguments=\count355
+\everyMPshowfont=\toks58
+\MPscratchCnt=\count356
+\MPscratchDim=\dimen347
+\MPnumerator=\count357
+\makeMPintoPDFobject=\count358
+\everyMPtoPDFconversion=\toks59
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -747,7 +901,10 @@ Package hyperref Info: Link coloring OFF on input line 8.
 \@outlinefile=\write4
 \openout4 = `if-fi-rewrite.out'.
 
-\c@lstlisting=\count331
+\c@lstlisting=\count359
+ (/usr/local/texlive/2023/texmf-dist/tex/latex/ninecolors/ninecolors.sty
+Package: ninecolors 2022-02-13 vv2022D Select colors with proper color contrast
+)
 LaTeX Font Info:    Trying to load font information for U+msa on input line 9.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -762,15 +919,15 @@ Package rerunfilecheck Info: File `if-fi-rewrite.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 23221 strings out of 476025
- 424424 string characters out of 5790016
+ 28190 strings out of 476025
+ 536959 string characters out of 5790016
  1863388 words of memory out of 5000000
- 43271 multiletter control sequences out of 15000+600000
- 515417 words of font info for 46 fonts, out of 8000000 for 9000
+ 48202 multiletter control sequences out of 15000+600000
+ 516266 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 117i,10n,118p,539b,1070s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 117i,11n,118p,613b,1096s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on tex-out/if-fi-rewrite.pdf (1 page, 75067 bytes).
+Output written on tex-out/if-fi-rewrite.pdf (1 page, 76833 bytes).
 PDF statistics:
  60 PDF objects out of 1000 (max. 8388607)
  42 compressed objects within 1 object stream
