@@ -124,9 +124,7 @@ end
 
 
 
-(* OLD VERSIONS -- HALFWAY THERE *)
-
-(* structure NewPPlus =
+structure NewPPlus =
   MkExtended(type name = string
          datatype pat = NAME of name | APP of Core.vcon * pat list
          datatype 'a extension = CASE of 'a * (pat * 'a) list)
@@ -150,7 +148,7 @@ structure SpeculativeVMinus =
              datatype guard = CONDITION of E.exp
                             | EQN       of name * E.exp
              datatype 'exp guarded = GUARDED of name list * guard list * 'exp 
-             datatype 'a extension = IF_FI of 'a guarded list) *)
+             datatype 'a extension = IF_FI of 'a guarded list)
 
 
 
@@ -214,9 +212,6 @@ struct
                 | IF_FI of (expL, expR) if_fi
 end
 
-
-
-
 structure ExtensibleCore = struct
   type name = string 
   type vcon  = Core.vcon
@@ -263,40 +258,17 @@ structure SplitVMinusTransformer = struct
      | IF_FI of (name list * ('a, 'a) plus_split_if_fi guard list * ('a, 'b) plus_split_if_fi) list
 end
 
-structure PPlusTransformer = struct
-  type name = string
-  datatype 'exp pattern = PATNAME of name 
-                   | WHEN of 'exp 
-                   | PATGUARD of 'exp pattern * 'exp 
-                   | ORPAT of 'exp pattern * 'exp pattern 
-                   | PATCONAPP of name * 'exp pattern list
-
-  datatype 'a plus_case = BASE of 'a 
-                        | CASE of ('a plus_case pattern * 'a plus_case) list
-end
-
-
 structure StandardTransformer = struct
   open ExtensibleCore (* to rename a type *)
   type 'a plus_standard = 'a exp
 end
 
-structure TrueVMinus = struct
+structure VMinusXXX = struct
   open MultiTransformer  open StandardTransformer (* to make a point *)
   open VMinusTransformer
   open SplitVMinusTransformer
   datatype exp = E of (exp plus_standard, exp plus_standard plus_multi) plus_split_if_fi
 end
-
-(* structure TrueVMinus = struct
-  open MultiTransformer  open StandardTransformer (* to make a point *)
-  open VMinusTransformer
-  open SplitVMinusTransformer
-  datatype exp = E of (exp plus_standard, exp plus_standard plus_multi) plus_split_if_fi
-end *)
-
-
-val (x : TrueVMinus.exp) = TrueVMinus.E (SplitVMinusTransformer.BASE (MultiTransformer.BASE (ExtensibleCore.NAME "n")))
 
 
 
