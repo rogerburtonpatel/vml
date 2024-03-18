@@ -1,18 +1,69 @@
-structure FinalPPlus = struct
-  type name = string
-  type vcon = string
+structure FinalPPlus :> sig 
+  type name = Core'.name
+  type vcon = Core'.vcon
 
   datatype 'e pattern = PATNAME of name 
-                  | WHEN of 'e 
-                  | PATGUARD of 'e pattern * 'e 
-                  | ORPAT of 'e pattern * 'e pattern 
-                  | PATCONAPP of name * 'e pattern list
-                  | PATSEQ of 'e pattern * 'e pattern 
+                      | WHEN of 'e 
+                      | PATGUARD of 'e pattern * 'e 
+                      | ORPAT of 'e pattern * 'e pattern 
+                      | PATCONAPP of vcon * 'e pattern list
+                      | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
   datatype pplus = C of pplus Core'.t 
                  | I of pplus ppcase
 
+  datatype def = DEF of name * pplus
+
+  val expString : pplus -> string
+
+end 
+  = 
+struct
+  type name = Core'.name
+  type vcon = Core'.vcon
+
+  datatype 'e pattern = PATNAME of name 
+                      | WHEN of 'e 
+                      | PATGUARD of 'e pattern * 'e 
+                      | ORPAT of 'e pattern * 'e pattern 
+                      | PATCONAPP of vcon * 'e pattern list
+                      | PATSEQ of 'e pattern * 'e pattern 
+
+  datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
+  datatype pplus = C of pplus Core'.t 
+                | I of pplus ppcase
+
+  datatype def = DEF of name * pplus
+
+  fun br printer input = "(" ^ printer input ^ ")"
+  fun br' input = "(" ^ input ^ ")"
+
+
+
+
+  fun expString (C ce)                           = Core'.expString expString ce
+    | expString (I (CASE (scrutinee, branches))) = 
+      let fun branchString (p, ex) = patString p ^ " -> " ^ expString ex
+          val body = 
+              if null branches 
+              then "" 
+              else String.concatWith "\n  | " (map branchString branches)
+          in "case " ^ expString scrutinee ^ " of " ^ body
+          
+          end
+  and patString (PATNAME n) = n 
+    | patString (PATCONAPP (n, ps)) = 
+        Core'.vconAppStr (fn (PATNAME n') => n' 
+                          | cmplx => br patString cmplx) n ps
+    | patString (WHEN cond)       = br' ("when "      ^ expString cond)
+    | patString (ORPAT (p1, p2))  = br' (patString p1 ^ " | "  ^ patString p2)
+    | patString (PATSEQ (p1, p2)) = br' (patString p1 ^  ", "  ^ patString p2)
+    | patString (PATGUARD (p, e)) = br' (patString p  ^ " <- " ^ expString e)
+    (* fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e *)
+(* val branches = [(PATCONAPP ("K", [PATNAME "n"]), C (Core'.NAME "e1")), (PATCONAPP ("K", [PATNAME "n1", PATNAME "n2"]), C (Core'.NAME "e2"))]
+val x_ = I (CASE (C (Core'.VCONAPP ("K", [C (Core'.NAME "n1"), C (Core'.NAME "n2")])), branches))
+val _ = print ("HERE\n\n" ^ expString x_) *)
 
 end
 

@@ -20,7 +20,9 @@ struct
 
   val table = map inject
     [ (PPLUS,  "pp",  "P+ concrete syntax")
+    , (PPLUS,  "pplus",  "P+ concrete syntax")
     , (VMINUS_ALPHA,  "vma",  "V- with alpha concrete syntax")
+    , (VMINUS_ALPHA, "vminus",  "V- simple concrete syntax")
     , (VMINUS_SIMPLE, "vms",  "V- simple concrete syntax")
     , (VMINUS_ARROW,  "vmr",  "V- with arrow concrete syntax")
     , (AST_P, "astp", "AST for P+")

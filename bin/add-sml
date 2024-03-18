@@ -1,8 +1,9 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 #
-# Purpose: makes an sml file and adds it to your all.cm, millet.cm, and 
+# Purpose: makes an sml file and adds it to your all.cm, and 
 #          all.mlb. 
 # 
+# 3/17: No longer adds to millet.cm
 
 ## Usage: add-sml filename
 ## 
@@ -25,16 +26,16 @@ NEWML="$1"
 if $(! test -f "all.cm"); then 
     >&2 echo "all.cm not found!"
     exit 1
-elif $(! test -f "millet.cm"); then 
-    >&2 echo "millet.cm not found!"
-    exit 1
+# elif $(! test -f "millet.cm"); then 
+#     >&2 echo "millet.cm not found!"
+#     exit 1
 elif $(! test -f "all.mlb"); then 
     >&2 echo "all.mlb not found!"
     exit 1
 fi
 
 grep -qxF "  $NEWML" all.cm    || printf "  $NEWML\n" >> "all.cm"
-grep -qxF "  $NEWML" millet.cm || printf "  $NEWML\n" >> "millet.cm"
+# grep -qxF "  $NEWML" millet.cm || printf "  $NEWML\n" >> "millet.cm"
 grep -qxF "  $NEWML" all.mlb   || printf "  $NEWML\n" >> "all.mlb"
 
 if $(! test -f "$NEWML"); then 
