@@ -1,3 +1,22 @@
+structure FinalPPlus = struct
+  type name = string
+  type vcon = string
+
+  datatype 'e pattern = PATNAME of name 
+                  | WHEN of 'e 
+                  | PATGUARD of 'e pattern * 'e 
+                  | ORPAT of 'e pattern * 'e pattern 
+                  | PATCONAPP of name * 'e pattern list
+                  | PATSEQ of 'e pattern * 'e pattern 
+
+  datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
+  datatype pplus = C of pplus Core'.t 
+                 | I of pplus ppcase
+
+
+end
+
+
 structure PPlus :> sig 
   type name = string 
   type vcon = Core.vcon 
@@ -148,7 +167,7 @@ fun runProg defs =
                 acc ^ ", " ^ patString pat ^ " <- " ^ expString ex ^ "") "" steps))
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
-                                Core.strBuilderOfVconApp 
+                                Core.vconAppStr 
                                   (fn (PNAME n') => n' 
                                       | conapp => br patString conapp) 
                                   (Core.K n) 
@@ -162,94 +181,13 @@ fun runProg defs =
                 (foldr (fn (br, acc) => "\n| " ^ branchString br ^ acc) "" 
                  (tl branches)))
           end
-      | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
+      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = br' (expString e1 ^ " " ^ expString e2)
       | expString (LAMBDAEXP (n, body)) = 
             StringEscapes.backslash ^ n ^ ". " ^ (expString body)
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
 end 
-
-
-
-
-signature EXTENSION = sig
-  type 'a context
-  type 'a value = 'a Core.core_value
-  type 'a extension
-
-  val eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) 
-end
-
-
-structure PPlusExtension : EXTENSION = struct
-  type name = string
-  type vcon = PPlus.vcon
-  type pat = PPlus.toplevelpattern
-  datatype 'a extension = CASE of 'a * (pat * 'a) list
-
-  type 'a value = 'a Core.core_value
-  type 'a context = 'a value Env.env
-
-  val rec eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) =
-    fn evalExp =>
-    let fun go context (CASE (e, choices)) =
-          let val v = evalExp context e
-          in  Impossible.unimp "pick the choice that matches v"
-          end
-    in  go
-    end
-
-end
-
-structure NewPPlus' = MkExtended(open PPlusExtension)
-
-structure XXX =
-struct
-  structure P  = NewPPlus'
-  structure PX = PPlusExtension
-  fun eval rho e = 
-      case e 
-        of P.NAME n => Env.find (n, rho)
-         | P.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
-         | P.FUNAPP (fe, param) => 
-                (case eval rho fe 
-                  of Core.LAMBDA (n, b) => 
-                    let val arg = eval rho param
-                        val rho' = Env.bind (n, arg, rho)
-                      in eval rho' b
-                      end
-                   | _ => raise Core.BadFunApp "attempted to apply non-function")
-        | P.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
-        | P.E x => PX.eval eval rho x
-
-end
-
-
-
-
-functor MkEval(structure Extended : EXTENDED
-               structure Extension : EXTENSION
-                                         where type 'a context = 'a Core.core_value Env.env
-               sharing type Extended.extension = Extension.extension
-               )
-  =
-struct
-  fun eval rho e = 
-      case e 
-        of Extended.NAME n => Env.find (n, rho)
-         | Extended.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
-         | Extended.FUNAPP (fe, param) => 
-                (case eval rho fe 
-                  of Core.LAMBDA (n, b) => 
-                    let val arg = eval rho param
-                        val rho' = Env.bind (n, arg, rho)
-                      in eval rho' b
-                      end
-                   | _ => raise Core.BadFunApp "attempted to apply non-function")
-        | Extended.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
-        | Extended.E x => Extension.eval eval rho x
-end
 
 
 

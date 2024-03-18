@@ -1,3 +1,22 @@
+structure FinalD = struct
+  type name = string
+  type vcon = string
+  type arity = int
+  type labeled_constructor = vcon * arity
+
+  datatype 'e multi = MULTI of 'e list
+
+  datatype ('e, 'a) tree = MATCH of 'a
+              | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
+              | IF of name   * ('e, 'a) tree * ('e, 'a) tree 
+              | LET of name  * 'e * ('e, 'a) tree 
+
+  datatype d = C of d Core'.t 
+             | I of (d, d multi) tree
+
+end
+
+
 signature DECISION_TREE = sig
   type name = string 
   type 'a exp

@@ -184,7 +184,7 @@ and eqgexp (g1, g2) = Impossible.unimp "not yet"
     and expString (ALPHA a) = "'a"
       | expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
+      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
       | expString (LAMBDAEXP (n, body)) = 
           StringEscapes.backslash ^ n ^ ". " ^ (expString body)
@@ -194,7 +194,7 @@ and eqgexp (g1, g2) = Impossible.unimp "not yet"
   fun valString (VALPHA a) = "alpha"
     | valString (VCON v) = (case v of   
        (K (n, vs)) => 
-        Core.strBuilderOfVconApp valString (Core.K n) vs 
+        Core.vconAppStr valString (Core.K n) vs 
     | TRUE  => "true"
     | FALSE => "false")
     | valString (LAMBDA (n, body)) = 

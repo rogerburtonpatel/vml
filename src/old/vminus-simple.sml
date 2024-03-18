@@ -86,7 +86,7 @@ struct
                     x ^ " = " ^ expString e ^ "; " ^ gexpString ge 
     and expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]\n" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
+      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
       | expString (LAMBDAEXP (n, body)) = 
           StringEscapes.backslash ^ n ^ ". " ^ (expString body)
@@ -95,7 +95,7 @@ struct
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
-  fun valString (v as (Core.VCON (n, vs))) = Core.strOfCoreValue v
+  fun valString (v as (Core.VCON (n, vs))) = Core.valString v
     | valString (Core.LAMBDA (x, body)) = 
         Char.toString (chr 92) ^ x ^ ". " ^ expString body
 
