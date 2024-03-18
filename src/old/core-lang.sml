@@ -15,8 +15,8 @@ structure Core :> sig
   val eqval           : 'a core_value * 'a core_value -> bool
   val boolOfCoreValue : 'a core_value -> bool 
   val expString    : core_exp -> string 
-  val strOfCoreValue  : 'a core_value -> string 
-  val strBuilderOfVconApp : ('a -> string) -> vcon -> 'a list -> string
+  val valString  : 'a core_value -> string 
+  val vconAppStr : ('a -> string) -> vcon -> 'a list -> string
 end 
   = 
 struct 
@@ -40,7 +40,7 @@ struct
 
                      
 
-  fun strBuilderOfVconApp f n args = 
+  fun vconAppStr f n args = 
       case (n, args)
       of (K n, vs) =>
         let val vcss = foldr (fn (vc, acc) => " " ^ f vc ^ acc) "" vs
@@ -53,14 +53,14 @@ struct
 
   fun expString (NAME n) = n
     | expString (VCONAPP (n, es)) = 
-     strBuilderOfVconApp expString n es 
+     vconAppStr expString n es 
     | expString (LAMBDAEXP (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (expString body) (* backslash *)
     | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
 
-  fun strOfCoreValue (VCON (v, vals)) = 
-          strBuilderOfVconApp strOfCoreValue v vals 
-    | strOfCoreValue (LAMBDA (n, e)) = 
+  fun valString (VCON (v, vals)) = 
+          vconAppStr valString v vals 
+    | valString (LAMBDA (n, e)) = 
       Impossible.impossible 
       "stringifying core lambda- client code must handle this case"
 
@@ -102,7 +102,7 @@ struct
                | E of exp extension  (* everything else *)
 
 
-  fun strBuilderOfVconApp f vc args = 
+  fun vconAppStr f vc args = 
   let val name = 
       (case vc 
         of Core.K n => n 
@@ -114,7 +114,7 @@ struct
 
   fun expString (NAME n) = n
   | expString (VCONAPP (n, es)) = 
-    strBuilderOfVconApp expString n es 
+    vconAppStr expString n es 
   | expString (LAMBDAEXP (n, body)) = 
       StringEscapes.backslash ^ n ^ ". " ^ (expString body) (* backslash *)
   | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2

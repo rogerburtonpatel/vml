@@ -148,7 +148,7 @@ fun runProg defs =
                 acc ^ ", " ^ patString pat ^ " <- " ^ expString ex ^ "") "" steps))
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
-                                Core.strBuilderOfVconApp 
+                                Core.vconAppStr 
                                   (fn (PNAME n') => n' 
                                       | conapp => br patString conapp) 
                                   (Core.K n) 
@@ -162,7 +162,7 @@ fun runProg defs =
                 (foldr (fn (br, acc) => "\n| " ^ branchString br ^ acc) "" 
                  (tl branches)))
           end
-      | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
+      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = br' (expString e1 ^ " " ^ expString e2)
       | expString (LAMBDAEXP (n, body)) = 
             StringEscapes.backslash ^ n ^ ". " ^ (expString body)

@@ -17,8 +17,8 @@ structure Core :> sig
   val eqval           : 'a core_value * 'a core_value -> bool
   val boolOfCoreValue : 'a core_value -> bool 
   val strOfCoreExp    : core_exp -> string 
-  val strOfCoreValue  : 'a core_value -> string 
-  val strBuilderOfVconApp : ('a -> string) -> vcon -> 'a list -> string
+  val valString  : 'a core_value -> string 
+  val vconAppStr : ('a -> string) -> vcon -> 'a list -> string
 end 
   = 
 struct 
@@ -54,7 +54,7 @@ struct
     | evalcore rho (FUNAPP (e1, e2))  = raise Impossible.unimp "funapp"
                      
 
-  fun strBuilderOfVconApp f n args = 
+  fun vconAppStr f n args = 
       case (n, args)
       of (K n, vs) =>
         let val vcss = foldr (fn (vc, acc) => " " ^ f vc ^ acc) "" vs
@@ -67,16 +67,16 @@ struct
 
   fun strOfCoreExp (NAME n) = n
     | strOfCoreExp (VCONAPP (n, es)) = 
-     strBuilderOfVconApp strOfCoreExp n es 
+     vconAppStr strOfCoreExp n es 
     | strOfCoreExp (IF_THEN_ELSE (e1, e2, e3)) = 
         "if " ^ strOfCoreExp e1 ^ "then " ^ strOfCoreExp e2 ^ "else " ^ strOfCoreExp e3
     | strOfCoreExp (LAMBDAEXP (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (strOfCoreExp body) (* backslash *)
     | strOfCoreExp (FUNAPP (e1, e2)) = strOfCoreExp e1 ^ " " ^ strOfCoreExp e2
 
-  fun strOfCoreValue (VCON (v, vals)) = 
-          strBuilderOfVconApp strOfCoreValue v vals 
-    | strOfCoreValue (LAMBDA (n, e)) = 
+  fun valString (VCON (v, vals)) = 
+          vconAppStr valString v vals 
+    | valString (LAMBDA (n, e)) = 
       Impossible.impossible 
       "stringifying core lambda- client code must handle this case"
 

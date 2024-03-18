@@ -83,13 +83,13 @@ struct
                     x ^ " <- " ^ expString e ^ "; " ^ gexpString ge 
     and expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.strBuilderOfVconApp expString v es
+      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
     and optExpString (SOME e) = "SOME " ^ expString e 
     | optExpString    NONE    = "NONE"
 
 
-  fun valString (VCON (n, vs)) = Core.strBuilderOfVconApp valString n vs 
+  fun valString (VCON (n, vs)) = Core.vconAppStr valString n vs 
     | valString (LAMBDA (x, body)) = 
         Char.toString (chr 92) ^ x ^ ". " ^ expString body
 
