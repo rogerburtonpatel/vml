@@ -1,4 +1,18 @@
-structure FinalVMinus = struct
+structure FinalVMinus :> sig 
+  type name = Core'.name
+  type vcon = Core'.vcon
+  datatype 'e guard = EQN of name * 'e
+                    | CONDITION of 'e
+                    | CHOICE of 'e guard list * 'e guard list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
+  datatype 'e multi = MULTI of 'e list
+  datatype vminus = C of vminus Core'.t
+                  | I of (vminus, vminus multi) if_fi
+
+  val expString : vminus -> string 
+
+end 
+  = struct
   type name = string
   type vcon = string
   datatype 'e guard = EQN of name * 'e
@@ -8,6 +22,29 @@ structure FinalVMinus = struct
   datatype 'e multi = MULTI of 'e list
   datatype vminus = C of vminus Core'.t
                   | I of (vminus, vminus multi) if_fi
+
+    fun gmap f (EQN (n, e))        = EQN (n, f e)
+      | gmap f (CONDITION e)       = CONDITION (f e)
+      | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
+
+  fun multiString (f : 'e -> string) (MULTI es) = String.concat (map f es)
+
+  fun expString   (C ce)               = Core'.expString expString ce
+    | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
+  and guardString (EQN (n, e))         = n ^ " = " ^ expString e
+    | guardString (CONDITION e)        = expString e
+    | guardString (CHOICE (gs1, gs2))  = 
+            let val compress = String.concat o map guardString
+            in  compress gs1 ^ " | " ^ compress gs2 
+            end 
+  and if_fiString [] = ""
+    | if_fiString ((ns, gs, r) :: rest) = 
+        let val (existential, dot) = if null ns then ("", "") else ("E ", ". ")
+            val bindings = existential ^ String.concatWith " " ns ^ dot
+            val gStrings = String.concatWith "; " (map guardString gs)
+            val rString  = (multiString expString r)
+        in "  " ^ bindings ^ gStrings ^ " " ^ rString ^ "\n" ^ if_fiString rest
+        end 
 
 end
 

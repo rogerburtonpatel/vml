@@ -47,3 +47,4 @@ group is
 
   main.sml
   
+  pp-of-vm.sml
