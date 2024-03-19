@@ -1,9 +1,10 @@
 structure PPlusParse : sig
-  val parse    :  PPlusLex.token list -> PPlus.def list Error.error
+  val parse    :  PPlusLex.token list -> FinalPPlus.def list Error.error
 end = struct
 
   structure L = PPlusLex
-  structure A = PPlus (* AST *)
+  (* structure A = PPlus AST *)
+  structure A = FinalPPlus (* AST *)
 
   fun listShow _ [] = "[]"
     | listShow show xs = "[" ^ String.concatWith ", " (map show xs) ^ "]"
@@ -37,7 +38,7 @@ end = struct
   val eos = P.eos
   fun flip f x y = f y x
   fun member x xs = List.exists (fn y => y = x) xs
-
+  fun uncurry f (x, y) = f x y
   (* utilities *)
 
   (* val int       = P.maybe (fn (L.INT   n)    => SOME n  | _ => NONE) one *)
@@ -69,27 +70,22 @@ end = struct
   fun barSeparated p = curry op :: <$> p <*> many (reserved "|" >> p)
   fun barSeparatedMulti p = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
-  val pattern = P.fix (fn pattern =>
-      curry A.CONAPP <$> vcon <*> many pattern <|>
-      A.PNAME  <$> name <|> 
-      bracketed pattern
-      )
-
 
   fun lookfor s p = P.ofFunction (fn tokens => 
                   (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
+
+
+  val vcons = ["true", "false", "cons"]
 
   fun isVcon x =
     let val lastPart = List.last (String.fields (curry op = #".") x)
         val firstAfterdot = String.sub (lastPart, 0) handle Subscript => #" "
     in  Char.isUpper firstAfterdot orelse firstAfterdot = #"#" orelse
-        String.isPrefix "make-" x
+        String.isPrefix "make-" x orelse member x vcons
     end
 
   val vcon = 
-    sat (fn s => s = "false") vcon >> succeed Core.FALSE <|>
-    sat (fn s => s = "true" ) vcon >> succeed Core.TRUE  <|>
-    Core.K <$> (sat isVcon vcon)
+    Core'.K <$> (sat isVcon vcon)
 
 
   (* turn any single- or multi-token string into a parser for that token *)
@@ -102,38 +98,39 @@ end = struct
         in matchtokens (PPlusLex.tokenize_line s)
         end
 
+  fun ppname n = A.C (Core'.NAME n)
+  fun ppvconapp vc es = A.C (Core'.VCONAPP (vc, es))
+  fun pplambdaexp n body = A.C (Core'.LAMBDAEXP (n, body))
+  fun ppfunapp e1 e2 = A.C (Core'.FUNAPP (e1, e2))
+  fun ppcase e branches = A.I (A.CASE (e, branches))
 
   val exp = P.fix (fn exp : A.exp P.producer => 
-    let 
-    fun guard (e : A.exp P.producer) = 
-      P.pair <$> sat (fn tok => tok = L.SPECIAL L.COMMA) one (* better way to do this? *)
-                 >> pattern <*> reserved "<-" >> e
-        val topLevelPattern = 
-        P.fix (fn topLevelPattern => 
-          A.PATGUARD <$> bracketed (P.pair <$> topLevelPattern 
-                                            <*> many (guard exp)) <|>
-          A.WHEN <$> bracketed (P.pair <$> topLevelPattern 
-                          <~> reserved "when" <*> exp)            <|>
-          A.ORPAT <$> barSeparatedMulti pattern                   <|>
-          A.PAT   <$> pattern                                     <|>
-          bracketed topLevelPattern
-  )
-    fun choice e = P.pair <$> topLevelPattern <*> reserved "->" >> e
+    let         
+    val pattern = P.fix (fn pattern =>
+      curry A.PATCONAPP <$> vcon <*> many pattern <|>
+      A.PATNAME  <$> name <|> 
+      A.PATGUARD <$> bracketed (P.pair <$> pattern <*> reserved "<-" >> exp)              <|>
+      A.WHEN     <$> (reserved "when" >> exp)                    <|>
+      A.ORPAT    <$> bracketed (P.pair <$> pattern  <~> reserved "|" <*> pattern) <|>
+      A.PATSEQ   <$> bracketed (P.pair <$> pattern <~> sat (fn tok => tok = L.SPECIAL L.COMMA) one (* better way to do this? *)<*> pattern)   <|>
+      bracketed pattern)
+      
+    fun choice e = P.pair <$> pattern <*> reserved "->" >> e
     in 
-      reserved "pat" >> topLevelPattern >> succeed (A.NAME "x")   <|> 
-      curry A.VCONAPP <$> vcon <*> many exp                       <|> 
-      A.FUNAPP <$> bracketed (P.pair <$> exp <*> exp)             <|> 
-      curry A.LAMBDAEXP <$> bslash >> name <~> dot <*> exp                          <|> 
-      A.NAME <$> name                                             <|> 
-      curry A.CASE <$> reserved "case" >> exp <*> 
+      reserved "pat" >> pattern >> succeed (ppname "x")           <|> 
+      ppvconapp <$> vcon <*> many exp                             <|> 
+      uncurry ppfunapp <$> bracketed (P.pair <$> exp <*> exp)                                    <|>
+      pplambdaexp <$> bslash >> name <~> dot <*> exp              <|> 
+      ppname <$> name                                             <|> 
+      ppcase <$> reserved "case" >> exp <*> 
                        reserved "of" >> barSeparated (choice exp) <|> 
       bracketed exp
-     end )
+     end)
     
 
   val def = 
         reserved "val"   >> (curry A.DEF <$> name <*> (reserved "=" >> exp)) <|>
-        reserved "parse" >> exp >> P.succeed (A.DEF ("z", A.NAME "z"))       <|>
+        reserved "parse" >> exp >> P.succeed (A.DEF ("z", ppname "z"))       <|>
         peek one         >> expected "definition"
 (*
      -- dirty trick for testing

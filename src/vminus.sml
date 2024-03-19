@@ -12,11 +12,12 @@ structure FinalVMinus :> sig
   datatype def = DEF of name * exp
 
   val expString : exp -> string 
+  val defString : def -> string 
 
 end 
   = struct
   type name = string
-  type vcon = string
+  type vcon = Core'.vcon
   datatype 'e guard = EQN of name * 'e
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
@@ -49,6 +50,9 @@ end
             val rString  = (multiString expString r)
         in "  " ^ bindings ^ gStrings ^ " " ^ rString ^ "\n" ^ if_fiString rest
         end 
+
+  fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
+
 
 end
 
