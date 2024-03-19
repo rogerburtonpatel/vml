@@ -36,6 +36,7 @@ end = struct
   val notFollowedBy = P.notFollowedBy
   val eos = P.eos
   fun flip f x y = f y x
+  fun member x xs = List.exists (fn y => y = x) xs
 
   (* utilities *)
 

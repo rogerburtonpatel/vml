@@ -1,8 +1,14 @@
-structure PPofVM = struct
+structure VMofPP :> sig
+
+  val translate : FinalPPlus.exp -> FinalVMinus.exp
+  val def : FinalPPlus.def -> FinalVMinus.def
+
+end 
+ = 
+struct
 
   structure P = FinalPPlus
   structure V = FinalVMinus
-  structure D = FinalD
   structure C = Core'
 
 
@@ -16,12 +22,12 @@ structure PPofVM = struct
   fun uncurry f (x, y) = f x y
 
   fun patFreeNames (P.PATNAME n) = [n]
-            | patFreeNames (P.PATCONAPP (vc, ps)) = 
+            | patFreeNames (P.PATCONAPP (_, ps)) = 
                                 List.concat (List.map patFreeNames ps)
             | patFreeNames (P.WHEN _) = [] 
             | patFreeNames (P.ORPAT (p1, p2)) = 
                         List.concat [patFreeNames p1, patFreeNames p2] 
-            | patFreeNames (P.PATGUARD (p, e)) = patFreeNames p 
+            | patFreeNames (P.PATGUARD (p, _)) = patFreeNames p 
             | patFreeNames (P.PATSEQ (p1, p2)) =  
                         List.concat [patFreeNames p1, patFreeNames p2] 
 
@@ -44,10 +50,9 @@ structure PPofVM = struct
              else V.IF_FI [([name], [V.EQN (name, e')], V.MULTI [V.I internal])]
         in V.I final
         end
-
-  and translatePatWith n (p : P.pplus P.pattern) = 
+  and translatePatWith n (p : P.exp P.pattern) = 
     let val _ = translatePatWith 
-          : P.name -> P.pplus P.pattern -> V.name list * V.vminus V.guard list
+          : P.name -> P.exp P.pattern -> V.name list * V.exp V.guard list
         val freshNameGen = FreshName.freshNameGenGen ()
         val freenames    = patFreeNames p
         fun translateTwo f p1 p2 = 
@@ -58,7 +63,7 @@ structure PPofVM = struct
         val (local_names, local_guards) = 
           case p of P.PATNAME n'   => ([], [V.EQN (n, V.C (C.NAME n'))])
             | P.WHEN e             => ([], [V.CONDITION (translate e)])
-            | P.PATCONAPP (vc, ps) => 
+            | P.PATCONAPP (_, ps) => 
             (* introduce one fresh per ps  *)
             let val fresh_names = map (fn _ => freshNameGen ()) ps
                 val ns_gs = ListPair.map (uncurry translatePatWith) 
@@ -78,5 +83,8 @@ structure PPofVM = struct
       in (freenames @ local_names, local_guards)
       end
 
-  val _ = translate : FinalPPlus.pplus -> FinalVMinus.vminus
+  val _ = translate : FinalPPlus.exp -> FinalVMinus.exp
+
+  fun def (P.DEF (n, e)) = V.DEF (n, translate e)
+
 end

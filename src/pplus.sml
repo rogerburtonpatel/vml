@@ -10,12 +10,13 @@ structure FinalPPlus :> sig
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
-  datatype pplus = C of pplus Core'.t 
-                 | I of pplus ppcase
+  datatype exp = C of exp Core'.t 
+                 | I of exp ppcase
 
-  datatype def = DEF of name * pplus
+  datatype def = DEF of name * exp
 
-  val expString : pplus -> string
+  val expString : exp -> string
+  val defString : def -> string
 
 end 
   = 
@@ -31,10 +32,10 @@ struct
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
-  datatype pplus = C of pplus Core'.t 
-                | I of pplus ppcase
+  datatype exp = C of exp Core'.t 
+                | I of exp ppcase
 
-  datatype def = DEF of name * pplus
+  datatype def = DEF of name * exp
 
   fun br printer input = "(" ^ printer input ^ ")"
   fun br' input = "(" ^ input ^ ")"
@@ -60,7 +61,9 @@ struct
     | patString (ORPAT (p1, p2))  = br' (patString p1 ^ " | "  ^ patString p2)
     | patString (PATSEQ (p1, p2)) = br' (patString p1 ^  ", "  ^ patString p2)
     | patString (PATGUARD (p, e)) = br' (patString p  ^ " <- " ^ expString e)
-    (* fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e *)
+    
+  fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
+
 (* val branches = [(PATCONAPP ("K", [PATNAME "n"]), C (Core'.NAME "e1")), (PATCONAPP ("K", [PATNAME "n1", PATNAME "n2"]), C (Core'.NAME "e2"))]
 val x_ = I (CASE (C (Core'.VCONAPP ("K", [C (Core'.NAME "n1"), C (Core'.NAME "n2")])), branches))
 val _ = print ("HERE\n\n" ^ expString x_) *)
@@ -239,7 +242,3 @@ fun runProg defs =
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
 end 
-
-
-
-

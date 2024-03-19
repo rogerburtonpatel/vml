@@ -143,7 +143,7 @@ struct
           | treeOfGuardedExp (VM.EXISTS (n, g')) = treeOfGuardedExp g'
           | treeOfGuardedExp (VM.EXPSEQ (e, g')) = 
               let val freshname = FreshName.freshNameGenGen () ()
-                  val (fail) = raise Todo "failure"
+                  val fail = raise Todo "failure"
               in 
               D.LET (freshname, dexpOfVmExp e, D.IF (freshname, treeOfGuardedExp g', treeOfGs gs))
               end 

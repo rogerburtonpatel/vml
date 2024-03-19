@@ -11,11 +11,11 @@ structure FinalD :> sig
               | IF of name   * ('e, 'a) tree * ('e, 'a) tree 
               | LET of name  * 'e * ('e, 'a) tree 
 
-  datatype d = C of d Core'.t 
-             | I of (d, d multi) tree
+  datatype exp = C of exp Core'.t 
+             | I of (exp, exp multi) tree
 
   val emitTree  : ('a -> string) -> ('b -> string) -> ('b, 'a) tree -> string
-  val expString : d -> string
+  val expString : exp -> string
   
 end
   = 
@@ -32,8 +32,8 @@ struct
               | IF of name   * ('e, 'a) tree * ('e, 'a) tree 
               | LET of name  * 'e * ('e, 'a) tree 
 
-  datatype d = C of d Core'.t 
-             | I of (d, d multi) tree
+  datatype exp = C of exp Core'.t 
+             | I of (exp, exp multi) tree
 
   fun multiString (f : 'e -> string) (MULTI es) = String.concat (map f es)
 
