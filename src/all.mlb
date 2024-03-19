@@ -46,4 +46,4 @@ $(SML_LIB)/basis/basis.mlb
 
   main.sml
   
-  pp-of-vm.sml
+  vm-of-pp.sml

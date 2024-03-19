@@ -2,9 +2,10 @@ version = 1
 [workspace]
 root = "all.cm"
 [workspace.path-vars]
-FOO = { value = "woof" }
-BAR = { path = "bork" }
 [diagnostics]
-5011.severity = "warning"
-4015.severity = "error"
-5029.severity = "ignore"
+5011.severity = "warning" # non-exhaustive pattern matching 
+4015.severity = "warning" # overly complex boolean logic 
+
+5029.severity = "ignore"  # unused variable
+5040.severity = "ignore"  # declaration with no effect (warns type constraints)
+5043.severity = "ignore"  # matching on a name already in scope

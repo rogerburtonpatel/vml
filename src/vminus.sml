@@ -6,10 +6,12 @@ structure FinalVMinus :> sig
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
   datatype 'e multi = MULTI of 'e list
-  datatype vminus = C of vminus Core'.t
-                  | I of (vminus, vminus multi) if_fi
+  datatype exp = C of exp Core'.t
+                  | I of (exp, exp multi) if_fi
 
-  val expString : vminus -> string 
+  datatype def = DEF of name * exp
+
+  val expString : exp -> string 
 
 end 
   = struct
@@ -20,8 +22,10 @@ end
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
   datatype 'e multi = MULTI of 'e list
-  datatype vminus = C of vminus Core'.t
-                  | I of (vminus, vminus multi) if_fi
+  datatype exp = C of exp Core'.t
+                  | I of (exp, exp multi) if_fi
+
+  datatype def = DEF of name * exp
 
     fun gmap f (EQN (n, e))        = EQN (n, f e)
       | gmap f (CONDITION e)       = CONDITION (f e)
