@@ -71,7 +71,7 @@ end
 
 structure Core' :> sig
     type name = string 
-    type vcon = string
+    datatype vcon = K of string
     datatype 'a t = NAME of name 
                   | VCONAPP of vcon * 'a list
                   | LAMBDAEXP of name * 'a 
@@ -91,7 +91,7 @@ structure Core' :> sig
 
   = struct
     type name = string 
-    type vcon = string
+    datatype vcon = K of string
     datatype 'a t = NAME of name 
                   | VCONAPP of vcon * 'a list
                   | LAMBDAEXP of name * 'a 
@@ -110,17 +110,17 @@ structure Core' :> sig
       v1 = v2 andalso ListPair.all eqval (vs, vs')
     | eqval (_, _) = false 
 
-  fun vconAppStr f vc args = 
+  fun vconAppStr f (K vc) args = 
       String.concatWith " " (vc::(List.map f args))
 
   fun expString f (NAME n)              = n
-    | expString f (VCONAPP (n, es))     = vconAppStr f n es 
+    | expString f (VCONAPP (vc, es))     = vconAppStr f vc es 
     | expString f (LAMBDAEXP (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
     | expString f (FUNAPP (e1, e2)) = f e1 ^ " " ^ f e2
 
-  fun valString f (VCON (v, vals))   = 
-          vconAppStr (valString f) v vals 
+  fun valString f (VCON (vc, vals))   = 
+          vconAppStr (valString f) vc vals 
     | valString f (LAMBDA (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
     

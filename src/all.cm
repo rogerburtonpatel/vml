@@ -41,10 +41,10 @@ group is
   vminus-parser.sml
   vminus-lex.sml
   vminus-parse.sml
+  vm-of-pp.sml
 
   languages.sml
   uft.sml
 
   main.sml
   
-  vm-of-pp.sml
