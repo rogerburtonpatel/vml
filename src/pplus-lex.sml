@@ -1,10 +1,8 @@
 structure PPlusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
-  datatype specialchar   = QUOTE | COMMA | BACKSLASH | DOT
 
   datatype token
-    = SPECIAL of specialchar
-    | VCON    of string 
+    = VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
@@ -47,11 +45,9 @@ struct
 
 
   datatype bracket_shape = ROUND | SQUARE | CURLY
-  datatype specialchar = QUOTE | COMMA | BACKSLASH | DOT
 
   datatype token
-    = SPECIAL of specialchar
-    | VCON    of string 
+    = VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
@@ -89,7 +85,7 @@ struct
 
 
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", 
+                  "->", "<-", "when", ",",
                   (* debugging *)
                   "parse", "pat"
                   ]
@@ -115,15 +111,15 @@ struct
   fun optional p = SOME <$> p <|> succeed NONE
 
   val backslash = (chr 92)
+  val sbackslash = StringEscapes.backslash
 
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  char #"'" >> succeed (SPECIAL QUOTE)
-                  <|> char #"," >> succeed (SPECIAL COMMA)
-                  <|> char backslash >> succeed (SPECIAL BACKSLASH)
-                  <|> char #"." >> succeed (SPECIAL DOT)
-                  <|> char #"," >> succeed (SPECIAL COMMA)
+    bracketLexer   (  char #"'" >> succeed (RESERVED "'")
+                  <|> char backslash >> succeed (RESERVED sbackslash)
+                  <|> char #"." >> succeed (RESERVED ".")
+                  <|> char #"," >> succeed (RESERVED ",")
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )
@@ -141,11 +137,7 @@ struct
     | rightString CURLY = "}"
 
 
-  fun tokenString (SPECIAL QUOTE)      = doublequote
-    | tokenString (SPECIAL COMMA)      = "COMMA"
-    | tokenString (SPECIAL BACKSLASH)  = "BACKSLASH"
-    | tokenString (SPECIAL DOT)        = "DOT"
-    | tokenString (VCON n)     = "vcon " ^ n
+  fun tokenString (VCON n)     = "vcon " ^ n
     | tokenString (NAME n)     = "name " ^ n
     | tokenString (LEFT b)     = leftString b
     | tokenString (RIGHT b)    = rightString b

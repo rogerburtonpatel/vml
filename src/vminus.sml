@@ -32,23 +32,23 @@ end
       | gmap f (CONDITION e)       = CONDITION (f e)
       | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
 
-  fun multiString (f : 'e -> string) (MULTI es) = String.concat (map f es)
+  fun multiString (f : 'e -> string) (MULTI es) = String.concat (map f es) 
 
   fun expString   (C ce)               = Core'.expString expString ce
     | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
   and guardString (EQN (n, e))         = n ^ " = " ^ expString e
     | guardString (CONDITION e)        = expString e
     | guardString (CHOICE (gs1, gs2))  = 
-            let val compress = String.concat o map guardString
+            let val compress = String.concatWith "; " o map guardString
             in  compress gs1 ^ " | " ^ compress gs2 
             end 
   and if_fiString [] = ""
     | if_fiString ((ns, gs, r) :: rest) = 
         let val (existential, dot) = if null ns then ("", "") else ("E ", ". ")
-            val bindings = existential ^ String.concatWith " " ns ^ dot
+            val binds    = existential ^ String.concatWith " " ns ^ dot
             val gStrings = String.concatWith "; " (map guardString gs)
             val rString  = (multiString expString r)
-        in "  " ^ bindings ^ gStrings ^ " " ^ rString ^ "\n" ^ if_fiString rest
+        in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" ^ if_fiString rest
         end 
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
