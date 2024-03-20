@@ -16,6 +16,7 @@ structure FinalPPlus :> sig
   datatype def = DEF of name * exp
 
   val expString : exp -> string
+  val patString : exp pattern -> string
   val defString : def -> string
 
 end 
@@ -57,12 +58,22 @@ struct
     | patString (PATCONAPP (n, ps)) = 
         Core'.vconAppStr (fn (PATNAME n') => n' 
                           | cmplx => br patString cmplx) n ps
-    | patString (WHEN cond)       = br' ("when "      ^ expString cond)
-    | patString (ORPAT (p1, p2))  = br' (patString p1 ^ " | "  ^ patString p2)
-    | patString (PATSEQ (p1, p2)) = br' (patString p1 ^  ", "  ^ patString p2)
-    | patString (PATGUARD (p, e)) = br' (patString p  ^ " <- " ^ expString e)
+    | patString (WHEN cond)       = ("when "      ^ expString cond)
+    | patString (ORPAT (p1, p2))  = (patString p1 ^ " | "  ^ patString p2)
+    | patString (PATSEQ (p1, p2)) = (patString p1 ^  ", "  ^ patString p2)
+    | patString (PATGUARD (p, e)) = (patString p  ^ " <- " ^ expString e)
     
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
+
+  fun patmap f g p = 
+  case p 
+    of PATNAME n          => PATNAME (f n)
+      | WHEN e             => WHEN (g e)
+      | PATGUARD (p', e)   => PATGUARD (patmap f g p', f e)
+      | ORPAT (p1, p2)     => ORPAT (patmap f g p1, patmap f g p2)
+      | PATSEQ (p1, p2)    => PATSEQ (patmap f g p1, patmap f g p2)
+      | PATCONAPP (vc, ps) => PATCONAPP (vc, map (patmap f g) ps)
+
 
 (* val branches = [(PATCONAPP ("K", [PATNAME "n"]), C (Core'.NAME "e1")), (PATCONAPP ("K", [PATNAME "n1", PATNAME "n2"]), C (Core'.NAME "e2"))]
 val x_ = I (CASE (C (Core'.VCONAPP ("K", [C (Core'.NAME "n1"), C (Core'.NAME "n2")])), branches))
