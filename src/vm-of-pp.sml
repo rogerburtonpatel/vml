@@ -22,8 +22,8 @@ struct
   fun uncurry f (x, y) = f x y
   fun nub xs = Set.elems (Set.fromList xs)
 
-  fun patFreeNames (P.PATNAME n) = [n]
-            | patFreeNames (P.PATCONAPP (_, ps)) = 
+  fun patFreeNames (P.PNAME n) = [n]
+            | patFreeNames (P.CONAPP (_, ps)) = 
                                 List.concat (List.map patFreeNames ps)
             | patFreeNames (P.WHEN _) = [] 
             | patFreeNames (P.ORPAT (p1, p2)) = 
@@ -46,11 +46,11 @@ struct
             in (names1 @ names2, f (guards1, guards2))
             end 
         val (local_names, local_guards) = 
-          case p of P.PATNAME n'   => ([], 
+          case p of P.PNAME n'   => ([], 
                                 (* prune duplicate bindings *)
                                 if n = n' then [] else [coreEq (n, C.NAME n')])
             | P.WHEN e             => ([], [V.CONDITION (translate e)])
-            | P.PATCONAPP (vc, ps) => 
+            | P.CONAPP (vc, ps) => 
             (* introduce one fresh per ps  *)
             let val fresh_names = FreshName.genOfList freshNameGen ps
                 val ns_gs = ListPair.map (uncurry guardofPatWith) 
@@ -65,7 +65,7 @@ struct
             end
             | P.ORPAT (p1, p2)   => translateTwo (fn gs => [V.CHOICE gs]) p1 p2
             | P.PATGUARD (p', e) => 
-              let val n' = (case p' of (P.PATNAME n_) => n_
+              let val n' = (case p' of (P.PNAME n_) => n_
                                      | _ => freshNameGen ())
                   val () = print ("translating " ^ P.patString p' ^ " <- " ^ P.expString e ^ "\n")
                   val (names, guards) = guardofPatWith n' p'

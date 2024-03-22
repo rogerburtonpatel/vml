@@ -122,9 +122,9 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
     let         
     val pattern = P.fix (fn pattern => 
       let val atom = P.fix (fn atom =>
-      curry A.PATCONAPP <$> vcon <*> many atom                               <|>
+      curry A.CONAPP <$> vcon <*> many atom                               <|>
       A.WHEN     <$> (word "when" >> exp)                                    <|>
-      A.PATNAME  <$> name                                                    <|> 
+      A.PNAME  <$> name                                                    <|> 
       bracketed pattern)
     val factor = A.PATGUARD <$> (P.pair <$> atom <*> leftarrow >> exp)       <|>
                  atom 
