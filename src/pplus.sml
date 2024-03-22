@@ -2,16 +2,18 @@ structure FinalPPlus :> sig
   type name = Core'.name
   type vcon = Core'.vcon
 
-  datatype 'e pattern = PATNAME of name 
+  datatype 'e pattern = PNAME of name 
                       | WHEN of 'e 
                       | PATGUARD of 'e pattern * 'e 
                       | ORPAT of 'e pattern * 'e pattern 
-                      | PATCONAPP of vcon * 'e pattern list
+                      | CONAPP of vcon * 'e pattern list
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
   datatype exp = C of exp Core'.t 
-                 | I of exp ppcase
+               | I of exp ppcase
+
+  type value = exp Core'.value
 
   datatype def = DEF of name * exp
 
@@ -25,16 +27,18 @@ struct
   type name = Core'.name
   type vcon = Core'.vcon
 
-  datatype 'e pattern = PATNAME of name 
+  datatype 'e pattern = PNAME of name 
                       | WHEN of 'e 
                       | PATGUARD of 'e pattern * 'e 
                       | ORPAT of 'e pattern * 'e pattern 
-                      | PATCONAPP of vcon * 'e pattern list
+                      | CONAPP of vcon * 'e pattern list
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
   datatype exp = C of exp Core'.t 
-                | I of exp ppcase
+               | I of exp ppcase
+
+  type value = exp Core'.value
 
   datatype def = DEF of name * exp
 
@@ -54,9 +58,9 @@ struct
           in "case " ^ expString scrutinee ^ " of " ^ body
           
           end
-  and patString (PATNAME n) = n 
-    | patString (PATCONAPP (n, ps)) = 
-        Core'.vconAppStr (fn (PATNAME n') => n' 
+  and patString (PNAME n) = n 
+    | patString (CONAPP (n, ps)) = 
+        Core'.vconAppStr (fn (PNAME n') => n' 
                           | cmplx => br patString cmplx) n ps
     | patString (WHEN cond)       = ("when "      ^ expString cond)
     | patString (ORPAT (p1, p2))  = (patString p1 ^ " | "  ^ patString p2)
@@ -67,15 +71,83 @@ struct
 
   fun patmap f g p = 
   case p 
-    of PATNAME n          => PATNAME (f n)
-      | WHEN e             => WHEN (g e)
-      | PATGUARD (p', e)   => PATGUARD (patmap f g p', f e)
-      | ORPAT (p1, p2)     => ORPAT (patmap f g p1, patmap f g p2)
-      | PATSEQ (p1, p2)    => PATSEQ (patmap f g p1, patmap f g p2)
-      | PATCONAPP (vc, ps) => PATCONAPP (vc, map (patmap f g) ps)
+    of  PNAME n          => PNAME (f n)
+      | WHEN e           => WHEN (g e)
+      | PATGUARD (p', e) => PATGUARD (patmap f g p', f e)
+      | ORPAT (p1, p2)   => ORPAT (patmap f g p1, patmap f g p2)
+      | PATSEQ (p1, p2)  => PATSEQ (patmap f g p1, patmap f g p2)
+      | CONAPP (vc, ps)  => CONAPP (vc, map (patmap f g) ps)
 
 
-(* val branches = [(PATCONAPP ("K", [PATNAME "n"]), C (Core'.NAME "e1")), (PATCONAPP ("K", [PATNAME "n1", PATNAME "n2"]), C (Core'.NAME "e2"))]
+  structure C = Core'
+  infix 6 <+> 
+  val op <+> = Env.<+>
+  exception DisjointUnionFailed of name
+
+  fun duplicatename [] = NONE
+    | duplicatename (x::xs) =
+        if List.exists (fn x' => x' = x) xs then
+          SOME x
+        else
+          duplicatename xs
+(* <boxed values 96>=                           *)
+val _ = duplicatename : name list -> name option
+fun disjointUnion (envs: 'a Env.env list) =
+  let val env = Env.concat envs
+  in  case duplicatename (Env.keys env)
+        of NONE => env
+         | SOME x => raise DisjointUnionFailed x
+  end
+
+  exception Doesn'tMatch
+
+  
+  fun eval rho (C ce) = 
+    (case ce of 
+      C.LITERAL v => v
+    | C.NAME n => Env.find (n, rho)  
+    | C.VCONAPP (vc, es) => C.VCON (vc, map (eval rho) es)
+    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
+    | C.FUNAPP (fe, param) => 
+              (case eval rho fe 
+                of C.LAMBDA (n, b) => 
+                  let val arg = eval rho param
+                      val rho' = Env.bind (n, arg, rho)
+                    in eval rho' b
+                    end
+                 | _ => raise Core.BadFunApp "attempted to apply non-function"))
+  | eval rho (I (CASE (C (C.LITERAL v), (p, rhs) :: choices))) =
+            (let val rho' = match rho (p, v)
+            in  eval (rho <+> rho') rhs
+            end
+            handle Doesn'tMatch => 
+              eval rho (I (CASE (C (C.LITERAL v), choices))))
+  | eval rho (I (CASE (_, []))) = raise Match
+  | eval rho (I (CASE (scrutinee, branches))) = 
+      let val v = eval rho scrutinee 
+      in eval rho (I (CASE (C (C.LITERAL v), branches)))
+      end 
+
+  and match rho (PNAME x,   v) = Env.bind (x, v, Env.empty)
+    | match rho (WHEN e, _)     = 
+      (case eval rho e 
+        of C.VCON ((C.K "false"), _) => raise Doesn'tMatch 
+         | _                         => Env.empty)
+    | match rho (PATGUARD (p, e), _) = match rho (p, eval rho e) 
+    | match rho (ORPAT (p1, p2), v)  = 
+      (match rho (p1, v) handle Doesn'tMatch => match rho (p2, v))
+    | match rho (PATSEQ (p1, p2), v)  = 
+        disjointUnion [match rho (p1, v), match rho (p2, v)]
+    | match rho (CONAPP (C.K k, ps), C.VCON (C.K k', vs)) =
+     if k = k' 
+     then disjointUnion (ListPair.mapEq (match rho) (ps, vs))
+     else raise Doesn'tMatch
+  | match rho (CONAPP _, _) = raise Doesn'tMatch
+
+  (* TODO next: test eval, write vm eval, write d eval, renamings, vm parser (fun actually) *)
+
+
+(* val branches = [(CONAPP ("K", [PNAME "n"]), C (Core'.NAME "e1")), (CONAPP ("K", [PNAME "n1", PNAME "n2"]), C (Core'.NAME "e2"))]
 val x_ = I (CASE (C (Core'.VCONAPP ("K", [C (Core'.NAME "n1"), C (Core'.NAME "n2")])), branches))
 val _ = print ("HERE\n\n" ^ expString x_) *)
 
@@ -122,7 +194,7 @@ struct
   type value = exp Core.core_value
   datatype def = DEF of name * exp
 
-  infix 6 <+> 
+  (* infix 6 <+> 
   val op <+> = Env.<+>
   fun fst (x, y) = x
   
@@ -136,16 +208,16 @@ fun duplicatename [] = NONE
         duplicatename xs
 (* <boxed values 96>=                           *)
 val _ = duplicatename : name list -> name option
-(* fun disjointUnion (envs: 'a Env.env list) =
+fun disjointUnion (envs: 'a Env.env list) =
   let val env = Env.concat envs
-  in  case duplicatename (map fst env)
+  in  case duplicatename (Env.keys env)
         of NONE => env
          | SOME x => raise DisjointUnionFailed x
-  end *)
+  end
 
   exception Doesn'tMatch
 
-  (* fun match (CONAPP (k, ps), Core.VCON (Core.K k', vs)) =
+  fun match (CONAPP (k, ps), Core.VCON (Core.K k', vs)) =
      if k = k' then
        disjointUnion (ListPair.mapEq match (ps, vs))
      else
@@ -175,9 +247,15 @@ fun eval (rho : value Env.env) e =
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function")
       | LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
-      | CASE (ex, (p, rhs) :: choices) => Impossible.unimp "eval case"
-      | CASE _ => Impossible.unimp "eval case"
-          (* let val scrutinee = eval rho ex *)
+      | CASE _ => Impossible.unimp "case "
+      (* | CASE (ex, (p, rhs) :: choices) =>
+            let val v = eval rho ex 
+            val rho' = match (p, v)
+            in  eval (e, rho <+> rho')
+            end
+            handle Doesn'tMatch => eval rho (CASE (LITERAL v, choices))
+      | CASE (_, []) =>
+          raise Match *)
 
 fun def rho (DEF (n, e)) = 
   let val v = eval rho e

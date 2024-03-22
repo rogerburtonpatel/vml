@@ -265,11 +265,11 @@ end
 
 structure PPlusTransformer = struct
   type name = string
-  datatype 'exp pattern = PATNAME of name 
+  datatype 'exp pattern = PNAME of name 
                    | WHEN of 'exp 
                    | PATGUARD of 'exp pattern * 'exp 
                    | ORPAT of 'exp pattern * 'exp pattern 
-                   | PATCONAPP of name * 'exp pattern list
+                   | CONAPP of name * 'exp pattern list
 
   datatype 'a plus_case = BASE of 'a 
                         | CASE of ('a plus_case pattern * 'a plus_case) list
@@ -485,11 +485,11 @@ structure FinalPPlus = struct
   type name = string
   type vcon = string
 
-  datatype 'e pattern = PATNAME of name 
+  datatype 'e pattern = PNAME of name 
                   | WHEN of 'e 
                   | PATGUARD of 'e pattern * 'e 
                   | ORPAT of 'e pattern * 'e pattern 
-                  | PATCONAPP of name * 'e pattern list
+                  | CONAPP of name * 'e pattern list
                   | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
@@ -535,8 +535,8 @@ structure PPofVM = struct
     *)
   fun uncurry f (x, y) = f x y
 
-  fun patFreeNames (P.PATNAME n) = [n]
-            | patFreeNames (P.PATCONAPP (vc, ps)) = 
+  fun patFreeNames (P.PNAME n) = [n]
+            | patFreeNames (P.CONAPP (vc, ps)) = 
                                 List.concat (List.map patFreeNames ps)
             | patFreeNames (P.WHEN _) = [] 
             | patFreeNames (P.ORPAT (p1, p2)) = 
@@ -576,9 +576,9 @@ structure PPofVM = struct
             in (names1 @ names2, f (guards1, guards2))
             end 
         val (local_names, local_guards) = 
-          case p of P.PATNAME n'   => ([], [V.EQN (n, V.C (C.NAME n'))])
+          case p of P.PNAME n'   => ([], [V.EQN (n, V.C (C.NAME n'))])
             | P.WHEN e             => ([], [V.CONDITION (translate e)])
-            | P.PATCONAPP (vc, ps) => 
+            | P.CONAPP (vc, ps) => 
             (* introduce one fresh per ps  *)
             let val fresh_names = map (fn _ => freshNameGen ()) ps
                 val ns_gs = ListPair.map (uncurry translatePatWith) 
@@ -606,9 +606,9 @@ structure PPofVM = struct
           val freshNameGen = FreshName.freshNameGenGen ()
           val freenames    = patFreeNames p
           val (local_names, (local_guards : V.vminus FinalVMinus.guard list)) = 
-        case p of P.PATNAME n' => ([], ([V.EQN (n, V.C (C.NAME n'))] :  V.vminus FinalVMinus.guard list))
+        case p of P.PNAME n' => ([], ([V.EQN (n, V.C (C.NAME n'))] :  V.vminus FinalVMinus.guard list))
           | P.WHEN e           => ([], [V.CONDITION (translate e)])
-          | P.PATCONAPP (vc, ps) => 
+          | P.CONAPP (vc, ps) => 
           (* introduce one fresh per ps  *)
           let val fresh_names = map (fn _ => freshNameGen ()) ps 
               val ns_gs = ListPair.map (uncurry translatePatWith) (fresh_names, (ps : FinalPPlus.pplus FinalPPlus.pattern list))
