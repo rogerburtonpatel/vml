@@ -53,6 +53,8 @@ end
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
+  (* fun eval  *)
+
 
 end
 

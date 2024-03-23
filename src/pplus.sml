@@ -48,7 +48,7 @@ struct
 
 
 
-  fun expString (C ce)                           = Core'.expString expString ce
+  fun expString (C ce) = Core'.expString expString ce
     | expString (I (CASE (scrutinee, branches))) = 
       let fun branchString (p, ex) = patString p ^ " -> " ^ expString ex
           val body = 
@@ -90,14 +90,14 @@ struct
           SOME x
         else
           duplicatename xs
-(* <boxed values 96>=                           *)
-val _ = duplicatename : name list -> name option
-fun disjointUnion (envs: 'a Env.env list) =
-  let val env = Env.concat envs
-  in  case duplicatename (Env.keys env)
-        of NONE => env
-         | SOME x => raise DisjointUnionFailed x
-  end
+
+  val _ = duplicatename : name list -> name option
+  fun disjointUnion (envs: 'a Env.env list) =
+    let val env = Env.concat envs
+    in  case duplicatename (Env.keys env)
+          of NONE => env
+          | SOME x => raise DisjointUnionFailed x
+    end
 
   exception Doesn'tMatch
 
