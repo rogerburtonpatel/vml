@@ -16,6 +16,7 @@ group is
   freshnames.sml
   (* **** languages **** *)
   core-lang.sml
+  multi.sml
   vminus-simple.sml
   vminus-arrow.sml
   decision-tree.sml

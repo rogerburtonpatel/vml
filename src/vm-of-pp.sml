@@ -10,6 +10,7 @@ struct
   structure P = FinalPPlus
   structure V = FinalVMinus
   structure C = Core'
+  val MULTI = Multi.MULTI
 
 
   fun typecheck () = Impossible.unimp "typecheck"
@@ -81,14 +82,14 @@ struct
                             | _ => (false, freshNameGen ()))
             val ns_gs    = map (guardofPatWith name) pats
             val uniqs    = map (fn (ns, gs) => (nub ns, gs)) ns_gs
-            val rhss'    = map (fn rhs => V.MULTI [translate rhs]) rhss
-            val options  = ListPair.map (fn ((ns, gs), rhs) => (ns, gs, rhs)) 
+            val rhss'    = map (fn rhs => MULTI [translate rhs]) rhss
+            val options  = ListPair.map (fn ((ns, gs), rhs) => (ns, (gs, rhs))) 
                                         (uniqs, rhss')
             val internal = V.IF_FI options
             val final    =
              if scrutinee_already_a_name 
              then internal
-             else V.IF_FI [([name], [V.EQN (name, e')], V.MULTI [V.I internal])]
+             else V.IF_FI [([name], ([V.EQN (name, e')], MULTI [V.I internal]))]
         in V.I final
         end
 
