@@ -1,13 +1,13 @@
 structure Translation : sig
   type 'a vmFnType
-  val vmOfP : PPlus.exp -> 'a vmFnType
-  val vmSimpleOfP : PPlus.exp -> VMinusSimple.exp 
-  val vmSimpleOfPdef : PPlus.def -> VMinusSimple.def
-  structure VM : VMINUS
+  val vmOfP : OldPPlus.exp -> 'a vmFnType
+  val vmSimpleOfP : OldPPlus.exp -> VMinusSimple.exp 
+  val vmSimpleOfPdef : OldPPlus.def -> VMinusSimple.def
+  structure VM : OLDVMINUS
 end 
   =
 struct 
-  structure P  = PPlus 
+  structure P  = OldPPlus 
   structure VM = VMFn(structure A = Alpha)
   structure VMS = VMinusSimple
   structure V  = Verse 

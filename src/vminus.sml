@@ -1,4 +1,4 @@
-signature FV = sig 
+signature VMINUS = sig 
   type name = Core'.name
   type vcon = Core'.vcon
   datatype 'e guard = EQN of name * 'e
@@ -21,7 +21,7 @@ signature FV = sig
   val gmap :  ('a -> 'b) -> 'a guard -> 'b guard
 
 end 
-structure FinalVMinus :> FV
+structure VMinus :> VMINUS
   = struct
   type name = string
   type vcon = Core'.vcon
@@ -130,7 +130,7 @@ structure RenamedVMinus = struct
   and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * 'a exp (* expressions return values *)
 end
 
-signature VMINUS = sig  
+signature OLDVMINUS = sig  
   type name = string 
 
   exception NameNotBound of name 
@@ -173,7 +173,7 @@ signature VMINUS = sig
 
 end 
 
-functor VMFn (structure A : ALPHA (*sus*) ) :> VMINUS = struct  
+functor VMFn (structure A : ALPHA (*sus*) ) :> OLDVMINUS = struct  
    (* signature ALPHA probably cannot be implemented in any useful way *)
 
   (* type name = string

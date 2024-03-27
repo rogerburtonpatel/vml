@@ -1,6 +1,6 @@
 structure VMTest = struct 
 
-  structure P = PPlus 
+  structure P = OldPPlus 
   structure VMS = VMinusSimple
   structure T = Translation
   structure A = Translation.VM

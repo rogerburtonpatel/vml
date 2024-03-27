@@ -468,7 +468,7 @@ structure Core' = struct
         | FUNAPP (t1, t2)  => FUNAPP (f t1, f t2)
 end
 
-structure FinalVMinus = struct
+structure VMinus = struct
   type name = string
   type vcon = string
   datatype 'e guard = EQN of name * 'e
@@ -481,7 +481,7 @@ structure FinalVMinus = struct
 
 end
 
-structure FinalPPlus = struct
+structure PPlus = struct
   type name = string
   type vcon = string
 
@@ -499,7 +499,7 @@ structure FinalPPlus = struct
 
 end
 
-structure FinalD = struct
+structure D = struct
   type name = string
   type vcon = string
   type arity = int
@@ -520,9 +520,9 @@ end
 
 structure PPofVM = struct
 
-  structure P = FinalPPlus
-  structure V = FinalVMinus
-  structure D = FinalD
+  structure P = PPlus
+  structure V = VMinus
+  structure D = D
   structure C = Core'
 
 
@@ -598,22 +598,22 @@ structure PPofVM = struct
       in (freenames @ local_names, local_guards)
       end
 
-  val _ = translate : FinalPPlus.pplus -> FinalVMinus.vminus
+  val _ = translate : PPlus.pplus -> VMinus.vminus
 
 
       (* fun translatePatWith n (p : P.pplus P.pattern) = 
       let val _ = translatePatWith : P.name -> P.pplus P.pattern -> V.name list * V.vminus V.guard list
           val freshNameGen = FreshName.freshNameGenGen ()
           val freenames    = patFreeNames p
-          val (local_names, (local_guards : V.vminus FinalVMinus.guard list)) = 
-        case p of P.PNAME n' => ([], ([V.EQN (n, V.C (C.NAME n'))] :  V.vminus FinalVMinus.guard list))
+          val (local_names, (local_guards : V.vminus VMinus.guard list)) = 
+        case p of P.PNAME n' => ([], ([V.EQN (n, V.C (C.NAME n'))] :  V.vminus VMinus.guard list))
           | P.WHEN e           => ([], [V.CONDITION (translate e)])
           | P.CONAPP (vc, ps) => 
           (* introduce one fresh per ps  *)
           let val fresh_names = map (fn _ => freshNameGen ()) ps 
-              val ns_gs = ListPair.map (uncurry translatePatWith) (fresh_names, (ps : FinalPPlus.pplus FinalPPlus.pattern list))
+              val ns_gs = ListPair.map (uncurry translatePatWith) (fresh_names, (ps : PPlus.pplus PPlus.pattern list))
               val (names, guards) = ListPair.unzip ns_gs
-          in (List.concat names @ fresh_names, List.concat (guards :  V.vminus FinalVMinus.guard list list))
+          in (List.concat names @ fresh_names, List.concat (guards :  V.vminus VMinus.guard list list))
           (* final form is n => vc n1 ... nm, translatePatWith n1 p1 ... translatePatWith nm pm *)
           (* n = vc applied to fresh names, then map translatePatWith each name, each of ps *)
 
@@ -664,8 +664,8 @@ end
 
 structure PPlusExtension : EXTENSION = struct
   type name = string
-  type vcon = PPlus.vcon
-  type pat = PPlus.toplevelpattern
+  type vcon = OldPPlus.vcon
+  type pat = OldPPlus.toplevelpattern
   datatype 'a extension = CASE of 'a * (pat * 'a) list
 
   type 'a value = 'a Core.core_value

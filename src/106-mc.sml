@@ -1,4 +1,4 @@
-signature DECISION_TREE = sig
+signature OLD_DECISION_TREE = sig
   (* Describes the target of match compilation, a data structure that
      can be visualized *)
   type register
@@ -16,7 +16,7 @@ functor MatchCompiler (eqtype register
                        val regString : register -> string)
   : 
 sig
-  include DECISION_TREE
+  include OLD_DECISION_TREE
   val decisionTree : register * (pat * 'a) list -> 'a tree
     (* register argument is the register that will hold
        the value of the scrutinee. *)

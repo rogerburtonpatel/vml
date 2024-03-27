@@ -41,7 +41,7 @@ struct
 
   (**** Reader functions ****)
 
-  val pplusOfFile : instream -> PPlus.def list error =
+  val pplusOfFile : instream -> OldPPlus.def list error =
     lines                    (* line list *)
     >>> map PPlusLex.tokenize_line  (* token list error list *)
     >>> Error.list           (* token list list error *)
@@ -50,7 +50,7 @@ struct
     
   val run : instream -> unit Error.error =
     pplusOfFile
-    >>> Error.map PPlus.runProg
+    >>> Error.map OldPPlus.runProg
 
 
 end

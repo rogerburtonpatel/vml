@@ -3,10 +3,10 @@ structure Renaming :> sig
 end 
   =
 struct 
-  structure P = FinalPPlus
+  structure P = PPlus
   structure E = Env
   structure C = Core'
-  type name = FinalPPlus.name
+  type name = PPlus.name
   type 'a env = 'a Env.env
   infix 6 <+>
   fun rho1 <+> rho2 = Env.<+>

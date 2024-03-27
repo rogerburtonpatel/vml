@@ -1,4 +1,4 @@
-structure PPlus :> sig 
+structure OldPPlus :> sig 
   type name = string 
   type vcon = Core.vcon 
   datatype exp = NAME of name 

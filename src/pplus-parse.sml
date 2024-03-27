@@ -1,10 +1,10 @@
 structure PPlusParse : sig
-  val parse    :  PPlusLex.token list -> FinalPPlus.def list Error.error
+  val parse    :  PPlusLex.token list -> PPlus.def list Error.error
 end = struct
 
   structure L = PPlusLex
-  (* structure A = PPlus AST *)
-  structure A = FinalPPlus (* AST *)
+  (* structure A = OldPPlus AST *)
+  structure A = PPlus (* AST *)
 
   fun listShow _ [] = "[]"
     | listShow show xs = "[" ^ String.concatWith ", " (map show xs) ^ "]"

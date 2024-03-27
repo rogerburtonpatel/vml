@@ -119,7 +119,7 @@ end
 
 (* structure OldVMinusLex : sig
   val tokenize : string -> string list
-  val parse    : string list -> PPlus.def list
+  val parse    : string list -> OldPPlus.def list
 end = struct
 
 
