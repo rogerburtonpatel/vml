@@ -9,7 +9,7 @@ struct
 
   structure P = PPlus
   structure V = VMinus
-  structure C = Core'
+  structure C = Core
   val MULTI = Multi.MULTI
 
 
@@ -33,7 +33,7 @@ struct
             | patFreeNames (P.PATSEQ (p1, p2)) =  
                         List.concat [patFreeNames p1, patFreeNames p2] 
 
-  fun translate (P.C ce) = V.C (Core'.map translate ce)
+  fun translate (P.C ce) = V.C (Core.map translate ce)
     | translate (P.I (P.CASE (scrutinee, branches))) = 
         let val freshNameGen = FreshName.freshNameGenGen ()
   fun guardofPatWith n (p : P.exp P.pattern) = 

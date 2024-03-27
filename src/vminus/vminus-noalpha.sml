@@ -6,11 +6,11 @@ structure VMinusSimple :> sig
   exception Cycle of string 
   exception Todo of string 
   
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
   datatype exp = 
                 NAME of name 
               | IF_FI of guarded_exp list 
-              | VCONAPP of Core.vcon * exp list
+              | VCONAPP of OldCore.vcon * exp list
               | FUNAPP  of exp * exp
               | LAMBDAEXP of name * exp
       (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
@@ -21,7 +21,7 @@ structure VMinusSimple :> sig
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
                       | EQN    of name * exp * guarded_exp
-  type value = exp Core.core_value
+  type value = exp OldCore.core_value
   datatype result = VAL of value | REJECT (* guarded_exps return results *)
 
 
@@ -46,11 +46,11 @@ struct
   exception Cycle of string 
   exception Todo of string 
   
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
   datatype exp = 
                 NAME of name 
               | IF_FI of guarded_exp list 
-              | VCONAPP of Core.vcon * exp list
+              | VCONAPP of OldCore.vcon * exp list
               | FUNAPP  of exp * exp
               | LAMBDAEXP of name * exp
       (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
@@ -61,7 +61,7 @@ struct
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
                       | EQN    of name * exp * guarded_exp
-  type value = exp Core.core_value
+  type value = exp OldCore.core_value
   datatype result = VAL of value | REJECT (* guarded_exps return results *)
 
 
@@ -70,10 +70,10 @@ struct
   
 
 
-  fun boolOfValue (Core.VCON FALSE) = false 
+  fun boolOfValue (OldCore.VCON FALSE) = false 
     | boolOfValue _                 = true
 
-  fun eqval (Core.VCON (v1, vs), Core.VCON (v2, vs'))     = 
+  fun eqval (OldCore.VCON (v1, vs), OldCore.VCON (v2, vs'))     = 
       v1 = v2 andalso ListPair.all eqval (vs, vs')
     | eqval (_, _) =  false 
 
@@ -88,7 +88,7 @@ struct
                     x ^ " = " ^ expString e ^ "; " ^ gexpString ge 
     and expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
+      | expString (VCONAPP (v, es)) = OldCore.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
       | expString (LAMBDAEXP (n, body)) = 
           StringEscapes.backslash ^ n ^ ". " ^ (expString body)
@@ -96,8 +96,8 @@ struct
     | optExpString    NONE    = "NONE"
 
 
-  fun valString (v as (Core.VCON (n, vs))) = Core.valString v
-    | valString (Core.LAMBDA (x, body)) = 
+  fun valString (v as (OldCore.VCON (n, vs))) = OldCore.valString v
+    | valString (OldCore.LAMBDA (x, body)) = 
         Char.toString (chr 92) ^ x ^ ". " ^ expString body
 
   fun optValStr v = optString valString v
@@ -129,7 +129,7 @@ val rec stuck : lvar_env -> exp ->  bool =
            | FUNAPP (e1, e2) => has_unbound_names e1 orelse has_unbound_names e2 
            | IF_FI gs => List.exists has_unbound_gexp gs
            | LAMBDAEXP (n, body) => 
-                  stuck (Env.bind (n, SOME (Core.VCON (Core.TRUE, [])), rho)) body
+                  stuck (Env.bind (n, SOME (OldCore.VCON (OldCore.TRUE, [])), rho)) body
         and has_unbound_gexp g = 
           case g of ARROWEXP e    => has_unbound_names e
                   | EXISTS (_, g')  => has_unbound_gexp g'
@@ -165,7 +165,7 @@ val rec stuck : lvar_env -> exp ->  bool =
                 then  let fun builder rest = buildRest (EXPSEQ (e, rest)) 
                       in  chooseAndSolve rho g' builder status
                       end
-                else (case eval rho e of Core.VCON FALSE => REJ
+                else (case eval rho e of OldCore.VCON FALSE => REJ
                                       | _ => OK (g', rho, buildRest, CHANGED))
               | EQN (n, e, g') => 
                 let val nstuck   = stuck rho (NAME n)
@@ -207,7 +207,7 @@ val rec stuck : lvar_env -> exp ->  bool =
                   then if (eqval ((valOf nval), v)) then OK rho else REJ
                   else OK (Env.bind (n, SOME v, rho))
                 end 
-            | (VCONAPP (Core.K n, es), Core.VCON (Core.K n', vs)) => 
+            | (VCONAPP (OldCore.K n, es), OldCore.VCON (OldCore.K n', vs)) => 
                 if n <> n'
                   orelse List.length es <> List.length vs
                 then REJ 
@@ -264,20 +264,20 @@ val rec stuck : lvar_env -> exp ->  bool =
             | IF_FI (g::gs) => (case solve rho g
                                   of VAL v => v
                                   | REJECT => eval rho (IF_FI gs))
-            | VCONAPP (Core.TRUE,  []) => Core.VCON (Core.TRUE, [])
-            | VCONAPP (Core.FALSE, []) => Core.VCON (Core.FALSE, []) 
-            | VCONAPP (Core.K n, es)  => Core.VCON (Core.K n, map (eval rho) es)
+            | VCONAPP (OldCore.TRUE,  []) => OldCore.VCON (OldCore.TRUE, [])
+            | VCONAPP (OldCore.FALSE, []) => OldCore.VCON (OldCore.FALSE, []) 
+            | VCONAPP (OldCore.K n, es)  => OldCore.VCON (OldCore.K n, map (eval rho) es)
             | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
             | FUNAPP (fe, param) => 
               (case eval rho fe 
-                of Core.LAMBDA (n, b) => 
+                of OldCore.LAMBDA (n, b) => 
                   let val arg = eval rho param
                       val rho' = Env.bind (n, SOME arg, rho)
                     in eval rho' b
                     end
                  | _ => raise BadFunApp "attempted to apply non-function")  
-                 | LAMBDAEXP (n, body) => Core.LAMBDA (n, body)
+                 | LAMBDAEXP (n, body) => OldCore.LAMBDA (n, body)
 
   
 

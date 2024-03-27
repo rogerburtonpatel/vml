@@ -4,13 +4,13 @@ signature VMinus = sig
   exception NameNotBound of name 
   exception Cycle of string 
 
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
 
   datatype 'a exp = 
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
       and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
@@ -54,13 +54,13 @@ functor VMFn (A : ALPHA) :> VMinus = struct
   exception NameNotBound of name 
   exception Cycle of string 
 
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
 
   datatype 'a exp = 
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
       and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
@@ -129,10 +129,10 @@ functor VMFn (A : ALPHA) :> VMinus = struct
        | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
-      | VCONAPP (Core.TRUE, []) => VCON TRUE
-      | VCONAPP (Core.FALSE, []) => VCON FALSE 
-      | VCONAPP (Core.K n, []) => VCON (K (n, []))
-      | VCONAPP (Core.K n, es) => VCON (K (n, map (eval rho) es))
+      | VCONAPP (OldCore.TRUE, []) => VCON TRUE
+      | VCONAPP (OldCore.FALSE, []) => VCON FALSE 
+      | VCONAPP (OldCore.K n, []) => VCON (K (n, []))
+      | VCONAPP (OldCore.K n, es) => VCON (K (n, map (eval rho) es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application" *)
@@ -146,7 +146,7 @@ functor VMFn (A : ALPHA) :> VMinus = struct
     and expString (ALPHA a) = "'a"
       | expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
+      | expString (VCONAPP (v, es)) = OldCore.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
       | expString (LAMBDAEXP (n, body)) = 
           StringEscapes.backslash ^ n ^ ". " ^ (expString body)
@@ -156,7 +156,7 @@ functor VMFn (A : ALPHA) :> VMinus = struct
   fun valString (VALPHA a) = "alpha"
     | valString (VCON v) = (case v of   
        (K (n, vs)) => 
-        Core.vconAppStr valString (Core.K n) vs 
+        OldCore.vconAppStr valString (OldCore.K n) vs 
     | TRUE  => "true"
     | FALSE => "false")
     | valString (LAMBDA (n, body)) = 
@@ -238,7 +238,7 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp *)
 
 
@@ -306,7 +306,7 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                   then if (eqval ((valOf nval), v)) then OK rho else REJ
                   else OK (Env.bind (n, SOME v, rho))
                 end 
-            | (VCONAPP (Core.K n, es), VCON (K (n', vs))) => 
+            | (VCONAPP (OldCore.K n, es), VCON (K (n', vs))) => 
                 if n <> n'
                   orelse List.length es <> List.length vs
                 then REJ 
@@ -364,9 +364,9 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
             | IF_FI (g::gs) => (case solve rho g
                                   of VAL v => v
                                   | REJECT => eval rho (IF_FI gs))
-            | VCONAPP (Core.TRUE,  []) => VCON TRUE
-            | VCONAPP (Core.FALSE, []) => VCON FALSE 
-            | VCONAPP (Core.K n, es)   => VCON (K (n, map (eval rho) es))
+            | VCONAPP (OldCore.TRUE,  []) => VCON TRUE
+            | VCONAPP (OldCore.FALSE, []) => VCON FALSE 
+            | VCONAPP (OldCore.K n, es)   => VCON (K (n, map (eval rho) es))
             | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
             | FUNAPP (fe, param) => 
@@ -376,7 +376,7 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                         val rho' = Env.bind (n, SOME arg, rho)
                       in eval rho' b
                       end
-                  | _ => raise Core.BadFunApp "attempted to apply non-function")
+                  | _ => raise OldCore.BadFunApp "attempted to apply non-function")
             | LAMBDAEXP (n, ex) => LAMBDA (n, ex)
 
                   (* if (stuck rho stuckFn (NAME n)) 
@@ -461,10 +461,10 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
        | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
-      | VCONAPP (Core.TRUE, []) => VCON TRUE
-      | VCONAPP (Core.FALSE, []) => VCON FALSE 
-      | VCONAPP (Core.K n, []) => VCON (K (n, []))
-      | VCONAPP (Core.K n, es) => VCON (K (n, map (eval rho) es))
+      | VCONAPP (OldCore.TRUE, []) => VCON TRUE
+      | VCONAPP (OldCore.FALSE, []) => VCON FALSE 
+      | VCONAPP (OldCore.K n, []) => VCON (K (n, []))
+      | VCONAPP (OldCore.K n, es) => VCON (K (n, map (eval rho) es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application" *)
