@@ -1,0 +1,7 @@
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QAn implementation of len using pattern matching within a clausal definition.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QRoger Burtonpatel \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q Tufts University 419 Boston Ave Medford Massachusetts USA 02155\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QStandard ML's List.len using observer functions An implementation of len using null, hd, and tl Manual case analysis and deconstruction with built-in observer functions like null and tl can be both error-prone (say more on this?) and verbose.\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QThis is certainly legal Haskell, but it is a tremendously verbose and un-obvious way to achieve the desired effect.\\E$"}
+{"rule":"ENGLISH_WORD_REPEAT_RULE","sentence":"^\\Q… other equations for clunky clunky with pattern guards An implementation of clunky using pattern guards.\\E$"}
+{"rule":"WORD_CONTAINS_UNDERSCORE","sentence":"^\\QAn implementation of parent_game_of_token using bare patterns.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qparentgameoftoken, with redundant right-hand sides.\\E$"}
