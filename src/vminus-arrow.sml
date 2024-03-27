@@ -1,3 +1,4 @@
+
 structure VMinusArrow :> sig 
   type name = string 
 
@@ -6,11 +7,11 @@ structure VMinusArrow :> sig
   exception Cycle of string 
   exception Todo of string 
   
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
   datatype exp = 
                 NAME of name 
               | IF_FI of guarded_exp list 
-              | VCONAPP of Core.vcon * exp list
+              | VCONAPP of OldCore.vcon * exp list
               | FUNAPP  of exp * exp
       (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
                       | S_EXPSEQ of  exp *  sugared_guarded_exp 
@@ -20,7 +21,7 @@ structure VMinusArrow :> sig
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
                       | EQN    of name * exp * guarded_exp
-  and value = VCON of Core.vcon * value list | LAMBDA of name * exp 
+  and value = VCON of OldCore.vcon * value list | LAMBDA of name * exp 
   datatype result = VAL of value | REJECT (* guarded_exps return results *)
 
 
@@ -45,11 +46,11 @@ struct
   exception Cycle of string 
   exception Todo of string 
   
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
   datatype exp = 
                 NAME of name 
               | IF_FI of guarded_exp list 
-              | VCONAPP of Core.vcon * exp list
+              | VCONAPP of OldCore.vcon * exp list
               | FUNAPP  of exp * exp
       (* and  sugared_guarded_exp = S_ARROWALPHA of  exp 
                       | S_EXPSEQ of  exp *  sugared_guarded_exp 
@@ -59,7 +60,7 @@ struct
                       | EXPSEQ of exp  * guarded_exp 
                       | EXISTS of name * guarded_exp
                       | EQN    of name * exp * guarded_exp
-  and value = VCON of Core.vcon * value list | LAMBDA of name * exp 
+  and value = VCON of OldCore.vcon * value list | LAMBDA of name * exp 
   datatype result = VAL of value | REJECT (* guarded_exps return results *)
 
 
@@ -83,13 +84,13 @@ struct
                     x ^ " <- " ^ expString e ^ "; " ^ gexpString ge 
     and expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
+      | expString (VCONAPP (v, es)) = OldCore.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
     and optExpString (SOME e) = "SOME " ^ expString e 
     | optExpString    NONE    = "NONE"
 
 
-  fun valString (VCON (n, vs)) = Core.vconAppStr valString n vs 
+  fun valString (VCON (n, vs)) = OldCore.vconAppStr valString n vs 
     | valString (LAMBDA (x, body)) = 
         Char.toString (chr 92) ^ x ^ ". " ^ expString body
 
@@ -198,7 +199,7 @@ val stuck : lvar_env -> exp ->  bool =
                   then if (eqval ((valOf nval), v)) then OK rho else REJ
                   else OK (Env.bind (n, SOME v, rho))
                 end 
-            | (VCONAPP (Core.K n, es), VCON (Core.K n', vs)) => 
+            | (VCONAPP (OldCore.K n, es), VCON (OldCore.K n', vs)) => 
                 if n <> n'
                   orelse List.length es <> List.length vs
                 then REJ 
@@ -255,9 +256,9 @@ val stuck : lvar_env -> exp ->  bool =
             | IF_FI (g::gs) => (case solve rho g
                                   of VAL v => v
                                   | REJECT => eval rho (IF_FI gs))
-            | VCONAPP (Core.TRUE,  []) => VCON (Core.TRUE, [])
-            | VCONAPP (Core.FALSE, []) => VCON (Core.FALSE, []) 
-            | VCONAPP (Core.K n, es)   => VCON (Core.K n, map (eval rho) es)
+            | VCONAPP (OldCore.TRUE,  []) => VCON (OldCore.TRUE, [])
+            | VCONAPP (OldCore.FALSE, []) => VCON (OldCore.FALSE, []) 
+            | VCONAPP (OldCore.K n, es)   => VCON (OldCore.K n, map (eval rho) es)
             | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
             | FUNAPP (fe, param) => 

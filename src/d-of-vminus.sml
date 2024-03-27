@@ -11,7 +11,7 @@ struct
 
   structure V = VMinus
   structure D = D
-  structure C = Core'
+  structure C = Core
 
   type 'a guarded_exp' = V.name list * (V.exp V.guard list * 'a)
 
@@ -283,7 +283,7 @@ f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
 
 
 (* todo: translate must also propegate a context *)
-  fun translate (V.C ce) = D.C (Core'.map translate ce)
+  fun translate (V.C ce) = D.C (Core.map translate ce)
     | translate (V.I (V.IF_FI branches)) = 
 
 
@@ -523,7 +523,7 @@ struct
 *)
 
   val matchName :
-      V.name -> (Core.vcon * 'a V.exp list) -> 'a V.guarded_exp -> 'a V.guarded_exp option
+      V.name -> (OldCore.vcon * 'a V.exp list) -> 'a V.guarded_exp -> 'a V.guarded_exp option
     = fn _ => Impossible.unimp "not yet"
   (*
      matchName (x = y :: ys) [[x = z :: zs --> e]] = SOME [[y = z, ys = zs --> e]]

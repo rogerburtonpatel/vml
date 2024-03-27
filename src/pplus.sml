@@ -1,6 +1,6 @@
 structure PPlus :> sig 
-  type name = Core'.name
-  type vcon = Core'.vcon
+  type name = Core.name
+  type vcon = Core.vcon
 
   datatype 'e pattern = PNAME of name 
                       | WHEN of 'e 
@@ -10,10 +10,10 @@ structure PPlus :> sig
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
-  datatype exp = C of exp Core'.t 
+  datatype exp = C of exp Core.t 
                | I of exp ppcase
 
-  type value = exp Core'.value
+  type value = exp Core.value
 
   datatype def = DEF of name * exp
 
@@ -24,8 +24,8 @@ structure PPlus :> sig
 end 
   = 
 struct
-  type name = Core'.name
-  type vcon = Core'.vcon
+  type name = Core.name
+  type vcon = Core.vcon
 
   datatype 'e pattern = PNAME of name 
                       | WHEN of 'e 
@@ -35,10 +35,10 @@ struct
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
-  datatype exp = C of exp Core'.t 
+  datatype exp = C of exp Core.t 
                | I of exp ppcase
 
-  type value = exp Core'.value
+  type value = exp Core.value
 
   datatype def = DEF of name * exp
 
@@ -48,7 +48,7 @@ struct
 
 
 
-  fun expString (C ce) = Core'.expString expString ce
+  fun expString (C ce) = Core.expString expString ce
     | expString (I (CASE (scrutinee, branches))) = 
       let fun branchString (p, ex) = patString p ^ " -> " ^ expString ex
           val body = 
@@ -60,7 +60,7 @@ struct
           end
   and patString (PNAME n) = n 
     | patString (CONAPP (n, ps)) = 
-        Core'.vconAppStr (fn (PNAME n') => n' 
+        Core.vconAppStr (fn (PNAME n') => n' 
                           | cmplx => br patString cmplx) n ps
     | patString (WHEN cond)       = ("when "      ^ expString cond)
     | patString (ORPAT (p1, p2))  = (patString p1 ^ " | "  ^ patString p2)
@@ -79,7 +79,7 @@ struct
       | CONAPP (vc, ps)  => CONAPP (vc, map (patmap f g) ps)
 
 
-  structure C = Core'
+  structure C = Core
   infix 6 <+> 
   val op <+> = Env.<+>
   exception DisjointUnionFailed of name
@@ -115,7 +115,7 @@ struct
                       val rho' = Env.bind (n, arg, rho)
                     in eval rho' b
                     end
-                 | _ => raise Core.BadFunApp "attempted to apply non-function"))
+                 | _ => raise OldCore.BadFunApp "attempted to apply non-function"))
   | eval rho (I (CASE (C (C.LITERAL v), (p, rhs) :: choices))) =
             (let val rho' = match rho (p, v)
             in  eval (rho <+> rho') rhs
@@ -147,8 +147,8 @@ struct
   (* TODO next: test eval, write vm eval, write d eval, renamings, vm parser (fun actually) *)
 
 
-(* val branches = [(CONAPP ("K", [PNAME "n"]), C (Core'.NAME "e1")), (CONAPP ("K", [PNAME "n1", PNAME "n2"]), C (Core'.NAME "e2"))]
-val x_ = I (CASE (C (Core'.VCONAPP ("K", [C (Core'.NAME "n1"), C (Core'.NAME "n2")])), branches))
+(* val branches = [(CONAPP ("K", [PNAME "n"]), C (Core.NAME "e1")), (CONAPP ("K", [PNAME "n1", PNAME "n2"]), C (Core.NAME "e2"))]
+val x_ = I (CASE (C (Core.VCONAPP ("K", [C (Core.NAME "n1"), C (Core.NAME "n2")])), branches))
 val _ = print ("HERE\n\n" ^ expString x_) *)
 
 end
@@ -156,7 +156,7 @@ end
 
 structure OldPPlus :> sig 
   type name = string 
-  type vcon = Core.vcon 
+  type vcon = OldCore.vcon 
   datatype exp = NAME of name 
                | CASE of exp * (toplevelpattern * exp) list 
                | VCONAPP of vcon * exp list 
@@ -168,7 +168,7 @@ structure OldPPlus :> sig
                             | PATGUARD of toplevelpattern * (pattern * exp) list
       and pattern =     PNAME of name
                       | CONAPP of name * pattern list 
-  type value = exp Core.core_value
+  type value = exp OldCore.core_value
   datatype def = DEF of name * exp
 
   val expString : exp -> string
@@ -179,7 +179,7 @@ end
   = 
 struct 
   type name = string 
-  type vcon = Core.vcon 
+  type vcon = OldCore.vcon 
   datatype exp = NAME of name 
                | CASE of exp * (toplevelpattern * exp) list 
                | VCONAPP of vcon * exp list 
@@ -191,7 +191,7 @@ struct
                             | PATGUARD of toplevelpattern * (pattern * exp) list
       and pattern =     PNAME of name
                       | CONAPP of name * pattern list 
-  type value = exp Core.core_value
+  type value = exp OldCore.core_value
   datatype def = DEF of name * exp
 
   (* infix 6 <+> 
@@ -217,7 +217,7 @@ fun disjointUnion (envs: 'a Env.env list) =
 
   exception Doesn'tMatch
 
-  fun match (CONAPP (k, ps), Core.VCON (Core.K k', vs)) =
+  fun match (CONAPP (k, ps), OldCore.VCON (OldCore.K k', vs)) =
      if k = k' then
        disjointUnion (ListPair.mapEq match (ps, vs))
      else
@@ -233,20 +233,20 @@ val _ = op disjointUnion : 'a env list -> 'a env *)
 fun eval (rho : value Env.env) e = 
     case e 
       of NAME n => Env.find (n, rho)
-       | VCONAPP (Core.TRUE,  []) => Core.VCON (Core.TRUE, [])
-       | VCONAPP (Core.FALSE, []) => Core.VCON (Core.FALSE, []) 
-       | VCONAPP (Core.K n, es)  => Core.VCON (Core.K n, map (eval rho) es)
+       | VCONAPP (OldCore.TRUE,  []) => OldCore.VCON (OldCore.TRUE, [])
+       | VCONAPP (OldCore.FALSE, []) => OldCore.VCON (OldCore.FALSE, []) 
+       | VCONAPP (OldCore.K n, es)  => OldCore.VCON (OldCore.K n, map (eval rho) es)
        | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
        | FUNAPP (fe, param) => 
               (case eval rho fe 
-                of Core.LAMBDA (n, b) => 
+                of OldCore.LAMBDA (n, b) => 
                   let val arg = eval rho param
                       val rho' = Env.bind (n, arg, rho)
                     in eval rho' b
                     end
-                 | _ => raise Core.BadFunApp "attempted to apply non-function")
-      | LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
+                 | _ => raise OldCore.BadFunApp "attempted to apply non-function")
+      | LAMBDAEXP (n, ex) => OldCore.LAMBDA (n, ex)
       | CASE _ => Impossible.unimp "case "
       (* | CASE (ex, (p, rhs) :: choices) =>
             let val v = eval rho ex 
@@ -310,10 +310,10 @@ fun runProg defs =
                 acc ^ ", " ^ patString pat ^ " <- " ^ expString ex ^ "") "" steps))
           and patString (PNAME n) = n 
             | patString (CONAPP (n, ps)) = 
-                                Core.vconAppStr 
+                                OldCore.vconAppStr 
                                   (fn (PNAME n') => n' 
                                       | conapp => br patString conapp) 
-                                  (Core.K n) 
+                                  (OldCore.K n) 
                                   ps
           fun branchString (p, ex) = 
                                      tlpatString p ^ " -> " ^ expString ex
@@ -324,7 +324,7 @@ fun runProg defs =
                 (foldr (fn (br, acc) => "\n| " ^ branchString br ^ acc) "" 
                  (tl branches)))
           end
-      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
+      | expString (VCONAPP (v, es)) = OldCore.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = br' (expString e1 ^ " " ^ expString e2)
       | expString (LAMBDAEXP (n, body)) = 
             StringEscapes.backslash ^ n ^ ". " ^ (expString body)

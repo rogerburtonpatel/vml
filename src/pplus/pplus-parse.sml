@@ -86,9 +86,9 @@ end = struct
     end
 
   val vcon = 
-    sat (fn s => s = "false") vcon >> succeed Core.FALSE <|>
-    sat (fn s => s = "true" ) vcon >> succeed Core.TRUE  <|>
-    Core.K <$> (sat isVcon vcon)
+    sat (fn s => s = "false") vcon >> succeed OldCore.FALSE <|>
+    sat (fn s => s = "true" ) vcon >> succeed OldCore.TRUE  <|>
+    OldCore.K <$> (sat isVcon vcon)
 
 
   (* turn any single- or multi-token string into a parser for that token *)

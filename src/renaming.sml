@@ -5,7 +5,7 @@ end
 struct 
   structure P = PPlus
   structure E = Env
-  structure C = Core'
+  structure C = Core
   type name = PPlus.name
   type 'a env = 'a Env.env
   infix 6 <+>

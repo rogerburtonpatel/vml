@@ -1,17 +1,17 @@
 signature VMINUS = sig 
-  type name = Core'.name
-  type vcon = Core'.vcon
+  type name = Core.name
+  type vcon = Core.vcon
   datatype 'e guard = EQN of name * 'e
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
   type 'e multi = 'e Multi.multi
-  datatype exp = C of exp Core'.t
+  datatype exp = C of exp Core.t
                | I of (exp, exp multi) if_fi
 
   datatype def = DEF of name * exp
 
-  type value = exp Core'.value
+  type value = exp Core.value
 
   val expString : exp -> string 
   val defString : def -> string 
@@ -24,25 +24,25 @@ end
 structure VMinus :> VMINUS
   = struct
   type name = string
-  type vcon = Core'.vcon
+  type vcon = Core.vcon
   datatype 'e guard = EQN of name * 'e
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
   type 'e multi = 'e Multi.multi
-  datatype exp = C of exp Core'.t
+  datatype exp = C of exp Core.t
                | I of (exp, exp multi) if_fi
 
   datatype def = DEF of name * exp
 
-  type value = exp Core'.value
+  type value = exp Core.value
 
     fun gmap f (EQN (n, e))        = EQN (n, f e)
       | gmap f (CONDITION e)       = CONDITION (f e)
       | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
 
 
-  fun expString   (C ce)               = Core'.expString expString ce
+  fun expString   (C ce)               = Core.expString expString ce
     | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
   and guardString (EQN (n, e))         = n ^ " = " ^ expString e
     | guardString (CONDITION e)        = expString e
@@ -61,7 +61,7 @@ structure VMinus :> VMINUS
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
-fun eqexp (C cex1, C cex2) = Core'.expString expString cex1 = Core'.expString expString cex2
+fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expString cex2
   | eqexp (I i1, I i2) = Impossible.unimp "compare 2 if-fis"
   | eqexp _ = false 
 
@@ -70,7 +70,7 @@ fun eqexp (C cex1, C cex2) = Core'.expString expString cex1 = Core'.expString ex
      | (NAME n1, NAME n2)   => n1 = n2
      | (IF_FI gs1, IF_FI gs2) => ListPair.allEq eqgexp(gs1, gs2)
      | (VCONAPP (vc1, es1), VCONAPP (vc2, es2)) => 
-        Core.eqval (Core.VCON (vc1, []), Core.VCON (vc1, []))
+        OldCore.eqval (OldCore.VCON (vc1, []), OldCore.VCON (vc1, []))
         andalso 
         ListPair.allEq eqexp (es1, es2)
      | (FUNAPP (e1, e2), FUNAPP (e3, e4)) =>
@@ -88,15 +88,15 @@ fun eqexp (C cex1, C cex2) = Core'.expString expString cex1 = Core'.expString ex
 end
 
 structure FinalVMinusWithAlpha = struct 
-  type name = Core'.name
-  type vcon = Core'.vcon
+  type name = Core.name
+  type vcon = Core.vcon
   datatype 'e guard = EQN of name * 'e
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
   datatype 'e multi = MULTI of 'e list
 
-type 'e core_exp = 'e Core'.t
+type 'e core_exp = 'e Core.t
 
 datatype simple = C_S of simple core_exp
                 | I_S  of (simple, simple) if_fi
@@ -105,8 +105,8 @@ datatype 'a exp = S of simple
                 | C of 'a exp core_exp
                 | I of (simple, 'a) if_fi
 
-val x__ = S (C_S (Core'.NAME "n"))
-val _ = S (C_S (Core'.NAME "n"))
+val x__ = S (C_S (Core.NAME "n"))
+val _ = S (C_S (Core.NAME "n"))
 val test__ = I (IF_FI [([], [], 3)])
 
   datatype 'a def = DEF of name * 'a exp
@@ -120,7 +120,7 @@ structure RenamedVMinus = struct
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
       and 'a guarded_exp = GUARDED of name list * 'a guard list * 'a exp 
@@ -136,13 +136,13 @@ signature OLDVMINUS = sig
   exception NameNotBound of name 
   exception Cycle of string 
 
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
 
   datatype 'a exp = 
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
       and 'a guarded_exp = ARROWALPHA of 'a exp 
@@ -193,13 +193,13 @@ functor VMFn (structure A : ALPHA (*sus*) ) :> OLDVMINUS = struct
   exception NameNotBound of name 
   exception Cycle of string 
 
-  type core_exp = Core.core_exp
+  type core_exp = OldCore.core_exp
 
   datatype 'a exp = 
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
       and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
@@ -227,7 +227,7 @@ fun eqexp (ex1, ex2) =
      | (NAME n1, NAME n2)   => n1 = n2
      | (IF_FI gs1, IF_FI gs2) => ListPair.allEq eqgexp(gs1, gs2)
      | (VCONAPP (vc1, es1), VCONAPP (vc2, es2)) => 
-        Core.eqval (Core.VCON (vc1, []), Core.VCON (vc1, []))
+        OldCore.eqval (OldCore.VCON (vc1, []), OldCore.VCON (vc1, []))
         andalso 
         ListPair.allEq eqexp (es1, es2)
      | (FUNAPP (e1, e2), FUNAPP (e3, e4)) =>
@@ -283,10 +283,10 @@ and eqgexp (g1, g2) = Impossible.unimp "not yet"
        | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
-      | VCONAPP (Core.TRUE, []) => VCON TRUE
-      | VCONAPP (Core.FALSE, []) => VCON FALSE 
-      | VCONAPP (Core.K n, []) => VCON (K (n, []))
-      | VCONAPP (Core.K n, es) => VCON (K (n, map (eval rho) es))
+      | VCONAPP (OldCore.TRUE, []) => VCON TRUE
+      | VCONAPP (OldCore.FALSE, []) => VCON FALSE 
+      | VCONAPP (OldCore.K n, []) => VCON (K (n, []))
+      | VCONAPP (OldCore.K n, es) => VCON (K (n, map (eval rho) es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application" *)
@@ -300,7 +300,7 @@ and eqgexp (g1, g2) = Impossible.unimp "not yet"
     and expString (ALPHA a) = "'a"
       | expString (NAME n) = n
       | expString (IF_FI gs) = "if " ^ ListUtil.join gexpString "[]" gs ^ " fi"
-      | expString (VCONAPP (v, es)) = Core.vconAppStr expString v es
+      | expString (VCONAPP (v, es)) = OldCore.vconAppStr expString v es
       | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
       | expString (LAMBDAEXP (n, body)) = 
           StringEscapes.backslash ^ n ^ ". " ^ (expString body)
@@ -310,7 +310,7 @@ and eqgexp (g1, g2) = Impossible.unimp "not yet"
   fun valString (VALPHA a) = "alpha"
     | valString (VCON v) = (case v of   
        (K (n, vs)) => 
-        Core.vconAppStr valString (Core.K n) vs 
+        OldCore.vconAppStr valString (OldCore.K n) vs 
     | TRUE  => "true"
     | FALSE => "false")
     | valString (LAMBDA (n, body)) = 
@@ -392,7 +392,7 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                  ALPHA of 'a 
               |  NAME of name 
               | IF_FI of 'a guarded_exp list 
-              | VCONAPP of Core.vcon * 'a exp list
+              | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp *)
 
 
@@ -462,7 +462,7 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                   then if (eqval ((valOf nval), v)) then OK rho else REJ
                   else OK (Env.bind (n, SOME v, rho))
                 end 
-            | (VCONAPP (Core.K n, es), VCON (K (n', vs))) => 
+            | (VCONAPP (OldCore.K n, es), VCON (K (n', vs))) => 
                 if n <> n'
                   orelse List.length es <> List.length vs
                 then REJ 
@@ -520,9 +520,9 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
             | IF_FI (g::gs) => (case solve rho g
                                   of VAL v => v
                                   | REJECT => eval rho (IF_FI gs))
-            | VCONAPP (Core.TRUE,  []) => VCON TRUE
-            | VCONAPP (Core.FALSE, []) => VCON FALSE 
-            | VCONAPP (Core.K n, es)   => VCON (K (n, map (eval rho) es))
+            | VCONAPP (OldCore.TRUE,  []) => VCON TRUE
+            | VCONAPP (OldCore.FALSE, []) => VCON FALSE 
+            | VCONAPP (OldCore.K n, es)   => VCON (K (n, map (eval rho) es))
             | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
             | FUNAPP (fe, param) => 
@@ -532,7 +532,7 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                         val rho' = Env.bind (n, SOME arg, rho)
                       in eval rho' b
                       end
-                  | _ => raise Core.BadFunApp "attempted to apply non-function")
+                  | _ => raise OldCore.BadFunApp "attempted to apply non-function")
             | LAMBDAEXP (n, ex) => LAMBDA (n, ex)
 
                   (* if (stuck rho stuckFn (NAME n)) 
@@ -617,10 +617,10 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
        | IF_FI (g::gs) => (case solve rho g
                             of VAL v => v
                             | REJECT => eval rho (IF_FI gs))
-      | VCONAPP (Core.TRUE, []) => VCON TRUE
-      | VCONAPP (Core.FALSE, []) => VCON FALSE 
-      | VCONAPP (Core.K n, []) => VCON (K (n, []))
-      | VCONAPP (Core.K n, es) => VCON (K (n, map (eval rho) es))
+      | VCONAPP (OldCore.TRUE, []) => VCON TRUE
+      | VCONAPP (OldCore.FALSE, []) => VCON FALSE 
+      | VCONAPP (OldCore.K n, []) => VCON (K (n, []))
+      | VCONAPP (OldCore.K n, es) => VCON (K (n, map (eval rho) es))
       | VCONAPP _ => 
               raise Impossible.impossible "erroneous vcon argument application"
       | FUNAPP (fe, es) => raise Todo "eval function application" *)

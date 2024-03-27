@@ -1,4 +1,4 @@
-structure Core :> sig 
+structure OldCore :> sig 
   type name = string 
   datatype vcon  = TRUE | FALSE | K of name 
   datatype 'a core_value = VCON of vcon   * 'a core_value list 
@@ -15,8 +15,8 @@ structure Core :> sig
 
   val evalcore        : 'a core_value Env.env -> core_exp -> 'a core_value
   val eqval           : 'a core_value * 'a core_value -> bool
-  val boolOfCoreValue : 'a core_value -> bool 
-  val strOfCoreExp    : core_exp -> string 
+  val boolOfOldCoreValue : 'a core_value -> bool 
+  val strOfOldCoreExp    : core_exp -> string 
   val valString  : 'a core_value -> string 
   val vconAppStr : ('a -> string) -> vcon -> 'a list -> string
 end 
@@ -37,8 +37,8 @@ struct
                   | LAMBDAEXP of name * core_exp 
                   | FUNAPP of core_exp * core_exp 
 
-  fun boolOfCoreValue (VCON (FALSE, [])) = false
-    | boolOfCoreValue _                  = true
+  fun boolOfOldCoreValue (VCON (FALSE, [])) = false
+    | boolOfOldCoreValue _                  = true
 
   fun evalcore rho (NAME n)  = if not (Env.binds (rho, n))
                               then raise NameNotBound n
@@ -65,14 +65,14 @@ struct
     | (TRUE, _)   =>  Impossible.impossible "true applied to args"
     | (FALSE, _)  =>  Impossible.impossible "false applied to args"
 
-  fun strOfCoreExp (NAME n) = n
-    | strOfCoreExp (VCONAPP (n, es)) = 
-     vconAppStr strOfCoreExp n es 
-    | strOfCoreExp (IF_THEN_ELSE (e1, e2, e3)) = 
-        "if " ^ strOfCoreExp e1 ^ "then " ^ strOfCoreExp e2 ^ "else " ^ strOfCoreExp e3
-    | strOfCoreExp (LAMBDAEXP (n, body)) = 
-        StringEscapes.backslash ^ n ^ ". " ^ (strOfCoreExp body) (* backslash *)
-    | strOfCoreExp (FUNAPP (e1, e2)) = strOfCoreExp e1 ^ " " ^ strOfCoreExp e2
+  fun strOfOldCoreExp (NAME n) = n
+    | strOfOldCoreExp (VCONAPP (n, es)) = 
+     vconAppStr strOfOldCoreExp n es 
+    | strOfOldCoreExp (IF_THEN_ELSE (e1, e2, e3)) = 
+        "if " ^ strOfOldCoreExp e1 ^ "then " ^ strOfOldCoreExp e2 ^ "else " ^ strOfOldCoreExp e3
+    | strOfOldCoreExp (LAMBDAEXP (n, body)) = 
+        StringEscapes.backslash ^ n ^ ". " ^ (strOfOldCoreExp body) (* backslash *)
+    | strOfOldCoreExp (FUNAPP (e1, e2)) = strOfOldCoreExp e1 ^ " " ^ strOfOldCoreExp e2
 
   fun valString (VCON (v, vals)) = 
           vconAppStr valString v vals 

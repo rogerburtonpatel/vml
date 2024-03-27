@@ -34,7 +34,7 @@ struct
                       | translateTlPat _ = Impossible.unimp "todo"
                     and translatePat (P.PNAME n)        = VM.NAME n 
                       | translatePat (P.CONAPP (n, ps)) = 
-                                      VM.VCONAPP (Core.K n, map translatePat ps)
+                                      VM.VCONAPP (OldCore.K n, map translatePat ps)
                     (* find unbound names in a pattern *)
                     fun tlpatFreeNames (P.PAT p) = patFreeNames p
                       | tlpatFreeNames _ = Impossible.unimp "todo"
@@ -82,7 +82,7 @@ struct
                       | translateTlPat _ = VMS.NAME "todo translate top-level patterns"
                     and translatePat (P.PNAME n)        = VMS.NAME n 
                       | translatePat (P.CONAPP (n, ps)) = 
-                                      VMS.VCONAPP (Core.K n, map translatePat ps)
+                                      VMS.VCONAPP (OldCore.K n, map translatePat ps)
                     fun tlpatFreeNames (P.PAT p) = patFreeNames p
                       | tlpatFreeNames _ = []
                     (* find unbound names in a pattern *)
@@ -115,9 +115,10 @@ struct
 
   fun vmSimpleOfPdef (P.DEF (n, e)) = VMS.DEF (n, vmSimpleOfP e)
 
-  val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
+
+  val pempty = P.CASE (P.VCONAPP (OldCore.K "cons", [P.VCONAPP (OldCore.K "1", []), P.VCONAPP (OldCore.K "nil", [])]), [])
   (* val _ = print ((VM.expString (vmOfP pempty)) ^ "\n") *)
-  val psome = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [
+  val psome = P.CASE (P.VCONAPP (OldCore.K "cons", [P.VCONAPP (OldCore.K "1", []), P.VCONAPP (OldCore.K "nil", [])]), [
     (P.PAT (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"])), P.NAME "x")
   ])
   (* val _ = print ((VM.expString (vmOfP psome)) ^ "\n") *)
@@ -147,7 +148,7 @@ struct
               in 
               D.LET (freshname, dexpOfVmExp e, D.IF (freshname, treeOfGuardedExp g', treeOfGs gs))
               end 
-          | treeOfGuardedExp (VM.EQN (n, VM.VCONAPP (Core.K vc, es), g')) = 
+          | treeOfGuardedExp (VM.EQN (n, VM.VCONAPP (OldCore.K vc, es), g')) = 
             let val arity = List.length es 
                 val lcon = (vc, arity)
             (* Big todo: match compile es *)
@@ -173,7 +174,7 @@ struct
               in 
               D.LET (freshname, dexpOfVmSimpleExp e, D.IF (freshname, treeOfGuardedExp g', treeOfSimpleGs gs))
               end 
-          | treeOfGuardedExp (VMS.EQN (n, VMS.VCONAPP (Core.K vc, es), g')) = 
+          | treeOfGuardedExp (VMS.EQN (n, VMS.VCONAPP (OldCore.K vc, es), g')) = 
             let val arity = List.length es 
                 val lcon = (vc, arity)
             (* Big todo: match compile es *)
@@ -193,7 +194,7 @@ struct
   (* fun vOfVMinus ve = 
     case ve of VM.ALPHA a => raise Impossible.impossible "no alphas in verse"
              | VM.NAME n => V.VAL (V.NAME n)
-             | VM.VCONAPP (Core.K vc, es) => 
+             | VM.VCONAPP (OldCore.K vc, es) => 
                 V.VAL (V.HNF (V.SEQ (V.NAME vc::(map vOfVMinus es)))) *)
              (* existentially introduce all es *)
              (* give a sequence of all of them *)

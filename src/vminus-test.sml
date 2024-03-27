@@ -5,26 +5,26 @@ structure VMTest = struct
   structure T = Translation
   structure A = Translation.VM
 
-  (* val _ = print (valString (eval Env.empty (IF_FI [(A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", A.VCONAPP (Core.TRUE, []), A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.NAME "x"))))))])) ) *)
+  (* val _ = print (valString (eval Env.empty (IF_FI [(A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", A.VCONAPP (OldCore.TRUE, []), A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.NAME "x"))))))])) ) *)
 
-  (* val _ = print (valString (eval Env.empty (IF_FI [(A.EXISTS ("x", A.EQN ("x", A.VCONAPP (Core.TRUE, []), A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EXISTS ("z", A.EQN ("y", A.NAME "x", A.EXISTS ("w", A.EQN ("y", A.NAME "x", A.EXISTS ("a", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))))))))]))) *)
+  (* val _ = print (valString (eval Env.empty (IF_FI [(A.EXISTS ("x", A.EQN ("x", A.VCONAPP (OldCore.TRUE, []), A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EXISTS ("z", A.EQN ("y", A.NAME "x", A.EXISTS ("w", A.EQN ("y", A.NAME "x", A.EXISTS ("a", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))))))))]))) *)
   
   (* oh for a parser *)
   val cycle_ge = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))
 
-  val cycle_but_good_ge = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", A.NAME "x", A.EQN ("y", (A.VCONAPP (Core.K "3", [])), A.ARROWALPHA (A.NAME "x")))))))
-  val unbound_x_lhs = (A.EQN ("x", (A.VCONAPP (Core.K "3", [])), A.ARROWALPHA (A.VCONAPP (Core.K "4", []))))
+  val cycle_but_good_ge = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", A.NAME "x", A.EQN ("y", (A.VCONAPP (OldCore.K "3", [])), A.ARROWALPHA (A.NAME "x")))))))
+  val unbound_x_lhs = (A.EQN ("x", (A.VCONAPP (OldCore.K "3", [])), A.ARROWALPHA (A.VCONAPP (OldCore.K "4", []))))
   
-  val unbound_y_rhs = (A.EXISTS ("x", A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.VCONAPP (Core.K "4", [])))))
+  val unbound_y_rhs = (A.EXISTS ("x", A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.VCONAPP (OldCore.K "4", [])))))
   
-  val late_y_rhs = (A.EXISTS ("x", A.EQN ("x", A.NAME "y", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (Core.K "3", [])), A.ARROWALPHA (A.NAME "x"))))))
-  val late_y_rhs2 = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", (A.VCONAPP (Core.K "7", [])), A.ARROWALPHA (A.NAME "x"))))))
+  val late_y_rhs = (A.EXISTS ("x", A.EQN ("x", A.NAME "y", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (OldCore.K "3", [])), A.ARROWALPHA (A.NAME "x"))))))
+  val late_y_rhs2 = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", (A.VCONAPP (OldCore.K "7", [])), A.ARROWALPHA (A.NAME "x"))))))
   
-  val good_y_rhs  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (Core.K "3", [])), A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.NAME "x"))))))
-  val good_y_rhs2 = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", (A.VCONAPP (Core.K "7", [])), A.ARROWALPHA (A.NAME "x"))))))
+  val good_y_rhs  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (OldCore.K "3", [])), A.EQN ("x", A.NAME "y", A.ARROWALPHA (A.NAME "x"))))))
+  val good_y_rhs2 = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("x", A.NAME "y", A.EQN ("y", (A.VCONAPP (OldCore.K "7", [])), A.ARROWALPHA (A.NAME "x"))))))
   
-  val exist_unordered       = (A.EXISTS ("x", A.EQN ("x", (A.VCONAPP (Core.K "3", [])), A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))
-  val exist_unordered_cmplx = (A.EXISTS ("x", A.EQN ("x", (A.VCONAPP (Core.K "3", [])), A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EXISTS ("z", A.EQN ("y", A.NAME "x", A.EXISTS ("w", A.EQN ("y", A.NAME "x", A.EXISTS ("a", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))))))))
+  val exist_unordered       = (A.EXISTS ("x", A.EQN ("x", (A.VCONAPP (OldCore.K "3", [])), A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))
+  val exist_unordered_cmplx = (A.EXISTS ("x", A.EQN ("x", (A.VCONAPP (OldCore.K "3", [])), A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EXISTS ("z", A.EQN ("y", A.NAME "x", A.EXISTS ("w", A.EQN ("y", A.NAME "x", A.EXISTS ("a", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "x"))))))))))))
 
   fun solveempty g = A.eval Env.empty (A.IF_FI [g])
   fun evalempty  e = A.eval Env.empty e
@@ -53,9 +53,9 @@ structure VMTest = struct
           (fn () => solveempty good_y_rhs2)
          (A.VCON (A.K ("7", [])))
 
-  val pempty = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [])
+  val pempty = P.CASE (P.VCONAPP (OldCore.K "cons", [P.VCONAPP (OldCore.K "1", []), P.VCONAPP (OldCore.K "nil", [])]), [])
   (* val _ = print ((A.A.EXpString (vmOfP pempty)) ^ "\n") *)
-  val psome = P.CASE (P.VCONAPP (Core.K "cons", [P.VCONAPP (Core.K "1", []), P.VCONAPP (Core.K "nil", [])]), [
+  val psome = P.CASE (P.VCONAPP (OldCore.K "cons", [P.VCONAPP (OldCore.K "1", []), P.VCONAPP (OldCore.K "nil", [])]), [
     (P.PAT (P.CONAPP ("cons", [P.PNAME "x", P.PNAME "xs"])), P.NAME "x")
   ])
 
@@ -71,7 +71,7 @@ structure VMTest = struct
     ^ "\n"
   ) *)
 
-  val unsolvable  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (Core.K "3", [])), A.EQN ("y", (A.VCONAPP (Core.K "4", [])), A.ARROWALPHA (A.NAME "y"))))))
+  val unsolvable  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", (A.VCONAPP (OldCore.K "3", [])), A.EQN ("y", (A.VCONAPP (OldCore.K "4", [])), A.ARROWALPHA (A.NAME "y"))))))
   val unsolvable2  = (A.EXISTS ("x", A.EXISTS ("y", A.EQN ("y", A.NAME "x", A.EQN ("y", A.NAME "x", A.ARROWALPHA (A.NAME "y"))))))
 
   val () = Unit.checkExnWith A.valString "solving unsolvable"

@@ -93,7 +93,7 @@ end = struct
     end
 
   val vcon = 
-    Core'.K <$> (sat isVcon vcon)
+    Core.K <$> (sat isVcon vcon)
 
 
   (* turn any single- or multi-token string into a parser for that token *)
@@ -106,10 +106,10 @@ end = struct
         in matchtokens (PPlusLex.tokenize_line s)
         end
 
-  fun ppname n = A.C (Core'.NAME n)
-  fun ppvconapp vc es = A.C (Core'.VCONAPP (vc, es))
-  fun pplambdaexp n body = A.C (Core'.LAMBDAEXP (n, body))
-  fun ppfunapp e1 e2 = A.C (Core'.FUNAPP (e1, e2))
+  fun ppname n = A.C (Core.NAME n)
+  fun ppvconapp vc es = A.C (Core.VCONAPP (vc, es))
+  fun pplambdaexp n body = A.C (Core.LAMBDAEXP (n, body))
+  fun ppfunapp e1 e2 = A.C (Core.FUNAPP (e1, e2))
   fun ppcase e branches = A.I (A.CASE (e, branches))
 
 (* p ::= term [| term]

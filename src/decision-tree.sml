@@ -1,6 +1,6 @@
 signature DECISION_TREE = sig
-  type name = Core'.name 
-  type vcon = Core'.vcon 
+  type name = Core.name 
+  type vcon = Core.vcon 
   type arity = int
   type labeled_constructor = vcon * arity
 
@@ -11,7 +11,7 @@ signature DECISION_TREE = sig
               | IF of name   * ('e, 'a) tree * ('e, 'a) tree 
               | LET of name  * 'e * ('e, 'a) tree 
 
-  datatype exp = C of exp Core'.t 
+  datatype exp = C of exp Core.t 
                | I of (exp, exp multi) tree
 
   val emitTree  : ('a -> string) -> ('b -> string) -> ('b, 'a) tree -> string
@@ -22,8 +22,8 @@ end
 structure D :> DECISION_TREE 
   = 
 struct
-  type name = Core'.name 
-  type vcon = Core'.vcon 
+  type name = Core.name 
+  type vcon = Core.vcon 
   type arity = int
   type labeled_constructor = vcon * arity
 
@@ -34,14 +34,14 @@ struct
               | IF of name   * ('e, 'a) tree * ('e, 'a) tree 
               | LET of name  * 'e * ('e, 'a) tree 
 
-  datatype exp = C of exp Core'.t 
+  datatype exp = C of exp Core.t 
              | I of (exp, exp multi) tree
 
 
   fun emitTree f_a f_e t = 
     let fun emitCase [] default = Impossible.impossible "no patterns to match on"
            | emitCase (x::xs) default = 
-           let fun emitBranch ((Core'.K vc, i), tr) = "(" ^ vc ^ ", " ^ Int.toString i ^ ") => " ^ emitTree' tr ^ "\n"
+           let fun emitBranch ((Core.K vc, i), tr) = "(" ^ vc ^ ", " ^ Int.toString i ^ ") => " ^ emitTree' tr ^ "\n"
            val emittedBranches = foldr (fn (b, acc) => "| " ^ emitBranch b ^ acc) "" xs
         in emitBranch x ^ emittedBranches ^ (if isSome default then "| _ => " ^ emitTree' (valOf default) else "")
         end 
@@ -52,7 +52,7 @@ struct
     in emitTree' t ^ "\n"
     end 
 
-  fun expString (C ce) = Core'.expString expString ce
+  fun expString (C ce) = Core.expString expString ce
     | expString (I tr) = emitTree (Multi.multiString expString) expString tr
 
     fun id x = x 

@@ -1,4 +1,4 @@
-structure Core :> sig 
+structure OldCore :> sig 
   type name = string 
   datatype vcon  = TRUE | FALSE | K of name 
   datatype 'exp core_value = VCON of vcon   * 'exp core_value list 
@@ -13,7 +13,7 @@ structure Core :> sig
                   | FUNAPP of core_exp * core_exp 
 
   val eqval           : 'a core_value * 'a core_value -> bool
-  val boolOfCoreValue : 'a core_value -> bool 
+  val boolOfOldCoreValue : 'a core_value -> bool 
   val expString    : core_exp -> string 
   val valString  : 'a core_value -> string 
   val vconAppStr : ('a -> string) -> vcon -> 'a list -> string
@@ -34,8 +34,8 @@ struct
                   | LAMBDAEXP of name * core_exp 
                   | FUNAPP of core_exp * core_exp 
 
-  fun boolOfCoreValue (VCON (FALSE, [])) = false
-    | boolOfCoreValue _                  = true
+  fun boolOfOldCoreValue (VCON (FALSE, [])) = false
+    | boolOfOldCoreValue _                  = true
 
 
                      
@@ -72,7 +72,7 @@ end
 
 signature EXTENDED = sig
   type name = string 
-  type vcon  = Core.vcon
+  type vcon  = OldCore.vcon
   datatype 'exp value = VCON of vcon   * 'exp value list 
                       | LAMBDA of name * 'exp
   type 'exp extension  (* all the expressions we don't care about *)
@@ -91,7 +91,7 @@ functor MkExtended(type 'a extension (*solid*) ) :> EXTENDED where type 'a exten
   =
 struct
   type name = string 
-  type vcon = Core.vcon
+  type vcon = OldCore.vcon
   type 'a extension = 'a extension
   datatype 'exp value = VCON of vcon   * 'exp value list 
                       | LAMBDA of name * 'exp
@@ -105,9 +105,9 @@ struct
   fun vconAppStr f vc args = 
   let val name = 
       (case vc 
-        of Core.K n => n 
-         | Core.TRUE => "true" 
-         | Core.FALSE => "false")
+        of OldCore.K n => n 
+         | OldCore.TRUE => "true" 
+         | OldCore.FALSE => "false")
       val vcss = foldr (fn (v, acc) => " " ^ f v ^ acc) "" args
         in name ^ vcss
     end 
@@ -128,7 +128,7 @@ end
 
 (* structure NewPPlus =
   MkExtended(type name = string
-         datatype pat = NAME of name | APP of Core.vcon * pat list
+         datatype pat = NAME of name | APP of OldCore.vcon * pat list
          datatype 'a extension = CASE of 'a * (pat * 'a) list)
 
 structure NewVMinus =
@@ -217,9 +217,9 @@ end
 
 
 
-structure ExtensibleCore = struct
+structure ExtensibleOldCore = struct
   type name = string 
-  type vcon  = Core.vcon
+  type vcon  = OldCore.vcon
   datatype 'extension exp = NAME of name 
                           | VCONAPP of vcon * 'extension exp list
                           | LAMBDAEXP of name * 'extension exp 
@@ -228,7 +228,7 @@ structure ExtensibleCore = struct
 end
 
 structure MultiExtension = struct
-  datatype 'e exp = CORE  of 'e exp ExtensibleCore.exp
+  datatype 'e exp = CORE  of 'e exp ExtensibleOldCore.exp
                   | MULTI of 'e exp list
 end
 
@@ -277,7 +277,7 @@ end
 
 
 structure StandardTransformer = struct
-  open ExtensibleCore (* to rename a type *)
+  open ExtensibleOldCore (* to rename a type *)
   type 'a plus_standard = 'a exp
 end
 
@@ -295,7 +295,7 @@ end
 
 structure DTransformer = struct 
   type name = string 
-  type vcon = Core.vcon 
+  type vcon = OldCore.vcon 
   type arity = int
   type labeled_constructor = vcon * arity
 
@@ -317,9 +317,9 @@ structure TrueD = struct
 end
 
 
-val (x__ : TrueVMinus.exp) = TrueVMinus.E (SplitVMinusTransformer.BASE (MultiTransformer.BASE (ExtensibleCore.NAME "n")))
+val (x__ : TrueVMinus.exp) = TrueVMinus.E (SplitVMinusTransformer.BASE (MultiTransformer.BASE (ExtensibleOldCore.NAME "n")))
 
-val test = (SplitVMinusTransformer.BASE (MultiTransformer.BASE (ExtensibleCore.NAME "n")))
+val test = (SplitVMinusTransformer.BASE (MultiTransformer.BASE (ExtensibleOldCore.NAME "n")))
 
 (* PP -> VM *)
 
@@ -328,10 +328,10 @@ structure VM = TrueVMinus
 structure E = ExtensibleCore
 structure PT = PPlusTransformer
 
-fun vmOfPPex (e : TruePPlus.exp ExtensibleCore.exp) = 
+fun vmOfPPex (e : TruePPlus.exp ExtensibleOldCore.exp) = 
 Impossible.unimp "typecheck"
 
-val _ = vmOfPPex : TruePPlus.exp ExtensibleCore.exp -> TrueVMinus.exp ExtensibleCore.exp
+val _ = vmOfPPex : TruePPlus.exp ExtensibleOldCore.exp -> TrueVMinus.exp ExtensibleOldCore.exp
 
 val tppexe = P.E (PPlusTransformer.BASE (E.NAME "n"))
 val excorex = P.E (P.BASE (E.NAME "n"))
@@ -390,7 +390,7 @@ end
 
 
 structure VminusX = 
-  MkIfParametric(type 'a coreL = 'a ExtensibleCore.exp
+  MkIfParametric(type 'a coreL = 'a ExtensibleOldCore.exp
                  type 'a coreR = 'a MultiExtension.exp)
 
   
@@ -398,7 +398,7 @@ functor MkDecisionTreeTooSimple(type 'a core)
   =
 struct
   type name = string
-  type vcon = Core.vcon
+  type vcon = OldCore.vcon
   type arity = int
   type labeled_constructor = vcon * arity
 
@@ -419,7 +419,7 @@ functor MkDecisionTree(type 'a coreL
   =
 struct
   type name = string
-  type vcon = Core.vcon
+  type vcon = OldCore.vcon
   type arity = int
   type labeled_constructor = vcon * arity
   datatype data = CON of vcon * data list
@@ -442,18 +442,18 @@ struct
 end
 
 (*
-  txCore  : ('a -> DEST) -> ('a core -> DEST)
+  txOldCore  : ('a -> DEST) -> ('a core -> DEST)
 
   structure Dest = MkDecisionTree(type 'a core = 'a MultiExtension.exp)
 
 
-  txVerse (VerseX.E (CORE e)) = txCore e
+  txVerse (VerseX.E (CORE e)) = txOldCore e
   txVerse (VerseX.E (MULTI m)) = ... translation of multi to DEST ...
 
 
 *)
 
-structure Core' = struct
+structure Core = struct
     type name = string 
     type vcon = string
     datatype 'a t = NAME of name 
@@ -476,7 +476,7 @@ structure VMinus = struct
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
   datatype 'e multi = MULTI of 'e list
-  datatype vminus = C of vminus Core'.t
+  datatype vminus = C of vminus Core.t
                   | I of (vminus, vminus multi) if_fi
 
 end
@@ -493,7 +493,7 @@ structure PPlus = struct
                   | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
-  datatype pplus = C of pplus Core'.t 
+  datatype pplus = C of pplus Core.t 
                  | I of pplus ppcase
 
 
@@ -512,7 +512,7 @@ structure D = struct
               | IF of name   * ('e, 'a) tree * ('e, 'a) tree 
               | LET of name  * 'e * ('e, 'a) tree 
 
-  datatype d = C of d Core'.t 
+  datatype d = C of d Core.t 
              | I of (d, d multi) tree
 
 end
@@ -523,7 +523,7 @@ structure PPofVM = struct
   structure P = PPlus
   structure V = VMinus
   structure D = D
-  structure C = Core'
+  structure C = Core
 
 
   fun typecheck () = Impossible.unimp "typecheck"
@@ -545,7 +545,7 @@ structure PPofVM = struct
             | patFreeNames (P.PATSEQ (p1, p2)) =  
                         List.concat [patFreeNames p1, patFreeNames p2] 
 
-  fun translate (P.C ce) = V.C (Core'.map translate ce)
+  fun translate (P.C ce) = V.C (Core.map translate ce)
     | translate (P.I (P.CASE (scrutinee, branches))) = 
         let val freshNameGen = FreshName.freshNameGenGen ()
             val e'           = translate scrutinee
@@ -650,12 +650,12 @@ structure PPofVM = struct
                     | CONDITION of 'e
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
 
-  datatype vminus = C of vminus Core'.t
+  datatype vminus = C of vminus Core.t
                   | I of (vminus, vminus multi) if_fi *) *)
 
 signature EXTENSION = sig
   type 'a context
-  type 'a value = 'a Core.core_value
+  type 'a value = 'a OldCore.core_value
   type 'a extension
 
   val eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) 
@@ -668,7 +668,7 @@ structure PPlusExtension : EXTENSION = struct
   type pat = OldPPlus.toplevelpattern
   datatype 'a extension = CASE of 'a * (pat * 'a) list
 
-  type 'a value = 'a Core.core_value
+  type 'a value = 'a OldCore.core_value
   type 'a context = 'a value Env.env
 
   val rec eval : ('a context -> 'a -> 'a value) -> ('a context -> 'a extension -> 'a value) =
@@ -691,16 +691,16 @@ struct
   fun eval rho e = 
       case e 
         of P.NAME n => Env.find (n, rho)
-         | P.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
+         | P.VCONAPP (c, es) => OldCore.VCON (c, map (eval rho) es)
          | P.FUNAPP (fe, param) => 
                 (case eval rho fe 
-                  of Core.LAMBDA (n, b) => 
+                  of OldCore.LAMBDA (n, b) => 
                     let val arg = eval rho param
                         val rho' = Env.bind (n, arg, rho)
                       in eval rho' b
                       end
-                   | _ => raise Core.BadFunApp "attempted to apply non-function")
-        | P.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
+                   | _ => raise OldCore.BadFunApp "attempted to apply non-function")
+        | P.LAMBDAEXP (n, ex) => OldCore.LAMBDA (n, ex)
         | P.E x => PX.eval eval rho x
 
 end
@@ -710,7 +710,7 @@ end
 
 functor MkEval(structure Extended : EXTENDED
                structure Extension : EXTENSION
-                                         where type 'a context = 'a Core.core_value Env.env
+                                         where type 'a context = 'a OldCore.core_value Env.env
                sharing type Extended.extension = Extension.extension
                )
   =
@@ -718,16 +718,16 @@ struct
   fun eval rho e = 
       case e 
         of Extended.NAME n => Env.find (n, rho)
-         | Extended.VCONAPP (c, es) => Core.VCON (c, map (eval rho) es)
+         | Extended.VCONAPP (c, es) => OldCore.VCON (c, map (eval rho) es)
          | Extended.FUNAPP (fe, param) => 
                 (case eval rho fe 
-                  of Core.LAMBDA (n, b) => 
+                  of OldCore.LAMBDA (n, b) => 
                     let val arg = eval rho param
                         val rho' = Env.bind (n, arg, rho)
                       in eval rho' b
                       end
-                   | _ => raise Core.BadFunApp "attempted to apply non-function")
-        | Extended.LAMBDAEXP (n, ex) => Core.LAMBDA (n, ex)
+                   | _ => raise OldCore.BadFunApp "attempted to apply non-function")
+        | Extended.LAMBDAEXP (n, ex) => OldCore.LAMBDA (n, ex)
         | Extended.E x => Extension.eval eval rho x
 end *)
 
