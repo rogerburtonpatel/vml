@@ -45,14 +45,14 @@ struct
 
   (**** Reader functions ****)
 
-  val pplusOfFile : instream -> FinalPPlus.def list error =
+  val pplusOfFile : instream -> PPlus.def list error =
     lines                    (* line list *)
     >>> map PPlusLex.tokenize_line  (* token list error list *)
     >>> Error.list           (* token list list error *)
     >>> Error.map List.concat (* token list error *)
     >=> PPlusParse.parse       (* def list error *)    
     
-  val vmsOfPP : FinalPPlus.def list -> FinalVMinus.def list =
+  val vmsOfPP : PPlus.def list -> VMinus.def list =
   map VMofPP.def
 
   (* val dOfVMS : VMinusSimple.def list ->  =
@@ -70,12 +70,12 @@ struct
 
 
   fun emitAST_P outfile =
-    app (fn d => ( TextIO.output(outfile, FinalPPlus.defString d)
+    app (fn d => ( TextIO.output(outfile, PPlus.defString d)
                  ; TextIO.output(outfile, "\n")
                  ))
 
   fun emitVMS outfile =
-    app (fn d => ( TextIO.output(outfile, FinalVMinus.defString d)
+    app (fn d => ( TextIO.output(outfile, VMinus.defString d)
                  ; TextIO.output(outfile, "\n")
                  ))
 

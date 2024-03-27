@@ -1,6 +1,6 @@
 structure DofVminus :> sig
-  structure D : FD
-  structure V : FV
+  structure D : DECISION_TREE
+  structure V : VMINUS
   type 'a guarded_exp' = V.name list * (V.exp V.guard list * 'a)
   exception Stuck of unit guarded_exp' list
   val compile : V.exp Multi.multi guarded_exp' list -> (D.exp, D.exp Multi.multi) D.tree
@@ -9,8 +9,8 @@ end
   =
 struct
 
-  structure V = FinalVMinus
-  structure D = FinalD
+  structure V = VMinus
+  structure D = D
   structure C = Core'
 
   type 'a guarded_exp' = V.name list * (V.exp V.guard list * 'a)
@@ -18,17 +18,15 @@ struct
   exception Stuck of unit guarded_exp' list
 
   fun unitify (ns, (gs, a)) = (ns, (gs, ()))
-  (* fun unitify (gs, a) = (List.map (V.gmap (fn _ => ())) gs, a) *)
-
-
+  fun member x xs = List.exists (fn y => x = y)
   val mapPartial = List.mapPartial
+
 
   datatype status = KNOWN | UNKNOWN  (* status of each bound variable *)
   
-  val emptyContext = Env.empty
-
   type context = status Env.env
 
+  val emptyContext = Env.empty
 
   fun addVar status x rho = Env.bind (x, status, rho)
   val _ = addVar : status -> V.name -> context -> context
@@ -52,7 +50,6 @@ struct
      matchName (x = y :: ys) [[x = nil --> e]] = NONE
    *)    
 
-  (* fun member x xs = List.exists (fn y => x y ) *)
 
   (* | V.EXISTS (n, g')    => findOneConstructorApplication (addVar UNKNOWN n ctx) g' *)
 
@@ -490,8 +487,8 @@ end
 
 (* 
 structure OldDofVminus :> sig
-  structure D : DECISION_TREE
-  structure V : VMINUS
+  structure D : OLD_DECISION_TREE
+  structure V : OLDVMINUS
   exception Stuck of unit V.guarded_exp list
   val compile : 'a V.guarded_exp list -> 'a D.tree
 end

@@ -1,4 +1,4 @@
-signature FD = sig
+signature DECISION_TREE = sig
   type name = Core'.name 
   type vcon = Core'.vcon 
   type arity = int
@@ -19,7 +19,7 @@ signature FD = sig
   
 end
 
-structure FinalD :> FD 
+structure D :> DECISION_TREE 
   = 
 struct
   type name = Core'.name 
@@ -64,7 +64,7 @@ struct
 end
 
 
-signature DECISION_TREE = sig
+signature OLD_DECISION_TREE = sig
   type name = string 
   type 'a exp
   type vcon = string 
@@ -84,7 +84,7 @@ end
 
 functor DecisionTree(type 'a exp
                     val expString : 'a exp -> string) :>
-        DECISION_TREE where type 'a exp = 'a exp
+        OLD_DECISION_TREE where type 'a exp = 'a exp
   = 
 struct
   type name = string 

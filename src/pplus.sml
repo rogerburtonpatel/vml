@@ -1,4 +1,4 @@
-structure FinalPPlus :> sig 
+structure PPlus :> sig 
   type name = Core'.name
   type vcon = Core'.vcon
 
@@ -154,7 +154,7 @@ val _ = print ("HERE\n\n" ^ expString x_) *)
 end
 
 
-structure PPlus :> sig 
+structure OldPPlus :> sig 
   type name = string 
   type vcon = Core.vcon 
   datatype exp = NAME of name 

@@ -1,14 +1,14 @@
 structure VMofPP :> sig
 
-  val translate : FinalPPlus.exp -> FinalVMinus.exp
-  val def : FinalPPlus.def -> FinalVMinus.def
+  val translate : PPlus.exp -> VMinus.exp
+  val def : PPlus.def -> VMinus.def
 
 end 
  = 
 struct
 
-  structure P = FinalPPlus
-  structure V = FinalVMinus
+  structure P = PPlus
+  structure V = VMinus
   structure C = Core'
   val MULTI = Multi.MULTI
 
@@ -93,7 +93,7 @@ struct
         in V.I final
         end
 
-  val _ = translate : FinalPPlus.exp -> FinalVMinus.exp
+  val _ = translate : PPlus.exp -> VMinus.exp
 
   fun def (P.DEF (n, e)) = V.DEF (n, translate e)
 
