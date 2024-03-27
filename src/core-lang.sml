@@ -37,7 +37,6 @@ struct
   fun boolOfCoreValue (VCON (FALSE, [])) = false
     | boolOfCoreValue _                  = true
 
-
                      
 
   fun vconAppStr f n args = 
@@ -111,6 +110,15 @@ structure Core' :> sig
   and vmap (f : ('a -> 'b)) v = 
     case v of LAMBDA (n, e) => LAMBDA (n, f e)
             | VCON (vc, vs) => VCON (vc, List.map (vmap f) vs)
+
+  (* fun fold (f : ('x value -> 'a)) (g : (name -> 'a)) (h : ('c -> 'a)) e = 
+    case e of 
+      LITERAL v => f v
+  | NAME n => g n 
+  | VCONAPP (vc, es) => _
+  | LAMBDAEXP (n, body) => _
+  | FUNAPP (e1, e2) => _ *)
+
 
 
   fun eqval (VCON (v1, vs), VCON (v2, vs')) = 

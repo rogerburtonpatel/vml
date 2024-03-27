@@ -15,6 +15,7 @@ $(SML_LIB)/basis/basis.mlb
   freshnames.sml
   
   core-lang.sml
+  multi.sml
   vminus-simple.sml
   vminus-arrow.sml
   decision-tree.sml

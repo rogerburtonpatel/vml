@@ -1,10 +1,10 @@
-structure FinalD :> sig
+signature FD = sig
   type name = Core'.name 
   type vcon = Core'.vcon 
   type arity = int
   type labeled_constructor = vcon * arity
 
-  datatype 'e multi = MULTI of 'e list
+  type 'e multi = 'e Multi.multi
 
   datatype ('e, 'a) tree = MATCH of 'a
               | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
@@ -12,12 +12,14 @@ structure FinalD :> sig
               | LET of name  * 'e * ('e, 'a) tree 
 
   datatype exp = C of exp Core'.t 
-             | I of (exp, exp multi) tree
+               | I of (exp, exp multi) tree
 
   val emitTree  : ('a -> string) -> ('b -> string) -> ('b, 'a) tree -> string
   val expString : exp -> string
   
 end
+
+structure FinalD :> FD 
   = 
 struct
   type name = Core'.name 
@@ -25,7 +27,7 @@ struct
   type arity = int
   type labeled_constructor = vcon * arity
 
-  datatype 'e multi = MULTI of 'e list
+  type 'e multi = 'e Multi.multi
 
   datatype ('e, 'a) tree = MATCH of 'a
               | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
@@ -35,7 +37,6 @@ struct
   datatype exp = C of exp Core'.t 
              | I of (exp, exp multi) tree
 
-  fun multiString (f : 'e -> string) (MULTI es) = String.concat (map f es)
 
   fun emitTree f_a f_e t = 
     let fun emitCase [] default = Impossible.impossible "no patterns to match on"
@@ -52,7 +53,7 @@ struct
     end 
 
   fun expString (C ce) = Core'.expString expString ce
-    | expString (I tr) = emitTree (multiString expString) expString tr
+    | expString (I tr) = emitTree (Multi.multiString expString) expString tr
 
     fun id x = x 
 

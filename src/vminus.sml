@@ -1,38 +1,46 @@
-structure FinalVMinus :> sig 
+signature FV = sig 
   type name = Core'.name
   type vcon = Core'.vcon
   datatype 'e guard = EQN of name * 'e
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
-  datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
-  datatype 'e multi = MULTI of 'e list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
+  type 'e multi = 'e Multi.multi
   datatype exp = C of exp Core'.t
                | I of (exp, exp multi) if_fi
 
   datatype def = DEF of name * exp
 
+  type value = exp Core'.value
+
   val expString : exp -> string 
   val defString : def -> string 
 
+  val eqexp : exp * exp -> bool
+
+  val gmap :  ('a -> 'b) -> 'a guard -> 'b guard
+
 end 
+structure FinalVMinus :> FV
   = struct
   type name = string
   type vcon = Core'.vcon
   datatype 'e guard = EQN of name * 'e
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
-  datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
-  datatype 'e multi = MULTI of 'e list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
+  type 'e multi = 'e Multi.multi
   datatype exp = C of exp Core'.t
                | I of (exp, exp multi) if_fi
 
   datatype def = DEF of name * exp
 
+  type value = exp Core'.value
+
     fun gmap f (EQN (n, e))        = EQN (n, f e)
       | gmap f (CONDITION e)       = CONDITION (f e)
       | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
 
-  fun multiString (f : 'e -> string) (MULTI es) = String.concat (map f es) 
 
   fun expString   (C ce)               = Core'.expString expString ce
     | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
@@ -43,15 +51,36 @@ end
             in  compress gs1 ^ " | " ^ compress gs2 
             end 
   and if_fiString [] = ""
-    | if_fiString ((ns, gs, r) :: rest) = 
+    | if_fiString ((ns, (gs, r)) :: rest) = 
         let val (existential, dot) = if null ns then ("", "") else ("E ", ". ")
             val binds    = existential ^ String.concatWith " " ns ^ dot
             val gStrings = String.concatWith "; " (map guardString gs)
-            val rString  = (multiString expString r)
+            val rString  = (Multi.multiString expString r)
         in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" ^ if_fiString rest
         end 
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
+
+fun eqexp (C cex1, C cex2) = Core'.expString expString cex1 = Core'.expString expString cex2
+  | eqexp (I i1, I i2) = Impossible.unimp "compare 2 if-fis"
+  | eqexp _ = false 
+
+    
+    (* (ALPHA a1, ALPHA a2) => Alpha.eqval a1 a2 
+     | (NAME n1, NAME n2)   => n1 = n2
+     | (IF_FI gs1, IF_FI gs2) => ListPair.allEq eqgexp(gs1, gs2)
+     | (VCONAPP (vc1, es1), VCONAPP (vc2, es2)) => 
+        Core.eqval (Core.VCON (vc1, []), Core.VCON (vc1, []))
+        andalso 
+        ListPair.allEq eqexp (es1, es2)
+     | (FUNAPP (e1, e2), FUNAPP (e3, e4)) =>
+        ListPair.allEq eqexp ([e1, e2], [e3, e4])
+     | (LAMBDAEXP (n1, e1), LAMBDAEXP (n2, e2)) => 
+        n1 = n2 andalso eqexp (e1, e2)
+     | _ => false  *)
+
+  fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
 
   (* fun eval  *)
 
@@ -420,8 +449,10 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                     end) 
                 end 
         and bindWith (rho : 'a lvar_env) (e : 'a exp, v : 'a value) = 
-        let val _ = print ("Env entering bindWith: " ^ (Env.toString optValStr rho) ^ "\n") 
+        let 
+            val _ = print ("Env entering bindWith: " ^ (Env.toString optValStr rho) ^ "\n") 
             val _ = print ("bindwith on " ^ expString e ^ ", " ^ valString v ^ "\n")
+            val () = () 
             in 
           case (e, v) 
             of (NAME n, _) => 
