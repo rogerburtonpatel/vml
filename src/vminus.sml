@@ -7,7 +7,7 @@ structure FinalVMinus :> sig
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
   datatype 'e multi = MULTI of 'e list
   datatype exp = C of exp Core'.t
-                  | I of (exp, exp multi) if_fi
+               | I of (exp, exp multi) if_fi
 
   datatype def = DEF of name * exp
 
@@ -24,7 +24,7 @@ end
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
   datatype 'e multi = MULTI of 'e list
   datatype exp = C of exp Core'.t
-                  | I of (exp, exp multi) if_fi
+               | I of (exp, exp multi) if_fi
 
   datatype def = DEF of name * exp
 
@@ -57,6 +57,32 @@ end
 
 
 end
+
+structure FinalVMinusWithAlpha = struct 
+  type name = Core'.name
+  type vcon = Core'.vcon
+  datatype 'e guard = EQN of name * 'e
+                    | CONDITION of 'e
+                    | CHOICE of 'e guard list * 'e guard list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
+  datatype 'e multi = MULTI of 'e list
+
+type 'e core_exp = 'e Core'.t
+
+datatype simple = C_S of simple core_exp
+                | I_S  of (simple, simple) if_fi
+
+datatype 'a exp = S of simple 
+                | C of 'a exp core_exp
+                | I of (simple, 'a) if_fi
+
+val x__ = S (C_S (Core'.NAME "n"))
+val _ = S (C_S (Core'.NAME "n"))
+val test__ = I (IF_FI [([], [], 3)])
+
+  datatype 'a def = DEF of name * 'a exp
+
+end 
 
 
 structure RenamedVMinus = struct

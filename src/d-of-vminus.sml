@@ -138,7 +138,11 @@ val rec stuck : context -> ('a -> bool) -> 'a V.exp ->  bool =
 
   (*  *)
   val ifEq : (V.name * 'a V.exp) -> 'a D.tree -> 'a D.tree -> 'a D.tree
-    = fn _ => Impossible.unimp "not yet"
+    = fn (n, e) => fn tbranch => fn fbranch => 
+    let val c = FreshName.freshNameGen ()
+    in 
+      D.LET (c, (Impossible.unimp "n = e"), D.IF (c, tbranch, fbranch))
+    end 
 
   val nameExp : 'a V.exp -> V.name -> 'a V.guarded_exp -> 'a V.guarded_exp   
     (* nameExp (x, e) replaces all occurrences of e with x *)
