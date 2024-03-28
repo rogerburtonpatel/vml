@@ -32,8 +32,12 @@ struct
   val _ = addVar : status -> V.name -> context -> context
   
   val makeKnown = addVar KNOWN
+  val makeUnknown = addVar UNKNOWN
   fun known context x = Env.binds (context, x) 
                         andalso Env.find (x, context) = KNOWN
+
+  fun makeAllUnkown ns ctx = foldl (fn (n, c) => makeUnknown n c) ctx ns
+
 
 (* to generate a decision-tree TEST node, we require an EQN that has a
    known name on the left and a constrcutor application on the right 
@@ -42,16 +46,14 @@ struct
 *)
 
 
-  val matchName :
+(* Not used, so far- replaced by addEquality/addInequality *)
+  (* val matchName :
       V.name -> (Core.vcon * V.exp list) -> 'a guarded_exp' -> 'a guarded_exp' option
-    = fn _ => Impossible.unimp "not yet"
+    = fn _ => Impossible.unimp "not yet" *)
   (*
      matchName (x = y :: ys) [[x = z :: zs --> e]] = SOME [[y = z, ys = zs --> e]]
      matchName (x = y :: ys) [[x = nil --> e]] = NONE
    *)    
-
-
-  (* | V.EXISTS (n, g')    => findOneConstructorApplication (addVar UNKNOWN n ctx) g' *)
 
   val rec findOneConstructorApplication : context -> 'a guarded_exp' -> V.name option
     = fn ctx => fn (names, (guards, a)) => 
@@ -78,13 +80,40 @@ struct
   val _ : context -> 'a guarded_exp' list -> V.name option
     = findAnyConstructorApplication
 
-  fun makeUnknownIn names ctx = foldl (fn (n, base) => addVar UNKNOWN n base) ctx names
 
   exception NameNotBound of string 
 
+(************* BEGIN FAILED ATTEMPTS AT findAnyKnownRHS *************)
+
+
+
+
+(* an expression e is known in context ctx if all names in e are KNOWN in ctx.
+  fun expKnown (ctx : context) (V.C ce) = 
+    (case ce of 
+      C.LITERAL v => true 
+    | C.NAME n => known ctx n
+    | C.VCONAPP (vc, es) => List.all (expKnown ctx) es
+    | C.LAMBDAEXP (n, body) => expKnown (addVar KNOWN n ctx) body 
+    | C.FUNAPP (e1, e2) => expKnown ctx e1 andalso expKnown ctx e2)
+    | expKnown ctx (V.I (V.IF_FI branches)) = 
+      let fun doGuard ctx' g = 
+        case g of 
+          V.CONDITION e => expKnown ctx' e  
+        | V.EQN (n, e) => _
+        | V.CHOICE _ => _
+
+
+      
+      fun doBranch (ns, (gs, a)) = 
+        let val ctx' = makeAllUnkown ns ctx 
+        in Impossible.unimp "todo"
+        end 
+      in Impossible.unimp "todo"
+      end 
+
 (* stuck says: can I solve this with the information I have now? 
-i.e. do I have all the names I need to evaluate this expression? 
-f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
+i.e. do I have all the names I need to evaluate this expression? *)
 (* val rec stuck : context -> V.exp -> bool = 
   fn ctx => fn ex => 
     let fun unknown n = if not (Env.binds (ctx, n)) then raise NameNotBound n 
@@ -107,7 +136,7 @@ f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
                     | branchStuck (ns, (g::gs), a) = 
                   
               
-                  val ctx' = makeUnknownIn names ctx 
+                  val ctx' = makeAllUnkown names ctx 
                   val (gs, rhss)     = ListPair.unzip gexps
               in 
            List.exists (has_unbound_gexp ctx) gs 
@@ -119,39 +148,12 @@ f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
                   | V.CHOICE (gs1, gs2) => Impossible.unimp "todo s" *)
     in has_unbound_names ex 
   end  *)
-
-
-
-(* an expression e is known in context ctx if all names in e are KNOWN in ctx.
-  fun expKnown (ctx : context) (V.C ce) = 
-    (case ce of 
-      C.LITERAL v => true 
-    | C.NAME n => known ctx n
-    | C.VCONAPP (vc, es) => List.all (expKnown ctx) es
-    | C.LAMBDAEXP (n, body) => expKnown (addVar KNOWN n ctx) body 
-    | C.FUNAPP (e1, e2) => expKnown ctx e1 andalso expKnown ctx e2)
-    | expKnown ctx (V.I (V.IF_FI branches)) = 
-      let fun doGuard ctx' g = 
-        case g of 
-          V.CONDITION e => expKnown ctx' e  
-        | V.EQN (n, e) => _
-        | V.CHOICE _ => _
-
-
-      
-      fun doBranch (ns, (gs, a)) = 
-        let val ctx' = makeUnknownIn ns ctx 
-        in Impossible.unimp "todo"
-        end 
-      in Impossible.unimp "todo"
-      end 
-
   
 
   val rec findOneKnownRHS : context -> 'a guarded_exp' -> V.name option
     = fn ctx => fn (names, (guards, a)) => 
     let 
-    val ctx' = makeUnknownIn names ctx
+    val ctx' = makeAllUnkown names ctx
     fun findOneRHS gs = 
        case gs of 
             []      => NONE
@@ -164,8 +166,9 @@ f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
     end  *)
     (* return a known name that is equal to a VCONAPP *)
 
-  fun findOneKnownRHS ctx g = Impossible.unimp "todo"
+(************* END FAILED ATTEMPTS AT findAnyKnownRHS *************)
 
+  fun findOneKnownRHS ctx g = Impossible.unimp "todo"
 
   fun findAnyKnownRHS context [] = NONE
     | findAnyKnownRHS context (g::gs) =
@@ -196,7 +199,7 @@ f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
 (* example of where you want side conditions *)
 
   val addInequality : (V.name * V.exp) -> 'a guarded_exp' -> 'a guarded_exp' option
-    = fn (n, e) => Impossible.unimp "todo"
+    = fn (n, e) => 
       let exception BadInequality
       val check = List.filter 
         (fn g => case g of V.EQN eqn => 
@@ -222,15 +225,13 @@ f is a function 'a -> bool, which lets us see if the final 'a is stuck. *)
     (* nameExp (x, e) replaces all occurrences of e with x *)
     = fn e => fn n => fn (ns, (gs, a)) =>
     let fun swapIfEq e1 e2 = if V.eqexp (e1, e2) then (V.C (C.NAME n)) else e2
-        val replace = List.map 
+        fun replace gs = List.map 
           (fn V.CONDITION e' => V.CONDITION (swapIfEq e e')
             | V.EQN (n', e') => V.EQN (n', swapIfEq e e')
-            | V.CHOICE (gs1, gs2) => Impossible.unimp "choice")
+            | V.CHOICE (gs1, gs2) => V.CHOICE (replace gs1, replace gs2)) gs
         in (ns, (replace gs, a))
         end 
 (* question: swap a as well? *)
-
-
 
   (* addEquality   (x, e) [[x = e, g]] = SOME [[g]]
      addInequality (x, e) [[x = e, g]] = NONE
