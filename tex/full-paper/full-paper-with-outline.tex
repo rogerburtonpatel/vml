@@ -110,7 +110,7 @@
     \end{figure}
     
     Manual case analysis and deconstruction with built-in observer functions
-    like \tt{null} and \tt{tl} can be both error-prone (\bf{say more on this?})
+    like \tt{null} and \tt{tl} can be both error-prone (\rab{say more on this?})
     and verbose. Most functional programmers likely prefer the following
     implementation of \tt{len}:
     \begin{figure}[htt]
@@ -128,9 +128,9 @@
     \label{fig:pmlen}
     \end{figure}
 
-    As a final step towards simplification, most functional languages allow the
-    \tt{case} to be removed entirely in a form of syntactic sugar known as a
-    \it{clausal definition}:
+    As a final step towards simplicity, most functional languages allow
+    programmers to merge pattern matching and function declaration in
+    a form of syntactic sugar known as a \it{clausal definition}:
 
     \begin{figure}[ht]
     \smllst
@@ -138,7 +138,7 @@
         fun len []      = 0
           | len (_::xs) = 1 + len xs
         \end{lstlisting}
-    \caption{A final, concise implementation that uses pattern matching.}
+    \caption{A final, concise implementation that uses pattern matching within a clausal definition.}
     \Description{An implementation of len using pattern matching within a 
     clausal definition.}
     \label{fig:pmclausallen}
@@ -147,37 +147,59 @@
 
     \1 \bf{Common extensions simplify some special cases that would otherwise be awkward}
 
-    Indeed, pattern matching is a well-established construct in functional
-    programming languages, and the subject of much rich literature [cite, appeal
-    to authority]. However, in certain cases, pattern matching can be awkward,
-    and functional languages have often relied on \tt{extensions} to pattern
-    matching to simplify such awkward cases. 
-
-    Below, we illustrate several of such cases, and how extensions mitigate 
-    clunky or verbose code. We use the term \tt{bare pattern matching} to 
-    describe pattern matching \tt{without} extensions: the only syntactic 
-    forms of pattern in bare pattern matching are names and applications of 
-    value constructors to zero or more patterns. 
+    Indeed, pattern matching serves as a cornerstone in functional programming
+    languages, extensively discussed in abundant literature [cite, appeal to
+    authority]. However, in particular instances, pattern matching may prove
+    cumbersome, driving functional languages to frequently employ
+    \it{extensions} to mitigate such scenarios.
     
+    Below, we illustrate several such instances and demonstrate how popular
+    functional languages employ extensions to streamline clunky or verbose code.
+    For the sake of comparison, we coin the term \tt{bare pattern matching} to
+    denote pattern matching \tt{without} extensions: in bare pattern matching,
+    the only syntactic forms of patterns are names and applications of value
+    constructors to zero or more patterns. 
+
+
+    \2 First, side conditions (OCaml, Erlang, Haskell)
+
+    \3 We show a classic example with if 
+
+    \3 Footnote desugaring of \tt{if} \it{condition} \tt{then} \it{branch1} \tt{else} \it{branch2} 
+    
+    to 
+    
+    \tt{case} \it{condition} \tt{of} \tt{true =>} \it{branch1} \tt{| false =>} \it{branch2}
+    
+    \3 Then get a side condition: nice. 
+    \3 Part of what's nice is getting names from the pattern into the condition. 
+
+    \2 Transition to pat guards: 
+    \2 what if we want a pattern match in our condition? Or multiple? 
+
     
     \2 \bf{Example: pat guards} 
     \rab{Help here:
             \begin{enumerate}
-            \item What is correct style on long-form quotation of work with 
-                    code figures, as below? 
+            \item I'm quoting a chunk of another paper, including code blocks. 
+            My education up to now hasn't covered this. What's protocol here?
             \item How can I force the figures to appear in the same order as in 
                   the original paper? Using [h!] does not appear to be working. 
-            \item I believe this borrowed example is helpful in using appeal to
-            authority to illustrate the expressive power of guards as extensions to
-            PM. Do you agree? 
+            \item With correct formatting, I believe this borrowed example is
+            helpful as a clear example and an appeal to authority to illustrate
+            the expressive power of guards as extensions to pattern matching. Do
+            you agree? 
             \end{enumerate}}
 
-            For example, pattern matching is """expressive""" when
-            deconstructing the result of a single expression. But what about
-            when we wish for success only after \it{multiple sequential
-            expressions} match with patterns? Consider the following
-            example, borrowed from Erwig and Peyton-Jones: 
 
+            \rab{Better way to begin this next paragraph?}
+
+            We introduce our first example. While pattern matching is known for
+            its effectiveness in deconstructing individual values, its
+            expressiveness diminishes when faced with sequential computations.
+            What about when we wish to fire a right-hand side only after
+            \it{multiple sequential expressions} match with patterns? Consider
+            the following example, borrowed from Erwig and Peyton-Jones: 
 
     “\dots suppose we have an abstract data type of finite maps, with a lookup
     operation:
@@ -237,11 +259,13 @@
         This is a bit shorter, but hardly better. Worse, if this was just one
         equation of clunky, with others that follow, then the thing would not
         work at all.” [cite]
-        
+
+        EXPLICIT END QUOTATION 
+
         To mitigate the problem, the authors propose \it{pattern guards}, a form
-        of “smart pattern” which allow for intermediate binding of a pattern to
-        an expression within a single branch of a match. Their solution with
-        pattern guards is the following (Figure~\ref{fig:guardclunky}): 
+        of “smart pattern” in which intermediate patterns bind to
+        expressions within a single branch of a match. Their solution with
+        pattern guards is shown in Figure~\ref{fig:guardclunky}. 
 
     \begin{figure}[hbt!]  
         \begin{center}
@@ -258,18 +282,30 @@
     \Description{An implementation of clunky using pattern guards.}
     \label{fig:guardclunky}
     \end{figure}
-        
+
+    Guards offer an elegant solution to the problem of matching on successive
+    computations. \footnote{The authors of the proposal show several other
+    examples where guards drastically simplify otherwise-maddening code.}
+    Additionally, a further power of pattern guards lies in the ability for
+    expressions within guards to utilize names bound in preceding guards. This
+    enables imperative pattern-matched steps with expressive capabilities akin
+    to Haskell's \tt{do} notation [cite or example? I came up with this idea;
+    not sure if it exists- I'll look.]. \rab{should this be its own example?}
+
         % \it{This is obviously better. But now consider something where you need 
         % or-patterns; this fails. }
         \2 \bf{Example: or-patterns}
 
-        In the above example, pattern guards allowed a multi-step computation to
-        play out over a single match. But what if, rather than matching on
-        \tt{all} parts of a complex pattern sequence, the programmer wishes to
-        match a value on \tt{any one} of such a sequence of patterns? Consider
-        Figure~\ref{fig:barepgot}, an example of such a case in OCaml using bare
-        pattern matching: 
-       
+        In the preceding example, we observed how pattern guards facilitated a
+        multi-step computation within a single match. However, what if the
+        programmer's intention isn't to match on \tt{all} parts of a pattern
+        sequence, but instead to match a value on \tt{any one} of such a
+        sequence of patterns? Our following example illustrates this need.
+        Figure~\ref{fig:barepgot}. Examining \tt{parent\_game\_of\_token},
+        written in OCaml using bare patterns, many functional programmers likely
+        sense the need for such functionality.
+        
+        
         \begin{figure}
             \begin{center}
                 \begin{verbatim}
@@ -290,9 +326,10 @@
         \label{fig:barepgot}
         \end{figure}
 
-With \tt{or-patterns}, which condense patterns that share a right-hand side, we
-can eliminate much redundant code (Figure~\ref{fig:orpgot}). (Footnote:
-or-patterns are built in to OCaml). 
+Thankfully, an extension once again comes to our rescue: With \it{or-patterns},
+which condense patterns that share a right-hand side, we can eliminate much
+redundant code (Figure~\ref{fig:orpgot}).
+\footnote{Or-patterns are a feature built into OCaml.}
 
     \begin{figure}
     \begin{center}
@@ -309,22 +346,20 @@ or-patterns are built in to OCaml).
     \label{fig:orpgot}
     \end{figure}
 
-    Besides the natural appeal of brevity, or-patterns localize complexity to a
-    single point. If, rather than a string, \tt{parent\_game\_of\_token}
-    returned the result of a complex computation, the duplicate right-hand sides
-    over multiple patterns as seen in the first model would require the
-    programmer to maintain multiple redundant copies of that computation.
-    \rab{should this just be the example?} Or-patterns allow programmers to
-    localize such maintenance to a single point of truth. 
-    \rab{todo: revise this section.}
-
-    Finally, side conditions (OCaml, Erlang, Haskell)
-
+    In addition to the inherent appeal of brevity, or-patterns serve to
+    concentrate complexity at a single juncture. Consider a scenario where,
+    instead of a string, \tt{parent\_game\_of\_token} yields the outcome of a
+    complex computation. In the initial model, duplicating the right-hand sides
+    across multiple patterns would necessitate the programmer to manage numerous
+    redundant copies of this computation. Or-patterns empower programmers to
+    centralize such maintenance at a single point of truth.
+    
     \1 \bf{Verse Dominates observer functions }
 
     Instead of pattern matching, \it{functional logic programming} languages
-    like Verse [cite: Verse] may favor equations to test for structural
-    equality and create bindings. Consider the Verse implementation of \tt{len}:
+    like Verse [cite: Verse] may favor equations to test for structural equality
+    and create bindings. (Consider the Verse implementation of \tt{len} on a
+    list built of nested tuples in Figure~\ref{fig:verselen}).
 
     \2 \bf{Example.}
 
@@ -375,10 +410,7 @@ or-patterns are built in to OCaml).
 
     \2 Crisp example of this 
 
-    \3 I would say 1-2 short examples that illustrate necessity of backtracking 
-    and multiple results. Also, implementation of standard functions (zip): 
-    maybe hard to predict runtime of functions written like this. Come up with 
-    a good example. 
+    \3 I would say 1-2 short examples that illustrate necessity of backtracking  and multiple results. Also, implementation of standard functions (zip):  maybe hard to predict runtime of functions written like this. Come up with a good example. 
 
     \3 We outline 2 solutions for this! 
 
@@ -402,12 +434,12 @@ functional programming languages. % which we informally introduce
     \end{itemize}
 
     \PPlus\ packages common and standard extensions to pattern matching. In
-    addition to traditional patterns-- names and applications of value
-    constructors-- the language includes pattern guards, or-patterns, and side
-    conditions (Footnote: side conditions are subsumed by pattern guards
-    [cite?]; they are included for purpose of study.) Furthermore, a pattern in
-    \PPlus\ be a \it{sequence} of sub-patterns, allowing for combinations of 
-    arbitrary numbers of patterns. 
+    addition to traditional patterns (maybe say bare patterns?)-- names and
+    applications of value constructors-- the language includes pattern guards,
+    or-patterns, and side conditions (Footnote: side conditions are subsumed by
+    pattern guards [cite?]; they are included for purpose of study.)
+    Furthermore, a pattern in \PPlus\ be a \it{sequence} of sub-patterns,
+    allowing for combinations of arbitrary numbers of patterns. 
     
     \3 \bf{Examples of \PPlus. }
 
@@ -459,7 +491,7 @@ functional programming languages. % which we informally introduce
         These laws are applied repeatedly until we reach a fixed point. 
         
 \subsection{Introducing \VMinus\ }
-\1 \bf{We want to study decision-making inspired by Verse. }
+\1 \bf{We want to study decision-making inspired by Verse.}
         
         To fuel our pursuit of smarter decision-making, we now draw inspiration
         from Verse. We begin by trimming away the aforementioned culprits that
@@ -501,8 +533,7 @@ functional programming languages. % which we informally introduce
         if bound to unknown variable or bound to known variable if any name 
         is unknown}.
         
-        \2 \bf{We add a classic decision-making construct: Guarded commands. }
-        [cite- Dijkstra paper]
+        \2 \bf{We add a classic decision-making construct: Guarded commands. } [cite- Dijkstra paper]
         \2 \bf{The result: \VMinus. }
         
         With these modifications in place, alongside a few additional
@@ -516,13 +547,20 @@ functional programming languages. % which we informally introduce
     \1 \bf{Definition of \VMinus}
     \1 \bf{Continued Discussion:}
 
+    \2 IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
+    \3 Doesn't backtrack
+    \3 No multiple results 
+    \3 Doesn't evaluate functions backwards, have top-level patterns like verse, the list goes on 
+
+
+
     \subsection{Maybe a subsection break here}
     
     \2 \bf{{\VMinus} admits of many of the same pleasing computations as full Verse. }
     
     Even with multiple modifications, \VMinus\ still allows for many of the same
     pleasing computations as full Verse. Programmers can... todo: write.
-    Figure~\ref{fig:ppexs} provides an example of how a programmer might utilize
+    Figure~TODO provides an example of how a programmer might utilize
     \VMinus\ to solve the previous problems:
 
     \2 \bf{Examples of programming in \VMinus }
@@ -531,6 +569,9 @@ functional programming languages. % which we informally introduce
    
     \2 \bf{{\VMinus} is at least as good as {\PPlus}? Or just as comparable? }
         Or incomparable? (Why not both?)
+
+
+
     \3 \bf{\bf{This is likely motivated strongly by examples of comparable code.}}
 
     \4 Let's say 2-3 examples here
