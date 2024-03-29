@@ -66,7 +66,7 @@
 
 \section{Languages are Interesting}
     \begin{outline}[enumerate]
-    
+     \bf{PM dominates observer functions}
 
     Pattern matching dominates observer functions. Consider the following
     implementation of \tt{List.len} in Standard ML, using observers:
@@ -89,7 +89,7 @@
     % Consider the following algorithm on an abstract type~\tt{FiniteMap}, involving a
     % lookup function. This examples is a modificaiton of one borrowed from SPJ
     % proposal [cite]. 
-    
+     \bf{Example. }
 
     \begin{figure}[ht!]
         \centering
@@ -110,7 +110,7 @@
     \end{figure}
     
     Manual case analysis and deconstruction with built-in observer functions
-    like \tt{null} and \tt{tl} can be both error-prone (\bf{say more on this?})
+    like \tt{null} and \tt{tl} can be both error-prone (\rab{say more on this?})
     and verbose. Most functional programmers likely prefer the following
     implementation of \tt{len}:
     \begin{figure}[htt]
@@ -145,7 +145,7 @@
     \end{figure}
         
 
-    
+     \bf{Common extensions simplify some special cases that would otherwise be awkward}
 
     Indeed, pattern matching is a well-established construct in functional
     programming languages, and the subject of much rich literature [cite, appeal
@@ -160,7 +160,7 @@
     value constructors to zero or more patterns. 
     
     
-    
+     \bf{Example: pat guards} 
     \rab{Help here:
             \begin{enumerate}
             \item What is correct style on long-form quotation of work with 
@@ -261,7 +261,7 @@
         
         % \it{This is obviously better. But now consider something where you need 
         % or-patterns; this fails. }
-        
+         \bf{Example: or-patterns}
 
         In the above example, pattern guards allowed a multi-step computation to
         play out over a single match. But what if, rather than matching on
@@ -320,13 +320,13 @@ or-patterns are built in to OCaml).
 
     Finally, side conditions (OCaml, Erlang, Haskell)
 
-    
+     \bf{Verse Dominates observer functions }
 
     Instead of pattern matching, \it{functional logic programming} languages
     like Verse [cite: Verse] may favor equations to test for structural
     equality and create bindings. Consider the Verse implementation of \tt{len}:
 
-    
+     \bf{Example.}
 
     \begin{figure}
         \verselst
@@ -340,7 +340,7 @@ or-patterns are built in to OCaml).
     \label{fig:verselen}
     \end{figure}
     
-    
+     \bf{\bf{Verse is comparably pleasing to PM }}
     Verse is comparably pleasing to pattern matching in its brevity and
     expressiveness, though it differs in a few key ways. For one, Verse
     \it{explicitly} introduces the names that appear inside an equation which
@@ -352,12 +352,12 @@ or-patterns are built in to OCaml).
     Todo: write more. 
 
     Example above illustrates this. Likely add more. 
+     \bf{Full Verse allows/encourages computations that are bad, cost-wise } 
     
-    
-    
-    
-    
-    
+     \bf{Hard to predict?}
+     \bf{Exponential?}
+     \bf{Multiple results?}
+     \bf{Bad how? }
     However, full Verse allows/encourages computations that are problematic,
     cost-wise. In Verse, names (logical variables) are \tt{values}, and can just
     as easily be the result of evaluating an expression as an integer or tuple.
@@ -373,14 +373,14 @@ or-patterns are built in to OCaml).
     combinatorials""" whose size can be difficult to predict. (Todo: technical phrase for 'something massive.') 
 
 
-    
+     Crisp example of this 
 
-    
+     I would say 1-2 short examples that illustrate necessity of backtracking 
     and multiple results. Also, implementation of standard functions (zip): 
     maybe hard to predict runtime of functions written like this. Come up with 
     a good example. 
 
-    
+     We outline 2 solutions for this! 
 
     \end{outline}
 \section{Simplification for Study and Synthesis}
@@ -391,10 +391,10 @@ functional programming languages. % which we informally introduce
 \subsection{Introducing \PPlus\ }
 
 \begin{outline}[enumerate]
-    
+     \bf{To study "all" the interesting/standard extensions to PM, we introduce}
     \PPlus. Its definition is found in \dots TODO 
-    
-    
+     \bf{Definition of \PPlus}
+     \bf{{\PPlus} packages common/standard extensions to PM}
     \begin{itemize}
         \item side conditions
         \item or-patterns 
@@ -409,7 +409,7 @@ functional programming languages. % which we informally introduce
     \PPlus\ be a \it{sequence} of sub-patterns, allowing for combinations of 
     arbitrary numbers of patterns. 
     
-    
+     \bf{Examples of \PPlus. }
 
     Figure~\ref{fig:ppexs} provides an example of how a programmer might utilize
     \PPlus\ to solve the previous problems: 
@@ -434,9 +434,9 @@ functional programming languages. % which we informally introduce
     
     
 \subsection{Addressing how \PPlus\ handles unusual pattern combinations}
-
-
-
+ \bf{\PPlus\ admits of strange looking patterns, but these should not be alarming. }
+ \bf{-> Because they reduce to standard things by (direct) application of algebraic laws. }
+ \bf{\tt{when} within vcons }
 
     Given its minimal restrictions on what kind of pattern can appear where,
     \PPlus\ admits of strange looking patterns: consider \tt{Cons (when true)
@@ -444,22 +444,22 @@ functional programming languages. % which we informally introduce
     to normal forms by (direct) application of algebraic laws: 
 
     
-        
-        
+         Laws: float out vcon, float out from guard
+         \bf{This law is applied repeatedly until we reach a fixed point.}
 
-        
-        
-        
-        
-        
-        
-        
+         K (when e) p2 \dots === K \_ p2 \dots, when e
+         K (when e, p2) p3 \dots  === K p2 p3 \dots, when e
+         K (p2, when e) p3 \dots  === K p2 p3 \dots, when e
+         Footnote: This works because no side fx in \PPlus\ and all names are unique $\uparrow$ 
+         K (when e \pbar p2) p3 \dots === (K \_ p3 \dots, when e) \pbar (K p2 p3 \dots)
+         K (p1 \pbar when e) p3 \dots === (K p2 p3 \dots) \pbar (K \_ p3 \dots, when e) 
+         when e $\leftarrow$ e === \_ <- e, when e
 
         
         These laws are applied repeatedly until we reach a fixed point. 
         
 \subsection{Introducing \VMinus\ }
-
+ \bf{We want to study decision-making inspired by Verse. }
         
         To fuel our pursuit of smarter decision-making, we now draw inspiration
         from Verse. We begin by trimming away the aforementioned culprits that
@@ -474,7 +474,7 @@ functional programming languages. % which we informally introduce
         potential of this operator, particularly when paired with Verse's 'one'
         keyword. When employed with choice as a condition, 'one' elegantly
         signifies 'proceed if any branch of the choice succeeds.
-        
+         \bf{We remove obvious backtracking/multiple results (ask what the notecard says)}
         SAY WHAT CHOICE DOES. 
 
         To this end, we permit the use of choice with several modifications:
@@ -495,15 +495,15 @@ functional programming languages. % which we informally introduce
         of the earlier expression, which we aim to avoid. Consider this example
         in Verse where precisely this occurs:
 
-    
+     Example 
 
         \bf{Choice forces "name knowing." Names must be known in all branches 
         if bound to unknown variable or bound to known variable if any name 
         is unknown}.
         
-        
+         \bf{We add a classic decision-making construct: Guarded commands. }
         [cite- Dijkstra paper]
-        
+         \bf{The result: \VMinus. }
         
         With these modifications in place, alongside a few additional
         adjustments to the placement of existentials and the timing of choice
@@ -513,27 +513,30 @@ functional programming languages. % which we informally introduce
         
         Insert Definition
 
-    
-    
+     \bf{Definition of \VMinus}
+     \bf{Continued Discussion:}
 
     \subsection{Maybe a subsection break here}
     
-    
+     \bf{{\VMinus} admits of many of the same pleasing computations as full Verse. }
     
     Even with multiple modifications, \VMinus\ still allows for many of the same
     pleasing computations as full Verse. Programmers can... todo: write.
-    Figure~\ref{fig:ppexs} provides an example of how a programmer might utilize
+    Figure~TODO provides an example of how a programmer might utilize
     \VMinus\ to solve the previous problems:
 
-    
-    
+     \bf{Examples of programming in \VMinus }
+     \bf{Show: beautiful examples. }
    
    
-    
+     \bf{{\VMinus} is at least as good as {\PPlus}? Or just as comparable? }
         Or incomparable? (Why not both?)
-    
 
-    
+
+
+     \bf{\bf{This is likely motivated strongly by examples of comparable code.}}
+
+     Let's say 2-3 examples here
 
     \end{outline}
 
@@ -542,41 +545,41 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 \section{(PAYLOAD) {\VMinus} can be compiled to \D 
         [Evidence that \dots efficiency]}
 \begin{outline}[enumerate]
-    
-    
-    
-    
-    
-    
+     \bf{Definition of \D }
+     \bf{Examples of Decision Trees - From Maragnet. }
+     \bf{Indeed, consistent with Maragnet }
+     \bf{D is a simple generalization of Maragnet, et al. }
+     \bf{Semantics of \D }
+     \bf{\D\ has a great cost model: }
 
     \bf{A decision tree can be exponential in size but never examines a word of
     the scrutinee more than once. }
 
-    
-    
-    
+     \bf{Algorithm: Translation from \VMinus\ to \D\ : match compiler }
+     \bf{Theorem: Translation from \VMinus\ to \D\ preserves semantics }
+     \bf{Likely inductive hypothesis. 1-4 sentences on proof max. }
 \end{outline}
 
 \section{\PPlus -> \VMinus is interesting (optional)}
 \begin{outline}[enumerate]
-    
-    
-    
-    
+     \bf{\VMinus subsumes pattern matching }
+     \bf{Algorithm: Translation from \PPlus\ to \VMinus}
+     \bf{Theorem: Translation from \PPlus\ to \VMinus preserves semantics }
+     \bf{Claim: Translation \PPlus\ -> \D\ is consistent with Maragnet and others}
 \end{outline}
 
 \section{Related Work}
 \section{Future Work}
 \begin{outline}[enumerate]
-    
-    
-    
+     \bf{Why we wish for $\alpha$s}
+     \bf{What's up with \PPlus\ ? It's worth study in its own right- in future work.}
+     \bf{\PPlus is interesting because it combines or-patterns with pattern }
         guards. No major functional language does this. 
-    
+     \bf{Programs written in Verse using ideas from \VMinus\ might have a }
     friendlier cost model (depending on compiler)
-    
+     \bf{\VMinus might give Verse programmers good ideas }
         (That is, how to solve problems in Verse)
-    
+     \bf{Examples of programming in Verse in the style of \VMinus }
 \end{outline}
 
 \section{Conclusion, Discussion}
@@ -585,17 +588,17 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 \setcounter{section}{0}
 \section{Proofs}
 \begin{outline}
-    
-    
-    
+     \bf{Proof: Translation from \VMinus to \D\ preserves semantics }
+     \bf{Proof: Translation from \PPlus\ to \VMinus preserves semantics }
+     \bf{Proof: Translation from \VMinus to Verse preserves semantics     }
 \end{outline}
 
 \section{Trust me on \VMinus (It's reduced to Verse)}
 \begin{outline}
-    
-    
-    
-    
+     \bf{\VMinus\ has something to do with Verse, semantically }
+     \bf{Our semantics of Verse is consistent with ICFP's semantics of Verse }
+     \bf{Definition: Our semantics of Verse}
+     \bf{Theorem: Translation from \VMinus to Verse preserves semantics     }
 \end{outline}
 
 
