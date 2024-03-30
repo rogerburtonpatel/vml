@@ -51,9 +51,18 @@
   Pattern matching is nice and has an appealing cost model, but people keep
   extending it to make it more expressive. Verse [cite-Verse] looks very simple
   and is surprisingly expressive, but the cost model is a challenge. Why not
-  look for a compromise? We introduce two small functional languages that
-  attempt to address the limitations of pattern matching in popular functional
-  languages.
+  look for a compromise? 
+  
+%   We introduce two small functional languages that
+%   attempt to address the limitations of pattern matching in popular functional
+%   languages.
+
+  We explore the realm of pattern matching in common functional languages and
+  compare it with Verse's equation-based approach. Recognizing the balance
+  between expressiveness and efficiency, we introduce two modest functional
+  languages aimed at addressing the limitations of prevalent pattern matching
+  techniques. We show how a subset of Verse can be compiled to decision trees. 
+
   \end{abstract}
 
 \maketitle
@@ -375,16 +384,50 @@ redundant code (Figure~\ref{fig:orpgot}).
     \label{fig:verselen}
     \end{figure}
     
-    \1 \bf{\bf{Verse is comparably pleasing to PM }}
+    \1 \bf{\bf{Verse is comparably pleasing to PM }} 
+    
+    BIOHAZARD START 
+
+    Verse is comparably pleasing to pattern matching in its brevity and
+    expressiveness (albeit with a few key differences). Equations in Verse, 
+    like pattern matching, can attempt to bind values to patterns. In Verse, 
+    however, 
+
+    programmers introduce names explicitly 
+
+    leading to differences: 
+    105 mistake. 
+
+    In Verse, programmers can also express "do a thing if a condition succeeds":
+    guarding an expression with another before a semicolon, 
+    idea of failure. 
+
+    INLINE EXAMPLES. 
+
     Verse is comparably pleasing to pattern matching in its brevity and
     expressiveness, though it differs in a few key ways. For one, Verse
-    \it{explicitly} introduces the names that appear inside an equation which
-    will be bound to the components of a value when a match succeeds. On line~3 
-    of the example, we see the existential $\exists$ introduce two fresh names, 
-    \tt{x} and \tt{xs}, before attempting to bind them to \tt{ys}. These fresh 
-    names correspond to the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
+    \it{explicitly} introduces the names that appear inside an equation with the
+    existential $\exists$. These names will be bound to the components of a
+    value when a match succeeds. On line~3 of the example, we see the
+    existential $\exists$ introduce two fresh names, \tt{x} and \tt{xs}, before
+    attempting to bind them to \tt{ys}. These fresh names correspond to the
+    \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
+
+    Also, in Verse's equations, names with prior bindings \it{retain those
+    bindings} during matching. This is different from pattern matching, where a
+    name in a pattern is always considered fresh and will always succeed in
+    binding to a value. This is best illustrated with an example (Figure~TODO). 
+    We discuss the implications of this difference in Section~(TODO which).
+
+    Todo: show "105 student mistake" example. 
 
     Todo: write more. 
+
+    \rab{The transition here feels shaky at best. I'd like help connecting the
+    two points: 1. Verse is comparably pleasing to PM, albeit a bit different
+    and 2. However, Verse has an unpredictable cost model.}
+
+    BIOHAZARD END 
 
     Example above illustrates this. Likely add more. 
     \1 \bf{Full Verse allows/encourages computations that are bad, cost-wise } 
@@ -489,7 +532,7 @@ functional programming languages. % which we informally introduce
 
         
         These laws are applied repeatedly until we reach a fixed point. 
-        
+        Todo: add in revision 
 \subsection{Introducing \VMinus\ }
 \1 \bf{We want to study decision-making inspired by Verse.}
         
@@ -505,33 +548,75 @@ functional programming languages. % which we informally introduce
         removal altogether. However, we are drawn to harnessing the expressive
         potential of this operator, particularly when paired with Verse's 'one'
         keyword. When employed with choice as a condition, 'one' elegantly
-        signifies 'proceed if any branch of the choice succeeds.
+        signifies 'proceed if any branch of the choice succeeds. 
+        
         \2 \bf{We remove obvious backtracking/multiple results (ask what the notecard says)}
         SAY WHAT CHOICE DOES. 
 
-        To this end, we permit the use of choice with several modifications:
+        To this end, we imagine a new language, \VMinus, in which we permit
+        choice with several modifications:
 
         \begin{enumerate}
-        \item Choice may only appear as a condition or 'guard', not as a result.
+        \item Choice may only appear as a condition or 'guard', not as a result
+        or the right-hand side of a binding.
         \item If any branch of the choice succeeds, the choice succeeds,
         producing any bindings found in that branch. The program examines the
         branches in a left-to-right order.
         \item The existential $\exists$ may not appear under choice.
         \end{enumerate}
 
-        We make one further crucial modification to the Verse runtime: a name
-        becomes an \it{expression} rather than a \it{value}. This, in
-        combination with our revisions to choice, eliminates backtracking
-        altogether. Here's why: if an expression were to return a name, and a
-        new constraint were then imposed on it, it could force the reevaluation
-        of the earlier expression, which we aim to avoid. Consider this example
-        in Verse where precisely this occurs:
+        We introduce one more crucial modification to the Verse runtime: a name
+        in \VMinus is an \it{expression} rather than a \it{value}. This
+        alteration, coupled with our adjustments to choice, effectively
+        \rab{remove 'effectively' here?} eradicates backtracking. Our rationale
+        behind this is straightforward: if an expression returns a name, and
+        subsequently, the program imposes a new constraint on that name, it may
+        necessitate the reevaluation of the earlier expression—- a scenario we
+        strive to avoid. An example in Verse illustrates this precise scenario:
 
-    \2 Example 
+        FIRST PAPER EXAMPLE 
 
-        \bf{Choice forces "name knowing." Names must be known in all branches 
-        if bound to unknown variable or bound to known variable if any name 
-        is unknown}.
+        \2 Example 
+
+        \2 IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
+        \3 Doesn't backtrack
+        \3 No multiple results 
+        \3 Doesn't evaluate functions backwards, have top-level patterns like verse, the list goes on 
+
+
+        The discerning reader, particularly those well-versed in functional
+        logic programming, may perceive that imposing such restrictions on
+        choice and names effectively strips away much of Verse's essence as a
+        functional logic programming language. With these constraints enforced,
+        there can be no backtracking, multiple results, backward function
+        evaluation, or top-level patterns, among other classic functional logic
+        programming features. But do not fear: our intent is not to recklessly
+        strip Verse of its meticulously crafted core tenets. Instead, our aim is
+        to extract a select few—namely, its equations, existentials, and
+        nondeterministic evaluation order—and juxtapose them with pattern
+        matching.
+
+        % The reader, especially if they are familiar with functional logic
+        % programming, will by now have realized that such restrictions on choice
+        % and names effectively eliminate much of the identity of Verse as a
+        % functional logic programming language. With them in place, there can be
+        % no backtracking, no multiple results, no evaluating functions backwards,
+        % no top-level patterns: the list of curios goes on. But fear not: we do
+        % not aim to thoughtlessly gut Verse of its meticulously-chosen core
+        % features, but rather to extract a select few of them- namely, its
+        % equations, existentials, and nondeterministic evaluation order- and
+        % compare them with pattern matching. 
+    
+
+        Indeed, having stripped out the functional logic programming elements of
+        Verse, we are left with just the decision-making bits. To wrap these, we
+        add a classic decision-making construct: guarded commands [cite-
+        Dijkstra paper, others.] The result is \VMinus. \VMinus is defined in 
+        Figure~(TODO, whatever extension solution you choose). 
+
+        % \bf{Choice forces "name knowing." Names must be known in all branches 
+        % if bound to unknown variable or bound to known variable if any name 
+        % is unknown}.
         
         \2 \bf{We add a classic decision-making construct: Guarded commands. } [cite- Dijkstra paper]
         \2 \bf{The result: \VMinus. }
@@ -541,10 +626,17 @@ functional programming languages. % which we informally introduce
         evaluation (footnote: we discuss these later), we unveil a redefined decision-making core. To complete this
         transformation, we incorporate a venerable decision-making construct:
         Guarded commands [cite: Dijkstra]. The result is \VMinus. 
-        
-        Insert Definition
 
     \1 \bf{Definition of \VMinus}
+
+    To facilitate comparisons and proofs, \VMinus and \PPlus are each a subset
+    of a single unifying language(\cref{fig:unilang}). Column “Unique To” indicates
+    which components of this unifying language belong to the sub-languages. 
+    \PPlus, \VMinus, and the decision tree language \D (Section~TODO) all share 
+    the same core of lambdas, value constructors (\it{K}), names, and function 
+    application. 
+
+
     \1 \bf{Continued Discussion:}
 
     \2 IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
@@ -568,9 +660,7 @@ functional programming languages. % which we informally introduce
    
    
     \2 \bf{{\VMinus} is at least as good as {\PPlus}? Or just as comparable? }
-        Or incomparable? (Why not both?)
-
-
+        Or incomparable? (Why not both?)        
 
     \3 \bf{\bf{This is likely motivated strongly by examples of comparable code.}}
 
@@ -638,6 +728,43 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
     \1 \bf{Definition: Our semantics of Verse}
     \1 \bf{Theorem: Translation from \VMinus to Verse preserves semantics     }
 \end{outline}
+
+\begin{table}[ht]
+    \centering
+    \small
+    \begin{tabular}{l l l}
+        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
+        \hline
+        $P$ : Programs & $\bracketed{d}$ & \\
+        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
+        $\expr$ : Expressions & $x, y, z$ & \\
+        & $K\bracketed{\expr}$ &  \\
+        & $\lambda x.\; \expr$ & \\
+        & $\expr[1]\; \expr[2]$ & \\
+        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
+        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
+        & $\dt$ & \D \\
+        $\v$ : Values & $K\bracketed{\v}$ & \\
+        & $\lambda x.\; \expr$ & \\
+        $p$ : Patterns & $x$ & \PPlus \\
+        & $K\; \bracketed{p}$ & \PPlus \\
+        & $\mathit{when}\; \expr$ & \PPlus \\
+        & $p, p'$ & \PPlus \\
+        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
+        & $p_{1}\pbar p_{2}$ & \PPlus \\
+        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
+        & $\expr;\; g$ & \VMinus \\
+        & $\vexists{x} g$ & \VMinus \\
+        & $x = \expr;\; g$ & \VMinus \\
+        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
+        & $\expr$ & \D \\
+        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
+        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
+    \end{tabular}
+    \caption{Example LaTeX Table}
+    \label{fig:unilang}
+\end{table}
+
 
 
 %     \item Programmers use pattern matching. But pattern matching is not good for
@@ -799,44 +926,6 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 % %     \caption{Example LaTeX Table}
 % %     \label{tab:example}
 % % \end{table}
-
-\begin{table}[ht]
-    \centering
-    \small
-    \begin{tabular}{l l l}
-        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
-        \hline
-        $P$ : Programs & $\bracketed{d}$ & \\
-        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
-        $\expr$ : Expressions & $x, y, z$ & \\
-        & $K\bracketed{\expr}$ &  \\
-        & $\lambda x.\; \expr$ & \\
-        & $\expr[1]\; \expr[2]$ & \\
-        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
-        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
-        & $\dt$ & \D \\
-        $\v$ : Values & $K\bracketed{\v}$ & \\
-        & $\lambda x.\; \expr$ & \\
-        $p$ : Patterns & $x$ & \PPlus \\
-        & $K\; \bracketed{p}$ & \PPlus \\
-        & $\mathit{when}\; \expr$ & \PPlus \\
-        & $p, p'$ & \PPlus \\
-        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
-        & $p_{1}\pbar p_{2}$ & \PPlus \\
-        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
-        & $\expr;\; g$ & \VMinus \\
-        & $\vexists{x} g$ & \VMinus \\
-        & $x = \expr;\; g$ & \VMinus \\
-        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
-        & $\expr$ & \D \\
-        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
-        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
-    \end{tabular}
-    \caption{Example LaTeX Table}
-    \label{tab:example}
-\end{table}
-
-
 
 % Most syntactic categories in \U are present in all of its subsets: Values, Value
 % Constructors, Definition Forms, and most forms of expression are shared. Indeed,
