@@ -309,7 +309,7 @@ i.e. do I have all the names I need to evaluate this expression? *)
         (case findAnyKnownRHS context choices  (* e is known *)
            of SOME (x, rhs) =>
                 if known context x then
-                  ifEq (x, translate rhs) (compile context
+                  ifEq (x, translate rhs) (compile context (* is x added to this context?  *)
                                          (mapPartial (addEquality   (x, rhs)) choices))
                                 (compile context
                                          (mapPartial (addInequality (x, rhs)) choices))
