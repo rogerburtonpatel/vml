@@ -7,7 +7,7 @@ structure Core :> sig
                   | LAMBDAEXP of name * 'a 
                   | FUNAPP of 'a * 'a 
     and 'exp value = VCON of vcon   * 'exp value list 
-                      | LAMBDA of name * 'exp
+                   | LAMBDA of name * 'exp
 
   val map                 : ('a -> 'b) -> 'a t -> 'b t
   

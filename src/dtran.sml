@@ -94,6 +94,10 @@ struct
                  ; TextIO.output(outfile, "\n")
                  ))
 
+  fun curry f x y = f (x, y)
+
+  fun emitD outfile = curry TextIO.output outfile
+
   (**** The Universal Forward Translator ****)
 
   exception NotForward of language * language  (* for external consumption *)

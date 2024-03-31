@@ -55,14 +55,39 @@ struct
     in emitTree' t ^ "\n"
     end 
 
-  fun expString (C ce) = Core.expString expString ce
+  fun br' input = "(" ^ input ^ ")"
+
+  structure C = Core 
+
+  fun mlconstring argstring (C.K vc, args) = 
+    "CON (" ^ vc ^  "[" ^ String.concatWith "," (map argstring args) ^ "]"
+
+  fun expString (C ce) = 
+    (case ce of 
+      C.LITERAL v => valString v
+    | C.NAME n => n
+    | C.VCONAPP conapp => br' (mlconstring expString conapp)
+    | C.LAMBDAEXP (n, body) => br' ("fn " ^ n ^ " => " ^ expString body)
+    | C.FUNAPP (e1, e2) => expString e1 ^ " " ^ expString e2)
     | expString (I tr) = emitTree (Multi.multiString expString) expString tr
+
+  and valString v = 
+  (case v of C.VCON conapp => 
+        br' (mlconstring valString conapp)
+          | C.LAMBDA (n, body) => br' ("fn " ^ n ^ " => " ^ expString body))
 
     fun id x = x 
 
-    (* val testTree = TEST ("r1", [(("C1", 2), MATCH "foo"), (("C1", 2), LET ("x", "C1/2", IF ("x", MATCH "foo", MATCH "bar")))], SOME (MATCH "Foo")) 
+    (* val testTree = TEST ("r1", [((C.K "C1", 2), MATCH "foo"), ((C.K "C1", 2), LET ("x", "C1/2", IF ("x", MATCH "foo", MATCH "bar")))], SOME (MATCH "Foo")) 
     val () = print (emitTree id id testTree) *)
 
+  fun defString (DEF (n, e)) = "val rec " ^ n ^ " = " ^ expString e
+
+  fun progstring (ds : def list) = 
+    ( "exception NoMatch \n" 
+    ^ "type vcon = string \n"
+    ^ "datatype data = CON of vcon * data list \n"
+    ^ String.concatWith "\n" (map defString ds))
 
 end
 
