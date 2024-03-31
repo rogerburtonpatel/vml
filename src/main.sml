@@ -41,7 +41,7 @@ structure Main = struct
     case String.fields (fn c => c = #"-") spec
       of [from, to] =>
            (case (Languages.find from, Languages.find to)
-              of (SOME from, SOME to) => UFT.translate (from, to)
+              of (SOME from, SOME to) => Dtran.translate (from, to)
                | (NONE, _) => die ("I don't recognize language `" ^ from ^ "`")
                | _ => die ("I don't recognize language `" ^ to ^ "`"))
        | _ => usage()
@@ -55,7 +55,7 @@ structure Main = struct
           of [] => usage ()
            | spec :: args => reportAndExit (tx (translationOf spec) args)
     end
-    handle UFT.NotForward (from, to) =>
+    handle Dtran.NotForward (from, to) =>
       (app eprint [arg0, ": Uh-oh!\n  I don't know how to translate ",
                    Languages.description from, "\n  to ",
                    Languages.description to, "\n"]

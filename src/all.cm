@@ -39,13 +39,12 @@ group is
   lexer-combinators.sml
   pplus-lex.sml
   pplus-parse.sml
-  vminus-parser.sml
   vminus-lex.sml
   vminus-parse.sml
   vm-of-pp.sml
 
   languages.sml
-  uft.sml
+  dtran.sml
 
   main.sml
   

@@ -5,7 +5,8 @@
 (* You'll get a partially complete version of this file, 
     which you'll need to complete *)
 
-structure UFT :> sig
+(* Formerly UFT *)
+structure Dtran :> sig
   type language = Languages.language
   exception NotForward of language * language
   val translate : language * language -> TextIO.instream * TextIO.outstream -> unit Error.error
@@ -51,30 +52,44 @@ struct
     >>> Error.list           (* token list list error *)
     >>> Error.map List.concat (* token list error *)
     >=> PPlusParse.parse       (* def list error *)    
-    
-  val vmsOfPP : PPlus.def list -> VMinus.def list =
-  map VMofPP.def
 
-  (* val dOfVMS : VMinusSimple.def list ->  =
-  map Translation.vmSimpleOfPdef *)
-
-
-  fun AST_P_of PPLUS = pplusOfFile
-    | AST_P_of  _    = raise Backward
-
-  fun VMINUS_SIMPLE_of PPLUS = pplusOfFile >>> Error.map vmsOfPP
-    | VMINUS_SIMPLE_of  _    = raise Backward
+  val vminusOfFile : instream -> VMinus.def list error =
+    lines                    (* line list *)
+    >>> map VMinusLex.tokenize_line  (* token list error list *)
+    >>> Error.list           (* token list list error *)
+    >>> Error.map List.concat (* token list error *)
+    >=> VMinusParse.parse       (* def list error *)    
 
 
-  fun D_of _  = Impossible.unimp "translate to a decision tree"
+
+  val vmofPP : PPlus.def list -> VMinus.def list = 
+    map VMofPP.def
+  
+  val dofVM : VMinus.def list -> D.def list = 
+    map DofVminus.def
+
+  fun PPLUS_of PPLUS = pplusOfFile
+    | PPLUS_of  _    = raise Backward
+
+  fun VMINUS_of PPLUS = pplusOfFile >>> Error.map vmofPP
+    | VMINUS_of  _    = raise Backward
+
+  fun Eval_of PPLUS  = pplusOfFile >>> Error.map PPlus.runProg
+    | Eval_of VMINUS = Impossible.unimp "eval vminus"
+    | Eval_of D      = Impossible.impossible "D is evaluated as Standard ML" (* XXX TODO really wants better error handling *)
+    | Eval_of Eval   = raise Backward
 
 
-  fun emitAST_P outfile =
+  fun D_of _  = Impossible.unimp "match compiler"
+  (* vminusOfFile >>> Error.map dofVM *)
+
+
+  fun emitPPLUS outfile =
     app (fn d => ( TextIO.output(outfile, PPlus.defString d)
                  ; TextIO.output(outfile, "\n")
                  ))
 
-  fun emitVMS outfile =
+  fun emitVMINUS outfile =
     app (fn d => ( TextIO.output(outfile, VMinus.defString d)
                  ; TextIO.output(outfile, "\n")
                  ))
@@ -85,8 +100,8 @@ struct
 
   fun translate (inLang, outLang) (infile, outfile) =
     (case outLang
-       of AST_P         => AST_P_of inLang >>> Error.map (emitAST_P outfile)
-        | VMINUS_SIMPLE => VMINUS_SIMPLE_of inLang >>> Error.map (emitVMS outfile)
+       of PPLUS         => PPLUS_of inLang >>> Error.map (emitPPLUS outfile)
+        | VMINUS        => VMINUS_of inLang >>> Error.map (emitVMINUS outfile)
         | D => D_of
         | _  => raise NoTranslationTo outLang
     ) infile

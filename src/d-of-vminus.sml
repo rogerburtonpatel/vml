@@ -1,10 +1,9 @@
 structure DofVminus :> sig
-  structure D : DECISION_TREE
-  structure V : VMINUS
-  type 'a guarded_exp' = V.name list * (V.exp V.guard list * 'a)
+  val def : VMinus.def -> D.def
+  type 'a guarded_exp' = VMinus.name list * (VMinus.exp VMinus.guard list * 'a)
   exception Stuck of unit guarded_exp' list
-  val compile : V.exp Multi.multi guarded_exp' list -> (D.exp, D.exp Multi.multi) D.tree
-  val translate : V.exp -> D.exp 
+  val compile : VMinus.exp Multi.multi guarded_exp' list -> (D.exp, D.exp Multi.multi) D.tree
+  val translate : VMinus.exp -> D.exp 
 end
   =
 struct
@@ -323,6 +322,8 @@ i.e. do I have all the names I need to evaluate this expression? *)
 
 
   val compile = fn things => compile emptyContext things
+
+  fun def (V.DEF (n, e)) = D.DEF (n, translate e)
 
 end
 

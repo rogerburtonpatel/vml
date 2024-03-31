@@ -21,6 +21,8 @@ structure PPlus :> sig
   val patString : exp pattern -> string
   val defString : def -> string
 
+  val runProg : def list -> unit 
+
 end 
   = 
 struct
@@ -145,6 +147,25 @@ struct
   | match rho (CONAPP _, _) = raise Doesn'tMatch
 
   (* TODO next: test eval, write vm eval, write d eval, renamings, vm parser (fun actually) *)
+
+(* TODO: recursion?  *)
+
+  fun def (rho : value Env.env) (DEF (n, C (Core.LAMBDAEXP (x, body)))) = 
+      let val rho' = Env.bind (n, Core.LAMBDA (x, body), rho)
+      in rho' 
+      end 
+  | def rho (DEF (n, e)) = 
+    let val v = eval rho e
+    in Env.bind (n, v, rho)
+    end
+
+  fun runProg defs = 
+  (  foldl (fn (d, env) => 
+      let val rho = def env d
+      in  Env.<+> (rho, env)
+      end) Env.empty defs;
+      ())
+  
 
 
 (* val branches = [(CONAPP ("K", [PNAME "n"]), C (Core.NAME "e1")), (CONAPP ("K", [PNAME "n1", PNAME "n2"]), C (Core.NAME "e2"))]
