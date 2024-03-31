@@ -1,4 +1,4 @@
-open Guard
+local open Guard in 
 
 (* hack for tests  *)
 
@@ -461,3 +461,4 @@ let fun insert_binding (ARROWEXP _) e (LV n) rho =
         raise Cycle ("names \"" ^ x ^ "\" and \"" 
                                      ^ y ^ "\" depend on each other;" 
                           ^ " the guarded expression cannot be ordered.") *)
+end
