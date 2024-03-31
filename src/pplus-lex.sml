@@ -8,7 +8,6 @@ structure PPlusLex : sig
     | RIGHT of bracket_shape
     | RESERVED of string
 
-    (* must do one line at a time *)
   val token : token LexerCombinators.producer
   val tokenize_line : string -> token list Error.error
   val tokenString : token -> string 
@@ -54,6 +53,8 @@ struct
     | RESERVED of string
 
   val doublequote = Char.toString (chr 96)
+  val backslash = (chr 92)
+  val sbackslash = StringEscapes.backslash
 
   fun bracketLexer token
     =  char #"(" >> succeed (LEFT  ROUND)
@@ -66,6 +67,7 @@ struct
 
 
   type lexer = token L.producer
+
 
   fun intFromChars (#"-" :: cs) = 
         Error.map Int.~ (intFromChars cs)  (* XXX todo overflow *)
@@ -84,8 +86,9 @@ struct
   fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};,.\\" c
 
 
+
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", ",",
+                  "->", "<-", "when", ",", sbackslash,
                   (* debugging *)
                   "parse", "pat"
                   ]
@@ -110,16 +113,17 @@ struct
 
   fun optional p = SOME <$> p <|> succeed NONE
 
-  val backslash = (chr 92)
-  val sbackslash = StringEscapes.backslash
+  fun onereserved c = char c >> succeed (RESERVED (Char.toString c))
+
+  val anyreserved =   onereserved #"'"
+                  <|> onereserved #"."
+                  <|> onereserved #","
+                  <|> char backslash >> succeed (RESERVED sbackslash)
 
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  char #"'" >> succeed (RESERVED "'")
-                  <|> char backslash >> succeed (RESERVED sbackslash)
-                  <|> char #"." >> succeed (RESERVED ".")
-                  <|> char #"," >> succeed (RESERVED ",")
+    bracketLexer   (  anyreserved
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )

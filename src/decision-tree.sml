@@ -14,6 +14,8 @@ signature DECISION_TREE = sig
   datatype exp = C of exp Core.t 
                | I of (exp, exp multi) tree
 
+  datatype def = DEF of name * exp 
+
   val emitTree  : ('a -> string) -> ('b -> string) -> ('b, 'a) tree -> string
   val expString : exp -> string
   
@@ -37,6 +39,7 @@ struct
   datatype exp = C of exp Core.t 
              | I of (exp, exp multi) tree
 
+  datatype def = DEF of name * exp 
 
   fun emitTree f_a f_e t = 
     let fun emitCase [] default = Impossible.impossible "no patterns to match on"

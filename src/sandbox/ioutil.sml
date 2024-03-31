@@ -1,4 +1,4 @@
-(* Utility functions for handling text input and output for UFT *)
+(* Utility functions for handling text input and output for Dtran *)
 
 (* You can ignore this *)
 

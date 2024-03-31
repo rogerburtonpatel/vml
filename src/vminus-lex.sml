@@ -2,16 +2,15 @@ structure VMinusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
 
   datatype token
-    = QUOTE
-    | VCON    of string 
+    = VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
+    | RESERVED of string
 
-    (* must do one line at a time *)
   val token : token LexerCombinators.producer
   val tokenize_line : string -> token list Error.error
-
+  val tokenString : token -> string 
   val leftString  : bracket_shape -> string
   val rightString : bracket_shape -> string
 end
@@ -36,6 +35,9 @@ struct
   val one = L.one
   val notFollowedBy = L.notFollowedBy
   val eos = L.eos
+  fun member x = List.exists (fn y => x = y)
+  
+
 
   fun char c = L.sat (L.eq c) one
 
@@ -44,11 +46,15 @@ struct
   datatype bracket_shape = ROUND | SQUARE | CURLY
 
   datatype token
-    = QUOTE
-    | VCON    of string 
+    = VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
+    | RESERVED of string
+
+  val doublequote = Char.toString (chr 96)
+  val backslash = (chr 92)
+  val sbackslash = StringEscapes.backslash
 
   fun bracketLexer token
     =  char #"(" >> succeed (LEFT  ROUND)
@@ -76,10 +82,23 @@ struct
   fun intToken isDelim =
     L.check (intFromChars <$> intChars isDelim)
 
-  fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};" c
+  fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};,.\\" c
 
 
-  fun atom x = NAME x
+  val reserved = ["val", "=", "if", "fi", doublequote, ".", "of", "|", 
+                  "->", ";", "[]", "E", sbackslash,
+                  (* debugging *)
+                  "parse", "pat"
+                  ]
+  val predefvcons = ["true", "false"]
+
+  fun atom x =
+    if member x reserved then
+        RESERVED x
+    else if Char.isUpper (String.sub (x, 0)) orelse (member x predefvcons) then
+        VCON x
+    else
+        NAME x
 
   val whitespace = many (sat Char.isSpace one)
 
@@ -88,14 +107,21 @@ struct
     in  Error.ERROR msg
     end
 
-  val comment = char #";" >> many one
+  val comment = char #"#" >> many one
 
   fun optional p = SOME <$> p <|> succeed NONE
+
+  fun onereserved c = char c >> succeed (RESERVED (Char.toString c))
+
+  val anyreserved =   onereserved #"'"
+                  <|> onereserved #"."
+                  <|> onereserved #";"
+                  <|> char backslash >> succeed (RESERVED sbackslash)
 
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  char #"'" >> succeed QUOTE
+    bracketLexer   (  anyreserved
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )
@@ -113,31 +139,11 @@ struct
     | rightString CURLY = "}"
 
 
+  fun tokenString (VCON n)     = "vcon " ^ n
+    | tokenString (NAME n)     = "name " ^ n
+    | tokenString (LEFT b)     = leftString b
+    | tokenString (RIGHT b)    = rightString b
+    | tokenString (RESERVED s) = "reserved word " ^ s
+
 end
 
-
-
-(* structure OldVMinusLex : sig
-  val tokenize : string -> string list
-  val parse    : string list -> OldPPlus.def list
-end = struct
-
-
-  fun isDelimiter c =
-    Char.isSpace c orelse Char.isAlphaNum c orelse Char.contains "([{,;)}]" c
-
-  fun tokenizeHelper acc lexeme rest =
-    case rest of
-      [] => List.rev (lexeme :: acc)
-    | c::cs =>
-        if isDelimiter c then
-          if lexeme = "" then tokenizeHelper acc (Char.toString c) cs
-          else tokenizeHelper (lexeme :: acc) (Char.toString c) cs
-        else
-          tokenizeHelper acc (lexeme ^ Char.toString c) cs
-
-  fun tokenize input =
-    tokenizeHelper [] "" (String.explode input)
-
-  fun parse tokens = Impossible.unimp "parser"
-end *)
