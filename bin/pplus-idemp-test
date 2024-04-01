@@ -65,7 +65,7 @@ shopt -s nullglob
 
 run_tests () {
     for file in $TESTDIR/*.pp; do
-        run_one_test "diff <(dtran pplus-astp $file 2>&1) <(dtran pplus-astp $file| dtran pplus-astp)"
+        run_one_test "diff <(dtran pp-pp $file 2>&1) <(dtran pp-pp $file| dtran pp-pp)"
     done
     if [[ "$numfail" -eq "0" ]]; then 
         echo "All tests passed."

@@ -42,22 +42,42 @@ structure VMinus :> VMINUS
       | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
 
 
-  fun expString   (C ce)               = Core.expString expString ce
+  fun br printer input = "(" ^ printer input ^ ")"
+  fun br' input = "(" ^ input ^ ")"
+
+  structure C = Core
+
+  fun expString (C ce) = 
+  (case ce of C.FUNAPP (e1, e2)  => 
+                          maybeparenthesize e1 ^ " " ^ maybeparenthesize e2
+            | C.VCONAPP (vc, es) => C.vconAppStr maybeparenthesize vc es
+            | _ => Core.expString expString ce)
     | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
   and guardString (EQN (n, e))         = n ^ " = " ^ expString e
     | guardString (CONDITION e)        = expString e
     | guardString (CHOICE (gs1, gs2))  = 
             let val compress = String.concatWith "; " o map guardString
-            in  compress gs1 ^ " | " ^ compress gs2 
+            in  br' (compress gs1 ^ " | " ^ compress gs2 )
             end 
-  and if_fiString [] = ""
-    | if_fiString ((ns, (gs, r)) :: rest) = 
+  and gexpString (ns, (gs, r)) = 
         let val (existential, dot) = if null ns then ("", "") else ("E ", ". ")
             val binds    = existential ^ String.concatWith " " ns ^ dot
             val gStrings = String.concatWith "; " (map guardString gs)
             val rString  = (Multi.multiString expString r)
-        in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" ^ if_fiString rest
+        in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" 
         end 
+  and if_fiString gexps = 
+  String.concat (List.map gexpString gexps) 
+  and maybeparenthesize (C e) = 
+(case e of C.LITERAL v => br' (C.valString expString v)
+        | C.NAME n     => n
+        | C.VCONAPP (C.K vc, es) => 
+            if null es then vc else br' (C.vconAppStr expString (C.K vc) es)
+        | C.LAMBDAEXP (n, body)  => 
+          br' (StringEscapes.backslash ^ n ^ ". " ^ (expString body))
+        | C.FUNAPP (e1, e2)      => br' (expString e1 ^ " " ^ expString e2))
+  | maybeparenthesize other = br' (expString other)
+    
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 

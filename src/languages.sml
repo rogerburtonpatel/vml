@@ -25,6 +25,7 @@ struct
     , (AST_P, "astp", "AST for P+")
     , (AST_V,  "astv",  "AST for V-") *)
     , (D,  "d",  "decision-tree language")
+    , (Eval,  "eval",  "language evaluator for P+ and V-")
     ]
 
 

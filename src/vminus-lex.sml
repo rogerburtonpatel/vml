@@ -88,7 +88,7 @@ struct
   val reserved = ["val", "=", "if", "fi", doublequote, ".", "of", "|", 
                   "->", ";", "[]", "E", sbackslash,
                   (* debugging *)
-                  "parse", "pat"
+                  "parse", "guard", "gexp"
                   ]
   val predefvcons = ["true", "false"]
 
