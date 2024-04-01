@@ -76,7 +76,8 @@ end = struct
   fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
 
   fun tokSeparated t p = curry op :: <$> p <*> many (reserved t >> p)
-
+                         <|> succeed []
+                        (* parse a token-separated list; may be empty *)
   fun barSeparated p       = tokSeparated "|" p
   fun semicolonSeparated p = tokSeparated ";" p
   fun commaSep p           = tokSeparated "," p
@@ -128,16 +129,19 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
 
   val exp = P.fix (fn exp : V.exp P.producer => 
     let         
-      val existentials = exists >> many name
+      val existentials = exists >> many name <~> dot
                           <|> succeed []
-      val guard =     
-          P.fix (fn guard : V.exp V.guard P.producer =>
-                curry V.EQN <$> name <*> equalssign >> exp
-            <|> curry V.CHOICE <$> many1 guard <~> bar <*> many1 guard
-            <|> V.CONDITION <$> exp)
+      
+      val guard = P.fix (fn guard : V.exp V.guard P.producer =>
+          let val baseguard = curry V.EQN <$> name <*> equalssign >> exp <|> 
+                            V.CONDITION <$> exp                          <|>
+                            bracketed guard 
+          in curry V.CHOICE <$> many1 baseguard <~> bar <*> many1 baseguard <|> 
+                   baseguard
+          end)  
       val guards = semicolonSeparated guard <|> succeed []
-      val multi = Multi.MULTI <$> many exp 
-      val rhs = multi 
+      val multi = Multi.MULTI <$> many1 exp 
+      val rhs = rightarrow >> multi 
       val guarded_exp = P.pair <$> existentials <*> (P.pair <$> guards <*> rhs)
     val subexp = P.fix (fn subexp =>
       vvconapp   <$> vcon <*> many exp                                      <|> 
@@ -149,8 +153,10 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
                                                                             <|> 
       bracketed exp)
     in 
-    
-      (* reserved "pat" >> pattern >> succeed (ppname "x")                      <|>  *)
+      reserved "guard" >> name >> equalssign >> exp >> succeed (vname "x") <|>
+      reserved "gexp" >> guarded_exp >> succeed (vname "x")                      <|> 
+      (* reserved "guard" >>  name >> succeed (vname "x")      <|>  *)
+      (* reserved "guard" >>  name >> equalssign >> exp >> succeed (vname "x")      <|>  *)
       (* debugging *)
       uncurry vfunapp <$> (P.pair <$> subexp <*> subexp)                    <|>
       subexp

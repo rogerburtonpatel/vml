@@ -45,7 +45,7 @@ structure Main = struct
                | (NONE, _) => die ("I don't recognize language `" ^ from ^ "`")
                | _ => die ("I don't recognize language `" ^ to ^ "`"))
        | _ => usage()
-                   
+
   fun reportAndExit (Error.OK ()) = OS.Process.exit OS.Process.success
     | reportAndExit (Error.ERROR msg) = die msg
 
@@ -61,5 +61,14 @@ structure Main = struct
                    Languages.description to, "\n"]
       ; OS.Process.exit OS.Process.failure
       )
-
+        | Dtran.Can'tDigest Languages.D => 
+          (app eprint [arg0, ": Uh-oh!\n  I can't parse or evaluate D: ",
+                             "D is parsed and evaluated as Standard ML!\n"]
+      ; OS.Process.exit OS.Process.failure
+      )
+        | Dtran.Can'tDigest Languages.Eval => 
+          (app eprint [arg0, ": You know better!\n", 
+                             "  Eval can only be used after the \"-\"!\n"]
+      ; OS.Process.exit OS.Process.failure
+      )
 end

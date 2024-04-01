@@ -9,6 +9,7 @@
 structure Dtran :> sig
   type language = Languages.language
   exception NotForward of language * language
+  exception Can'tDigest of language
   val translate : language * language -> TextIO.instream * TextIO.outstream -> unit Error.error
 
 (*@ false *)
@@ -60,7 +61,8 @@ struct
     >>> Error.map List.concat (* token list error *)
     >=> VMinusParse.parse       (* def list error *)    
 
-
+  (* For bad use of eval, attempting to read in D, etc. *)
+  exception Can'tDigest of language
 
   val vmofPP : PPlus.def list -> VMinus.def list = 
     map VMofPP.def
@@ -71,17 +73,22 @@ struct
   fun PPLUS_of PPLUS = pplusOfFile
     | PPLUS_of  _    = raise Backward
 
-  fun VMINUS_of PPLUS = pplusOfFile >>> Error.map vmofPP
-    | VMINUS_of  _    = raise Backward
+  fun VMINUS_of PPLUS  = pplusOfFile >>> Error.map vmofPP
+    | VMINUS_of VMINUS = vminusOfFile
+    | VMINUS_of  _     = raise Backward
 
-  fun Eval_of PPLUS  = pplusOfFile >>> Error.map PPlus.runProg
-    | Eval_of VMINUS = Impossible.unimp "eval vminus"
-    | Eval_of D      = Impossible.impossible "D is evaluated as Standard ML" (* XXX TODO really wants better error handling *)
-    | Eval_of Eval   = raise Backward
+  fun runProg PPLUS  = pplusOfFile >>> Error.map PPlus.runProg
+    | runProg VMINUS = Impossible.unimp "eval vminus"
+    | runProg D      = raise Can'tDigest D
+    | runProg _      = Impossible.impossible "no other languages to evaluate"
+(* Impossible.impossible "D is evaluated as Standard ML" XXX TODO really wants better error handling *)
 
-
-  fun D_of _  = Impossible.unimp "match compiler"
-  (* vminusOfFile >>> Error.map dofVM *)
+  fun D_of VMINUS  = vminusOfFile >>> Error.map dofVM
+    | D_of PPLUS   = VMINUS_of PPLUS >>> Error.map dofVM
+    | D_of D       = raise Can'tDigest D
+    | D_of _       = raise Backward
+  (* Impossible.unimp "match compiler" *)
+  
 
 
   fun emitPPLUS outfile =
@@ -96,26 +103,22 @@ struct
 
   fun curry f x y = f (x, y)
 
-  fun emitD outfile = curry TextIO.output outfile
+  fun emitD outfile = D.progString >>> curry TextIO.output outfile
 
   (**** The Universal Forward Translator ****)
 
   exception NotForward of language * language  (* for external consumption *)
 
-  fun translate (inLang, outLang) (infile, outfile) =
+  fun translate (Eval, _) _ = raise Can'tDigest Eval 
+    | translate (inLang, outLang) (infile, outfile) =
     (case outLang
-       of PPLUS         => PPLUS_of inLang >>> Error.map (emitPPLUS outfile)
-        | VMINUS        => VMINUS_of inLang >>> Error.map (emitVMINUS outfile)
-        | D => D_of
-        | _  => raise NoTranslationTo outLang
+       of PPLUS  => PPLUS_of  inLang >>> Error.map (emitPPLUS outfile)
+        | VMINUS => VMINUS_of inLang >>> Error.map (emitVMINUS outfile)
+        | D      => D_of      inLang >>> Error.map (emitD outfile)
+        | Eval   => runProg inLang
     ) infile
-    handle Backward => 
-    let val () = IOUtil.eprint "backward" in 
-    raise NotForward (inLang, outLang) end 
-         | NoTranslationTo outLang => 
-    let val () = IOUtil.eprint "notran" in 
+    handle Backward                => raise NotForward (inLang, outLang)
+         | NoTranslationTo outLang => raise NotForward (inLang, outLang)
          
-         raise NotForward (inLang, outLang) end
-
 
 end

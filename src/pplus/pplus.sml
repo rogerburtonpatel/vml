@@ -59,19 +59,19 @@ val _ = duplicatename : name list -> name option
          | SOME x => raise DisjointUnionFailed x
   end *)
 
-  exception Doesn'tMatch
+  exception NoMatch
 
   (* fun match (CONAPP (k, ps), OldCore.VCON (OldCore.K k', vs)) =
      if k = k' then
        disjointUnion (ListPair.mapEq match (ps, vs))
      else
-       raise Doesn'tMatch
-  | match (CONAPP _, _) = raise Doesn'tMatch
+       raise NoMatch
+  | match (CONAPP _, _) = raise NoMatch
   | match (PNAME x,   v) = Env.bind (x, v, Env.empty) *)
 
 
 (* <boxed values 147>=                          *)
-(* val _ = op match         : pat * value -> value env (* or raises Doesn'tMatch *)
+(* val _ = op match         : pat * value -> value env (* or raises NoMatch *)
 val _ = op disjointUnion : 'a env list -> 'a env *)
 
 fun eval (rho : value Env.env) e = 
@@ -114,7 +114,7 @@ fun eval (rho : value Env.env) e =
              (* val rho' = match (p, v)
              in  eval (e, rho <+> rho')
              end
-             handle Doesn'tMatch => eval rho (CASE (LITERAL v, choices))
+             handle NoMatch => eval rho (CASE (LITERAL v, choices))
         | CASE (_, []) =>
             raise Match *)
 

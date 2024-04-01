@@ -18,6 +18,8 @@ signature DECISION_TREE = sig
 
   val emitTree  : ('a -> string) -> ('b -> string) -> ('b, 'a) tree -> string
   val expString : exp -> string
+
+  val progString : def list -> string
   
 end
 
@@ -83,7 +85,7 @@ struct
 
   fun defString (DEF (n, e)) = "val rec " ^ n ^ " = " ^ expString e
 
-  fun progstring (ds : def list) = 
+  fun progString (ds : def list) = 
     ( "exception NoMatch \n" 
     ^ "type vcon = string \n"
     ^ "datatype data = CON of vcon * data list \n"

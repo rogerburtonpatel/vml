@@ -55,12 +55,20 @@ structure Core :> sig
       v1 = v2 andalso ListPair.all eqval (vs, vs')
     | eqval (_, _) = false 
 
+  fun br printer input = "(" ^ printer input ^ ")"
+  fun br' input = "(" ^ input ^ ")"
+
   fun vconAppStr f (K vc) args = 
       String.concatWith " " (vc::(List.map f args))
 
+  fun vconAppExpStr f (K vc) args = 
+      String.concatWith " " (vc::(List.map f args))
+
+
+
   fun expString f (LITERAL v)           = valString f v
     | expString f (NAME n)              = n
-    | expString f (VCONAPP (vc, es))     = vconAppStr f vc es 
+    | expString f (VCONAPP (vc, es))    = vconAppStr f vc es 
     | expString f (LAMBDAEXP (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
     | expString f (FUNAPP (e1, e2)) = f e1 ^ " " ^ f e2
@@ -68,6 +76,13 @@ structure Core :> sig
           vconAppStr (valString f) vc vals 
     | valString f (LAMBDA (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
+  (* and maybeparenthesize f e = 
+    case e of LITERAL v           => br' (valString f v)
+            | NAME n              => n
+            | VCONAPP (vc, es)    => br' (vconAppStr f vc es)
+            | LAMBDAEXP (n, body) => 
+              br' (StringEscapes.backslash ^ n ^ ". " ^ (f body))
+            | FUNAPP (e1, e2)     => br' (f e1 ^ " " ^ f e2) *)
     
 end
 

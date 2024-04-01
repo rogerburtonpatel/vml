@@ -48,9 +48,14 @@ struct
   fun br' input = "(" ^ input ^ ")"
 
 
+  structure C = Core 
 
 
-  fun expString (C ce) = Core.expString expString ce
+  fun expString (C ce) = 
+  (case ce of C.FUNAPP (e1, e2)  => 
+                          maybeparenthesize e1 ^ " " ^ maybeparenthesize e2
+            | C.VCONAPP (vc, es) => C.vconAppStr maybeparenthesize vc es
+            | _ => Core.expString expString ce)
     | expString (I (CASE (scrutinee, branches))) = 
       let fun branchString (p, ex) = patString p ^ " -> " ^ expString ex
           val body = 
@@ -60,6 +65,15 @@ struct
           in "case " ^ expString scrutinee ^ " of " ^ body
           
           end
+    and maybeparenthesize (C e) = 
+    (case e of C.LITERAL v => br' (C.valString expString v)
+            | C.NAME n     => n
+            | C.VCONAPP (C.K vc, es) => 
+                if null es then vc else br' (C.vconAppStr expString (C.K vc) es)
+            | C.LAMBDAEXP (n, body)  => 
+              br' (StringEscapes.backslash ^ n ^ ". " ^ (expString body))
+            | C.FUNAPP (e1, e2)      => br' (expString e1 ^ " " ^ expString e2))
+      | maybeparenthesize other = br' (expString other)
   and patString (PNAME n) = n 
     | patString (CONAPP (n, ps)) = 
         Core.vconAppStr (fn (PNAME n') => n' 
@@ -101,7 +115,7 @@ struct
           | SOME x => raise DisjointUnionFailed x
     end
 
-  exception Doesn'tMatch
+  exception NoMatch
 
   
   fun eval rho (C ce) = 
@@ -122,7 +136,7 @@ struct
             (let val rho' = match rho (p, v)
             in  eval (rho <+> rho') rhs
             end
-            handle Doesn'tMatch => 
+            handle NoMatch => 
               eval rho (I (CASE (C (C.LITERAL v), choices))))
   | eval rho (I (CASE (_, []))) = raise Match
   | eval rho (I (CASE (scrutinee, branches))) = 
@@ -133,18 +147,18 @@ struct
   and match rho (PNAME x,   v) = Env.bind (x, v, Env.empty)
     | match rho (WHEN e, _)     = 
       (case eval rho e 
-        of C.VCON ((C.K "false"), _) => raise Doesn'tMatch 
+        of C.VCON ((C.K "false"), _) => raise NoMatch 
          | _                         => Env.empty)
     | match rho (PATGUARD (p, e), _) = match rho (p, eval rho e) 
     | match rho (ORPAT (p1, p2), v)  = 
-      (match rho (p1, v) handle Doesn'tMatch => match rho (p2, v))
+      (match rho (p1, v) handle NoMatch => match rho (p2, v))
     | match rho (PATSEQ (p1, p2), v)  = 
         disjointUnion [match rho (p1, v), match rho (p2, v)]
     | match rho (CONAPP (C.K k, ps), C.VCON (C.K k', vs)) =
      if k = k' 
      then disjointUnion (ListPair.mapEq (match rho) (ps, vs))
-     else raise Doesn'tMatch
-  | match rho (CONAPP _, _) = raise Doesn'tMatch
+     else raise NoMatch
+  | match rho (CONAPP _, _) = raise NoMatch
 
   (* TODO next: test eval, write vm eval, write d eval, renamings, vm parser (fun actually) *)
 
@@ -236,19 +250,19 @@ fun disjointUnion (envs: 'a Env.env list) =
          | SOME x => raise DisjointUnionFailed x
   end
 
-  exception Doesn'tMatch
+  exception NoMatch
 
   fun match (CONAPP (k, ps), OldCore.VCON (OldCore.K k', vs)) =
      if k = k' then
        disjointUnion (ListPair.mapEq match (ps, vs))
      else
-       raise Doesn'tMatch
-  | match (CONAPP _, _) = raise Doesn'tMatch
+       raise NoMatch
+  | match (CONAPP _, _) = raise NoMatch
   | match (PNAME x,   v) = Env.bind (x, v, Env.empty) *)
 
 
 (* <boxed values 147>=                          *)
-(* val _ = op match         : pat * value -> value env (* or raises Doesn'tMatch *)
+(* val _ = op match         : pat * value -> value env (* or raises NoMatch *)
 val _ = op disjointUnion : 'a env list -> 'a env *)
 
 fun eval (rho : value Env.env) e = 
@@ -274,7 +288,7 @@ fun eval (rho : value Env.env) e =
             val rho' = match (p, v)
             in  eval (e, rho <+> rho')
             end
-            handle Doesn'tMatch => eval rho (CASE (LITERAL v, choices))
+            handle NoMatch => eval rho (CASE (LITERAL v, choices))
       | CASE (_, []) =>
           raise Match *)
 
@@ -297,7 +311,7 @@ fun runProg defs =
              (* val rho' = match (p, v)
              in  eval (e, rho <+> rho')
              end
-             handle Doesn'tMatch => eval rho (CASE (LITERAL v, choices))
+             handle NoMatch => eval rho (CASE (LITERAL v, choices))
         | CASE (_, []) =>
             raise Match *)
 
