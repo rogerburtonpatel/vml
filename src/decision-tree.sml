@@ -12,7 +12,7 @@ signature DECISION_TREE = sig
               | LET of name  * 'e * ('e, 'a) tree 
 
   datatype exp = C of exp Core.t 
-               | I of (exp, exp multi) tree
+               | I of (exp, exp) tree
 
   datatype def = DEF of name * exp 
 
@@ -39,7 +39,7 @@ struct
               | LET of name  * 'e * ('e, 'a) tree 
 
   datatype exp = C of exp Core.t 
-             | I of (exp, exp multi) tree
+             | I of (exp, exp) tree
 
   datatype def = DEF of name * exp 
 
@@ -71,7 +71,7 @@ struct
     | C.VCONAPP conapp => br' (mlconstring expString conapp)
     | C.LAMBDAEXP (n, body) => br' ("fn " ^ n ^ " => " ^ expString body)
     | C.FUNAPP (e1, e2) => expString e1 ^ " " ^ expString e2)
-    | expString (I tr) = emitTree (Multi.multiString expString) expString tr
+    | expString (I tr) = emitTree expString expString tr
 
   and valString v = 
   (case v of C.VCON conapp => 

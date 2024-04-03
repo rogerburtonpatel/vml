@@ -140,8 +140,8 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
                    baseguard
           end)  
       val guards = semicolonSeparated guard <|> succeed []
-      val multi = Multi.MULTI <$> many1 exp 
-      val rhs = rightarrow >> multi 
+      (* val multi = Multi.MULTI <$> many1 exp  *)
+      val rhs = rightarrow >> exp 
       val guarded_exp = P.pair <$> existentials <*> (P.pair <$> guards <*> rhs)
     val subexp = P.fix (fn subexp =>
       vvconapp   <$> vcon <*> many exp                                      <|> 

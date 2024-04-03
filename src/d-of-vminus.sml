@@ -2,7 +2,7 @@ structure DofVminus :> sig
   val def : VMinus.def -> D.def
   type 'a guarded_exp' = VMinus.name list * (VMinus.exp VMinus.guard list * 'a)
   exception Stuck of unit guarded_exp' list
-  val compile : VMinus.exp Multi.multi guarded_exp' list -> (D.exp, D.exp Multi.multi) D.tree
+  val compile : VMinus.exp guarded_exp' list -> (D.exp, D.exp) D.tree
   val translate : VMinus.exp -> D.exp 
 end
   =
@@ -294,8 +294,8 @@ i.e. do I have all the names I need to evaluate this expression? *)
       end 
 
   and compile context [] = Impossible.impossible "no choices"
-    | compile context (choices as ((_, ([], Multi.MULTI e)) :: _)) =
-         D.MATCH (Multi.MULTI (map translate e))  (* unguarded ARROW *)
+    | compile context (choices as ((_, ([], e)) :: _)) =
+         D.MATCH (translate e)  (* unguarded ARROW *)
     | compile context choices =
         (case findAnyConstructorApplication context choices (* x known, VCONAPP *)
            of SOME x =>

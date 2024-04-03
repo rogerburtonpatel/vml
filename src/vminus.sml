@@ -7,7 +7,7 @@ signature VMINUS = sig
   datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
   type 'e multi = 'e Multi.multi
   datatype exp = C of exp Core.t
-               | I of (exp, exp multi) if_fi
+               | I of (exp, exp) if_fi
 
   datatype def = DEF of name * exp
 
@@ -31,7 +31,7 @@ structure VMinus :> VMINUS
   datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
   type 'e multi = 'e Multi.multi
   datatype exp = C of exp Core.t
-               | I of (exp, exp multi) if_fi
+               | I of (exp, exp) if_fi
 
   datatype def = DEF of name * exp
 
@@ -63,7 +63,7 @@ structure VMinus :> VMINUS
         let val (existential, dot) = if null ns then ("", "") else ("E ", ". ")
             val binds    = existential ^ String.concatWith " " ns ^ dot
             val gStrings = String.concatWith "; " (map guardString gs)
-            val rString  = (Multi.multiString expString r)
+            val rString  = expString r
         in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" 
         end 
   and if_fiString gexps = 

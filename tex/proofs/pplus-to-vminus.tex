@@ -1,0 +1,92 @@
+\documentclass[]{article}
+\usepackage{vmlmacros}
+\usepackage{syntax}
+\usepackage{relsize}
+% \usepackage{palatino} % I don't love this, to be honest. 
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{simplebnf}
+\setcounter{secnumdepth}{1}
+
+\DeclareMathOperator{\dom}{dom}
+
+
+% \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
+\setlength{\grammarindent}{10em} % increase separation between LHS/RHS
+\setlength{\parindent}{0cm}
+\title{Translation from {\PPlus} to {\VMinus}}
+\author{Roger Burtonpatel}
+\begin{document}
+
+\maketitle
+
+\subsection{Domains}
+We give the names and domains of our translation functions: 
+
+\begin{align*}
+    &\mathcal{P}: Pattern\; ->\; Name\; ->\; Guard \\
+    % &\mathcal{P}: Pattern\; ->\; Name\; ->\; Exp\; ->\; Guarded\; Exp \\
+    &\mathcal{E}: Exp\; ->\; Exp \\
+    &\mathcal{B}: Pattern\; ->\; Name\; Set \\
+    \end{align*}
+
+The translation functions $\mathcal{B}$, $\mathcal{E}$, and $\mathcal{P}$
+are defined case by case: 
+
+\subsection{Binding names}
+
+\begin{align*}
+    &\Bindings{x} = \bracketed{x} \\ 
+    &\Bindings{K} = \bracketed{} \\
+    &\Bindings{K\; p_{1} \dots p_{n}} = \Bindings{p} \cup \dots \cup \Bindings{p_{n}} \\
+    &\Bindings{\porp} = \Bindings{p_{1}} \cap \Bindings{p_{2}} \\
+    &\Bindings{\pcommap} = \Bindings{p} \cup \Bindings{p'} \\
+    &\Bindings{\parrowe} = \Bindings{p} \\
+    &\Bindings{\whenexpr} = \bracketed{}
+\end{align*}
+
+\subsection{Translating Expressions}
+
+
+\begin{align*}
+    &\ptov[exp=x, result=x] \\
+    &\ptov[exp={K\; \expr[1] \dots \expr[n]}, result={K \etran{\expr[1]} \dots \etran{\expr[n]}}] \\
+    &\ptov[exp={\lambda x.\; \expr}, result={\lambda x.\; \etran{\expr}}] \\
+    &\ptov[exp={\expr[1]\; \expr[2]}, result={\etran{\expr[1]}\; \etran{\expr[2]}}] \\
+    &\ptov[exp={\tt{case}\; \expr\;  \emptyseq}, result={{\iffitt{\vexists{x}\; x = \etran{\expr};\; \iffitt{}}}}]\; \rm{, $x$ fresh }   \\
+    &\etran{\tt{case}\; \expr\;  p_{1}\; \expr[1] \vert \dots \vert p_{n}\; \expr[n]} \\
+    &\rightsquigarrow {\iffitt{\vexists{x}\; x = \etran{\expr};\; 
+            \iffitt{\vexists{\btran{p_{1}}}\; \ptran{p_{1}}x \rightarrow \etran{\expr[1]};\;
+            []\; \dots []\; \vexists {\btran{p_{n}}}\; \ptran{p_{n}}x \rightarrow \etran{\expr[n]}}}} \\
+    &\rm{, $x$ fresh }
+\end{align*}
+
+\rab{how do you format this so it's not terrible}
+
+\subsection{Translating Patterns}
+
+\begin{align*}
+    &\pattov[pat=y, exp={}, result={x = y}] \\
+    &\pattov[pat=K, exp={}, result={x = K}] \\
+    &\ptran{K p_{1} \dots p_{n}}x \rightsquigarrow \\
+    \vexists{y_{1} \dots y_{n}}\; &\ptran{p_{1}}y_{1}\; ;\; \dots ;\; \ptran{p_{n}}y_{n}\; o\;
+    x = K y_{1} \dots y_{n}, \\
+    &\rm{$\forall i.\; 1 \leq i \leq n:\; y_{i}$ fresh} \\
+    &\pattov[pat=\mathit{when}\; e, exp={}, result={\etran{e}}] \\
+    &\pattov[pat=\pcommap, exp={}, result=\ptran{p}x\; ;\; \ptran{p'}x] \\
+    &\pattov[pat=\porp, exp={}, result=(\ptran{p}x \pbar \ptran{p'}x)]
+\end{align*}
+
+\rab{The vconapp rule is a formatting disaster. How do I fix it.}
+
+Let's make some claims: 
+
+\begin{itemize}
+    \item Equational translation of everything outside of case is purely equivalent 
+    \item Inductive hypothesis could be over patterns? 
+    \item Semantics: when \prun, \vmrung
+\end{itemize}
+
+
+
+\end{document}
