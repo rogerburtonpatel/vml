@@ -629,10 +629,10 @@ functional programming languages. % which we informally introduce
 
     \1 \bf{Definition of \VMinus}
 
-    To facilitate comparisons and proofs, \VMinus and \PPlus are each a subset
+    To facilitate comparisons and proofs, \VMinus\ and \PPlus\ are each a subset
     of a single unifying language(\cref{fig:unilang}). Column “Unique To” indicates
     which components of this unifying language belong to the sub-languages. 
-    \PPlus, \VMinus, and the decision tree language \D (Section~TODO) all share 
+    \PPlus, \VMinus, and the decision tree language \D\ (Section~TODO) all share 
     the same core of lambdas, value constructors (\it{K}), names, and function 
     application. 
 
@@ -648,19 +648,44 @@ functional programming languages. % which we informally introduce
 
     \subsection{Maybe a subsection break here}
     
-    \2 \bf{{\VMinus} admits of many of the same pleasing computations as full Verse. }
+    \2 \bf{\VMinus\ admits of many of the same pleasing computations as full Verse. }
     
     Even with multiple modifications, \VMinus\ still allows for many of the same
-    pleasing computations as full Verse. Programmers can... todo: write.
+    pleasing computations as full Verse. Programmers can... 
+        \begin{enumerate}
+            \item Introduce a set of equations, to be solved in a nondeterministic order 
+            \item Guard expressions with those equations 
+            \item Flexibly express "proceed when any of these operations succeeds" with choice 
+        \end{enumerate}
+
     Figure~TODO provides an example of how a programmer might utilize
     \VMinus\ to solve the previous problems:
 
+    
     \2 \bf{Examples of programming in \VMinus }
     \3 \bf{Show: beautiful examples. }
+    
+    Look! It looks just like Verse! 
    
-   
-    \2 \bf{{\VMinus} is at least as good as {\PPlus}? Or just as comparable? }
-        Or incomparable? (Why not both?)        
+    \2 \bf{\VMinus\ is at least as good as \PPlus? Or just as comparable? }
+        Or incomparable? (Why not both?)
+    
+    \subsection{\VMinus\ and \PPlus, side by side}
+
+    \begin{itemize}
+        \item We compare \VMinus\ with \PPlus\ as an exercise in comparing
+        equations with pattern matching. 
+        \item They definitely look similar: as expressive as pattern. Great! 
+        \item{BIG PAYLOAD ALERT}
+        \item Bonus 1: You don't need the scrutinee in \VMinus. 
+        \item Bonus 2: Binding, checking are all in one construct: =. No
+                $\leftarrow$ vs case. No guessing what value patterns match to. 
+                And, unlike ML, Haskell, OCaml: no need for \tt{let}.
+        \item Bonus 3: Names. Explicit name introduction means we can use a name
+        from before and know if it's a pattern or an expression. This prevents
+        common mistakes like the kind 105 students make. 
+    \end{itemize}
+    
 
     \3 \bf{\bf{This is likely motivated strongly by examples of comparable code.}}
 
@@ -668,16 +693,20 @@ functional programming languages. % which we informally introduce
 
     \end{outline}
 
-IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
+IN EITHER OF THESE SECTIONS: Semantics of \PPlus, \VMinus
 
 \section{(PAYLOAD) {\VMinus} can be compiled to \D 
         [Evidence that \dots efficiency]}
 \begin{outline}[enumerate]
-    \1 \bf{Definition of \D }
+    \1 Maybe say "in our semantics of \PPlus\ and \VMinus, we adhere to the
+    strict invariant that no value is examined more than once at runtime. But we wish to go further in our assertion, 
+    so we compile \VMinus to a decision tree. 
     \1 \bf{Examples of Decision Trees - From Maragnet. }
-    \2 \bf{Indeed, consistent with Maragnet }
+    \1 For our compilation, we introduce \D, a language of decision trees. 
+    \1 \bf{Definition of \D}
+    \2 \bf{Indeed, we are consistent with Maragnet }
     \1 \bf{D is a simple generalization of Maragnet, et al. }
-    \1 \bf{Semantics of \D }
+    \1 \bf{Semantics of \D: ML Runtime! Yippee!}
     \1 \bf{\D\ has a great cost model: }
 
     \bf{A decision tree can be exponential in size but never examines a word of
@@ -690,9 +719,9 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 
 \section{\PPlus -> \VMinus is interesting (optional)}
 \begin{outline}[enumerate]
-    \1 \bf{\VMinus subsumes pattern matching }
+    \1 \bf{\VMinus subsumes pattern matching}
     \1 \bf{Algorithm: Translation from \PPlus\ to \VMinus}
-    \1 \bf{Theorem: Translation from \PPlus\ to \VMinus preserves semantics }
+    \1 \bf{Theorem: Translation from \PPlus\ to \VMinus preserves semantics}
     \1 \bf{Claim: Translation \PPlus\ -> \D\ is consistent with Maragnet and others}
 \end{outline}
 
