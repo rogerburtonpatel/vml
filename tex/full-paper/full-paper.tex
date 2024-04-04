@@ -51,9 +51,18 @@
   Pattern matching is nice and has an appealing cost model, but people keep
   extending it to make it more expressive. Verse [cite-Verse] looks very simple
   and is surprisingly expressive, but the cost model is a challenge. Why not
-  look for a compromise? We introduce two small functional languages that
-  attempt to address the limitations of pattern matching in popular functional
-  languages.
+  look for a compromise? 
+  
+%   We introduce two small functional languages that
+%   attempt to address the limitations of pattern matching in popular functional
+%   languages.
+
+  We explore the realm of pattern matching in common functional languages and
+  compare it with Verse's equation-based approach. Recognizing the balance
+  between expressiveness and efficiency, we introduce two modest functional
+  languages aimed at addressing the limitations of prevalent pattern matching
+  techniques. We show how a subset of Verse can be compiled to decision trees. 
+
   \end{abstract}
 
 \maketitle
@@ -61,16 +70,32 @@
 \section{Introduction}
 \it{We will add this at the end.}
 
-\VMinus\ can be compiled to efficient decision trees. 
+Pattern matching is popular and well-researched. However, it often needs to be
+augmented with extensions. Is this the most efficient thing to be doing? Can we
+take inspiration from Verse and use equations instead? Do Verse's equations
+subsume pattern matching with popular extensions? Can we get them at no
+additional runtime cost? 
+% We consider a toy language with many of the popular
+% extensions to pattern matching. 
+% \VMinus\ can be compiled to efficient decision
+% trees. 
 
 
-\section{Languages are Interesting}
+\section{Pattern Matching and Equations}
+\subsection{Pattern matching as an upgrade to observer functions}
     \begin{outline}[enumerate]
-     \bf{PM dominates observer functions}
-
-    Pattern matching dominates observer functions. Consider the following
-    implementation of \tt{List.len} in Standard ML, using observers:
     
+    
+    Pattern matching is a well-established and researched construct in
+    functional programming languages, and the topic of much rich literature
+    [cite, appeal to authority]. A primary appeal of pattern matching is its
+    dominance over observer functions\footnote{observer functions manually
+    scrutinze and deconstruct data. Examples include Scheme's \tt{null?},
+    \tt{car}, and \tt{cdr}, and ML's \tt{null}, \tt{hd}, and \tt{tl}.}. Consider
+    implementation of \tt{List.len} in Standard ML, using observers in
+    Figure~\ref{fig:observerlen}. \rab{Should I say 'observers' to avoid
+    repeating myself, or 'observer functions' to use the same term for the same
+    thing?}
     
     % Figure 1 illustrates an example in which pattern matching is an elegant solution
     % to a problem (compare to equivalent Standard ML code that manually deconstructs
@@ -89,39 +114,37 @@
     % Consider the following algorithm on an abstract type~\tt{FiniteMap}, involving a
     % lookup function. This examples is a modificaiton of one borrowed from SPJ
     % proposal [cite]. 
-     \bf{Example. }
+    
 
     \begin{figure}[ht!]
-        \centering
         \smllst
-        \begin{lstlisting}
-        fun len yes =
-            if null ys 
-            then 0 
-            else let xs = tl ys 
-                 in len xs 
-                 end 
-        \end{lstlisting}
-    \caption{Standard ML's \tt{List.len} using observer functions}
+        \begin{verbatim}
+            fun len ys =
+                if null ys 
+                then 0 
+                else let xs = tl ys 
+                     in len xs 
+                     end 
+        \end{verbatim}
+    \caption{Standard ML's \tt{List.len} using observer functions.}
     % \caption{An implementation of \tt{List.len} in Standard ML that does not use 
     % pattern matching.}
     \Description{An implementation of len using null, hd, and tl}
     \label{fig:observerlen}
     \end{figure}
     
-    Manual case analysis and deconstruction with built-in observer functions
-    like \tt{null} and \tt{tl} can be both error-prone (\rab{say more on this?})
-    and verbose. Most functional programmers likely prefer the following
-    implementation of \tt{len}:
+    Manual case analysis and deconstruction with observer functions can be both
+    error-prone (\rab{say more on this or cite?}) and verbose \rab{can I make
+    this claim?}. Most functional programmers would likely prefer the
+    implementation of \tt{len} found in Figure~\ref{fig:pmlen}.
     \begin{figure}[htt]
-        
-    \smllst
-    \begin{lstlisting}
-        fun len ys =
-            case ys 
-              of [] => 0
-               | _::xs => 1 + len xs
-        \end{lstlisting}
+    \begin{verbatim}
+            fun len ys =
+                case ys 
+                of []    => 0
+                 | x::xs => 1 + len xs
+        \end{verbatim}
+
     \caption{An equivalent implementation that uses pattern matching.}
     \Description{An implementation of len using implicit deconstruction via
     patterns.}
@@ -129,23 +152,26 @@
     \end{figure}
 
     As a final step towards simplicity, most functional languages allow
-    programmers to merge pattern matching and function declaration in
-    a form of syntactic sugar known as a \it{clausal definition}:
+    programmers to merge pattern matching and function declaration in a form of
+    syntactic sugar known as a \it{clausal definition}. We present a final
+    implementation of \tt{len} using pattern matching with a clausal definition
+    in Figure~\ref{fig:pmclausallen}.
 
     \begin{figure}[ht]
     \smllst
-    \begin{lstlisting}
-        fun len []      = 0
-          | len (_::xs) = 1 + len xs
-        \end{lstlisting}
-    \caption{A final, concise implementation that uses pattern matching within a clausal definition.}
+    \begin{verbatim}
+            fun len []      = 0
+              | len (x::xs) = 1 + len xs
+        \end{verbatim}
+    \caption{A final implementation that uses pattern matching with a clausal definition.}
     \Description{An implementation of len using pattern matching within a 
     clausal definition.}
     \label{fig:pmclausallen}
     \end{figure}
         
 
-     \bf{Common extensions simplify some special cases that would otherwise be awkward}
+    
+\subsection{Extensions as upgrades to pattern matching}
 
     Indeed, pattern matching serves as a cornerstone in functional programming
     languages, extensively discussed in abundant literature [cite, appeal to
@@ -159,47 +185,108 @@
     denote pattern matching \tt{without} extensions: in bare pattern matching,
     the only syntactic forms of patterns are names and applications of value
     constructors to zero or more patterns. 
-
-
-     First, side conditions (OCaml, Erlang, Haskell)
-
-     We show a classic example with if 
-
-     Footnote desugaring of \tt{if} \it{condition} \tt{then} \it{branch1} \tt{else} \it{branch2} 
     
-    to 
-    
-    \tt{case} \it{condition} \tt{of} \tt{true =>} \it{branch1} \tt{| false =>} \it{branch2}
-    
-     Then get a side condition: nice. 
-     Part of what's nice is getting names from the pattern into the condition. 
-
-     Transition to pat guards: 
-     what if we want a pattern match in our condition? Or multiple? 
 
     
-     \bf{Example: pat guards} 
-    \rab{Help here:
-            \begin{enumerate}
-            \item I'm quoting a chunk of another paper, including code blocks. 
-            My education up to now hasn't covered this. What's protocol here?
-            \item How can I force the figures to appear in the same order as in 
-                  the original paper? Using [h!] does not appear to be working. 
-            \item With correct formatting, I believe this borrowed example is
-            helpful as a clear example and an appeal to authority to illustrate
-            the expressive power of guards as extensions to pattern matching. Do
-            you agree? 
-            \end{enumerate}}
+
+\subsubsection{Side conditions}
+
+    First, we illustrate the need for \it{side conditions}\footnote{We use the
+    term \it{side conditions} to refer to a pattern followed by a boolean
+    expression. Some languages call this a \it{guard}, which we use to describe
+    a different, more powerful extension to pattern matching in
+    Section~\ref{guards}.}, an extension to pattern matching common in most
+    functional languages, including OCaml, Erlang, Scala,
+    and~Haskell\footnote{Haskell uses guards to subsume side conditions. We
+    discuss guards in Section~\ref{guards}.}. Consider
+    Figure~\ref{fig:ifnameof}. 
+    
+    \begin{figure}[ht]
+        \begin{verbatim}
+            let nameOf rho e = match e with 
+                  NAME n -> if binds rho n then n else raise NotFound
+                | _      -> raise NotFound  
+
+                (* where binds rho n == true, where n in dom(rho)
+                         binds rho n == false, otherwise
+                and NotFound is an exception 
+                delcared earlier in the program *)
+            \end{verbatim}    
+        \caption{An invented function \tt{nameOf}, using an \tt{if} statement}    
+        \Description{An implementation of a function nameOf in OCaml, which
+        uses pattern matching and an if statement.}
+        \label{fig:ifnameof}
+    \end{figure}
+    
+    
+    
+    Seeing the duplicate right-hand sides of \tt{nameOf}, the reader likely sees
+    how the code could be simplified with a \it{side condition} to a
+    pattern, giving the programmer a syntactic form for “match a pattern
+    \it{and} a condition.” Fortunately, the \tt{when} keyword in OCaml
+        provides such a form, as seen in Figure~\ref{fig:whennameof}.
+        
+        \begin{figure}[ht]
+            \begin{verbatim}
+            let nameOf rho e = match e with     
+                  NAME n when binds rho n -> n
+                | _                       -> raise NotFound  
+                \end{verbatim}
+            \caption{\tt{nameOf}, using a side condition with \tt{when}}    
+            \Description{An implementation of a function nameOf in OCaml, which
+            uses pattern matching and a side condition.}
+            \label{fig:whennameof}
+            \end{figure}
+
+        
+    
+    
+    
+
+    Programmers can employ side conditions to streamline cases and minimize
+    overhead. One notable advantage of side conditions is their capacity to
+    exploit bindings that emerge from the preceding pattern match. For
+    instance, the \tt{when} clause in Figure~\ref{fig:whennameof} utilizes \tt{n},
+    which is bound in the match of \tt{e} to \tt{NAME n}.
+
+    Side conditions serve to address the necessity of incorporating an extra
+    “check”- in this case, a boolean expression- within a pattern. But what if
+    the need arises to conduct additional pattern matches within such a check?
+    Here, side conditions prove inadequate. Without additional tooling,
+    programmers may resort to nested pattern matching as a potential solution;
+    yet, this often leads to duplicated right-hand sides and convoluted code
+    that is cumbersome to write and challenging to follow at first glance. We
+    now consider a more powerful extension to pattern matching which addresses
+    this problem. 
+
+ \subsubsection{Pattern guards}
+\label{guards}
+
+    % 
+
+    
+    % 
+    % \rab{Help here:
+            % \begin{enumerate}
+            % \item I'm quoting a chunk of another paper, including code blocks. 
+            % My education up to now hasn't covered this. What's protocol here?
+            % \item How can I force the figures to appear in the same order as in 
+            %       the original paper? Using [h!] does not appear to be working. 
+            % \item With correct formatting, I believe this borrowed example is
+            % helpful as a clear example and an appeal to authority to illustrate
+            % the expressive power of guards as extensions to pattern matching. Do
+            % you agree? 
+            % \end{enumerate}}
 
 
-            \rab{Better way to begin this next paragraph?}
+            % \rab{Better way to begin this next paragraph?}
 
-            We introduce our first example. While pattern matching is known for
-            its effectiveness in deconstructing individual values, its
-            expressiveness diminishes when faced with sequential computations.
-            What about when we wish to fire a right-hand side only after
-            \it{multiple sequential expressions} match with patterns? Consider
-            the following example, borrowed from Erwig and Peyton-Jones: 
+            While pattern matching is known for its effectiveness in
+            deconstructing individual values, its expressiveness diminishes when
+            faced with sequential computations. What about when we wish to fire
+            a right-hand side only after \it{multiple sequential expressions}
+            match with patterns? Consider the following example, borrowed from
+            Erwig and Peyton-Jones (2000): 
 
     “\dots suppose we have an abstract data type of finite maps, with a lookup
     operation:
@@ -215,7 +302,7 @@
     key maps to. Now consider the following definition
     (Figure~\ref{fig:whereclunky}):
 
-    \begin{figure}[hbt!]
+    % \begin{figure}[hbt!]
         \begin{verbatim}
             clunky env varl var2 | ok1 && 0k2 = val1 + val2 
                                  | otherwise  = var1 + var2 
@@ -226,41 +313,41 @@
                   Just val1 = m1 
                   Just val2 = m2    
         \end{verbatim}
-    \caption{\tt{clunky} in Haskell with bare pattern matching} \Description{An
-    implementation of clunky using only simple pattern matching within a clausal
-    definition.}
-    \label{fig:whereclunky}
-    \end{figure}
+    % \caption{\tt{clunky} in Haskell with bare pattern matching} \Description{An
+    % implementation of clunky using only simple pattern matching within a clausal
+    % definition.}
+    % \label{fig:whereclunky}
+    % \end{figure}
         
     \dots This is certainly legal Haskell, but it is a tremendously verbose and
     un-obvious way to achieve the desired effect. Is it any better using case
-    expressions(Figure~\ref{fig:caseclunky})?
+    expressions?
 
         % The authors show how explicit pattern matching with \tt{case} may
         % mitigate the verbosity of this problem:
     
-    \begin{figure}[hbt!]
-        \begin{verbatim}
+    % \begin{figure}[hbt!]
+        \begin{minipage}{\textwidth}
+            \begin{verbatim}
             clunky env var1 var2 = 
-              case lookup env var1 of 
+                case lookup env var1 of 
                 Nothing -> fail 
                 Just val1 -> 
-                  case lookup env var2 of 
+                    case lookup env var2 of 
                     Nothing -> fail 
                     Just val2 -> val1 + val2
             where 
                 fail = var1 + var2
-        \end{verbatim}
-    \caption{\tt{clunky} with \tt{case}} 
-    \Description{An implementation of clunky using case.}
-    \label{fig:caseclunky}
-    \end{figure}
+            \end{verbatim}
+        \end{minipage}
+    % \caption{\tt{clunky} with \tt{case}} 
+    % \Description{An implementation of clunky using case.}
+    % \label{fig:caseclunky}
+    % \end{figure}
     
         This is a bit shorter, but hardly better. Worse, if this was just one
         equation of clunky, with others that follow, then the thing would not
-        work at all.” [cite]
-
-        EXPLICIT END QUOTATION 
+        work at all.” 
 
         To mitigate the problem, the authors propose \it{pattern guards}, a form
         of “smart pattern” in which intermediate patterns bind to
@@ -270,21 +357,20 @@
     \begin{figure}[hbt!]  
         \begin{center}
         \begin{verbatim}
-            clunky env var2 var2    
-            | Just vall <- lookup env var1
-            , Just val2 <- lookup env var2
-            = val1 + val2
+                        clunky env var2 var2    
+                        | Just vall <- lookup env var1
+                        , Just val2 <- lookup env var2
+                        = val1 + val2
         \end{verbatim}
         \it{… other equations for clunky}
         \end{center}    
-    
     \caption{\tt{clunky} with pattern guards} 
     \Description{An implementation of clunky using pattern guards.}
     \label{fig:guardclunky}
     \end{figure}
 
     Guards offer an elegant solution to the problem of matching on successive
-    computations. \footnote{The authors of the proposal show several other
+    computations.\footnote{The authors of the proposal show several other
     examples where guards drastically simplify otherwise-maddening code.}
     Additionally, a further power of pattern guards lies in the ability for
     expressions within guards to utilize names bound in preceding guards. This
@@ -294,7 +380,9 @@
 
         % \it{This is obviously better. But now consider something where you need 
         % or-patterns; this fails. }
-         \bf{Example: or-patterns}
+        
+
+\subsubsection{Or-patterns}
 
         In the preceding example, we observed how pattern guards facilitated a
         multi-step computation within a single match. However, what if the
@@ -309,15 +397,15 @@
         \begin{figure}
             \begin{center}
                 \begin{verbatim}
-                    let parent_game_of_token = function 
-                    | BattlePass      -> "Fortnite"
-                    | ChugJug         -> "Fortnite"
-        | TomatoTown      -> "Fortnite"
-        | HuntersMark     -> "Bloodborne"
-        | SawCleaver      -> "Bloodborne"
-        | MoghLordOfBlood -> "Elden Ring"
-        | PreatorRykard   -> "Elden Ring"
-        | _               -> "Irrelevant"
+        let parent_game_of_token token = match token with 
+            | BattlePass      -> "Fortnite"
+            | ChugJug         -> "Fortnite"
+            | TomatoTown      -> "Fortnite"
+            | HuntersMark     -> "Bloodborne"
+            | SawCleaver      -> "Bloodborne"
+            | MoghLordOfBlood -> "Elden Ring"
+            | PreatorRykard   -> "Elden Ring"
+            | _               -> "Irrelevant"
                 \end{verbatim}
             \end{center}    
 
@@ -328,17 +416,16 @@
 
 Thankfully, an extension once again comes to our rescue: With \it{or-patterns},
 which condense patterns that share a right-hand side, we can eliminate much
-redundant code (Figure~\ref{fig:orpgot}).
-\footnote{Or-patterns are a feature built into OCaml.}
+redundant code (Figure~\ref{fig:orpgot}).\footnote{Or-patterns are a feature built into OCaml.}
 
     \begin{figure}
     \begin{center}
     \begin{verbatim}
-        let parent_game_of_token = function 
-        | BattlePass | ChugJug | TomatoTown  -> "Fortnite"
-        | HuntersMark | SawCleaver           -> "Bloodborne"
-        | MoghLordOfBlood | PreatorRykard    -> "Elden Ring"
-        | _                                  -> "Irrelevant"
+        let parent_game_of_token token = match token with 
+            | BattlePass | ChugJug | TomatoTown  -> "Fortnite"
+            | HuntersMark | SawCleaver           -> "Bloodborne"
+            | MoghLordOfBlood | PreatorRykard    -> "Elden Ring"
+            | _                                  -> "Irrelevant"
     \end{verbatim}
     \end{center}    
     \caption{\tt{parent\_game\_of\_token} using or-patterns.} 
@@ -354,45 +441,87 @@ redundant code (Figure~\ref{fig:orpgot}).
     redundant copies of this computation. Or-patterns empower programmers to
     centralize such maintenance at a single point of truth.
     
-     \bf{Verse Dominates observer functions }
+    SKYLAR STOP READING 
+    
+    \subsection{Verse's equations as an alternative to pattern matching}
+    
+    
 
     Instead of pattern matching, \it{functional logic programming} languages
     like Verse [cite: Verse] may favor equations to test for structural equality
     and create bindings. (Consider the Verse implementation of \tt{len} on a
     list built of nested tuples in Figure~\ref{fig:verselen}).
 
-     \bf{Example.}
+    
 
     \begin{figure}
         \verselst
-        \begin{lstlisting}
-            $\exists$ len. len = \ys. 
-              one {ys = $\langle \rangle$; 0
-                   |  $\exists$ x xs. ys = $\langle$x, xs$\rangle$; 1 + len xs}
+        \begin{lstlisting}[numbers=none]
+$\exists$ len. len = \ys. 
+  one {ys = $\langle \rangle$; 0
+       |  $\exists$ x xs. ys = $\langle$x, xs$\rangle$; 1 + len xs}
         \end{lstlisting}
     \caption{\tt{len} in Verse, with existentials and equations.} 
     \Description{An implementation of len in Verse.}
     \label{fig:verselen}
     \end{figure}
     
-     \bf{\bf{Verse is comparably pleasing to PM }}
-    Verse is comparably pleasing to pattern matching in its brevity and
-    expressiveness, though it differs in a few key ways. For one, Verse
-    \it{explicitly} introduces the names that appear inside an equation which
-    will be bound to the components of a value when a match succeeds. On line~3 
-    of the example, we see the existential $\exists$ introduce two fresh names, 
-    \tt{x} and \tt{xs}, before attempting to bind them to \tt{ys}. These fresh 
-    names correspond to the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
-
-    Todo: write more. 
-
-    Example above illustrates this. Likely add more. 
-     \bf{Full Verse allows/encourages computations that are bad, cost-wise } 
     
-     \bf{Hard to predict?}
-     \bf{Exponential?}
-     \bf{Multiple results?}
-     \bf{Bad how? }
+    
+
+
+
+    BIOHAZARD START 
+
+    Verse's equations are comparably pleasing to pattern matching in their
+    brevity and expressiveness (albeit with a few key differences). Equations in
+    Verse, like pattern matching, can attempt to bind values to patterns. In
+    Verse, however, 
+
+    programmers introduce names explicitly 
+
+    leading to differences: 
+    105 mistake. 
+
+    In Verse, programmers can also express "do a thing if a condition succeeds":
+    guarding an expression with another before a semicolon, 
+    idea of failure. 
+
+    INLINE EXAMPLES. 
+
+    Verse's equations comparably pleasing to pattern matching in their brevity
+    and expressiveness, though they differ in a few key ways. For one, in Verse,
+    the programmer \it{explicitly} introduces the names that appear inside an
+    equation with the existential $\exists$. These names will be bound to the
+    components of a value when a match succeeds. On line~3 of the example, we
+    see the existential $\exists$ introduce two fresh names, \tt{x} and \tt{xs},
+    before attempting to bind them to \tt{ys}. These fresh names correspond to
+    the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
+
+    Also, in Verse's equations, names with prior bindings \it{retain those
+    bindings} during matching. This is different from pattern matching, where a
+    name in a pattern is always considered fresh and will always succeed in
+    binding to a value. This is best illustrated with an example (Figure~TODO). 
+    We discuss the implications of this difference in Section~(TODO which).
+
+    % Todo: show "105 student mistake" example. 
+
+    % Todo: write more. 
+
+    % \rab{The transition here feels shaky at best. I'd like help connecting the
+    % two points: 1. Verse is comparably pleasing to PM, albeit a bit different
+    % and 2. However, Verse has an unpredictable cost model.}
+
+    % BIOHAZARD END 
+
+    % Example above illustrates this. Likely add more. 
+    % 
+    
+    % 
+    % 
+    % 
+    % 
+
     However, full Verse allows/encourages computations that are problematic,
     cost-wise. In Verse, names (logical variables) are \tt{values}, and can just
     as easily be the result of evaluating an expression as an integer or tuple.
@@ -408,11 +537,11 @@ redundant code (Figure~\ref{fig:orpgot}).
     combinatorials""" whose size can be difficult to predict. (Todo: technical phrase for 'something massive.') 
 
 
-     Crisp example of this 
+    
 
-     I would say 1-2 short examples that illustrate necessity of backtracking  and multiple results. Also, implementation of standard functions (zip):  maybe hard to predict runtime of functions written like this. Come up with a good example. 
+    
 
-     We outline 2 solutions for this! 
+    
 
     \end{outline}
 \section{Simplification for Study and Synthesis}
@@ -423,10 +552,10 @@ functional programming languages. % which we informally introduce
 \subsection{Introducing \PPlus\ }
 
 \begin{outline}[enumerate]
-     \bf{To study "all" the interesting/standard extensions to PM, we introduce}
+    
     \PPlus. Its definition is found in \dots TODO 
-     \bf{Definition of \PPlus}
-     \bf{{\PPlus} packages common/standard extensions to PM}
+    
+    
     \begin{itemize}
         \item side conditions
         \item or-patterns 
@@ -441,7 +570,7 @@ functional programming languages. % which we informally introduce
     Furthermore, a pattern in \PPlus\ be a \it{sequence} of sub-patterns,
     allowing for combinations of arbitrary numbers of patterns. 
     
-     \bf{Examples of \PPlus. }
+    
 
     Figure~\ref{fig:ppexs} provides an example of how a programmer might utilize
     \PPlus\ to solve the previous problems: 
@@ -466,9 +595,9 @@ functional programming languages. % which we informally introduce
     
     
 \subsection{Addressing how \PPlus\ handles unusual pattern combinations}
- \bf{\PPlus\ admits of strange looking patterns, but these should not be alarming. }
- \bf{-> Because they reduce to standard things by (direct) application of algebraic laws. }
- \bf{\tt{when} within vcons }
+
+
+
 
     Given its minimal restrictions on what kind of pattern can appear where,
     \PPlus\ admits of strange looking patterns: consider \tt{Cons (when true)
@@ -476,22 +605,22 @@ functional programming languages. % which we informally introduce
     to normal forms by (direct) application of algebraic laws: 
 
     
-         Laws: float out vcon, float out from guard
-         \bf{This law is applied repeatedly until we reach a fixed point.}
+        
+        
 
-         K (when e) p2 \dots === K \_ p2 \dots, when e
-         K (when e, p2) p3 \dots  === K p2 p3 \dots, when e
-         K (p2, when e) p3 \dots  === K p2 p3 \dots, when e
-         Footnote: This works because no side fx in \PPlus\ and all names are unique $\uparrow$ 
-         K (when e \pbar p2) p3 \dots === (K \_ p3 \dots, when e) \pbar (K p2 p3 \dots)
-         K (p1 \pbar when e) p3 \dots === (K p2 p3 \dots) \pbar (K \_ p3 \dots, when e) 
-         when e $\leftarrow$ e === \_ <- e, when e
+        
+        
+        
+        
+        
+        
+        
 
         
         These laws are applied repeatedly until we reach a fixed point. 
         Todo: add in revision 
 \subsection{Introducing \VMinus\ }
- \bf{We want to study decision-making inspired by Verse.}
+
         
         To fuel our pursuit of smarter decision-making, we now draw inspiration
         from Verse. We begin by trimming away the aforementioned culprits that
@@ -505,11 +634,13 @@ functional programming languages. % which we informally introduce
         removal altogether. However, we are drawn to harnessing the expressive
         potential of this operator, particularly when paired with Verse's 'one'
         keyword. When employed with choice as a condition, 'one' elegantly
-        signifies 'proceed if any branch of the choice succeeds.
-         \bf{We remove obvious backtracking/multiple results (ask what the notecard says)}
+        signifies 'proceed if any branch of the choice succeeds. 
+        
+        
         SAY WHAT CHOICE DOES. 
 
-        To this end, we imagine a new language, \VMinus, in which we permit the use of choice with several modifications:
+        To this end, we imagine a new language, \VMinus, in which we permit
+        choice with several modifications:
 
         \begin{enumerate}
         \item Choice may only appear as a condition or 'guard', not as a result
@@ -529,112 +660,169 @@ functional programming languages. % which we informally introduce
         necessitate the reevaluation of the earlier expression—- a scenario we
         strive to avoid. An example in Verse illustrates this precise scenario:
 
-     Example 
+        FIRST PAPER EXAMPLE 
 
-        The reader, especially if they are familiar with functional logic
-        programming, will by now have realized that such restrictions on choice
-        and names effectively eliminate much of the identity of Verse as a
-        functional logic programming language. Fear not: we do not aim to
-        thoughtlessly gut Verse of its core features, but rather to extract a
-        select few of them- namely, its equations, existentials, and
-        nondeterministic evaluation order- and compare them with pattern
-        matching. 
+        
+
+        
+        
+        
+        
+
+
+        The discerning reader, particularly those well-versed in functional
+        logic programming, may perceive that imposing such restrictions on
+        choice and names effectively strips away much of Verse's essence as a
+        functional logic programming language. With these constraints enforced,
+        there can be no backtracking, multiple results, backward function
+        evaluation, or top-level patterns, among other classic functional logic
+        programming features. But do not fear: our intent is not to recklessly
+        strip Verse of its meticulously crafted core tenets. Instead, our aim is
+        to extract a select few—namely, its equations, existentials, and
+        nondeterministic evaluation order—and juxtapose them with pattern
+        matching.
+
+        % The reader, especially if they are familiar with functional logic
+        % programming, will by now have realized that such restrictions on choice
+        % and names effectively eliminate much of the identity of Verse as a
+        % functional logic programming language. With them in place, there can be
+        % no backtracking, no multiple results, no evaluating functions backwards,
+        % no top-level patterns: the list of curios goes on. But fear not: we do
+        % not aim to thoughtlessly gut Verse of its meticulously-chosen core
+        % features, but rather to extract a select few of them- namely, its
+        % equations, existentials, and nondeterministic evaluation order- and
+        % compare them with pattern matching. 
     
 
-     IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
-     Doesn't backtrack
-     No multiple results 
-     Doesn't evaluate functions backwards, have top-level patterns like verse, the list goes on 
+        Indeed, having stripped out the functional logic programming elements of
+        Verse, we are left with just the decision-making bits. To wrap these, we
+        add a classic decision-making construct: guarded commands [cite-
+        Dijkstra paper, others.] The result is \VMinus. \VMinus is defined in 
+        Figure~(TODO, whatever extension solution you choose). 
 
         % \bf{Choice forces "name knowing." Names must be known in all branches 
         % if bound to unknown variable or bound to known variable if any name 
         % is unknown}.
         
-         \bf{We add a classic decision-making construct: Guarded commands. } [cite- Dijkstra paper]
-         \bf{The result: \VMinus. }
+        
+        
         
         With these modifications in place, alongside a few additional
         adjustments to the placement of existentials and the timing of choice
         evaluation (footnote: we discuss these later), we unveil a redefined decision-making core. To complete this
         transformation, we incorporate a venerable decision-making construct:
         Guarded commands [cite: Dijkstra]. The result is \VMinus. 
-        
-        Insert Definition
 
-     \bf{Definition of \VMinus}
-     \bf{Continued Discussion:}
+    
 
-     IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
-     Doesn't backtrack
-     No multiple results 
-     Doesn't evaluate functions backwards, have top-level patterns like verse, the list goes on 
+    To facilitate comparisons and proofs, \VMinus\ and \PPlus\ are each a subset
+    of a single unifying language(\cref{fig:unilang}). Column “Unique To” indicates
+    which components of this unifying language belong to the sub-languages. 
+    \PPlus, \VMinus, and the decision tree language \D\ (Section~TODO) all share 
+    the same core of lambdas, value constructors (\it{K}), names, and function 
+    application. 
+
+
+    
+
+    
+    
+    
+    
 
 
 
     \subsection{Maybe a subsection break here}
     
-     \bf{{\VMinus} admits of many of the same pleasing computations as full Verse. }
+    
     
     Even with multiple modifications, \VMinus\ still allows for many of the same
-    pleasing computations as full Verse. Programmers can... todo: write.
+    pleasing computations as full Verse. Programmers can... 
+        \begin{enumerate}
+            \item Introduce a set of equations, to be solved in a nondeterministic order 
+            \item Guard expressions with those equations 
+            \item Flexibly express "proceed when any of these operations succeeds" with choice 
+        \end{enumerate}
+
     Figure~TODO provides an example of how a programmer might utilize
     \VMinus\ to solve the previous problems:
 
-     \bf{Examples of programming in \VMinus }
-     \bf{Show: beautiful examples. }
+    
+    
+    
+    
+    Look! It looks just like Verse! 
    
-   
-     \bf{{\VMinus} is at least as good as {\PPlus}? Or just as comparable? }
+    
         Or incomparable? (Why not both?)
+    
+    \subsection{\VMinus\ and \PPlus, side by side}
 
+    \begin{itemize}
+        \item We compare \VMinus\ with \PPlus\ as an exercise in comparing
+        equations with pattern matching. 
+        \item They definitely look similar: as expressive as pattern. Great! 
+        \item{BIG PAYLOAD ALERT}
+        \item Bonus 1: You don't need the scrutinee in \VMinus. 
+        \item Bonus 2: Binding, checking are all in one construct: =. No
+                $\leftarrow$ vs case. No guessing what value patterns match to. 
+                And, unlike ML, Haskell, OCaml: no need for \tt{let}.
+        \item Bonus 3: Names. Explicit name introduction means we can use a name
+        from before and know if it's a pattern or an expression. This prevents
+        common mistakes like the kind 105 students make. 
+    \end{itemize}
+    
 
+    
 
-     \bf{\bf{This is likely motivated strongly by examples of comparable code.}}
-
-     Let's say 2-3 examples here
+    
 
     \end{outline}
 
-IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
+IN EITHER OF THESE SECTIONS: Semantics of \PPlus, \VMinus
 
 \section{(PAYLOAD) {\VMinus} can be compiled to \D 
         [Evidence that \dots efficiency]}
 \begin{outline}[enumerate]
-     \bf{Definition of \D }
-     \bf{Examples of Decision Trees - From Maragnet. }
-     \bf{Indeed, consistent with Maragnet }
-     \bf{D is a simple generalization of Maragnet, et al. }
-     \bf{Semantics of \D }
-     \bf{\D\ has a great cost model: }
+    
+    strict invariant that no value is examined more than once at runtime. But we wish to go further in our assertion, 
+    so we compile \VMinus to a decision tree. 
+    
+    
+    
+    
+    
+    
+    
 
     \bf{A decision tree can be exponential in size but never examines a word of
     the scrutinee more than once. }
 
-     \bf{Algorithm: Translation from \VMinus\ to \D\ : match compiler }
-     \bf{Theorem: Translation from \VMinus\ to \D\ preserves semantics }
-     \bf{Likely inductive hypothesis. 1-4 sentences on proof max. }
+    
+    
+    
 \end{outline}
 
 \section{\PPlus -> \VMinus is interesting (optional)}
 \begin{outline}[enumerate]
-     \bf{\VMinus subsumes pattern matching }
-     \bf{Algorithm: Translation from \PPlus\ to \VMinus}
-     \bf{Theorem: Translation from \PPlus\ to \VMinus preserves semantics }
-     \bf{Claim: Translation \PPlus\ -> \D\ is consistent with Maragnet and others}
+    
+    
+    
+    
 \end{outline}
 
 \section{Related Work}
 \section{Future Work}
 \begin{outline}[enumerate]
-     \bf{Why we wish for $\alpha$s}
-     \bf{What's up with \PPlus\ ? It's worth study in its own right- in future work.}
-     \bf{\PPlus is interesting because it combines or-patterns with pattern }
+    
+    
+    
         guards. No major functional language does this. 
-     \bf{Programs written in Verse using ideas from \VMinus\ might have a }
+    
     friendlier cost model (depending on compiler)
-     \bf{\VMinus might give Verse programmers good ideas }
+    
         (That is, how to solve problems in Verse)
-     \bf{Examples of programming in Verse in the style of \VMinus }
+    
 \end{outline}
 
 \section{Conclusion, Discussion}
@@ -643,18 +831,55 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 \setcounter{section}{0}
 \section{Proofs}
 \begin{outline}
-     \bf{Proof: Translation from \VMinus to \D\ preserves semantics }
-     \bf{Proof: Translation from \PPlus\ to \VMinus preserves semantics }
-     \bf{Proof: Translation from \VMinus to Verse preserves semantics     }
+    
+    
+    
 \end{outline}
 
 \section{Trust me on \VMinus (It's reduced to Verse)}
 \begin{outline}
-     \bf{\VMinus\ has something to do with Verse, semantically }
-     \bf{Our semantics of Verse is consistent with ICFP's semantics of Verse }
-     \bf{Definition: Our semantics of Verse}
-     \bf{Theorem: Translation from \VMinus to Verse preserves semantics     }
+    
+    
+    
+    
 \end{outline}
+
+\begin{table}[ht]
+    \centering
+    \small
+    \begin{tabular}{l l l}
+        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
+        \hline
+        $P$ : Programs & $\bracketed{d}$ & \\
+        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
+        $\expr$ : Expressions & $x, y, z$ & \\
+        & $K\bracketed{\expr}$ &  \\
+        & $\lambda x.\; \expr$ & \\
+        & $\expr[1]\; \expr[2]$ & \\
+        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
+        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
+        & $\dt$ & \D \\
+        $\v$ : Values & $K\bracketed{\v}$ & \\
+        & $\lambda x.\; \expr$ & \\
+        $p$ : Patterns & $x$ & \PPlus \\
+        & $K\; \bracketed{p}$ & \PPlus \\
+        & $\mathit{when}\; \expr$ & \PPlus \\
+        & $p, p'$ & \PPlus \\
+        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
+        & $p_{1}\pbar p_{2}$ & \PPlus \\
+        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
+        & $\expr;\; g$ & \VMinus \\
+        & $\vexists{x} g$ & \VMinus \\
+        & $x = \expr;\; g$ & \VMinus \\
+        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
+        & $\expr$ & \D \\
+        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
+        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
+    \end{tabular}
+    \caption{Example LaTeX Table}
+    \label{fig:unilang}
+\end{table}
+
 
 
 %     \item Programmers use pattern matching. But pattern matching is not good for
@@ -816,44 +1041,6 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus\ , \VMinus
 % %     \caption{Example LaTeX Table}
 % %     \label{tab:example}
 % % \end{table}
-
-\begin{table}[ht]
-    \centering
-    \small
-    \begin{tabular}{l l l}
-        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
-        \hline
-        $P$ : Programs & $\bracketed{d}$ & \\
-        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
-        $\expr$ : Expressions & $x, y, z$ & \\
-        & $K\bracketed{\expr}$ &  \\
-        & $\lambda x.\; \expr$ & \\
-        & $\expr[1]\; \expr[2]$ & \\
-        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
-        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
-        & $\dt$ & \D \\
-        $\v$ : Values & $K\bracketed{\v}$ & \\
-        & $\lambda x.\; \expr$ & \\
-        $p$ : Patterns & $x$ & \PPlus \\
-        & $K\; \bracketed{p}$ & \PPlus \\
-        & $\mathit{when}\; \expr$ & \PPlus \\
-        & $p, p'$ & \PPlus \\
-        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
-        & $p_{1}\pbar p_{2}$ & \PPlus \\
-        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
-        & $\expr;\; g$ & \VMinus \\
-        & $\vexists{x} g$ & \VMinus \\
-        & $x = \expr;\; g$ & \VMinus \\
-        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
-        & $\expr$ & \D \\
-        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
-        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
-    \end{tabular}
-    \caption{Example LaTeX Table}
-    \label{tab:example}
-\end{table}
-
-
 
 % Most syntactic categories in \U are present in all of its subsets: Values, Value
 % Constructors, Definition Forms, and most forms of expression are shared. Indeed,
