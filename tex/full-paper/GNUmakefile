@@ -14,7 +14,7 @@ build_with_section_numbers: full-paper-with-outline.tex
 	$(compile) $^
 
 build_full: full-paper-with-outline.tex
-	$(shell sed -E 's#\\[0-9](.*$$)#\1#g' full-paper-with-outline.tex > full-paper.tex)
+	$(shell sed -E 's#\\[0-9](.*$$)##g' full-paper-with-outline.tex > full-paper.tex)
 	$(compile) full-paper.tex
 
 outline: full-outline.pdf
