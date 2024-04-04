@@ -115,8 +115,6 @@ struct
           | SOME x => raise DisjointUnionFailed x
     end
 
-  exception NoMatch
-
   
   fun eval rho (C ce) = 
     (case ce of 
@@ -131,12 +129,12 @@ struct
                       val rho' = Env.bind (n, arg, rho)
                     in eval rho' b
                     end
-                 | _ => raise OldCore.BadFunApp "attempted to apply non-function"))
+                 | _ => raise Core.BadFunApp "attempted to apply non-function"))
   | eval rho (I (CASE (C (C.LITERAL v), (p, rhs) :: choices))) =
             (let val rho' = match rho (p, v)
             in  eval (rho <+> rho') rhs
             end
-            handle NoMatch => 
+            handle Core.NoMatch => 
               eval rho (I (CASE (C (C.LITERAL v), choices))))
   | eval rho (I (CASE (_, []))) = raise Match
   | eval rho (I (CASE (scrutinee, branches))) = 
@@ -147,18 +145,18 @@ struct
   and match rho (PNAME x,   v) = Env.bind (x, v, Env.empty)
     | match rho (WHEN e, _)     = 
       (case eval rho e 
-        of C.VCON ((C.K "false"), _) => raise NoMatch 
+        of C.VCON ((C.K "false"), _) => raise Core.NoMatch 
          | _                         => Env.empty)
     | match rho (PATGUARD (p, e), _) = match rho (p, eval rho e) 
     | match rho (ORPAT (p1, p2), v)  = 
-      (match rho (p1, v) handle NoMatch => match rho (p2, v))
+      (match rho (p1, v) handle Core.NoMatch => match rho (p2, v))
     | match rho (PATSEQ (p1, p2), v)  = 
         disjointUnion [match rho (p1, v), match rho (p2, v)]
     | match rho (CONAPP (C.K k, ps), C.VCON (C.K k', vs)) =
      if k = k' 
      then disjointUnion (ListPair.mapEq (match rho) (ps, vs))
-     else raise NoMatch
-  | match rho (CONAPP _, _) = raise NoMatch
+     else raise Core.NoMatch
+  | match rho (CONAPP _, _) = raise Core.NoMatch
 
   (* TODO next: test eval, write vm eval, write d eval, renamings, vm parser (fun actually) *)
 
@@ -250,19 +248,19 @@ fun disjointUnion (envs: 'a Env.env list) =
          | SOME x => raise DisjointUnionFailed x
   end
 
-  exception NoMatch
+  exception Core.NoMatch
 
   fun match (CONAPP (k, ps), OldCore.VCON (OldCore.K k', vs)) =
      if k = k' then
        disjointUnion (ListPair.mapEq match (ps, vs))
      else
-       raise NoMatch
-  | match (CONAPP _, _) = raise NoMatch
+       raise Core.NoMatch
+  | match (CONAPP _, _) = raise Core.NoMatch
   | match (PNAME x,   v) = Env.bind (x, v, Env.empty) *)
 
 
 (* <boxed values 147>=                          *)
-(* val _ = op match         : pat * value -> value env (* or raises NoMatch *)
+(* val _ = op match         : pat * value -> value env (* or raises Core.NoMatch *)
 val _ = op disjointUnion : 'a env list -> 'a env *)
 
 fun eval (rho : value Env.env) e = 
@@ -288,7 +286,7 @@ fun eval (rho : value Env.env) e =
             val rho' = match (p, v)
             in  eval (e, rho <+> rho')
             end
-            handle NoMatch => eval rho (CASE (LITERAL v, choices))
+            handle Core.NoMatch => eval rho (CASE (LITERAL v, choices))
       | CASE (_, []) =>
           raise Match *)
 
@@ -311,7 +309,7 @@ fun runProg defs =
              (* val rho' = match (p, v)
              in  eval (e, rho <+> rho')
              end
-             handle NoMatch => eval rho (CASE (LITERAL v, choices))
+             handle Core.NoMatch => eval rho (CASE (LITERAL v, choices))
         | CASE (_, []) =>
             raise Match *)
 

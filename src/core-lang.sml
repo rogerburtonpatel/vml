@@ -9,6 +9,9 @@ structure Core :> sig
     and 'exp value = VCON of vcon   * 'exp value list 
                    | LAMBDA of name * 'exp
 
+  exception NameNotBound of name 
+  exception BadFunApp of string 
+  exception NoMatch
   val map                 : ('a -> 'b) -> 'a t -> 'b t
   
   val eqval               : 'a value * 'a value -> bool
@@ -29,6 +32,10 @@ structure Core :> sig
                   | FUNAPP of 'a * 'a 
     and 'exp value = VCON of vcon   * 'exp value list 
                       | LAMBDA of name * 'exp
+
+  exception NameNotBound of name 
+  exception BadFunApp of string 
+  exception NoMatch
 
   fun map (f : ('a -> 'b)) t = 
       case t of 

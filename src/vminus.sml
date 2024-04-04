@@ -19,6 +19,10 @@ signature VMINUS = sig
   val eqexp : exp * exp -> bool
 
   val gmap :  ('a -> 'b) -> 'a guard -> 'b guard
+  
+  val eval : value option Env.env -> exp -> value
+
+  val runProg : def list -> unit
 
 end 
 structure VMinus :> VMINUS
@@ -41,6 +45,8 @@ structure VMinus :> VMINUS
       | gmap f (CONDITION e)       = CONDITION (f e)
       | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
 
+
+  fun eqval (e1, e2) = Core.eqval (e1, e2)
 
   fun br printer input = "(" ^ printer input ^ ")"
   fun br' input = "(" ^ input ^ ")"
@@ -101,6 +107,199 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
 
   fun optString printer (SOME x) = printer x 
     | optString printer NONE     = "NONE"
+
+  infix 9 binds
+  fun rho binds n = Env.binds (rho, n)
+
+  exception NameNotBound of string 
+
+  type lvar_env = value option Env.env
+
+  infix 9 exists_in
+
+  fun n exists_in (rho: lvar_env) = 
+    Env.binds (rho, n) andalso isSome (Env.find (n, rho))
+
+  fun checkBound e rho_ = 
+        case e of C (C.NAME n) => if not (rho_ binds n)
+                                  then raise NameNotBound n
+                                  else ()
+                              |  _ =>  ()
+
+  (* fun sort rho [] = []
+    | sort rho [g] = [g]
+    | sort rho (g::gs) = 
+        let val x = case g of CONDITION e => let val () = checkBound e rho
+        
+        fun sortWith rho tempStucks gs' = Impossible.unimp "todo"
+        in 
+        end  *)
+
+  fun println s = print (s ^ "\n")
+
+
+  fun lookup x rho = Env.find (x, rho)
+
+  fun lookupv x rho = valOf (lookup x rho)
+
+  (* making nondeterminism deterministic *)
+  fun pickAnEquation (g::gs) = (g, gs)
+    | pickAnEquation []      = Impossible.impossible "picking from no equations" 
+
+  exception Unsolvable
+
+  infix 6 <+>
+
+  val op <+> = Env.<+>
+
+  fun optValString v = optString (C.valString expString) v
+
+  fun lvarEnvMerge (rho1 : lvar_env) (rho2 : lvar_env) = 
+    Env.merge (fn (SOME x, SOME y)   => SOME x
+                | (NONE,   SOME x)   => SOME x
+                | (SOME x, NONE)     => SOME x
+                | (NONE,   NONE)     => NONE) (rho1, rho2)
+
+(* bindwith binds a value to an expression with unknown names, or fails. *)
+
+(* TODO Parsing ambiguity error: CONS A EMPTY being read as CONS (A EMPTY) *)
+  fun bindwith rho ((v as C.VCON (C.K vc, vs)), (C ce))  = 
+      (case ce of 
+    C.LITERAL v' => if v <> v' then raise Unsolvable else Env.empty
+  | C.NAME n => 
+    if n exists_in rho 
+    then if not (eqval (lookupv n rho, v)) then raise Unsolvable else Env.empty 
+    else Env.bind (n, SOME v, Env.empty)
+  | C.VCONAPP (C.K vc', es) => 
+      if vc <> vc' orelse length es <> length vs 
+      then raise Unsolvable 
+      else 
+      let val () = println "here"
+      val r = foldr (fn ((ex, vl), rho') => 
+                  let 
+                  val () = println (Env.toString optValString rho')
+                  val () = println ("value: " ^ C.valString expString vl)
+                  val rho'' = bindwith rho' (vl, ex) 
+                  in (lvarEnvMerge rho'' rho') 
+                  end)
+            rho (ListPair.zip (es, vs))
+      val () = println "after"
+      in r 
+            end 
+  | C.LAMBDAEXP _  => raise Unsolvable
+  | C.FUNAPP    _  => raise Unsolvable)
+    | bindwith rho (_, (I _))        = raise Unsolvable
+    | bindwith rho ((C.LAMBDA _), _) = raise Unsolvable
+
+
+  fun eval rho (C ce) = 
+    (case ce of
+      C.LITERAL v => v
+    | C.NAME n    => 
+        if n exists_in rho then lookupv n rho else raise Core.NameNotBound n
+    | C.VCONAPP (vc, es)    => C.VCON (vc, map (eval rho) es)
+    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
+    | C.FUNAPP (C (C.NAME "print"), param)  => 
+    (* dirty trick to print values *)
+                    ( println (C.valString expString (eval rho param)) 
+                          ; C.VCON (C.K "unit", [])
+                    ) 
+    | C.FUNAPP (fe, param)  => 
+              (case eval rho fe 
+                of C.LAMBDA (n, b) => 
+                  let val arg  = eval rho param
+                      val rho' = Env.bind (n, SOME arg, rho)
+                    in 
+                     eval rho' b
+                    end
+                 | _ => raise Core.BadFunApp "attempted to apply non-function"))
+    | eval rho (I (IF_FI ((ns, (gs, rhs))::branches))) = 
+    (let val rho'  = foldl (fn (n, env) => Env.bind (n, NONE, env)) rho ns
+         val rho'' = solve rho' [] false gs  (* may raise Unsolvable *)
+      in eval rho'' rhs
+      end 
+        handle Unsolvable => eval rho (I (IF_FI branches)))
+    | eval rho (I (IF_FI [])) = raise Core.NoMatch
+
+  and solve rho [] made_progress [] = rho
+    | solve rho gs made_progress [] = 
+        if made_progress then solve rho [] false gs else raise Unsolvable
+    | solve (rho : lvar_env) stuck made_progress guards = 
+
+        let val (g, gs) = pickAnEquation guards
+            fun currently_solvable e = (
+            (eval rho e ; true)
+                                              handle Core.NameNotBound _ => false
+                                                   | Core.NoMatch        => false)
+        in (case g 
+            of CONDITION e =>
+                let val (stuck', made_progress') = 
+                    if currently_solvable e
+                    then  if eval rho e = Core.VCON (Core.K "false", []) 
+                          then raise Unsolvable 
+                          else (stuck, true) 
+                    else (g::stuck, made_progress)
+                  in solve rho stuck' made_progress' gs
+                  end  
+          | EQN (x, e) => let val (rho', stuck', made_progress') = 
+                    case (x exists_in rho, currently_solvable e)
+                      of (true, true) => 
+                        if not (eqval (lookupv x rho, eval rho e)) 
+                        then raise Unsolvable 
+                        else (rho, stuck, true)
+                      | (true, false) => 
+                          (bindwith rho ((lookupv x rho), e), stuck, true)
+                      | (false, true) => 
+                          (Env.bind (x, (SOME (eval rho e)), rho), stuck, true)
+                      | (false, false) => 
+                          (rho, g::stuck, made_progress)
+                  in solve rho' stuck' made_progress' gs
+                  end 
+          | CHOICE (gs1, gs2) => 
+              let val (rho', stuck', made_progress') = 
+                      ((solve rho stuck made_progress gs1, stuck, true)
+                        handle Unsolvable => 
+                      ((solve rho stuck made_progress gs2, stuck, true)
+                        handle Unsolvable => 
+                      (rho, g::stuck, made_progress)))
+              in solve rho' stuck' made_progress' gs
+              end)
+          end 
+
+  fun def rho (DEF (n, e)) = 
+    let val v = eval rho e
+    in Env.bind (n, SOME v, rho)
+    end
+
+  fun runProg defs = 
+  (  foldl (fn (d, env) => 
+      let val rho = def env d
+      in  rho <+> env
+      end) Env.empty defs;
+      ())
+
+
+  (* fun moveIndependentsWith rho buildBinds buildLeftover changed [] = Impossible.unimp "do something" 
+    | moveIndependentsWith rho buildBinds buildLeftover changed (g::gs) = 
+        let fun currently_solvable e = Impossible.unimp "todo with stuck"
+        in 
+        (case g of 
+          CONDITION e =>
+            let val (buildBinds', buildLeftover', changed') = 
+                if currently_solvable rho e
+                then (g::buildBinds, buildLeftover, true)
+                else (buildBinds, g::gs, changed)
+              in moveIndependentsWith rho buildBinds' buildLeftover' changed' gs
+              end  
+              (* fix: rho update *)
+      | EQN (x, e) => let val (buildBinds', buildLeftover', changed') = 
+                if currently_solvable e orelse currently_solvable (C (C.NAME x))
+                then (g::buildBinds, buildLeftover, true)
+                else (buildBinds, g::gs, changed)              
+              in moveIndependentsWith rho buildBinds' buildLeftover' changed' gs
+              end 
+      | CHOICE (gs1, gs2) => Impossible.unimp "choice")
+      end  *)
 
   (* fun eval  *)
 

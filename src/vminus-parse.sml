@@ -20,7 +20,7 @@ end = struct
   infix 3  <*>      val op <*> = P.<*>
   infixr 4 <$>      val op <$> = P.<$>
   infix 3  <~>      val op <~> = P.<~>
-  infix 1  <|>      val op <|> = P.<|>
+  infix 1  <|>      val op <|> = P.<|>  
   infix 5  >>       val op >>  = P.>>
 
   val succeed = P.succeed
@@ -75,13 +75,16 @@ end = struct
 
   fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
 
+  val box =     sat (P.eq (L.LEFT L.SQUARE)) one 
+             >> sat (P.eq (L.RIGHT L.SQUARE)) one
+
   fun tokSeparated t p = curry op :: <$> p <*> many (reserved t >> p)
                          <|> succeed []
                         (* parse a token-separated list; may be empty *)
   fun barSeparated p       = tokSeparated "|" p
   fun semicolonSeparated p = tokSeparated ";" p
   fun commaSep p           = tokSeparated "," p
-  fun boxSeparated p       = tokSeparated "[]" p
+  fun boxSeparated p       = curry op :: <$> p <*> many (box >> p)
   fun barSeparatedMulti p  = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
 
@@ -125,6 +128,7 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
 
   val optional = P.optional
 
+  fun nullaryvcon vc = V.C (Core.VCONAPP (vc, []))
 
 
   val exp = P.fix (fn exp : V.exp P.producer => 
@@ -133,40 +137,42 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
                           <|> succeed []
       
       val guard = P.fix (fn guard : V.exp V.guard P.producer =>
-          let val baseguard = curry V.EQN <$> name <*> equalssign >> exp <|> 
-                            V.CONDITION <$> exp                          <|>
-                            bracketed guard 
-          in curry V.CHOICE <$> many1 baseguard <~> bar <*> many1 baseguard <|> 
-                   baseguard
+          let val baseguard = curry V.EQN <$> name <*> equalssign >> exp 
+        <|>  V.CONDITION <$> exp                          
+        <|>  bracketed guard 
+          in curry V.CHOICE <$> many1 baseguard <~> bar <*> many1 baseguard 
+        <|> baseguard
           end)  
       val guards = semicolonSeparated guard <|> succeed []
       (* val multi = Multi.MULTI <$> many1 exp  *)
       val rhs = rightarrow >> exp 
       val guarded_exp = P.pair <$> existentials <*> (P.pair <$> guards <*> rhs)
+
+    val vconarg : V.exp P.producer =  vname <$> name 
+                                  <|> nullaryvcon <$> vcon 
+                                  <|> bracketed exp
     val subexp = P.fix (fn subexp =>
-      vvconapp   <$> vcon <*> many exp                                      <|> 
-      vlambdaexp <$> bslash >> name <~> dot <*> exp                         <|> 
-      vname      <$> name                                                   <|> 
-      viffi      <$> word "if" 
+      vvconapp <$> vcon <*> many vconarg                                  
+        <|> vlambdaexp  <$> bslash >> name <~> dot <*> exp                         
+        <|> vname       <$> name                                                   
+        <|> viffi       <$> word "if" 
                     >> boxSeparated guarded_exp 
                  <~> word "fi"
-                                                                            <|> 
-      bracketed exp)
+                                                                            
+        <|>      bracketed exp)
     in 
-      reserved "guard" >> name >> equalssign >> exp >> succeed (vname "x") <|>
-      reserved "gexp" >> guarded_exp >> succeed (vname "x")                      <|> 
-      (* reserved "guard" >>  name >> succeed (vname "x")      <|>  *)
-      (* reserved "guard" >>  name >> equalssign >> exp >> succeed (vname "x")      <|>  *)
+      (* reserved "guard" >> name >> equalssign >> exp >> succeed (vname "x")  *)
+        (* <|>  reserved "gexp" >> guarded_exp >> succeed (vname "x") <|> *)
       (* debugging *)
-      uncurry vfunapp <$> (P.pair <$> subexp <*> subexp)                    <|>
-      subexp
+          uncurry vfunapp <$> (P.pair <$> subexp <*> subexp)                    
+      <|> subexp
      end)
     
 
   val def = 
-        word "val"       >> (curry V.DEF <$> name <*> (equalssign >> exp))   <|>
-        reserved "parse" >> exp >> P.succeed (V.DEF ("z", vname "z"))       <|>
-      (* debugging *)
+        word "val"       >> (curry V.DEF <$> name <*> (equalssign >> exp))   
+        (* <|>        reserved "parse" >> exp >> P.succeed (V.DEF ("z", vname "z"))        *)
+        <|>      (* debugging *)
         peek one         >> expected "definition"
 (*
      -- dirty trick for testing
