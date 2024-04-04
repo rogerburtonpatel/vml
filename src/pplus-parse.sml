@@ -20,7 +20,7 @@ end = struct
   infix 3  <*>      val op <*> = P.<*>
   infixr 4 <$>      val op <$> = P.<$>
   infix 3  <~>      val op <~> = P.<~>
-  infix 1  <|>      val op <|> = P.<|>
+  infix 1  <|>      val op <|> = P.<|>  
   infix 5  >>       val op >>  = P.>>
 
   val succeed = P.succeed
@@ -95,17 +95,6 @@ end = struct
   val vcon = 
     Core.K <$> (sat isVcon vcon)
 
-
-  (* turn any single- or multi-token string into a parser for that token *)
-  fun the s =
-        let fun matchtokens toks = 
-        case toks
-          of Error.OK (t::ts) => sat (P.eq t) one >> matchtokens (Error.OK ts)
-           | _ => (app eprint ["fail: `", s, "`\n"]; 
-                   Impossible.impossible "non-token in P+ parser")
-        in matchtokens (PPlusLex.tokenize_line s)
-        end
-
   fun ppname n = A.C (Core.NAME n)
   fun ppvconapp vc es = A.C (Core.VCONAPP (vc, es))
   fun pplambdaexp n body = A.C (Core.LAMBDAEXP (n, body))
@@ -117,42 +106,48 @@ term ::= factor {, factor}
 factor ::= atom [<- exp]
 atom ::= x | K {atom} | when exp | ❨p❩ *)
 
+  fun nullaryvcon vc = A.C (Core.VCONAPP (vc, []))
+
 
   val exp = P.fix (fn exp : A.exp P.producer => 
     let         
     val pattern = P.fix (fn pattern => 
       let val atom = P.fix (fn atom =>
-      curry A.CONAPP <$> vcon <*> many atom                               <|>
-      A.WHEN     <$> (word "when" >> exp)                                    <|>
-      A.PNAME  <$> name                                                    <|> 
-      bracketed pattern)
-    val factor = A.PATGUARD <$> (P.pair <$> atom <*> leftarrow >> exp)       <|>
-                 atom 
-    val term   = A.PATSEQ <$> (P.pair <$> factor <~> comma <*> pattern)      <|>    
-                 factor  
-    in A.ORPAT <$> (P.pair <$> term  <~> bar <*> term)                       <|>
-      term
+      curry A.CONAPP <$> vcon <*> many atom                               
+      <|> A.WHEN     <$> (word "when" >> exp)                                    
+      <|> A.PNAME    <$> name                                                    
+      <|> bracketed pattern)
+    val factor = A.PATGUARD <$> (P.pair <$> atom <*> leftarrow >> exp)       
+        <|> atom 
+    val term = A.PATSEQ <$> (P.pair <$> factor <~> comma <*> pattern)      
+        <|> factor  
+    in A.ORPAT <$> (P.pair <$> term  <~> bar <*> term)                       
+        <|> term
     end)
     fun choice e = P.pair <$> pattern <*> rightarrow >> e
+
+    val vconarg : A.exp P.producer =  ppname <$> name 
+                                  <|> nullaryvcon <$> vcon 
+                                  <|> bracketed exp
     val subexp = P.fix (fn subexp =>
-      ppvconapp   <$> vcon <*> many exp                                      <|> 
-      pplambdaexp <$> bslash >> name <~> dot <*> exp                         <|> 
-      ppname      <$> name                                                   <|> 
-      ppcase      <$> word "case" >> exp <*> 
-                      word "of"   >> barSeparated (choice exp)               <|> 
-      bracketed exp)
+      ppvconapp <$> vcon <*> many vconarg                                  
+        <|> pplambdaexp  <$> bslash >> name <~> dot <*> exp                         
+        <|> ppname       <$> name                                                   
+        <|> ppcase       <$> word "case" >> exp <*> 
+                      word "of"   >> barSeparated (choice exp)               
+        <|> bracketed exp)
     in 
-      reserved "pat" >> pattern >> succeed (ppname "x")                      <|> 
-      (* debugging *)
-      uncurry ppfunapp <$> (P.pair <$> subexp <*> subexp)                    <|>
-      subexp
+      (* reserved "pat" >> pattern >> succeed (ppname "x") <|>                       *)
+              (* debugging *)
+      uncurry ppfunapp <$> (P.pair <$> subexp <*> subexp)                    
+      <|> subexp
      end)
     
 
   val def = 
-        word "val"       >> (curry A.DEF <$> name <*> (equalssign >> exp))   <|>
-        reserved "parse" >> exp >> P.succeed (A.DEF ("z", ppname "z"))       <|>
-      (* debugging *)
+        word "val"       >> (curry A.DEF <$> name <*> (equalssign >> exp))   
+        (* <|>        reserved "parse" >> exp >> P.succeed (A.DEF ("z", ppname "z"))        *)
+        <|>      (* debugging *)
         peek one         >> expected "definition"
 (*
      -- dirty trick for testing

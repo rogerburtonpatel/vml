@@ -77,17 +77,15 @@ struct
     | VMINUS_of VMINUS = vminusOfFile
     | VMINUS_of  _     = raise Backward
 
-  fun runProg PPLUS  = pplusOfFile >>> Error.map PPlus.runProg
-    | runProg VMINUS = Impossible.unimp "eval vminus"
+  fun runProg PPLUS  = pplusOfFile  >>> Error.map PPlus.runProg
+    | runProg VMINUS = vminusOfFile >>> Error.map VMinus.runProg
     | runProg D      = raise Can'tDigest D
-    | runProg _      = Impossible.impossible "no other languages to evaluate"
-(* Impossible.impossible "D is evaluated as Standard ML" XXX TODO really wants better error handling *)
+    | runProg Eval   = raise Can'tDigest Eval
 
-  fun D_of VMINUS  = vminusOfFile >>> Error.map dofVM
-    | D_of PPLUS   = VMINUS_of PPLUS >>> Error.map dofVM
+  fun D_of VMINUS  = vminusOfFile    >>> Error.map dofVM
+    | D_of PPLUS   = VMINUS_of PPLUS >>> Error.map dofVM (* the composition *)
     | D_of D       = raise Can'tDigest D
     | D_of _       = raise Backward
-  (* Impossible.unimp "match compiler" *)
   
 
 
