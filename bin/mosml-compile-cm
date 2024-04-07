@@ -34,11 +34,9 @@ function compile {
           else
             : echo SKIP $src
           fi
-          # ui="$(basename $src .sml).ui"
-          ui="${src%.sml}.ui"
+          ui="$(basename $src .sml).ui"
           uis+=($ui)
-          uos+=("$uo")
-          #($(basename $src .sml).uo)
+          uos+=($(basename $src .sml).uo)
           if [[ "$ui" -nt "$newest" ]]; then
             newest="$ui"
           fi
