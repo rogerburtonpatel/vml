@@ -173,19 +173,12 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
   | C.VCONAPP (C.K vc', es) => 
       if vc <> vc' orelse length es <> length vs 
       then raise Unsolvable 
-      else 
-      let val () = println "here"
-      val r = foldr (fn ((ex, vl), rho') => 
+      else foldr (fn ((ex, vl), rho') => 
                   let 
-                  val () = println (Env.toString optValString rho')
-                  val () = println ("value: " ^ C.valString expString vl)
                   val rho'' = bindwith rho' (vl, ex) 
                   in (lvarEnvMerge rho'' rho') 
                   end)
             rho (ListPair.zip (es, vs))
-      val () = println "after"
-      in r 
-            end 
   | C.LAMBDAEXP _  => raise Unsolvable
   | C.FUNAPP    _  => raise Unsolvable)
     | bindwith rho (_, (I _))        = raise Unsolvable

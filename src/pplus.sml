@@ -46,6 +46,9 @@ struct
 
   fun br printer input = "(" ^ printer input ^ ")"
   fun br' input = "(" ^ input ^ ")"
+  fun member x xs = List.exists (fn y => y = x) xs
+
+  fun println s = print (s ^ "\n")
 
 
   structure C = Core 
@@ -115,18 +118,24 @@ struct
           | SOME x => raise DisjointUnionFailed x
     end
 
-  
+  val predefs = ["print"]
+
   fun eval rho (C ce) = 
     (case ce of 
       C.LITERAL v => v
     | C.NAME n => Env.find (n, rho)  
     | C.VCONAPP (vc, es) => C.VCON (vc, map (eval rho) es)
     | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
-    | C.FUNAPP (fe, param) => 
+    | C.FUNAPP (C (C.NAME "print"), param)  => 
+    (* dirty trick to print values *)
+                    ( println (C.valString expString (eval rho param)) 
+                          ; C.VCON (C.K "unit", [])
+                    ) 
+    | C.FUNAPP (fe, arg) => 
               (case eval rho fe 
                 of C.LAMBDA (n, b) => 
-                  let val arg = eval rho param
-                      val rho' = Env.bind (n, arg, rho)
+                  let val v_arg = eval rho arg
+                      val rho' = Env.bind (n, v_arg, rho)
                     in eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
@@ -158,9 +167,13 @@ struct
      else raise Core.NoMatch
   | match rho (CONAPP _, _) = raise Core.NoMatch
 
-  (* TODO next: test eval, write vm eval, write d eval, renamings, vm parser (fun actually) *)
+  and runpredef which (rho, arg) = 
+    case which of 
+      "print" => ( println (C.valString expString (eval rho arg)) 
+                  ; C.VCON (C.K "unit", [])
+                 )
+      | _ => Impossible.impossible "runtime bug: running non-predef function"
 
-(* TODO: recursion?  *)
 
   fun def (rho : value Env.env) (DEF (n, C (Core.LAMBDAEXP (x, body)))) = 
       let val rho' = Env.bind (n, Core.LAMBDA (x, body), rho)
@@ -271,10 +284,10 @@ fun eval (rho : value Env.env) e =
        | VCONAPP (OldCore.K n, es)  => OldCore.VCON (OldCore.K n, map (eval rho) es)
        | VCONAPP _ => 
                raise Impossible.impossible "erroneous vcon argument application"
-       | FUNAPP (fe, param) => 
+       | FUNAPP (fe, arg) => 
               (case eval rho fe 
                 of OldCore.LAMBDA (n, b) => 
-                  let val arg = eval rho param
+                  let val arg = eval rho arg
                       val rho' = Env.bind (n, arg, rho)
                     in eval rho' b
                     end
