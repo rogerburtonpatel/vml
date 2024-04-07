@@ -48,16 +48,6 @@ structure Core :> sig
     case v of LAMBDA (n, e) => LAMBDA (n, f e)
             | VCON (vc, vs) => VCON (vc, List.map (vmap f) vs)
 
-  (* fun fold (f : ('x value -> 'a)) (g : (name -> 'a)) (h : ('c -> 'a)) e = 
-    case e of 
-      LITERAL v => f v
-  | NAME n => g n 
-  | VCONAPP (vc, es) => _
-  | LAMBDAEXP (n, body) => _
-  | FUNAPP (e1, e2) => _ *)
-
-
-
   fun eqval (VCON (v1, vs), VCON (v2, vs')) = 
       v1 = v2 andalso ListPair.all eqval (vs, vs')
     | eqval (_, _) = false 
@@ -71,8 +61,6 @@ structure Core :> sig
   fun vconAppExpStr f (K vc) args = 
       String.concatWith " " (vc::(List.map f args))
 
-
-
   fun expString f (LITERAL v)           = valString f v
     | expString f (NAME n)              = n
     | expString f (VCONAPP (vc, es))    = vconAppStr f vc es 
@@ -83,83 +71,4 @@ structure Core :> sig
           vconAppStr (valString f) vc vals 
     | valString f (LAMBDA (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
-  (* and maybeparenthesize f e = 
-    case e of LITERAL v           => br' (valString f v)
-            | NAME n              => n
-            | VCONAPP (vc, es)    => br' (vconAppStr f vc es)
-            | LAMBDAEXP (n, body) => 
-              br' (StringEscapes.backslash ^ n ^ ". " ^ (f body))
-            | FUNAPP (e1, e2)     => br' (f e1 ^ " " ^ f e2) *)
-    
 end
-
-structure OldCore :> sig 
-  type name = string 
-  datatype vcon  = TRUE | FALSE | K of name 
-  datatype 'exp core_value = VCON of vcon   * 'exp core_value list 
-                           | LAMBDA of name * 'exp
-
-  exception NameNotBound of name 
-  exception BadFunApp of string 
-
-  datatype core_exp = NAME of name 
-                  | VCONAPP of vcon * core_exp list
-                  | LAMBDAEXP of name * core_exp 
-                  | FUNAPP of core_exp * core_exp 
-
-  val eqval               : 'a core_value * 'a core_value -> bool
-  val boolOfCoreValue     : 'a core_value -> bool 
-  val expString           : core_exp -> string 
-  val valString      : 'a core_value -> string 
-  val vconAppStr : ('a -> string) -> vcon -> 'a list -> string
-end 
-  = 
-struct 
-  type name = string 
-  datatype vcon  = TRUE | FALSE | K of name 
-  datatype 'a core_value = VCON of vcon * 'a core_value list | LAMBDA of name * 'a
-
-  exception NameNotBound of name 
-  exception BadFunApp of string 
-
-  
-
-  datatype core_exp = NAME of name 
-                  | VCONAPP of vcon * core_exp list
-                  | LAMBDAEXP of name * core_exp 
-                  | FUNAPP of core_exp * core_exp 
-
-  fun boolOfCoreValue (VCON (FALSE, [])) = false
-    | boolOfCoreValue _                  = true
-
-                     
-
-  fun vconAppStr f n args = 
-      case (n, args)
-      of (K n, vs) =>
-        let val vcss = foldr (fn (vc, acc) => " " ^ f vc ^ acc) "" vs
-        in n ^ vcss
-        end 
-    | (TRUE, [])  =>  "true"
-    | (FALSE, []) =>  "false"
-    | (TRUE, _)   =>  Impossible.impossible "true applied to args"
-    | (FALSE, _)  =>  Impossible.impossible "false applied to args"
-
-  fun expString (NAME n) = n
-    | expString (VCONAPP (n, es)) = 
-     vconAppStr expString n es 
-    | expString (LAMBDAEXP (n, body)) = 
-        StringEscapes.backslash ^ n ^ ". " ^ (expString body) (* backslash *)
-    | expString (FUNAPP (e1, e2)) = expString e1 ^ " " ^ expString e2
-
-  fun valString (VCON (v, vals)) = 
-          vconAppStr valString v vals 
-    | valString (LAMBDA (n, e)) = 
-      Impossible.impossible 
-      "stringifying core lambda- client code must handle this case"
-
-  fun eqval (VCON (v1, vs), VCON (v2, vs'))     = 
-      v1 = v2 andalso ListPair.all eqval (vs, vs')
-    | eqval (_, _) = false 
-end
-
