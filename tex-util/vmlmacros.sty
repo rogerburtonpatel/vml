@@ -212,6 +212,7 @@
 \defcomponent{context}{\context}
 \defcomponent{term}{\galpha}
 \defcomponent{guard}{g}
+\defcomponent{guards}{gs}
 \defcomponent{exp}{e}
 \defcomponent{pat}{p}
 \defcomponent{value}{v}
@@ -249,7 +250,7 @@
   \newcommand\pattov[1][]{%   translate patterns to V-minus
     {\setkeys{state}{#1}%
       \let\c=\component
-      \ensuremath{\ptran{\c{pat}}\c{name}\c{exp} \rightsquigarrow \c{result}}}}
+      \ensuremath{\ptran{\c{pat}}\c{name} \rightsquigarrow \c{result}}}}
 
   \newcommand\Bindings[1]{\ensuremath{\translation[B]{#1}}}
   
@@ -272,9 +273,15 @@
 \newcommand\eqrefine[1][]{%  equation refines environment
   {\setkeys{state}{#1}%
   \let\c=\component
-  \ensuremath{\langle \c{env}\c{envext}, \c{eq} \rangle \rightarrowtail \c{newenv}}}}
+  \ensuremath{\langle \c{env}\c{envext}, \c{guard} \rangle \rightarrowtail \c{newenv}}}}
 
 \newcommand\eqfail{\eqrefine[newenv=\dagger]}
+
+\newcommand\doguards[1][]{%  do many guards
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guards} \rightarrowtail \c{result}}}}
+
 
 \defcomponent{vterm}{e}
 \defcomponent{vresult}{e'}

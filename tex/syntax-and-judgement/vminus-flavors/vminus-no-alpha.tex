@@ -41,25 +41,27 @@ decision-making construct:
     $\expr$ : \textsf{Expressions} ::=
     | $x, y, z$ : names
     % Question: ebnf braces vs. regular brackets
-    | $\tt{if}\; \tt{[}\; g\; \bracketed{[] g}\; tt{]}\; \tt{fi}$ : if-fi 
+    | $\tt{if}\; \tt{[}\; G\; \bracketed{[] G}\; tt{]}\; \tt{fi}$ : if-fi 
     | $K \bracketed{\expr}$ : value constructor application 
     | $\expr[1]\; \expr[2]$ : function application 
     | $\lambda x.\; \expr$ : lambda delcaration 
     ;;
-    $g$ : \textsf{Guarded Expressions} ::=  
-    $\boldsymbol{\rightarrow}\expr$ : terminating experession
-    | $\expr;\; g$ : intermediate expression 
-    | $\vexists{x}g$ : existential 
-    | $\expr[1] = \expr[2];\; g$ : equation 
+    $G$ : \textsf{Guarded Expressions} ::=  
+    $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\expr$ : names, guards, and body
+    ;;
+    $g$ : \textsf{Guards} ::=  
+    | $\expr$ : intermediate expression 
+    | $x = \expr$ : equation 
+    | $ g \bracketed{; g} \; \choice \; g \bracketed{; g}$ : choice 
     ;;
     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
     | $\lambda x.\; \expr$ : lambda value
     ;;
-    $K$ : \textsf{Value Constructors} ::=
-    | \tt{true} $\vert$ \tt{false} : booleans
-    | $\tt{\#}x$ : name beginning with \tt{\#}
-    | \tt{A-Z}$x$ : name beggining with capital letter
-    | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+    % $K$ : \textsf{Value Constructors} ::=
+    % | \tt{true} $\vert$ \tt{false} : booleans
+    % | $\tt{\#}x$ : name beginning with \tt{\#}
+    % | \tt{A-Z}$x$ : name beggining with capital letter
+    % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
     \end{bnf}
 \end{center}
 
