@@ -12,6 +12,8 @@ structure Env :> sig
   val bind : name * 'a * 'a env -> 'a env
   val binds : 'a env * name -> bool
 
+  val keys : 'a env -> name list 
+
   val toString : ('a -> string) -> 'a env -> string
   val <+> : 'a env * 'a env -> 'a env  (* BPC, chap 5 *)
   val merge : ('a * 'a -> 'a) -> 'a env * 'a env -> 'a env
@@ -64,6 +66,10 @@ struct
       else (n1, resolver (x, find (n1, rho)))::(merge resolver (xs, rho))
 
   val concat = List.concat
+
+  fun fst (x, y) = x
+
+  fun keys rho = map fst rho
 
 end
   

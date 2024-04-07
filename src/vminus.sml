@@ -5,7 +5,7 @@ signature VMINUS = sig
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
-  type 'e multi = 'e Multi.multi
+
   datatype exp = C of exp Core.t
                | I of (exp, exp) if_fi
 
@@ -33,7 +33,7 @@ structure VMinus :> VMINUS
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
-  type 'e multi = 'e Multi.multi
+
   datatype exp = C of exp Core.t
                | I of (exp, exp) if_fi
 
@@ -312,7 +312,7 @@ structure FinalVMinusWithAlpha = struct
                     | CONDITION of 'e
                     | CHOICE of 'e guard list * 'e guard list
   datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
-  datatype 'e multi = MULTI of 'e list
+
 
 type 'e core_exp = 'e Core.t
 
