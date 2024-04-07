@@ -1,4 +1,354 @@
-signature VMinus = sig  
+signature VMINUS = sig 
+  type name = Core.name
+  type vcon = Core.vcon
+  datatype 'e guard = EQN of name * 'e
+                    | CONDITION of 'e
+                    | CHOICE of 'e guard list * 'e guard list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
+
+  datatype exp = C of exp Core.t
+               | I of (exp, exp) if_fi
+
+  datatype def = DEF of name * exp
+
+  type value = exp Core.value
+
+  val expString : exp -> string 
+  val defString : def -> string 
+
+  val eqexp : exp * exp -> bool
+
+  val gmap :  ('a -> 'b) -> 'a guard -> 'b guard
+  
+  val eval : value option Env.env -> exp -> value
+
+  val runProg : def list -> unit
+
+end 
+structure VMinus :> VMINUS
+  = struct
+  type name = string
+  type vcon = Core.vcon
+  datatype 'e guard = EQN of name * 'e
+                    | CONDITION of 'e
+                    | CHOICE of 'e guard list * 'e guard list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * ('e guard list * 'a)) list
+
+  datatype exp = C of exp Core.t
+               | I of (exp, exp) if_fi
+
+  datatype def = DEF of name * exp
+
+  type value = exp Core.value
+
+    fun gmap f (EQN (n, e))        = EQN (n, f e)
+      | gmap f (CONDITION e)       = CONDITION (f e)
+      | gmap f (CHOICE (gs1, gs2)) = CHOICE (map (gmap f) gs1, map (gmap f) gs2)
+
+
+  fun eqval (e1, e2) = Core.eqval (e1, e2)
+
+  fun br printer input = "(" ^ printer input ^ ")"
+  fun br' input = "(" ^ input ^ ")"
+
+  structure C = Core
+
+  fun expString (C ce) = 
+  (case ce of C.FUNAPP (e1, e2)  => 
+                          maybeparenthesize e1 ^ " " ^ maybeparenthesize e2
+            | C.VCONAPP (vc, es) => C.vconAppStr maybeparenthesize vc es
+            | _ => Core.expString expString ce)
+    | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
+  and guardString (EQN (n, e))         = n ^ " = " ^ expString e
+    | guardString (CONDITION e)        = expString e
+    | guardString (CHOICE (gs1, gs2))  = 
+            let val compress = String.concatWith "; " o map guardString
+            in  br' (compress gs1 ^ " | " ^ compress gs2 )
+            end 
+  and gexpString (ns, (gs, r)) = 
+        let val (existential, dot) = if null ns then ("", "") else ("E ", ". ")
+            val binds    = existential ^ String.concatWith " " ns ^ dot
+            val gStrings = String.concatWith "; " (map guardString gs)
+            val rString  = expString r
+        in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" 
+        end 
+  and if_fiString gexps = 
+  String.concat (List.map gexpString gexps) 
+  and maybeparenthesize (C e) = 
+(case e of C.LITERAL v => br' (C.valString expString v)
+        | C.NAME n     => n
+        | C.VCONAPP (C.K vc, es) => 
+            if null es then vc else br' (C.vconAppStr expString (C.K vc) es)
+        | C.LAMBDAEXP (n, body)  => 
+          br' (StringEscapes.backslash ^ n ^ ". " ^ (expString body))
+        | C.FUNAPP (e1, e2)      => br' (expString e1 ^ " " ^ expString e2))
+  | maybeparenthesize other = br' (expString other)
+    
+
+  fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
+
+fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expString cex2
+  | eqexp (I i1, I i2) = Impossible.unimp "compare 2 if-fis"
+  | eqexp _ = false 
+
+    
+    (* (ALPHA a1, ALPHA a2) => Alpha.eqval a1 a2 
+     | (NAME n1, NAME n2)   => n1 = n2
+     | (IF_FI gs1, IF_FI gs2) => ListPair.allEq eqgexp(gs1, gs2)
+     | (VCONAPP (vc1, es1), VCONAPP (vc2, es2)) => 
+        OldCore.eqval (OldCore.VCON (vc1, []), OldCore.VCON (vc1, []))
+        andalso 
+        ListPair.allEq eqexp (es1, es2)
+     | (FUNAPP (e1, e2), FUNAPP (e3, e4)) =>
+        ListPair.allEq eqexp ([e1, e2], [e3, e4])
+     | (LAMBDAEXP (n1, e1), LAMBDAEXP (n2, e2)) => 
+        n1 = n2 andalso eqexp (e1, e2)
+     | _ => false  *)
+
+  fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
+
+  infix 9 binds
+  fun rho binds n = Env.binds (rho, n)
+
+  exception NameNotBound of string 
+
+  type lvar_env = value option Env.env
+
+  infix 9 exists_in
+
+  fun n exists_in (rho: lvar_env) = 
+    Env.binds (rho, n) andalso isSome (Env.find (n, rho))
+
+  fun checkBound e rho_ = 
+        case e of C (C.NAME n) => if not (rho_ binds n)
+                                  then raise NameNotBound n
+                                  else ()
+                              |  _ =>  ()
+
+  (* fun sort rho [] = []
+    | sort rho [g] = [g]
+    | sort rho (g::gs) = 
+        let val x = case g of CONDITION e => let val () = checkBound e rho
+        
+        fun sortWith rho tempStucks gs' = Impossible.unimp "todo"
+        in 
+        end  *)
+
+  fun println s = print (s ^ "\n")
+
+
+  fun lookup x rho = Env.find (x, rho)
+
+  fun lookupv x rho = valOf (lookup x rho)
+
+  (* making nondeterminism deterministic *)
+  fun pickAnEquation (g::gs) = (g, gs)
+    | pickAnEquation []      = Impossible.impossible "picking from no equations" 
+
+  exception Unsolvable
+
+  infix 6 <+>
+
+  val op <+> = Env.<+>
+
+  fun optValString v = optString (C.valString expString) v
+
+  fun lvarEnvMerge (rho1 : lvar_env) (rho2 : lvar_env) = 
+    Env.merge (fn (SOME x, SOME y)   => SOME x
+                | (NONE,   SOME x)   => SOME x
+                | (SOME x, NONE)     => SOME x
+                | (NONE,   NONE)     => NONE) (rho1, rho2)
+
+(* bindwith binds a value to an expression with unknown names, or fails. *)
+
+(* TODO Parsing ambiguity error: CONS A EMPTY being read as CONS (A EMPTY) *)
+  fun bindwith rho ((v as C.VCON (C.K vc, vs)), (C ce))  = 
+      (case ce of 
+    C.LITERAL v' => if v <> v' then raise Unsolvable else Env.empty
+  | C.NAME n => 
+    if n exists_in rho 
+    then if not (eqval (lookupv n rho, v)) then raise Unsolvable else Env.empty 
+    else Env.bind (n, SOME v, Env.empty)
+  | C.VCONAPP (C.K vc', es) => 
+      if vc <> vc' orelse length es <> length vs 
+      then raise Unsolvable 
+      else 
+      let val () = println "here"
+      val r = foldr (fn ((ex, vl), rho') => 
+                  let 
+                  val () = println (Env.toString optValString rho')
+                  val () = println ("value: " ^ C.valString expString vl)
+                  val rho'' = bindwith rho' (vl, ex) 
+                  in (lvarEnvMerge rho'' rho') 
+                  end)
+            rho (ListPair.zip (es, vs))
+      val () = println "after"
+      in r 
+            end 
+  | C.LAMBDAEXP _  => raise Unsolvable
+  | C.FUNAPP    _  => raise Unsolvable)
+    | bindwith rho (_, (I _))        = raise Unsolvable
+    | bindwith rho ((C.LAMBDA _), _) = raise Unsolvable
+
+
+  fun eval rho (C ce) = 
+    (case ce of
+      C.LITERAL v => v
+    | C.NAME n    => 
+        if n exists_in rho then lookupv n rho else raise Core.NameNotBound n
+    | C.VCONAPP (vc, es)    => C.VCON (vc, map (eval rho) es)
+    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
+    | C.FUNAPP (C (C.NAME "print"), param)  => 
+    (* dirty trick to print values *)
+                    ( println (C.valString expString (eval rho param)) 
+                          ; C.VCON (C.K "unit", [])
+                    ) 
+    | C.FUNAPP (fe, param)  => 
+              (case eval rho fe 
+                of C.LAMBDA (n, b) => 
+                  let val arg  = eval rho param
+                      val rho' = Env.bind (n, SOME arg, rho)
+                    in 
+                     eval rho' b
+                    end
+                 | _ => raise Core.BadFunApp "attempted to apply non-function"))
+    | eval rho (I (IF_FI ((ns, (gs, rhs))::branches))) = 
+    (let val rho'  = foldl (fn (n, env) => Env.bind (n, NONE, env)) rho ns
+         val rho'' = solve rho' [] false gs  (* may raise Unsolvable *)
+      in eval rho'' rhs
+      end 
+        handle Unsolvable => eval rho (I (IF_FI branches)))
+    | eval rho (I (IF_FI [])) = raise Core.NoMatch
+
+  and solve rho [] made_progress [] = rho
+    | solve rho gs made_progress [] = 
+        if made_progress then solve rho [] false gs else raise Unsolvable
+    | solve (rho : lvar_env) stuck made_progress guards = 
+
+        let val (g, gs) = pickAnEquation guards
+            fun currently_solvable e = (
+            (eval rho e ; true)
+              handle _ => false)
+        in (case g 
+            of CONDITION e =>
+                let val (stuck', made_progress') = 
+                    if currently_solvable e
+                    then  if eval rho e = Core.VCON (Core.K "false", []) 
+                          then raise Unsolvable 
+                          else (stuck, true) 
+                    else (g::stuck, made_progress)
+                  in solve rho stuck' made_progress' gs
+                  end  
+          | EQN (x, e) => let val (rho', stuck', made_progress') = 
+                    case (x exists_in rho, currently_solvable e)
+                      of (true, true) => 
+                        if not (eqval (lookupv x rho, eval rho e)) 
+                        then raise Unsolvable 
+                        else (rho, stuck, true)
+                      | (true, false) => 
+                          (bindwith rho ((lookupv x rho), e), stuck, true)
+                      | (false, true) => 
+                          (Env.bind (x, (SOME (eval rho e)), rho), stuck, true)
+                      | (false, false) => 
+                          (rho, g::stuck, made_progress)
+                  in solve rho' stuck' made_progress' gs
+                  end 
+          | CHOICE (gs1, gs2) => 
+              let val (rho', stuck', made_progress') = 
+                      ((solve rho stuck made_progress gs1, stuck, true)
+                        handle Unsolvable => 
+                      ((solve rho stuck made_progress gs2, stuck, true)
+                        handle Unsolvable => 
+                      (rho, g::stuck, made_progress)))
+              in solve rho' stuck' made_progress' gs
+              end)
+          end 
+
+  fun def rho (DEF (n, e)) = 
+    let val v = eval rho e
+    in Env.bind (n, SOME v, rho)
+    end
+
+  fun runProg defs = 
+  (  foldl (fn (d, env) => 
+      let val rho = def env d
+      in  rho <+> env
+      end) Env.empty defs;
+      ())
+
+
+  (* fun moveIndependentsWith rho buildBinds buildLeftover changed [] = Impossible.unimp "do something" 
+    | moveIndependentsWith rho buildBinds buildLeftover changed (g::gs) = 
+        let fun currently_solvable e = Impossible.unimp "todo with stuck"
+        in 
+        (case g of 
+          CONDITION e =>
+            let val (buildBinds', buildLeftover', changed') = 
+                if currently_solvable rho e
+                then (g::buildBinds, buildLeftover, true)
+                else (buildBinds, g::gs, changed)
+              in moveIndependentsWith rho buildBinds' buildLeftover' changed' gs
+              end  
+              (* fix: rho update *)
+      | EQN (x, e) => let val (buildBinds', buildLeftover', changed') = 
+                if currently_solvable e orelse currently_solvable (C (C.NAME x))
+                then (g::buildBinds, buildLeftover, true)
+                else (buildBinds, g::gs, changed)              
+              in moveIndependentsWith rho buildBinds' buildLeftover' changed' gs
+              end 
+      | CHOICE (gs1, gs2) => Impossible.unimp "choice")
+      end  *)
+
+  (* fun eval  *)
+
+
+end
+(* 
+structure FinalVMinusWithAlpha = struct 
+  type name = Core.name
+  type vcon = Core.vcon
+  datatype 'e guard = EQN of name * 'e
+                    | CONDITION of 'e
+                    | CHOICE of 'e guard list * 'e guard list
+  datatype ('e, 'a) if_fi = IF_FI of (name list * 'e guard list * 'a) list
+
+
+type 'e core_exp = 'e Core.t
+
+datatype simple = C_S of simple core_exp
+                | I_S  of (simple, simple) if_fi
+
+datatype 'a exp = S of simple 
+                | C of 'a exp core_exp
+                | I of (simple, 'a) if_fi
+
+val x__ = S (C_S (Core.NAME "n"))
+val _ = S (C_S (Core.NAME "n"))
+val test__ = I (IF_FI [([], [], 3)])
+
+  datatype 'a def = DEF of name * 'a exp
+
+end 
+
+
+structure RenamedVMinus = struct
+  type name = string
+  datatype 'a exp = 
+                 ALPHA of 'a 
+              |  NAME of name 
+              | IF_FI of 'a guarded_exp list 
+              | VCONAPP of OldCore.vcon * 'a exp list
+              | FUNAPP  of 'a exp * 'a exp
+              | LAMBDAEXP of name * 'a exp
+      and 'a guarded_exp = GUARDED of name list * 'a guard list * 'a exp 
+      and 'a guard = CONDITION of 'a exp
+                   | EQN of name * 'a exp
+  and 'a vcon = K of name * 'a value list | TRUE | FALSE 
+  and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * 'a exp (* expressions return values *)
+end
+
+signature OLDVMINUS = sig  
   type name = string 
 
   exception NameNotBound of name 
@@ -13,16 +363,18 @@ signature VMinus = sig
               | VCONAPP of OldCore.vcon * 'a exp list
               | FUNAPP  of 'a exp * 'a exp
               | LAMBDAEXP of name * 'a exp
-      and 'a sugared_guarded_exp = S_ARROWALPHA of 'a exp 
-                      | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
-                      | S_EXISTS of name * 'a sugared_guarded_exp
-                      | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
       and 'a guarded_exp = ARROWALPHA of 'a exp 
                       | EXPSEQ of 'a exp * 'a guarded_exp 
                       | EXISTS of name * 'a guarded_exp
                       | EQN    of name * 'a exp * 'a guarded_exp
   and 'a vcon = K of name * 'a value list | TRUE | FALSE 
   and 'a value = VALPHA of 'a | VCON of 'a vcon | LAMBDA of name * 'a exp (* expressions return values *)
+
+  datatype 'a sugared_guarded_exp
+    = S_ARROWALPHA of 'a exp 
+    | S_EXPSEQ of 'a exp * 'a sugared_guarded_exp 
+    | S_EXISTS of name * 'a sugared_guarded_exp
+    | S_EQN    of 'a exp * 'a exp * 'a sugared_guarded_exp
   
   datatype 'a result = VAL of 'a value | REJECT (* guarded_exps return results *)
   datatype 'a def = DEF of name * 'a exp
@@ -32,10 +384,15 @@ signature VMinus = sig
   val expString : 'a exp -> string 
   val eval      : 'a value option Env.env -> 'a exp -> 'a value 
   val solve      : 'a value option Env.env -> 'a guarded_exp -> 'a result
+  val eqexp      : 'a exp * 'a exp -> bool 
+  
+  val map  : ('a -> 'b) -> 'a exp -> 'b exp
+  val gmap : ('a -> 'b) -> 'a guarded_exp -> 'b guarded_exp
 
 end 
 
-functor VMFn (A : ALPHA) :> VMinus = struct  
+functor VMFn (structure A : ALPHA (*sus*) ) :> OLDVMINUS = struct  
+   (* signature ALPHA probably cannot be implemented in any useful way *)
 
   (* type name = string
   datatype vcon = CONS | NIL | K of name | INT of int
@@ -82,7 +439,22 @@ functor VMFn (A : ALPHA) :> VMinus = struct
     | boolOfValue _              = true
 
   
+fun eqexp (ex1, ex2) = 
+  case (ex1, ex2)
+    of (ALPHA a1, ALPHA a2) => Alpha.eqval a1 a2 
+     | (NAME n1, NAME n2)   => n1 = n2
+     | (IF_FI gs1, IF_FI gs2) => ListPair.allEq eqgexp(gs1, gs2)
+     | (VCONAPP (vc1, es1), VCONAPP (vc2, es2)) => 
+        OldCore.eqval (OldCore.VCON (vc1, []), OldCore.VCON (vc1, []))
+        andalso 
+        ListPair.allEq eqexp (es1, es2)
+     | (FUNAPP (e1, e2), FUNAPP (e3, e4)) =>
+        ListPair.allEq eqexp ([e1, e2], [e3, e4])
+     | (LAMBDAEXP (n1, e1), LAMBDAEXP (n2, e2)) => 
+        n1 = n2 andalso eqexp (e1, e2)
+     | _ => false 
 
+and eqgexp (g1, g2) = Impossible.unimp "not yet"
 
   fun eqval (VALPHA a, VALPHA a')  = A.eqval a a'
     | eqval (VCON v1, VCON v2)     = 
@@ -295,8 +667,10 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
                     end) 
                 end 
         and bindWith (rho : 'a lvar_env) (e : 'a exp, v : 'a value) = 
-        let val _ = print ("Env entering bindWith: " ^ (Env.toString optValStr rho) ^ "\n") 
+        let 
+            val _ = print ("Env entering bindWith: " ^ (Env.toString optValStr rho) ^ "\n") 
             val _ = print ("bindwith on " ^ expString e ^ ", " ^ valString v ^ "\n")
+            val () = () 
             in 
           case (e, v) 
             of (NAME n, _) => 
@@ -587,4 +961,13 @@ val rec stuck : 'a lvar_env -> ('a -> bool) -> 'a exp ->  bool =
 (* story: parse in an exp. eval it. if it has if-fi, sort each guarded exp and solve it. *)
 (* story: parse in an exp. eval it. if it has if-fi, solve it sortingly. *)
 
-end
+ fun map f = Impossible.unimp "change alpha"
+ fun gmap f = Impossible.unimp "change alpha"
+ (* fun gmap f g = 
+  case g of 
+      ar as ARROWALPHA e   => ar
+    | EXPSEQ (e, g') => Impossible.unimp "not yet"  
+    | EXISTS (n, g') => _
+    | EQN (n, e, g') => _ *)
+
+end *)

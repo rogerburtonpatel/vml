@@ -139,7 +139,7 @@ fun make_sorted_test ge_test_tuple =
 (* val tests = [unbound_x_lhs, unbound_y_rhs, late_y_rhs, 
              late_y_rhs2, sorted_late_y_rhs2, good_y_rhs, good_y_rhs2, cycle_ge, cycle_but_good_ge] *)
 
-fun curry f x y = f (x, y)
+(* fun curry f x y = f (x, y) *)
 
 fun ListPrint converter xs = 
     print ("[" ^ (ListUtil.join converter ", " xs) ^ "]\n")

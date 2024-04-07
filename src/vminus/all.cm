@@ -14,19 +14,15 @@ group is
   Unit.sml
   error.sml
   freshnames.sml
+  producer.sml
+  lexer-combinators.sml
   (* **** languages **** *)
   core-lang.sml
-  vminus-noalpha.sml
-  vminus-arrow.sml
-  (****** The Alpha-Language ******)
-  alpha.sml 
   (****** VML ******)
   vminus.sml
-  guard.sml
-  guardsort.sml
-  vminus.sml
 
-  test-guard-sort.sml
-  producer.sml
   vminus-lex.sml
   vminus-parse.sml
+
+  main.sml
+  
