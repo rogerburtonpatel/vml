@@ -4,7 +4,7 @@ group is
 
   (* **** basic infrastructure **** *)
 
-  impossible.cm   (* analog of assertion failure *)
+  impossible.sml   (* analog of assertion failure *)
   escapes.sml     (* character escapes for string literals *)
 
   env.sml         (* environment abstraction *)

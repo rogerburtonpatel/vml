@@ -14,14 +14,15 @@ group is
   Unit.sml
   error.sml
   freshnames.sml
+  producer.sml
+  lexer-combinators.sml
   (* **** languages **** *)
   core-lang.sml
   (****** VML ******)
   pplus.sml
 
-  producer.sml
   pplus-lex.sml
   pplus-parse.sml
 
-  pplusrun.sml
+  main.sml
   

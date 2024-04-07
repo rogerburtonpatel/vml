@@ -1,22 +1,13 @@
-structure LexerCombinators =
-  MkListProducer (val species = "lexer"
-                  type input = char
-                  val show = StringEscapes.quote o implode
-                 )
-
 structure PPlusLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
-  datatype specialchar   = QUOTE | COMMA | BACKSLASH | DOT
 
   datatype token
-    = SPECIAL of specialchar
-    | VCON    of string 
+    = VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
     | RESERVED of string
 
-    (* must do one line at a time *)
   val token : token LexerCombinators.producer
   val tokenize_line : string -> token list Error.error
   val tokenString : token -> string 
@@ -53,17 +44,17 @@ struct
 
 
   datatype bracket_shape = ROUND | SQUARE | CURLY
-  datatype specialchar = QUOTE | COMMA | BACKSLASH | DOT
 
   datatype token
-    = SPECIAL of specialchar
-    | VCON    of string 
+    = VCON    of string 
     | NAME    of string
     | LEFT  of bracket_shape
     | RIGHT of bracket_shape
     | RESERVED of string
 
   val doublequote = Char.toString (chr 96)
+  val backslash = (chr 92)
+  val sbackslash = StringEscapes.backslash
 
   fun bracketLexer token
     =  char #"(" >> succeed (LEFT  ROUND)
@@ -76,6 +67,7 @@ struct
 
 
   type lexer = token L.producer
+
 
   fun intFromChars (#"-" :: cs) = 
         Error.map Int.~ (intFromChars cs)  (* XXX todo overflow *)
@@ -94,8 +86,9 @@ struct
   fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};,.\\" c
 
 
+
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", 
+                  "->", "<-", "when", ",", sbackslash,
                   (* debugging *)
                   "parse", "pat"
                   ]
@@ -120,16 +113,17 @@ struct
 
   fun optional p = SOME <$> p <|> succeed NONE
 
-  val backslash = (chr 92)
+  fun onereserved c = char c >> succeed (RESERVED (Char.toString c))
+
+  val anyreserved =   onereserved #"'"
+                  <|> onereserved #"."
+                  <|> onereserved #","
+                  <|> char backslash >> succeed (RESERVED sbackslash)
 
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  char #"'" >> succeed (SPECIAL QUOTE)
-                  <|> char #"," >> succeed (SPECIAL COMMA)
-                  <|> char backslash >> succeed (SPECIAL BACKSLASH)
-                  <|> char #"." >> succeed (SPECIAL DOT)
-                  <|> char #"," >> succeed (SPECIAL COMMA)
+    bracketLexer   (  anyreserved
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )
@@ -147,11 +141,7 @@ struct
     | rightString CURLY = "}"
 
 
-  fun tokenString (SPECIAL QUOTE)      = doublequote
-    | tokenString (SPECIAL COMMA)      = "COMMA"
-    | tokenString (SPECIAL BACKSLASH)  = "BACKSLASH"
-    | tokenString (SPECIAL DOT)        = "DOT"
-    | tokenString (VCON n)     = "vcon " ^ n
+  fun tokenString (VCON n)     = "vcon " ^ n
     | tokenString (NAME n)     = "name " ^ n
     | tokenString (LEFT b)     = leftString b
     | tokenString (RIGHT b)    = rightString b

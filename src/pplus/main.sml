@@ -1,8 +1,3 @@
-(*  Implements the command line and consults the Languages 
-    table (languages.sml) to see what translation is called for. *)
-
-(* The code is mostly error handling, and you won't need to look at it. *)
-
 structure Main = struct
 
   fun eprint s = TextIO.output (TextIO.stdErr, s)
@@ -15,12 +10,30 @@ structure Main = struct
 
   val () = Unit.reportWhenFailures ()
 
-  fun usage () =
-    ( app eprint ["Usage: pplus"]
-    ; OS.Process.exit OS.Process.failure
-    )
+  type instream = TextIO.instream
+  val lines  = IOUtil.lines : instream -> string list
+  val output = IOUtil.output 
+  val outln  = IOUtil.outln
 
-  fun run f stream = f stream
+
+  (**** function composition, including errors ****)
+
+  type 'a error = 'a Error.error
+
+  infix 0 >>> >=>
+  fun f >>> g = fn x => g (f x)         (* function composition, Elm style *)
+  val op >=> = Error.>=>
+
+  val pplusOfFile : instream -> PPlus.def list error =
+    lines                    (* line list *)
+    >>> map PPlusLex.tokenize_line  (* token list error list *)
+    >>> Error.list           (* token list list error *)
+    >>> Error.map List.concat (* token list error *)
+    >=> PPlusParse.parse       (* def list error *)    
+
+  fun runProg (instream, _) = Error.map PPlus.runProg (pplusOfFile instream) 
+
+  fun run f stream = f (stream, TextIO.stdOut)
   fun errorApp f [] = Error.OK ()
     | errorApp f (x::xs) = Error.>>= (f x, fn _ => errorApp f xs)
 
@@ -31,16 +44,16 @@ structure Main = struct
   fun tx f []    = run f TextIO.stdIn
     | tx f paths = errorApp (run f o openIn) paths
  
-  val _ = tx : (TextIO.instream -> unit Error.error) ->
+  val _ = tx : (TextIO.instream * TextIO.outstream -> unit Error.error) ->
                string list -> unit Error.error
     
-                   
+
   fun reportAndExit (Error.OK ()) = OS.Process.exit OS.Process.success
     | reportAndExit (Error.ERROR msg) = die msg
 
+
   val _ =
     let val argv = CommandLine.arguments ()
-    in  reportAndExit (tx PPlusRun.run argv)
+    in  reportAndExit (tx (runProg) argv)
     end
-
 end
