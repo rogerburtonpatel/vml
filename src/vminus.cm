@@ -16,13 +16,13 @@ group is
   freshnames.sml
   producer.sml
   lexer-combinators.sml
-  (* **** languages **** *)
+  (* **** shared core language **** *)
   core-lang.sml
-  (****** VML ******)
+  (****** VMINUS ******)
   vminus.sml
 
   vminus-lex.sml
   vminus-parse.sml
 
-  main.sml
+  vminus-main.sml
   

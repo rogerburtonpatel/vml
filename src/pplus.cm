@@ -16,31 +16,13 @@ group is
   freshnames.sml
   producer.sml
   lexer-combinators.sml
-
-  (* **** languages **** *)
+  (* **** shared core language **** *)
   core-lang.sml
+  (****** PPLUS ******)
   pplus.sml
-  vminus.sml
-  decision-tree.sml
 
-  verse.sml
-  uverse.sml
-  
-  (***** io **** *)
   pplus-lex.sml
   pplus-parse.sml
-  vminus-lex.sml
-  vminus-parse.sml
 
-  (***** translation **** *)
-
-  d-of-vminus.sml
-  vm-of-pp.sml
-
-  renaming.sml
-  languages.sml
-  dtran.sml
-
-
-  main.sml
+  pplus-main.sml
   
