@@ -66,16 +66,16 @@ are defined case by case:
 \subsection{Translating Patterns}
 
 \begin{align*}
-    &\pattov[pat=y, exp={}, result={x = y}] \\
-    &\pattov[pat=K, exp={}, result={x = K}] \\
+    &\pattov[pat=y, result={x = y}] \\
+    &\pattov[pat=K, result={x = K}] \\
     &\ptran{K p_{1} \dots p_{n}}x \rightsquigarrow \\
-    \vexists{y_{1} \dots y_{n}}\; &\ptran{p_{1}}y_{1}\; ;\; \dots ;\; \ptran{p_{n}}y_{n}\; o\;
-    x = K y_{1} \dots y_{n}, \\
+    \vexists{y_{1} \dots y_{n}}\; x = K y_{1} \dots y_{n} ;\; &\ptran{p_{1}}y_{1}\; ;\; \dots ;\; \ptran{p_{n}}y_{n}\; ;\; \\
     &\rm{$\forall i.\; 1 \leq i \leq n:\; y_{i}$ fresh} \\
-    &\pattov[pat=\mathit{when}\; e, exp={}, result={\etran{e}}] \\
-    &\pattov[pat=\pcommap, exp={}, result=\ptran{p}x\; ;\; \ptran{p'}x] \\
-    &\pattov[pat=\porp, exp={}, result=(\ptran{p}x \pbar \ptran{p'}x)]
+    &\pattov[pat=\mathit{when}\; e, result={\etran{e}}] \\
+    &\pattov[pat=\pcommap, result=\ptran{p}x\; ;\; \ptran{p'}x] \\
+    &\pattov[pat=\porp, result=(\ptran{p}x \pbar \ptran{p'}x)]
 \end{align*}
+
 
 \rab{The vconapp rule is a formatting disaster. How do I fix it.}
 
@@ -87,6 +87,39 @@ Let's make some claims:
     \item Semantics: when \prun, \vmrung
 \end{itemize}
 
+\newcommand\translatesto\rightsquigarrow
+
+\newcommand\ep{\ensuremath{e_{p}}}
+\newcommand\ev{\ensuremath{e_{v}}}
+\newcommand\nsgs{\ensuremath{(ns, gs)}}
+
+
+Let \ep\ be a \PPlus\ expression, \ev\ be a \VMinus\ expression, and \Rho\
+be a specific but arbitrarily chosen environment. If: (1) $\ptov[exp=\ep, result=\ev]$
+(2) \prun[exp=\ep, value=v_{1}] (3) \vmrung[guard=\ev, result=v_{2}]
+then $v_{1} = v_{2}$.
+
+Let $p$ be a \PPlus\ pattern, \nsgs be a list of names and \VMinus\ guards,
+\Rho\ be a specific but arbitrarily chosen environment, \context\ be a specific
+but arbitrarily chosen context, and $x$ be a name that stands for the scrutinee
+of a case expression $v$ such that $\Rho(x) = v$. If: (1) $\pattov[pat=p,
+result=\nsgs]$ (2) \pmatch[newenv=r_{1}] (3)
+\doguards[result=r_{2}] then $r_{1} = r_{2}$.
+
+
+NEXT STEPS:
+
+
+Case: 
+
+Name 
+
+(1) \pattov[pat=y, result={(y, [x = y])}] (2) \pmatch[pat=y, newenv=r_{1}] (3) \doguards[envext=\bracketed{y \mapsto \rho(x)}, guards={[x = y]}, result=r_{2}]
+
+By rule BLAH, $r_{1}$ = BLAH1. 
+By rule BLAH2, $r_{2}$ = BLAH2. 
+
+Therefore, $r_{1} = r_{2}$. 
 
 
 \end{document}

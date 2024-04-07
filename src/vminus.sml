@@ -229,8 +229,7 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
         let val (g, gs) = pickAnEquation guards
             fun currently_solvable e = (
             (eval rho e ; true)
-                                              handle Core.NameNotBound _ => false
-                                                   | Core.NoMatch        => false)
+              handle _ => false)
         in (case g 
             of CONDITION e =>
                 let val (stuck', made_progress') = 
