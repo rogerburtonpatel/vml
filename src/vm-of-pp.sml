@@ -10,7 +10,6 @@ struct
   structure P = PPlus
   structure V = VMinus
   structure C = Core
-  val MULTI = Multi.MULTI
 
 
   fun typecheck () = Impossible.unimp "typecheck"
