@@ -19,4 +19,5 @@
 /bin/dtran.opt
 *.out
 .cm
-bin/pplus
+/bin/pplus
+/bin/vminus
