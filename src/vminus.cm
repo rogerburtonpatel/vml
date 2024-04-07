@@ -1,0 +1,28 @@
+group is
+  $/basis.cm
+
+
+  (* **** basic infrastructure **** *)
+
+  impossible.sml   (* analog of assertion failure *)
+  escapes.sml     (* character escapes for string literals *)
+
+  env.sml         (* environment abstraction *)
+  set.sml         (* set abstraction *)
+  ioutil.sml      (* convenience functions for I/O *)
+  listutil.sml    (* list functions missing from Moscow ML *)
+  Unit.sml
+  error.sml
+  freshnames.sml
+  producer.sml
+  lexer-combinators.sml
+  (* **** languages **** *)
+  core-lang.sml
+  (****** VML ******)
+  vminus.sml
+
+  vminus-lex.sml
+  vminus-parse.sml
+
+  main.sml
+  
