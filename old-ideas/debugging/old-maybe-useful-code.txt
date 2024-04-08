@@ -1,0 +1,12 @@
+For debugging: In parser, at `fun parse input`: 
+  fun parse input = 
+  let val () = app eprint ["reading from token stream: \n", String.concatWith ", " (map L.tokenString input), "\n"]
+  in P.produce (curry fst <$> many def <*> eos) input 
+  end
+
+  and runpredef which (rho, arg) = 
+    case which of 
+      "print" => ( println (C.valString expString (eval rho arg)) 
+                  ; C.VCON (C.K "unit", [])
+                 )
+      | _ => Impossible.impossible "runtime bug: running non-predef function"

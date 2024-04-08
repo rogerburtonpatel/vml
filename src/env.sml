@@ -1,8 +1,5 @@
 (* Representation of environments *)
 
-(* You'll need to use the signature, 
-    but don't need to look at the implementation *)
-
 structure Env :> sig
   type name = string
   exception NotFound of name
@@ -59,6 +56,7 @@ struct
   infix 6 <+>
   fun pairs <+> pairs' = pairs' @ pairs
 
+  (* Merge two environments, with a resolver function to handle duplicates *)
   fun merge resolver ([], rho) = rho
     | merge resolver ((n1, x)::xs, rho) = 
       if not (binds (rho, n1))

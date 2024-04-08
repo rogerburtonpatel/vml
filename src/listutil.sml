@@ -4,6 +4,7 @@ structure ListUtil :> sig
   val concatMap : ('a -> 'b list) -> ('a list -> 'b list)
   val foldri : (int * 'a * 'b -> 'b) -> 'b -> 'a list -> 'b
   val join  : ('a -> string)  -> string -> 'a list -> string
+  val member: ''a -> ''a list -> bool 
 end
   =
 struct
@@ -39,6 +40,7 @@ struct
     | join f delim (x::xs) = (f x) ^ (foldr (fn (s, acc) => 
                                               delim ^ (f s) ^ acc) "" xs)
 
+  fun member x xs = List.exists (fn y => x = y) xs
 
 
 end

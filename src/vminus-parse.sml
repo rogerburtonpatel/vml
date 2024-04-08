@@ -38,7 +38,7 @@ end = struct
   val eos     = P.eos
   
   fun flip f x y  = f y x
-  fun member x xs = List.exists (fn y => y = x) xs
+  val member = ListUtil.member
   fun uncurry f (x, y) = f x y
   val backslash = StringEscapes.backslash
   (* utilities *)
@@ -121,28 +121,25 @@ end = struct
   fun vfunapp e1 e2 = V.C (Core.FUNAPP (e1, e2))
   fun viffi branches = V.I (V.IF_FI branches)
 
-(* p ::= term [| term]
-term ::= factor {, factor}
-factor ::= atom [<- exp]
-atom ::= x | K {atom} | when exp | ❨p❩ *)
-
   val optional = P.optional
 
   fun nullaryvcon vc = V.C (Core.VCONAPP (vc, []))
 
+  fun nub xs = (Set.elems o Set.fromList) xs
+  fun containsDuplicates xs = length xs <> length (nub xs)
 
   val exp = P.fix (fn exp : V.exp P.producer => 
     let         
-      val existentials = exists >> many name <~> dot
-                          <|> succeed []
-      
+      val existentials = 
+             exists >> sat (not o containsDuplicates) (many name) <~> dot
+          <|> succeed []
       val guard = P.fix (fn guard : V.exp V.guard P.producer =>
           let val baseguard = curry V.EQN <$> name <*> equalssign >> exp 
-        <|>  V.CONDITION <$> exp                          
-        <|>  bracketed guard 
+                           <|> V.CONDITION <$> exp                          
+                           <|> bracketed guard 
           val oneOrMoreGuards = semicolonSeparated baseguard
           in curry V.CHOICE <$> oneOrMoreGuards <~> bar <*> oneOrMoreGuards
-        <|> baseguard
+          <|> baseguard
           end)  
       val guards = semicolonSeparated guard <|> succeed []
       (* val multi = Multi.MULTI <$> many1 exp  *)
@@ -159,36 +156,19 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
         <|> viffi       <$> word "if" 
                     >> boxSeparated guarded_exp 
                  <~> word "fi"
-                                                                            
         <|>      bracketed exp)
     in 
-      (* reserved "guard" >> name >> equalssign >> exp >> succeed (vname "x")  *)
-        (* <|>  reserved "gexp" >> guarded_exp >> succeed (vname "x") <|> *)
-      (* debugging *)
-          uncurry vfunapp <$> (P.pair <$> subexp <*> subexp)                    
+         uncurry vfunapp <$> (P.pair <$> subexp <*> subexp)                    
       <|> subexp
-     end)
+    end)
     
 
   val def = 
         word "val"       >> (curry V.DEF <$> name <*> (equalssign >> exp))   
-        (* <|>        reserved "parse" >> exp >> P.succeed (V.DEF ("z", vname "z"))        *)
-        <|>      (* debugging *)
+        <|>
         peek one         >> expected "definition"
-(*
-     -- dirty trick for testing
 
-*)
-  val parse = 
-  P.produce (curry fst <$> many def <*> eos)
+  val parse = P.produce (curry fst <$> many def <*> eos)
 
-  fun parse input = 
-  let val () = 
-  (
-    ()
-    (* ;app eprint ["reading from token stream: \n", String.concatWith ", " (map L.tokenString input), "\n"] *)
-  )
-  in P.produce (curry fst <$> many def <*> eos) input 
-  end
 
 end

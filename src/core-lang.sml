@@ -19,7 +19,7 @@ structure Core :> sig
   val expString           : ('a -> string) -> 'a t -> string
   val valString           : ('a -> string) -> 'a value -> string 
   val vconAppStr : ('a -> string) -> vcon -> 'a list -> string
-
+  val maybeparenthesize : ('a -> string) -> 'a t -> string
   end 
 
   = struct
@@ -71,4 +71,12 @@ structure Core :> sig
           vconAppStr (valString f) vc vals 
     | valString f (LAMBDA (n, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
+   and maybeparenthesize f e = 
+(case e of LITERAL v => br' (valString f v)
+        | NAME n     => n
+        | VCONAPP (K vc, es) => 
+            if null es then vc else br' (vconAppStr f (K vc) es)
+        | LAMBDAEXP (n, body)  => 
+          br' (StringEscapes.backslash ^ n ^ ". " ^ (f body))
+        | FUNAPP (e1, e2)      => br' (f e1 ^ " " ^ f e2))
 end

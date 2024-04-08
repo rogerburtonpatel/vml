@@ -286,8 +286,9 @@ val rec stuck : lvar_env -> exp ->  bool =
   fun runProg defs = 
   (  foldl (fn (d, env) => 
       let val rho = def env d
-      in  Env.<+> (rho, env)
+      in  rho <+> env
       end) Env.empty defs;
-      ())  
+      ()
+  )
 
 end
