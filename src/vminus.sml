@@ -14,6 +14,7 @@ signature VMINUS = sig
   type value = exp Core.value
 
   val expString : exp -> string 
+  val valString : value -> string 
   val defString : def -> string 
 
   val eqexp : exp * exp -> bool
@@ -57,7 +58,7 @@ structure VMinus :> VMINUS
   (case ce of C.FUNAPP (e1, e2)  => 
                           maybeparenthesize e1 ^ " " ^ maybeparenthesize e2
             | C.VCONAPP (vc, es) => C.vconAppStr maybeparenthesize vc es
-            | _ => Core.expString expString ce)
+            | _ => C.expString expString ce)
     | expString   (I (IF_FI bindings)) = "if\n" ^ if_fiString bindings ^ "\nfi"
   and guardString (EQN (n, e))         = n ^ " = " ^ expString e
     | guardString (CONDITION e)        = expString e
@@ -74,73 +75,69 @@ structure VMinus :> VMINUS
         end 
   and if_fiString gexps = 
     "    " ^ String.concatWith "\n[]  " (List.map gexpString gexps) 
-  and maybeparenthesize (C e) = 
-(case e of C.LITERAL v => br' (C.valString expString v)
-        | C.NAME n     => n
-        | C.VCONAPP (C.K vc, es) => 
-            if null es then vc else br' (C.vconAppStr expString (C.K vc) es)
-        | C.LAMBDAEXP (n, body)  => 
-          br' (StringEscapes.backslash ^ n ^ ". " ^ (expString body))
-        | C.FUNAPP (e1, e2)      => br' (expString e1 ^ " " ^ expString e2))
-  | maybeparenthesize other = br' (expString other)
+  and valString v = C.valString expString v
+  and maybeparenthesize (C e) = C.maybeparenthesize expString e
+    | maybeparenthesize other = br' (expString other)
     
 
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
-fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expString cex2
-  | eqexp (I i1, I i2) = Impossible.unimp "compare 2 if-fis"
-  | eqexp _ = false 
+  (* XXX TODO this is a bit sus *)
+  fun eqexp (e1, e2) = expString e1 = expString e2
 
   fun optString printer (SOME x) = printer x 
     | optString printer NONE     = "NONE"
 
-  infix 9 binds
-  fun rho binds n = Env.binds (rho, n)
-
-  exception NameNotBound of string 
+  (* environment utils *)
 
   type lvar_env = value option Env.env
 
-  infix 9 exists_in
+  infix 6 <+>
+  val op <+> = Env.<+>
 
-  fun n exists_in (rho: lvar_env) = 
-    Env.binds (rho, n) andalso isSome (Env.find (n, rho))
-
-  fun checkBound e rho_ = 
-        case e of C (C.NAME n) => if not (rho_ binds n)
-                                  then raise NameNotBound n
-                                  else ()
-                              |  _ =>  ()
-
-  fun println s = print (s ^ "\n")
-
+  infix 9 binds
+  fun rho binds n = Env.binds (rho, n)
 
   fun lookup x rho = Env.find (x, rho)
-
+  fun bind x v rho = Env.bind (x, SOME v, rho)
+  fun introduce x rho = Env.bind (x, NONE, rho)
   fun lookupv x rho = valOf (lookup x rho)
+  val empty = Env.empty
 
-  (* making nondeterminism deterministic *)
+  infix 9 exists_in
+  fun n exists_in (rho: lvar_env) = 
+    rho binds n andalso isSome (lookup n rho)
+
+
+  (* making nondeterminism of picking an equation deterministic *)
   fun pickAnEquation (g::gs) = (g, gs)
     | pickAnEquation []      = Impossible.impossible "picking from no equations" 
 
   exception Unsolvable
 
-  infix 6 <+>
 
-  val op <+> = Env.<+>
-
+  (* for debugging *)
+  fun println s = print (s ^ "\n")
   fun optValString v = optString (C.valString expString) v
 
   fun nub xs = (Set.elems o Set.fromList) xs
-
   fun containsDuplicates xs = length xs <> length (nub xs)
+  exception DuplicateNames of name list
 
-  exception DuplicateNames
+  val member = ListUtil.member
 
-  fun addAsNONETo ns rho = 
-  if containsDuplicates ns 
-  then raise DuplicateNames
-  else foldl (fn (n, env) => Env.bind (n, NONE, env)) rho ns
+  fun getDuplicates xs = 
+  let val ys = nub xs
+  in foldl (fn (x, dups) => if not (member x ys) then x::dups else dups) [] xs
+  end 
+
+
+  fun introduceMany ns rho = 
+  let val dups = getDuplicates ns
+  in if length dups <> 0
+     then raise DuplicateNames dups
+     else foldl (fn (n, env) => introduce n env) rho ns
+  end
 
   fun lvarEnvMerge (rho1 : lvar_env) (rho2 : lvar_env) = 
     Env.merge (fn (SOME x, SOME y)   => SOME x
@@ -148,35 +145,40 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
                 | (SOME x, NONE)     => SOME x
                 | (NONE,   NONE)     => NONE) (rho1, rho2)
 
-(* bindwith binds a value to an expression with unknown names, or fails. *)
-
+(* bindwith binds a value to an expression that may contain unknown names, 
+   or fails. 
+   Another name for this function could be 'unify.' *)
   fun bindwith rho ((v as C.VCON (C.K vc, vs)), (C ce))  = 
       (case ce of 
-    C.LITERAL v' => if v <> v' then raise Unsolvable else Env.empty
-  | C.NAME n => 
-    if n exists_in rho 
-    then if not (eqval (lookupv n rho, v)) then raise Unsolvable else Env.empty 
-    else Env.bind (n, SOME v, Env.empty)
-  | C.VCONAPP (C.K vc', es) => 
-      if vc <> vc' orelse length es <> length vs 
-      then raise Unsolvable 
-      else foldr (fn ((ex, vl), rho') => 
-                  let 
-                  val rho'' = bindwith rho' (vl, ex) 
-                  in (lvarEnvMerge rho'' rho') 
-                  end)
-            rho (ListPair.zip (es, vs))
-  | C.LAMBDAEXP _  => raise Unsolvable
-  | C.FUNAPP    _  => raise Unsolvable)
-    | bindwith rho (_, (I _))        = raise Unsolvable
-    | bindwith rho ((C.LAMBDA _), _) = raise Unsolvable
+        C.LITERAL v' =>             if v <> v' then raise Unsolvable else empty
+      | C.NAME n     => 
+        if n exists_in rho 
+        then if not (eqval (lookupv n rho, v)) then raise Unsolvable else empty 
+        else bind n v empty
+      | C.VCONAPP (C.K vc', es) => 
+          if vc <> vc' orelse length es <> length vs 
+          then raise Unsolvable 
+          else bindwithMany rho es vs
+      | C.LAMBDAEXP _  => raise Unsolvable
+      | C.FUNAPP    _  => raise Unsolvable)
+        | bindwith rho (_, (I _))        = raise Unsolvable
+        | bindwith rho ((C.LAMBDA _), _) = raise Unsolvable
 
+  and bindwithMany rho es vs = 
+    foldr (fn ((ex, vl), rho') => 
+                        let val rho'' = bindwith rho' (vl, ex) 
+                        in (lvarEnvMerge rho'' rho') 
+                        end)
+                  rho (ListPair.zip (es, vs))
+
+
+  fun find_or_die n rho = 
+        if n exists_in rho then lookupv n rho else raise C.NameNotBound n
 
   fun eval rho (C ce) = 
     (case ce of
       C.LITERAL v => v
-    | C.NAME n    => 
-        if n exists_in rho then lookupv n rho else raise Core.NameNotBound n
+    | C.NAME n    => find_or_die n rho
     | C.VCONAPP (vc, es)    => C.VCON (vc, map (eval rho) es)
     | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
     | C.FUNAPP (C (C.NAME "print"), param)  => 
@@ -188,17 +190,18 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
               (case eval rho fe 
                 of C.LAMBDA (n, b) => 
                   let val arg  = eval rho param
-                      val rho' = Env.bind (n, SOME arg, rho)
+                      val rho' = bind n arg rho
                     in 
                      eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
     | eval rho (I (IF_FI ((ns, (gs, rhs))::branches))) = 
-    (let val rho'  = addAsNONETo ns rho
-         val rho'' = solve rho' [] false gs  (* may raise Unsolvable *)
-      in eval rho'' rhs
-      end 
-        handle Unsolvable => eval rho (I (IF_FI branches)))
+        ( let val rho'  = introduceMany ns rho
+            val rho'' = solve rho' [] false gs  (* may raise Unsolvable *)
+          in eval rho'' rhs
+          end 
+            handle Unsolvable => eval rho (I (IF_FI branches))
+        )
     | eval rho (I (IF_FI [])) = raise Core.NoMatch
 
   and solve rho [] made_progress [] = rho
@@ -208,7 +211,9 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
         let val (g, gs) = pickAnEquation guards
             fun currently_solvable e = (
             (eval rho e ; true)
-              handle _ => false)
+              handle Unsolvable       => false
+                   | C.NoMatch        => false
+                   | C.NameNotBound _ => false)
         in (case g 
             of CONDITION e =>
                 let val (stuck', made_progress') = 
@@ -219,20 +224,21 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
                     else (g::stuck, made_progress)
                   in solve rho stuck' made_progress' gs
                   end  
-          | EQN (x, e) => let val (rho', stuck', made_progress') = 
+          | EQN (x, e) => 
+              let val (rho', stuck', made_progress') = 
                     case (x exists_in rho, currently_solvable e)
                       of (true, true) => 
                         if not (eqval (lookupv x rho, eval rho e)) 
                         then raise Unsolvable 
                         else (rho, stuck, true)
                       | (true, false) => 
-                          (bindwith rho ((lookupv x rho), e), stuck, true)
+                          (bindwith rho (lookupv x rho, e), stuck, true)
                       | (false, true) => 
-                          (Env.bind (x, (SOME (eval rho e)), rho), stuck, true)
+                          (bind x (eval rho e) rho, stuck, true)
                       | (false, false) => 
                           (rho, g::stuck, made_progress)
-                  in solve rho' stuck' made_progress' gs
-                  end 
+              in solve rho' stuck' made_progress' gs
+              end 
           | CHOICE (gs1, gs2) => 
               let val (rho', stuck', made_progress') = 
                       ((solve rho stuck made_progress gs1, stuck, true)
@@ -246,15 +252,16 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
 
   fun def rho (DEF (n, e)) = 
     let val v = eval rho e
-    in Env.bind (n, SOME v, rho)
+    in bind n v rho
     end
 
   fun runProg defs = 
   (  foldl (fn (d, env) => 
       let val rho = def env d
       in  rho <+> env
-      end) Env.empty defs;
-      ())
+      end) empty defs;
+      ()
+  )
 
 
 end

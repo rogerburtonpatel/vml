@@ -35,7 +35,7 @@ struct
   val one = L.one
   val notFollowedBy = L.notFollowedBy
   val eos = L.eos
-  fun member x = List.exists (fn y => x = y)
+  val member = ListUtil.member
   
 
 

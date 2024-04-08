@@ -38,7 +38,7 @@ end = struct
   val eos     = P.eos
   
   fun flip f x y  = f y x
-  fun member x xs = List.exists (fn y => y = x) xs
+  val member = ListUtil.member
   fun uncurry f (x, y) = f x y
   val backslash = StringEscapes.backslash
   (* utilities *)
@@ -149,20 +149,7 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
         (* <|>        reserved "parse" >> exp >> P.succeed (A.DEF ("z", ppname "z"))        *)
         <|>      (* debugging *)
         peek one         >> expected "definition"
-(*
-     -- dirty trick for testing
 
-*)
-  val parse = 
-  P.produce (curry fst <$> many def <*> eos)
-
-  fun parse input = 
-  let val () = 
-  (
-    ()
-    (* ;app eprint ["reading from token stream: \n", String.concatWith ", " (map L.tokenString input), "\n"] *)
-  )
-  in P.produce (curry fst <$> many def <*> eos) input 
-  end
+  val parse = P.produce (curry fst <$> many def <*> eos)
 
 end

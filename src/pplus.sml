@@ -18,6 +18,7 @@ structure PPlus :> sig
   datatype def = DEF of name * exp
 
   val expString : exp -> string
+  val valString : value -> string
   val patString : exp pattern -> string
   val defString : def -> string
 
@@ -46,13 +47,12 @@ struct
 
   fun br printer input = "(" ^ printer input ^ ")"
   fun br' input = "(" ^ input ^ ")"
-  fun member x xs = List.exists (fn y => y = x) xs
+  val member = ListUtil.member
 
   fun println s = print (s ^ "\n")
 
 
   structure C = Core 
-
 
   fun expString (C ce) = 
   (case ce of C.FUNAPP (e1, e2)  => 
@@ -68,24 +68,17 @@ struct
           in "case " ^ expString scrutinee ^ " of " ^ body
           
           end
-    and maybeparenthesize (C e) = 
-    (case e of C.LITERAL v => br' (C.valString expString v)
-            | C.NAME n     => n
-            | C.VCONAPP (C.K vc, es) => 
-                if null es then vc else br' (C.vconAppStr expString (C.K vc) es)
-            | C.LAMBDAEXP (n, body)  => 
-              br' (StringEscapes.backslash ^ n ^ ". " ^ (expString body))
-            | C.FUNAPP (e1, e2)      => br' (expString e1 ^ " " ^ expString e2))
-      | maybeparenthesize other = br' (expString other)
   and patString (PNAME n) = n 
     | patString (CONAPP (n, ps)) = 
-        Core.vconAppStr (fn (PNAME n') => n' 
+        C.vconAppStr (fn (PNAME n') => n' 
                           | cmplx => br patString cmplx) n ps
     | patString (WHEN cond)       = ("when "      ^ expString cond)
     | patString (ORPAT (p1, p2))  = (patString p1 ^ " | "  ^ patString p2)
     | patString (PATSEQ (p1, p2)) = (patString p1 ^  ", "  ^ patString p2)
     | patString (PATGUARD (p, e)) = (patString p  ^ " <- " ^ expString e)
-    
+  and valString v = C.valString expString v    
+  and maybeparenthesize (C e) = C.maybeparenthesize expString e
+    | maybeparenthesize other = br' (expString other)
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
   fun patmap f g p = 
@@ -98,9 +91,19 @@ struct
       | CONAPP (vc, ps)  => CONAPP (vc, map (patmap f g) ps)
 
 
-  structure C = Core
-  infix 6 <+> 
+  (* environment utils *)
+
+  infix 6 <+>
   val op <+> = Env.<+>
+
+  infix 9 binds
+  fun rho binds n = Env.binds (rho, n)
+
+  fun lookup x rho = Env.find (x, rho)
+  fun bind x v rho = Env.bind (x, v, rho)
+  fun lookupv x rho = valOf (lookup x rho)
+  val empty = Env.empty
+
   exception DisjointUnionFailed of name
 
   fun duplicatename [] = NONE
@@ -123,19 +126,20 @@ struct
   fun eval rho (C ce) = 
     (case ce of 
       C.LITERAL v => v
-    | C.NAME n => Env.find (n, rho)  
+    | C.NAME n => lookup n rho  
     | C.VCONAPP (vc, es) => C.VCON (vc, map (eval rho) es)
     | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
-    | C.FUNAPP (C (C.NAME "print"), param)  => 
-    (* dirty trick to print values *)
-                    ( println (C.valString expString (eval rho param)) 
-                          ; C.VCON (C.K "unit", [])
-                    ) 
+    | C.FUNAPP (C (C.NAME n), arg)  => 
+      if member n predefs 
+      then runpredef n (rho, arg) 
+      else let val v = eval rho (C (C.NAME n))
+            in eval rho (C (C.LITERAL v))
+            end 
     | C.FUNAPP (fe, arg) => 
               (case eval rho fe 
                 of C.LAMBDA (n, b) => 
-                  let val v_arg = eval rho arg
-                      val rho' = Env.bind (n, v_arg, rho)
+                    let val v_arg = eval rho arg
+                        val rho' = bind n v_arg rho
                     in eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
@@ -151,11 +155,11 @@ struct
       in eval rho (I (CASE (C (C.LITERAL v), branches)))
       end 
 
-  and match rho (PNAME x,   v) = Env.bind (x, v, Env.empty)
+  and match rho (PNAME x,   v) = bind x v empty
     | match rho (WHEN e, _)     = 
       (case eval rho e 
         of C.VCON ((C.K "false"), _) => raise Core.NoMatch 
-         | _                         => Env.empty)
+         | _                         => empty)
     | match rho (PATGUARD (p, e), _) = match rho (p, eval rho e) 
     | match rho (ORPAT (p1, p2), v)  = 
       (match rho (p1, v) handle Core.NoMatch => match rho (p2, v))
@@ -175,26 +179,17 @@ struct
       | _ => Impossible.impossible "runtime bug: running non-predef function"
 
 
-  fun def (rho : value Env.env) (DEF (n, C (Core.LAMBDAEXP (x, body)))) = 
-      let val rho' = Env.bind (n, Core.LAMBDA (x, body), rho)
-      in rho' 
-      end 
-  | def rho (DEF (n, e)) = 
+  fun def rho (DEF (n, e)) = 
     let val v = eval rho e
-    in Env.bind (n, v, rho)
+    in bind n v rho
     end
 
   fun runProg defs = 
   (  foldl (fn (d, env) => 
       let val rho = def env d
-      in  Env.<+> (rho, env)
+      in  rho <+> env
       end) Env.empty defs;
-      ())
-  
-
-
-(* val branches = [(CONAPP ("K", [PNAME "n"]), C (Core.NAME "e1")), (CONAPP ("K", [PNAME "n1", PNAME "n2"]), C (Core.NAME "e2"))]
-val x_ = I (CASE (C (Core.VCONAPP ("K", [C (Core.NAME "n1"), C (Core.NAME "n2")])), branches))
-val _ = print ("HERE\n\n" ^ expString x_) *)
+      ()
+  )
 
 end
