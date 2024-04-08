@@ -78,13 +78,13 @@ end = struct
   val box =     sat (P.eq (L.LEFT L.SQUARE)) one 
              >> sat (P.eq (L.RIGHT L.SQUARE)) one
 
-  fun tokSeparated t p = curry op :: <$> p <*> many (reserved t >> p)
+  fun tokSeparated t p = curry op :: <$> p <*> many (t >> p)
                          <|> succeed []
                         (* parse a token-separated list; may be empty *)
-  fun barSeparated p       = tokSeparated "|" p
-  fun semicolonSeparated p = tokSeparated ";" p
-  fun commaSep p           = tokSeparated "," p
-  fun boxSeparated p       = curry op :: <$> p <*> many (box >> p)
+  fun barSeparated p       = tokSeparated (reserved "|") p
+  fun semicolonSeparated p = tokSeparated (reserved ";") p
+  fun commaSep p           = tokSeparated (reserved ",") p
+  fun boxSeparated p       = tokSeparated box p
   fun barSeparatedMulti p  = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
 
@@ -140,7 +140,8 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
           let val baseguard = curry V.EQN <$> name <*> equalssign >> exp 
         <|>  V.CONDITION <$> exp                          
         <|>  bracketed guard 
-          in curry V.CHOICE <$> many1 baseguard <~> bar <*> many1 baseguard 
+          val oneOrMoreGuards = semicolonSeparated baseguard
+          in curry V.CHOICE <$> oneOrMoreGuards <~> bar <*> oneOrMoreGuards
         <|> baseguard
           end)  
       val guards = semicolonSeparated guard <|> succeed []

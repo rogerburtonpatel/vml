@@ -70,10 +70,10 @@ structure VMinus :> VMINUS
             val binds    = existential ^ String.concatWith " " ns ^ dot
             val gStrings = String.concatWith "; " (map guardString gs)
             val rString  = expString r
-        in "  " ^ binds ^ gStrings ^ " -> " ^ rString ^ "\n" 
+        in binds ^ gStrings ^ " -> " ^ rString
         end 
   and if_fiString gexps = 
-  String.concat (List.map gexpString gexps) 
+    "    " ^ String.concatWith "\n[]  " (List.map gexpString gexps) 
   and maybeparenthesize (C e) = 
 (case e of C.LITERAL v => br' (C.valString expString v)
         | C.NAME n     => n
@@ -131,6 +131,17 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
 
   fun optValString v = optString (C.valString expString) v
 
+  fun nub xs = (Set.elems o Set.fromList) xs
+
+  fun containsDuplicates xs = length xs <> length (nub xs)
+
+  exception DuplicateNames
+
+  fun addAsNONETo ns rho = 
+  if containsDuplicates ns 
+  then raise DuplicateNames
+  else foldl (fn (n, env) => Env.bind (n, NONE, env)) rho ns
+
   fun lvarEnvMerge (rho1 : lvar_env) (rho2 : lvar_env) = 
     Env.merge (fn (SOME x, SOME y)   => SOME x
                 | (NONE,   SOME x)   => SOME x
@@ -183,7 +194,7 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
     | eval rho (I (IF_FI ((ns, (gs, rhs))::branches))) = 
-    (let val rho'  = foldl (fn (n, env) => Env.bind (n, NONE, env)) rho ns
+    (let val rho'  = addAsNONETo ns rho
          val rho'' = solve rho' [] false gs  (* may raise Unsolvable *)
       in eval rho'' rhs
       end 
@@ -194,7 +205,6 @@ fun eqexp (C cex1, C cex2) = Core.expString expString cex1 = Core.expString expS
     | solve rho gs made_progress [] = 
         if made_progress then solve rho [] false gs else raise Unsolvable
     | solve (rho : lvar_env) stuck made_progress guards = 
-
         let val (g, gs) = pickAnEquation guards
             fun currently_solvable e = (
             (eval rho e ; true)

@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Purpose: tests pplus parser
+# Purpose: tests idempotency of vminus parser
 # 
 
-## Usage: pplus-parse-test
+## Usage: vminus-idemp-test
 ## 
 ## 
 ## author: rab
@@ -64,15 +64,14 @@ run_one_test ()
 shopt -s nullglob
 
 run_tests () {
-    for file in $TESTDIR/*.pp; do
-        run_one_test "diff -w --ignore-blank-lines <(cat $file) <(dtran pp-pp $file 2>&1)"
+    for file in $TESTDIR/*.vm; do
+        run_one_test "diff <(dtran vm-vm $file 2>&1) <(dtran vm-vm $file| dtran vm-vm)"
     done
 
     if [[ "$numtests" -eq "0" ]]; then
-        >&2 echo "No tests run. Check why that might be."
+        >&2 echo "`basename $0`: No tests run. Check why that might be."
         exit 1
     fi
-
 
     if [[ "$numfail" -eq "0" ]]; then 
         echo "All tests passed."
