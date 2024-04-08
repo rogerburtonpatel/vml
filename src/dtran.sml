@@ -1,10 +1,3 @@
-(* This is the universal forward translator. As you build the different VScheme 
-    representations and the translations between them, you'll chain together 
-    these translations here. It implements the actual translations *)
-
-(* You'll get a partially complete version of this file, 
-    which you'll need to complete *)
-
 (* Formerly UFT *)
 structure Dtran :> sig
   type language = Languages.language
