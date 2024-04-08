@@ -48,20 +48,21 @@
 
 \begin{abstract}
     \it{WILL BE REVISED.}
-  Pattern matching is nice and has an appealing cost model, but people keep
-  extending it to make it more expressive. Verse [cite-Verse] looks very simple
-  and is surprisingly expressive, but the cost model is a challenge. Why not
-  look for a compromise? 
+  Pattern matching is nice and has an appealing cost model, but seems to lack in
+  expressiveness: people keep extending it to make it more expressive. Verse
+  [cite-Verse] doesn't use pattern matching and instead favors equations, which
+  look very simple and surprisingly expressive, but the language's cost model is
+  a challenge. Why not look for a compromise? 
   
-%   We introduce two small functional languages that
+%   We introduce two small functional programming languages that
 %   attempt to address the limitations of pattern matching in popular functional
 %   languages.
 
-  We explore the realm of pattern matching in common functional languages and
-  compare it with Verse's equation-based approach. Recognizing the balance
-  between expressiveness and efficiency, we introduce two modest functional
-  languages aimed at addressing the limitations of prevalent pattern matching
-  techniques. We show how a subset of Verse can be compiled to decision trees. 
+  We explore the realm of pattern matching in common functional programming
+  languages and compare it with Verse's equation-based approach. Recognizing the
+  balance between expressiveness and efficiency, we introduce two toy languages
+  aimed at addressing the limitations of prevalent pattern matching techniques.
+  We show how a subset of Verse can be compiled to decision trees. 
 
   \end{abstract}
 
@@ -86,16 +87,17 @@ additional runtime cost?
     \begin{outline}[enumerate]
     
     
+    % extensively discussed in abundant literature
     Pattern matching is a well-established and researched construct in
     functional programming languages, and the topic of much rich literature
     [cite, appeal to authority]. A primary appeal of pattern matching is its
-    dominance over observer functions\footnote{observer functions manually
-    scrutinze and deconstruct data. Examples include Scheme's \tt{null?},
-    \tt{car}, and \tt{cdr}, and ML's \tt{null}, \tt{hd}, and \tt{tl}.}. Consider
-    implementation of \tt{List.len} in Standard ML, using observers in
-    Figure~\ref{fig:observerlen}. \rab{Should I say 'observers' to avoid
-    repeating myself, or 'observer functions' to use the same term for the same
-    thing?}
+    dominance over observer functions\footnote{In functional programming,
+    observer functions manually scrutinize and deconstruct data. Examples
+    include Scheme's \tt{null?}, \tt{car}, and \tt{cdr}, and ML's \tt{null},
+    \tt{hd}, and \tt{tl}.}. Consider implementation of \tt{List.length} in Standard
+    ML, using observers in Figure~\ref{fig:observerlen}. \rab{Should I say
+    'observers' to avoid repeating myself, or 'observer functions' to use the
+    same term for the same thing?}
     
     % Figure 1 illustrates an example in which pattern matching is an elegant solution
     % to a problem (compare to equivalent Standard ML code that manually deconstructs
@@ -118,53 +120,67 @@ additional runtime cost?
 
     \begin{figure}[ht!]
         \smllst
+        \captionsetup{justification=centering}
         \begin{verbatim}
-            fun len ys =
+            fun length ys =
                 if null ys 
                 then 0 
                 else let xs = tl ys 
-                     in len xs 
+                     in length xs 
                      end 
         \end{verbatim}
-    \caption{Standard ML's \tt{List.len} using observer functions.}
-    % \caption{An implementation of \tt{List.len} in Standard ML that does not use 
+    \caption{Implementing \tt{List.length} using observer functions is tedious\\\hspace{\textwidth}
+    and doesn't look very functional.}
+    % \caption{An implementation of \tt{List.length} in Standard ML that does not use 
     % pattern matching.}
-    \Description{An implementation of len using null, hd, and tl}
+    \Description{An implementation of length using null, hd, and tl}
     \label{fig:observerlen}
     \end{figure}
     
     Manual case analysis and deconstruction with observer functions can be both
     error-prone (\rab{say more on this or cite?}) and verbose \rab{can I make
     this claim?}. Most functional programmers would likely prefer the
-    implementation of \tt{len} found in Figure~\ref{fig:pmlen}.
+    implementation of \tt{length} found in Figure~\ref{fig:pmlen}.
     \begin{figure}[htt]
     \begin{verbatim}
-            fun len ys =
+            fun length ys =
                 case ys 
                 of []    => 0
-                 | x::xs => 1 + len xs
+                 | x::xs => 1 + length xs
         \end{verbatim}
 
-    \caption{An equivalent implementation that uses pattern matching.}
-    \Description{An implementation of len using implicit deconstruction via
+    \caption{Using pattern matching makes an equivalent implementation 
+             more appealing.}
+
+    \Description{An implementation of length using implicit deconstruction via
     patterns.}
     \label{fig:pmlen}
     \end{figure}
 
-    As a final step towards simplicity, most functional languages allow
-    programmers to merge pattern matching and function declaration in a form of
-    syntactic sugar known as a \it{clausal definition}. We present a final
-    implementation of \tt{len} using pattern matching with a clausal definition
-    in Figure~\ref{fig:pmclausallen}.
+    Figure~\ref{fig:pmlen} is an example of the most common occurrence of where
+    pattern matching occurs: within a \tt{case} expression. \tt{case}
+    expressions test a \it{head expression} or \it{scrutinee} (\tt{ys} in
+    Figure~\ref{fig:pmlen}) against a list of patterns (\tt{[]}, \tt{x::xs}).
+    When the result of evaluating the scrutinee matches on a pattern, the
+    program evaluates the right-hand side of the respective branch (\tt{0} or
+    \tt{1 + length xs}) within the \it{case} expression. 
+
+    As a final step towards simplicity, most functional programming languages
+    allow programmers to merge pattern matching and function declaration in a
+    form of syntactic sugar known as a \it{clausal definition} that allow the
+    programmer to eliminate the top-level \tt{case} entirely.
+    Figure~\ref{fig:pmclausallen} shows a final implementation of \tt{length}
+    using pattern matching with a clausal definition. 
 
     \begin{figure}[ht]
     \smllst
     \begin{verbatim}
-            fun len []      = 0
-              | len (x::xs) = 1 + len xs
+            fun length []      = 0
+              | length (x::xs) = 1 + length xs
         \end{verbatim}
-    \caption{A final implementation that uses pattern matching with a clausal definition.}
-    \Description{An implementation of len using pattern matching within a 
+    \caption{Pattern matching with a clausal definition gives a simple and 
+             elegant implementation of \tt{List.length}.}
+    \Description{An implementation of length using pattern matching within a 
     clausal definition.}
     \label{fig:pmclausallen}
     \end{figure}
@@ -174,15 +190,15 @@ additional runtime cost?
 \subsection{Extensions as upgrades to pattern matching}
 
     Indeed, pattern matching serves as a cornerstone in functional programming
-    languages, extensively discussed in abundant literature [cite, appeal to
-    authority]. However, in particular instances, pattern matching may prove
-    cumbersome, driving functional languages to frequently employ
-    \it{extensions} to mitigate such scenarios.
+    languages as a way to make decisions [cite, appeal to authority]. However,
+    in particular instances, pattern matching may prove cumbersome, driving
+    functional programming languages to frequently employ \it{extensions} to mitigate such
+    scenarios. 
     
     Below, we illustrate several such instances and demonstrate how popular
-    functional languages employ extensions to streamline clunky or verbose code.
-    For the sake of comparison, we coin the term \tt{bare pattern matching} to
-    denote pattern matching \tt{without} extensions: in bare pattern matching,
+    functional programming languages employ extensions to streamline clunky or verbose code.
+    For the sake of comparison, we coin the term \it{bare pattern matching} to
+    denote pattern matching \it{without} extensions: in bare pattern matching,
     the only syntactic forms of patterns are names and applications of value
     constructors to zero or more patterns. 
     
@@ -196,7 +212,7 @@ additional runtime cost?
     expression. Some languages call this a \it{guard}, which we use to describe
     a different, more powerful extension to pattern matching in
     Section~\ref{guards}.}, an extension to pattern matching common in most
-    functional languages, including OCaml, Erlang, Scala,
+    popular functional programming languages, including OCaml, Erlang, Scala,
     and~Haskell\footnote{Haskell uses guards to subsume side conditions. We
     discuss guards in Section~\ref{guards}.}. Consider
     Figure~\ref{fig:ifnameof}. 
@@ -212,19 +228,20 @@ additional runtime cost?
                 and NotFound is an exception 
                 delcared earlier in the program *)
             \end{verbatim}    
-        \caption{An invented function \tt{nameOf}, using an \tt{if} statement}    
+        \caption{An invented function \tt{nameOf} combines pattern matching with
+        an \tt{if} expression, and is not very pretty.}    
         \Description{An implementation of a function nameOf in OCaml, which
         uses pattern matching and an if statement.}
         \label{fig:ifnameof}
     \end{figure}
     
     
-    
-    Seeing the duplicate right-hand sides of \tt{nameOf}, the reader likely sees
-    how the code could be simplified with a \it{side condition} to a
-    pattern, giving the programmer a syntactic form for “match a pattern
-    \it{and} a condition.” Fortunately, the \tt{when} keyword in OCaml
-        provides such a form, as seen in Figure~\ref{fig:whennameof}.
+    duplicates a right-hand side, and the actual “good” return of the function,
+    \tt{n}, is lost in the middle of the \tt{if} expression. The reader likely
+    sees how the code could be simplified with a \it{side condition} to a
+    pattern, i.e., a syntactic form for “match a pattern \it{and} a boolean
+    condition.” Fortunately, the \tt{when} keyword in OCaml provides such a
+    form, as seen in Figure~\ref{fig:whennameof}.
         
         \begin{figure}[ht]
             \begin{verbatim}
@@ -232,7 +249,8 @@ additional runtime cost?
                   NAME n when binds rho n -> n
                 | _                       -> raise NotFound  
                 \end{verbatim}
-            \caption{\tt{nameOf}, using a side condition with \tt{when}}    
+            \caption{With a side condition, \tt{nameOf} becomes simpler and more
+            clear in its goal.}
             \Description{An implementation of a function nameOf in OCaml, which
             uses pattern matching and a side condition.}
             \label{fig:whennameof}
@@ -284,35 +302,41 @@ additional runtime cost?
             While pattern matching is known for its effectiveness in
             deconstructing individual values, its expressiveness diminishes when
             faced with sequential computations. What about when we wish to fire
-            a right-hand side only after \it{multiple sequential expressions}
-            match with patterns? Consider the following example, borrowed from
-            Erwig and Peyton-Jones (2000): 
+            a right-hand side (\rab{should I just say "evaluate?" Many authors I read use "fire a
+            right-hand side."}) only after \it{multiple
+            sequential expressions} match with patterns? Consider the following
+            example, borrowed from Erwig and Peyton-Jones (2001): 
 
-    “\dots suppose we have an abstract data type of finite maps, with a lookup
-    operation:
+    \begin{quote}
     
-    \begin{center}
-        \begin{verbatim}
-            lookup :: FiniteMap -> Int -> Maybe Int
-        \end{verbatim}
-    \end{center}
+    \dots suppose we have an abstract data type of finite maps, with a lookup
+    operation:
 
-    The lookup returns \tt{Nothing} if the supplied key is not in the domain of
+        \begin{verbatim}
+
+
+lookup :: FiniteMap -> Int -> Maybe Int
+        \end{verbatim}
+
+        The lookup returns \tt{Nothing} if the supplied key is not in the domain of
     the mapping, and \tt{(Just v)} otherwise, where \tt{v} is the value that the
-    key maps to. Now consider the following definition
-    (Figure~\ref{fig:whereclunky}):
+    key maps to. Now consider the following definition:
+
 
     % \begin{figure}[hbt!]
+    \begin{minipage}{\textwidth}
         \begin{verbatim}
-            clunky env varl var2 | ok1 && 0k2 = val1 + val2 
-                                 | otherwise  = var1 + var2 
-            where m1  = lookup env var1 
-                  m2  = lookup env var2
-                  ok1 = isJust m1 
-                  ok2 = isJust m2 
-                  Just val1 = m1 
-                  Just val2 = m2    
-        \end{verbatim}
+clunky env varl var2 | ok1 && 0k2 = val1 + val2 
+                        | otherwise  = var1 + var2 
+where 
+    m1  = lookup env var1 
+    m2  = lookup env var2
+    ok1 = isJust m1 
+    ok2 = isJust m2 
+    Just val1 = m1 
+    Just val2 = m2    
+        \end{verbatim}        
+    \end{minipage}
     % \caption{\tt{clunky} in Haskell with bare pattern matching} \Description{An
     % implementation of clunky using only simple pattern matching within a clausal
     % definition.}
@@ -329,15 +353,17 @@ additional runtime cost?
     % \begin{figure}[hbt!]
         \begin{minipage}{\textwidth}
             \begin{verbatim}
-            clunky env var1 var2 = 
-                case lookup env var1 of 
-                Nothing -> fail 
-                Just val1 -> 
-                    case lookup env var2 of 
-                    Nothing -> fail 
-                    Just val2 -> val1 + val2
-            where 
-                fail = var1 + var2
+
+
+clunky env var1 var2 = 
+    case lookup env var1 of 
+        Nothing -> fail 
+        Just val1 -> 
+            case lookup env var2 of 
+            Nothing -> fail 
+            Just val2 -> val1 + val2
+where 
+    fail = var1 + var2
             \end{verbatim}
         \end{minipage}
     % \caption{\tt{clunky} with \tt{case}} 
@@ -346,8 +372,12 @@ additional runtime cost?
     % \end{figure}
     
         This is a bit shorter, but hardly better. Worse, if this was just one
-        equation of clunky, with others that follow, then the thing would not
-        work at all.” 
+        equation of \tt{clunky}, with others that follow, then the thing would
+        not work at all.
+
+    \end{quote}
+
+    (Source: Erwig, Martin, and Simon Peyton Jones. "Pattern guards and transformational patterns." Electronic Notes in Theoretical Computer Science 41.1 (2001): 2-3.)
 
         To mitigate the problem, the authors propose \it{pattern guards}, a form
         of “smart pattern” in which intermediate patterns bind to
@@ -357,15 +387,17 @@ additional runtime cost?
     \begin{figure}[hbt!]  
         \begin{center}
         \begin{verbatim}
-                        clunky env var2 var2    
-                        | Just vall <- lookup env var1
-                        , Just val2 <- lookup env var2
-                        = val1 + val2
+                        clunky env var1 var2    
+                           | Just vall <- lookup env var1
+                           , Just val2 <- lookup env var2
+                           = val1 + val2
         \end{verbatim}
         \it{… other equations for clunky}
         \end{center}    
-    \caption{\tt{clunky} with pattern guards} 
-    \Description{An implementation of clunky using pattern guards.}
+    \caption{The authors' solution to \tt{clunky} with pattern guards is plainly
+    the most elegant.} 
+    \Description{An implementation of clunky using pattern
+    guards.}
     \label{fig:guardclunky}
     \end{figure}
 
@@ -386,12 +418,12 @@ additional runtime cost?
 
         In the preceding example, we observed how pattern guards facilitated a
         multi-step computation within a single match. However, what if the
-        programmer's intention isn't to match on \tt{all} parts of a pattern
-        sequence, but instead to match a value on \tt{any one} of such a
-        sequence of patterns? Our following example illustrates this need.
-        Figure~\ref{fig:barepgot}. Examining \tt{parent\_game\_of\_token},
-        written in OCaml using bare patterns, many functional programmers likely
-        sense the need for such functionality.
+        programmer's intention isn't to match on \it{all} parts of a pattern
+        sequence, but instead to match a value on \it{any one} of such a
+        sequence of patterns? Our example in Figure~\ref{fig:barepgot}
+        illustrates this need. Examining \tt{parent\_game\_of\_token}, written
+        in OCaml using bare patterns, many functional programmers likely sense
+        the need for such functionality.
         
         
         \begin{figure}
@@ -409,14 +441,17 @@ additional runtime cost?
                 \end{verbatim}
             \end{center}    
 
-        \caption{\tt{parent\_game\_of\_token}, with redundant right-hand sides.} 
-        \Description{An implementation of parent_game_of_token using bare patterns.}
+        \caption{\tt{parent\_game\_of\_token}, with redundant right-hand sides,
+        should raise a red flag.} 
+        \Description{An implementation of
+        parent_game_of_token using bare patterns.}
         \label{fig:barepgot}
         \end{figure}
 
-Thankfully, an extension once again comes to our rescue: With \it{or-patterns},
-which condense patterns that share a right-hand side, we can eliminate much
-redundant code (Figure~\ref{fig:orpgot}).\footnote{Or-patterns are a feature built into OCaml.}
+Thankfully, an extension once again comes to our rescue. \it{Or-patterns}
+condense multiple patterns which share right-hand sides, and programmers can
+exploit them to eliminate much redundant code
+(Figure~\ref{fig:orpgot}).\footnote{Or-patterns are a feature built into OCaml.}
 
     \begin{figure}
     \begin{center}
@@ -428,8 +463,10 @@ redundant code (Figure~\ref{fig:orpgot}).\footnote{Or-patterns are a feature bui
             | _                                  -> "Irrelevant"
     \end{verbatim}
     \end{center}    
-    \caption{\tt{parent\_game\_of\_token} using or-patterns.} 
-    \Description{An implementation of parent_game_of_token using or-patterns.}
+    \caption{With or-patterns, \tt{parent\_game\_of\_token} condenses
+    tremendously and is easier to read line-by-line.} 
+    \Description{An
+    implementation of parent_game_of_token using or-patterns.}
     \label{fig:orpgot}
     \end{figure}
 
@@ -441,28 +478,53 @@ redundant code (Figure~\ref{fig:orpgot}).\footnote{Or-patterns are a feature bui
     redundant copies of this computation. Or-patterns empower programmers to
     centralize such maintenance at a single point of truth.
     
-    SKYLAR STOP READING 
+    \subsection{Verse's equations as an upgrade to observer functions}
     
-    \subsection{Verse's equations as an alternative to pattern matching}
     
+    
+    We now shift focus away from pattern matching to examine a different
+    strategy for (programs to make | making) decisions. We focus our study on
+    Verse [cite- Verse], a functional logic programming languages [cite- flps].
+
+    Verse uses \it{equations} instead of pattern matching to test for structural
+    equality and create bindings. Like pattern matching, equations scrutinize
+    and deconstruct data at runtime by testing for structural equality and
+    unifying names with values. Unlike pattern matching, Verse's equations can
+    unify names on \it{both} the left- and right-hand sides. 
+    
+    Equations in Verse take the form \it{x = e}, where \it{x} is a name and
+    \it{e} is an expression. During runtime, both \it{x} and any unbound names
+    in \it{e} are unified with values. Much like pattern matching, unification
+    can fail if the runtime attempts to bind incompatible values or structures. 
+    
+    Consider the Verse implementation of \tt{length} on a list built of nested
+    tuples in Figure~\ref{fig:verselen}. Like in the pattern-matching examples
+    in Figures~\ref{fig:pmlen} and~\ref{fig:pmclausallen}, the right-hand sides
+    of \tt{length} are \it{guarded} by a “check;” now, the check is successful
+    unification in an equation rather than a successful match on a pattern. 
+    
+    % At runtime, both \it{x} and any names found in \it{e} may be unbound, and
+    % unifying these names with values using equations is how Verse scrutinizes
+    % and deconstructs data. 
     
 
-    Instead of pattern matching, \it{functional logic programming} languages
-    like Verse [cite: Verse] may favor equations to test for structural equality
-    and create bindings. (Consider the Verse implementation of \tt{len} on a
-    list built of nested tuples in Figure~\ref{fig:verselen}).
+    % Instead of pattern matching, \it{functional logic programming} languages
+    % like Verse [cite: Verse] may favor \it{equations} to test for structural
+    % equality and create bindings. 
+    
 
     
 
     \begin{figure}
         \verselst
         \begin{lstlisting}[numbers=none]
-$\exists$ len. len = \ys. 
+$\exists$ length. length = \ys. 
   one {ys = $\langle \rangle$; 0
-       |  $\exists$ x xs. ys = $\langle$x, xs$\rangle$; 1 + len xs}
+       |  $\exists$ x xs. ys = $\langle$x, xs$\rangle$; 1 + length xs}
         \end{lstlisting}
-    \caption{\tt{len} in Verse, with existentials and equations.} 
-    \Description{An implementation of len in Verse.}
+    \caption{\tt{length} in Verse uses existentials and equations rather than
+    pattern matching.} 
+    \Description{An implementation of length in Verse.}
     \label{fig:verselen}
     \end{figure}
     
@@ -470,39 +532,64 @@ $\exists$ len. len = \ys.
     
 
 
+    % BIOHAZARD START 
 
-    BIOHAZARD START 
+    % Verse's equations are comparably pleasing to pattern matching in their
+    % brevity and expressiveness, and most functional programmers would likely
+    % prefer them to observer functions, as well. 
+    
+    % Equations in Verse, however, differ from pattern matching in a few key
+    % respects. 
+    
+    
+    % Like pattern matching, equations can attempt to bind values to patterns. 
+    Notice that in Verse, programmers must introduce names explicitly with the
+    existential $\exists$. These names will be bound to values when an equation
+    succeeds in unifying all pairs of them. On line~3 of the example, we see the
+    existential $\exists$ introduce two fresh names, \tt{x} and \tt{xs}, before
+    attempting to bind them to (by unifying them with) \tt{ys}. These fresh
+    names correspond to the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
 
-    Verse's equations are comparably pleasing to pattern matching in their
-    brevity and expressiveness (albeit with a few key differences). Equations in
-    Verse, like pattern matching, can attempt to bind values to patterns. In
-    Verse, however, 
+    Verse's equations appears comparable to pattern matching, and the language
+    enjoys several similar forms. 
 
-    programmers introduce names explicitly 
+    
 
-    leading to differences: 
-    105 mistake. 
+    In Verse, equations always guard expressions; they cannot be returned. Verse
+    enforces this restriction in the syntax: expressions may take the form
+    \it{eq; e}, where \it{eq} is an equation or an expression. Importantly,
+    either form of \it{eq} guards {e}. If \it{eq} fails (returns no results),
+    regardless of whether it is an expression or an equation, \it{e} will not be
+    evaluated. This means programmers can also express “perform a computation if
+    a condition succeeds” with a boolean\footnote{Verse does not have true
+    booleans. Instead, it replaces 'true' and 'false' with the notion of
+    'success' and 'failure.'} expression in the \it{eq} position. 
 
-    In Verse, programmers can also express "do a thing if a condition succeeds":
-    guarding an expression with another before a semicolon, 
-    idea of failure. 
+    
+    any one succeeds, with bindings." 
 
-    INLINE EXAMPLES. 
+    % % programmers introduce names explicitly 
 
-    Verse's equations comparably pleasing to pattern matching in their brevity
-    and expressiveness, though they differ in a few key ways. For one, in Verse,
-    the programmer \it{explicitly} introduces the names that appear inside an
-    equation with the existential $\exists$. These names will be bound to the
-    components of a value when a match succeeds. On line~3 of the example, we
-    see the existential $\exists$ introduce two fresh names, \tt{x} and \tt{xs},
-    before attempting to bind them to \tt{ys}. These fresh names correspond to
-    the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
+    % % leading to differences: 
+    % % 105 mistake. 
 
-    Also, in Verse's equations, names with prior bindings \it{retain those
-    bindings} during matching. This is different from pattern matching, where a
-    name in a pattern is always considered fresh and will always succeed in
-    binding to a value. This is best illustrated with an example (Figure~TODO). 
-    We discuss the implications of this difference in Section~(TODO which).
+
+    % INLINE EXAMPLES. 
+
+    % Verse's equations comparably pleasing to pattern matching in their brevity
+    % and expressiveness, though they differ in a few key ways. For one, in Verse,
+    % the programmer \it{explicitly} introduces the names that appear inside an
+    % equation with the existential $\exists$. These names will be bound to the
+    % components of a value when a match succeeds. On line~3 of the example, we
+    % see the existential $\exists$ introduce two fresh names, \tt{x} and \tt{xs},
+    % before attempting to bind them to \tt{ys}. These fresh names correspond to
+    % the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
+
+    % Also, in Verse's equations, names with prior bindings \it{retain those
+    % bindings} during matching. This is different from pattern matching, where a
+    % name in a pattern is always considered fresh and will always succeed in
+    % binding to a value. This is best illustrated with an example (Figure~TODO). 
+    % We discuss the implications of this difference in Section~(TODO which).
 
     % Todo: show "105 student mistake" example. 
 
@@ -522,14 +609,15 @@ $\exists$ len. len = \ys.
     % 
     % 
 
-    However, full Verse allows/encourages computations that are problematic,
-    cost-wise. In Verse, names (logical variables) are \tt{values}, and can just
-    as easily be the result of evaluating an expression as an integer or tuple.
-    To bind these names, Verse, like other functional logic languages, relies on
-    unifying its logical variables at runtime to meet a set of program
-    constraints [cite]. Unifying logical variables at runtime clasically
-    requires backtracking [cite], which can lead to exponential runtime cost
-    [cite]. 
+    Verse's equations appear to be comparably pleasing to pattern matching
+    in their brevity and expressiveness. However, full Verse allows/encourages
+    computations that are problematic, cost-wise. In Verse, names (logical
+    variables) are \tt{values}, and can just as easily be the result of
+    evaluating an expression as an integer or tuple. To bind these names, Verse,
+    like other functional logic languages, relies on unifying its logical
+    variables at runtime to meet a set of program constraints [cite]. Unifying
+    logical variables at runtime clasically requires backtracking [cite], which
+    can lead to exponential runtime cost [cite]. 
         
     Furthermore, rather than returning a single value, an expression in Verse
     evaluates to return a \it{sequence} of zero or more values. As such,
@@ -588,8 +676,10 @@ functional programming languages. % which we informally introduce
             | _                                    -> Irrelevant
         \end{lstlisting}
         \end{center}    
-        \caption{\tt{parent\_game\_of\_token} in \PPlus.} 
-        \Description{An implementation of parent_game_of_token in \PPlus.}
+        \caption{\tt{parent\_game\_of\_token} in \PPlus has the same desirable
+        implementation as before.} 
+        \Description{An implementation of
+        parent_game_of_token in \PPlus.}
         \label{fig:ppexs}
         \end{figure}
     
@@ -1103,7 +1193,7 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus, \VMinus
 % % You have to write your code in a way that allows the optimization. 
 
 
-% % Pattern matching is a well-established paradigm within functional languages, and
+% % Pattern matching is a well-established paradigm within functional programming languages, and
 % % """has been the subject of significant discourse.""" \it{Appeal to authority here.}
 
 % % Without pattern matching, it can be tiresome to deconstruct data using manual 
@@ -1111,25 +1201,25 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus, \VMinus
 % % \smllst
 
 % % \begin{lstlisting}
-% % val rec len = fn ys => 
+% % val rec length = fn ys => 
 % %     if null ys 
 % %     then 0 
 % %     else let xs = tl ys 
-% %          in len xs 
+% %          in length xs 
 % %          end 
 % % \end{lstlisting}
-% % \it{An implementation of List.len in Standard ML that does not use pattern 
+% % \it{An implementation of List.length in Standard ML that does not use pattern 
 % %     matching.}
 
 % % Manual checking and deconstruction, with built-in functions like \tt{null} and
 % % \tt{tl}, can be both error-prone (\bf{say more on this?}) and verbose. Most
-% % functional programmers likely prefer the follwing implementation of \tt{len}:
+% % functional programmers likely prefer the follwing implementation of \tt{length}:
 
 % % \begin{lstlisting}
-% %     val rec len = fn ys => 
+% %     val rec length = fn ys => 
 % %         case ys 
 % %           of [] => 0
-% %            | _::xs => 1 + len xs
+% %            | _::xs => 1 + length xs
 % %     \end{lstlisting}
 
 % % \it{An equivalent implementation that uses pattern matching.}
@@ -1140,9 +1230,9 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus, \VMinus
 
 
 % % \begin{lstlisting}
-% % val len = \ys. case ys 
+% % val length = \ys. case ys 
 % %                  of [] -> 0
-% %                   | _::xs -> 1 + len xs
+% %                   | _::xs -> 1 + length xs
 % % \end{lstlisting}
 
 
@@ -1174,7 +1264,7 @@ IN EITHER OF THESE SECTIONS: Semantics of \PPlus, \VMinus
 % % pattern matching is inherently built to match a scrutinee (pure data) with a
 % % pattern, pattern matching is quite expressive in these cases. 
 
-% % Because of this, most modern functional languages, especially \it{data
+% % Because of this, most modern functional programming languages, especially \it{data
 % % dependency languages} like Haskell or ML, \it{(is this right?)} employ pattern
 % % matching as their main way to deconstruct data (citation?). 
 
