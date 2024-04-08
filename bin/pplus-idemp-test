@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Purpose: tests vml parser
+# Purpose: tests idempotency of pplus parser
 # 
 
-## Usage: parse-test
+## Usage: pplus-idemp-test
 ## 
 ## 
 ## author: rab

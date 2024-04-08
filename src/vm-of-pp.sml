@@ -11,16 +11,13 @@ struct
   structure V = VMinus
   structure C = Core
 
+  (* utilities *)
 
-  fun typecheck () = Impossible.unimp "typecheck"
-(* get all pattern names 
-   introduce them all at the top
-   then translate each pattern accordingly: 
-   (pattern, name) goes to equation. nesting preserved. 
-
-    *)
   fun uncurry f (x, y) = f x y
   fun nub xs = Set.elems (Set.fromList xs)
+
+  (* utilities *)
+
 
   fun patFreeNames (P.PNAME n) = [n]
             | patFreeNames (P.CONAPP (_, ps)) = 
@@ -34,7 +31,12 @@ struct
 
   fun translate (P.C ce) = V.C (Core.map translate ce)
     | translate (P.I (P.CASE (scrutinee, branches))) = 
-        let val freshNameGen = FreshName.freshNameGenGen ()
+  let val freshNameGen = FreshName.freshNameGenGen ()
+  (* get all pattern names 
+   introduce them all at the top
+   then translate each pattern accordingly: 
+   (pattern, name) goes to equation. nesting preserved. 
+    *)
   fun guardofPatWith n (p : P.exp P.pattern) = 
     let val _ = guardofPatWith 
           : P.name -> P.exp P.pattern -> V.name list * V.exp V.guard list
@@ -48,7 +50,7 @@ struct
         val (local_names, local_guards) = 
           case p of P.PNAME n'   => ([], 
                                 (* prune duplicate bindings *)
-                                if n = n' then [] else [coreEq (n, C.NAME n')])
+                                 [coreEq (n, C.NAME n')])
             | P.WHEN e             => ([], [V.CONDITION (translate e)])
             | P.CONAPP (vc, ps) => 
             (* introduce one fresh per ps  *)
@@ -58,16 +60,15 @@ struct
                 val (names, guards) = ListPair.unzip ns_gs
                 val embedded_names  = map (V.C o C.NAME) fresh_names
                 val vconConstraint  = coreEq (n, C.VCONAPP (vc, embedded_names))
-            in (List.concat names @ fresh_names, 
+            in (* final form is n = vc (n1 ... nm); 
+                  guardofPatWith n1 p1; ...; guardofPatWith nm pm *)
+              (List.concat names @ fresh_names, 
                 vconConstraint::List.concat guards)
-            (* final form is n = vc (n1 ... nm); 
-              guardofPatWith n1 p1; ...; guardofPatWith nm pm *)
             end
             | P.ORPAT (p1, p2)   => translateTwo (fn gs => [V.CHOICE gs]) p1 p2
             | P.PATGUARD (p', e) => 
               let val n' = (case p' of (P.PNAME n_) => n_
                                      | _ => freshNameGen ())
-                  val () = print ("translating " ^ P.patString p' ^ " <- " ^ P.expString e ^ "\n")
                   val (names, guards) = guardofPatWith n' p'
               in (n'::names, V.EQN (n', translate e)::guards)
               end
