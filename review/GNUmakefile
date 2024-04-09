@@ -8,9 +8,12 @@ compile := env TEXINPUTS=$(TEXINPUTS) latexmk -g -xelatex -pdf -output-directory
 
 
 # builds the full paper from the outline
-all: section2
+all: section2-4824
 
 section2: section2.pdf
+	@: go
+
+section2-4824: section2-4824.pdf
 	@: go
 
 %.pdf : %.tex

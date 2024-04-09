@@ -27,9 +27,9 @@ struct
                           List.concat [patFreeNames p1, patFreeNames p2] 
 
 (* identity *)
-  val rec x = fn x => case x of x => x
+  (* val rec x = fn x => case x of x => x *)
   (* renamed *)
-  val rec x = fn y => case y of z => y
+  (* val rec x = fn y => case y of z => y *)
 
 (* algorithm: 
 for binding sites: 

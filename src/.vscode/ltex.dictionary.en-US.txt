@@ -8,3 +8,8 @@ vcon
 vcons
 Erwig
 existentials
+Obe
+Verv
+nameOf
+xs
+ys
