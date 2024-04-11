@@ -6,7 +6,7 @@ and Roger Burtonpatel.
 
 `tex`: tex source and generated pdfs. 
 
-`tex/tex-out`: the glut of latex build output lives here. 
+`tex/.tex-out`: the glut of latex build output lives here. 
 
 `tex/translations`: specifically for translation work. 
 

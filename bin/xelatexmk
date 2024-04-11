@@ -6,4 +6,4 @@ fi
 
 TEXFILE="$1"
 
-latexmk -xelatex -pdf -output-directory=. -aux-directory=tex-out --halt-on-error -file-line-error -shell-escape "$TEXFILE"
+latexmk -xelatex -pdf -output-directory=. -aux-directory=.tex-out --halt-on-error -file-line-error -shell-escape "$TEXFILE"

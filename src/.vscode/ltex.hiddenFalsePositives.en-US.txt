@@ -6,3 +6,4 @@
 {"rule":"WORD_CONTAINS_UNDERSCORE","sentence":"^\\QAn implementation of parent_game_of_token using bare patterns.\\E$"}
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qparentgameoftoken, with redundant right-hand sides.\\E$"}
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcase expressions test a scrutinee (ys in \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q) against a list of patterns ([], x::xs).\\E$"}
+{"rule":"SERIAL_COMMA_ON","sentence":"^\\QEven if you've read the Verse paper, VC and the paradigms of functional logic programming might look unfamiliar to your pattern matching-accustomed brains.\\E$"}
