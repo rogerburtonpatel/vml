@@ -268,15 +268,24 @@ i.e. do I have all the names I need to evaluate this expression? *)
 
   (* What can we find?
 
-       ARROW  ==   if unguarded, MATCH
-       SEQ    ==   if known, convert to LET, IF
+       No guards  ==  MATCH
+       CONDITION  ==   if known, convert to LET, IF
        EQN (x, e) ==
           - if x is known and e is VCONAPP, generate TEST
           - if x is known and e is not VCONAPP and e is known
                generate LET, IF
           - if x is unknown and e is known, then generate LET
+          
+    What if we don't find any of the above? 
+    There must be only unknown guards. 
+    Can't compile! 
   *)
 
+
+  (* To generate TEST: 
+     - find all instances of x bound to a VCONAPP 
+     - the 'test' is here: which one of these is x, actually, at runtime?
+     what's below the test:   *)
 
   (* don't love the case where x = e, and e is both VCONAPP and known *)
 
@@ -320,6 +329,65 @@ i.e. do I have all the names I need to evaluate this expression? *)
                 raise Stuck (map unitify choices)))
 
 
+  (*  *)
+  (* fun findAllVconBindingsOf x gss =  *)
+
+  (* this will be nubbed *)
+
+  (* find all things x is compared with so we can test x against all
+  possibilities *)
+  fun allApplicationsEquatedTo x guards = 
+  let 
+    fun findAllEq gs = 
+       case gs of 
+            []      => []
+          | V.CONDITION e::gs' => findAllEq gs'
+          | V.EQN (n, V.C (C.VCONAPP (vc, es)))::gs' => 
+              (if n = x then [(vc, length es)] else []) @ findAllEq gs'
+          | V.EQN _::gs' => findAllEq gs'
+          | V.CHOICE (g1, g2)::gs' => Impossible.unimp "todo - choice"
+    in findAllEq guards
+    end 
+
+  val _ = allApplicationsEquatedTo : V.name -> V.exp V.guard list -> (C.vcon * int) list
+
+  fun curry f x y = f (x, y)
+
+  fun refineGuardedExp x vconapp gs_rhs = 
+    let val (vc', ns)  = vconapp
+        val (gs', rhs) = gs_rhs
+        fun refine gs = 
+       case gs of 
+            []      => SOME []
+          | V.CONDITION e::gs' => refine gs'
+          (* weak- want to refine in condition as well *)
+          | V.EQN (n, V.C (C.VCONAPP (vc, es)))::gs' => 
+              if n = x then 
+                if vc' = vc andalso length es = length ns
+                then Option.map (curry op @ (ListPair.map V.EQN (ns, es))) 
+                                (refine gs')
+                else NONE  
+              else refine gs'
+          | V.EQN _::gs' => refine gs'
+          | V.CHOICE (g1, g2)::gs' => Impossible.unimp "todo - choice"
+        in NONE 
+    end 
+
+  val _ = refineGuardedExp : V.name -> (C.vcon * V.name list) -> (V.exp V.guard list * V.exp) -> (V.exp V.guard list * V.exp) option
+    (* rge x app g  = SOME g', where app is substituted for x everywhere, or NONE if the the compiler can determine that a guard cannot succeed *)
+    (* rge x [[(z :: zs)]] [[(x = y :: ys -> command)]] == [[(z = y, zs = ys -> command)]] *)
+
+    (* rge x [[K y1 y2]]  [[gs, x = K e1 e2, gs' -> e]] == SOME [[gs, y1 = e2, y2 = e2, gs' -> e]] *)
+    (* rge x [[K y1 ... yn]]  [[gs, x = K e1 ... en, gs' -> e]] == SOME [[gs, y1 = e1, ..., yn = en, gs' -> e]] *)
+    (* rge x [[K y1 ... yn]] [[gs, x = K' e1 ... em, gs' -> e]] == NONE, where K != K' *)
+    (* rge x [[K y1 ... yn]] [[gs, x = K e1 ... em, gs' -> e]] == NONE, where n != m *)
+
+    (* this has to happen until there are no free occurrences of x *)
+
+
+    (* compilation continues until there are no known variables equal to constructor applications *)
+
+    (* fun sanityCheckTree gss = findAnyConstructorApplication gss = NONE *)
 
   val compile = fn things => compile emptyContext things
 

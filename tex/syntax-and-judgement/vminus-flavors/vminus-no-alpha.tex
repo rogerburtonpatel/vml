@@ -39,12 +39,13 @@ decision-making construct:
     | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
     ;;
     $\expr$ : \textsf{Expressions} ::=
+    | $v$ : literal values 
     | $x, y, z$ : names
     % Question: ebnf braces vs. regular brackets
-    | $\tt{if}\; \tt{[}\; G\; \bracketed{[] G}\; tt{]}\; \tt{fi}$ : if-fi 
+    | $\tt{if}\; \tt{[}\; G\; \bracketed{\square\; G}\; \tt{]}\; \tt{fi}$ : if-fi 
     | $K \bracketed{\expr}$ : value constructor application 
     | $\expr[1]\; \expr[2]$ : function application 
-    | $\lambda x.\; \expr$ : lambda delcaration 
+    | $\lambda x.\; \expr$ : lambda declaration 
     ;;
     $G$ : \textsf{Guarded Expressions} ::=  
     $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\expr$ : names, guards, and body
@@ -87,17 +88,21 @@ and is not a value constructor name or a reserved word.
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
 \midrule
+    $\expr$& An expression \\ 
     $\v,\; \v'$& value \\
+    $\fail$& expression failure \\
+    $\result$& $\v \vert$ \fail : expressions produce \it{results}: values or
+    failure. \\
+    \Rho& environment: $name \rightarrow {\mathcal{V}}_{\bot}$ \\
+    $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
+    $g$& A guard \\
     $eq$& equation \\ 
     % $\tempstuck$& a temporarily-stuck equation \\
-    $\reject$& equation rejection \\
-    $\result$& $\v \mid$ \reject : a result of \v\; or
-    rejection\\
-    \Rho& environment: $name \rightarrow \mathcal{\v}_{\bot}$ \\
-    $\rho\{ x \mapsto y \} $& environment extended with name $x$ mapping to $y$ \\
-    $\mathcal{T}$& Context of all temporarily stuck equations (a sequence) \\ 
-    $\expr$& An expression \\ 
-    $g$& A guarded expression \\
+    $\reject$& when solving guards is rejected \\
+    $\solution$& $\rhohat \mid$ \reject : guards produce \it{solutions}: a
+    refined environment \rhohat\; or rejection\\
+    $\mathcal{T}$& Context of all temporarily stuck guards (a sequence) \\ 
+    $G$& A guarded expression \\
     % \uppsidown& Inability to compile to a decision tree; a compile time error \\
 \bottomrule
 \end{tabular}    
@@ -128,7 +133,8 @@ and is not a value constructor name or a reserved word.
     
     
     Success only refines the environment; that~is, when
-    ${\vtuple{\rho, \expr}} \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
+    ${\vtuple{\rho, \expr}} \rightarrowtail{} {\Rhoprime}$, 
+    we~expect $\rho \subseteq \Rhoprime$.
     
     
 
@@ -138,18 +144,18 @@ and is not a value constructor name or a reserved word.
     \newcommand\GNoTree{\vmrung \rightsquigarrow \uppsidown} 
     
     An expression in core Verse evaluates to produce possibly-empty sequence of
-    values. In {\VMinus}, expressions evaluate to a single value. We will explore
-    a Verse variant in which expressions may evaluate to multiple values. 
+    values. In {\VMinus}, expressions evaluate to a single value. 
+    % We will
+    % explore a Verse variant in which expressions may evaluate to multiple
+    % values. 
 
+    An expression evaluates to produce a \bf{result}. A result is either
+    a value $\v$ or \fail. 
     
-
-    A guarded expression evaluates to produce a \bf{result}. A result is either
-    a value $\v$ or reject. 
+    \[\it{r}\; \rm{::=}\; \rhohat\; \vert \; \fail \]
     
-    \[\it{r}\; \rm{::=}\; \v\; \; \reject \]
-    
-    \showvjudgement{Eval}{\veval{\expr}{\v}}
-    \showvjudgement{Eval-Guarded-Expr}{\vmrung[guard=g]}
+    \showvjudgement{Eval}{\vmeval}
+    \showvjudgement{Solve-Guards}{\vmgs}
     
     % \bigskip
     % If a guarded expression cannot be evaluated without producing logical 
@@ -162,21 +168,21 @@ and is not a value constructor name or a reserved word.
 \subsection{Equations}
 
 In {\VMinus}, we solve equations (intermediate computations in a guarded
-expression of the form \\$\expr[1] = \expr[2]$) in a similar way to the
-authors of the original Verse paper: we pick one, attempt to solve for it, and
-move on. 
+expression of the form \\$x = \expr$) in a similar way to the authors of the
+original Verse paper: we pick one, attempt to solve for it, and move on. 
 
-\rab{How do we express that {\VMinus} semantics preclude backtracking/logical 
-variables at runtime?}
+In our semantics, we do this with a \it{list} of guards: we pick a guard, 
+attempt to solve it to refine our environment or fail, and repeat. If we 
+can't make progress in solving a guard, we put it in \context\ and move on.
 
-Given an environment from names to metavalues {\v}s \Rho, an equation \eq
-~will either refine the environment ($\Rhoprime$) or lead to failure. We use
-the metavariable $\dagger$ to represent failure, and an equation failing will
-cause the top-level guarded expression to evaluate to \reject. 
 
-\showvjudgement{Eq-Refine}\eqrefine
-\showvjudgement{Eq-Fail}\eqfail
-    
+Given an environment from names to metavalues {\v}s \Rho, a guard \g\ will
+either refine the environment ($\Rhoprime$) or be \bf{rejected}. We use the
+metavariable $\reject$ to represent rejection, and a guard producing no
+solution will cause the top-level list of guards to also produce \reject. 
+
+    \showvjudgement{Guard-Refine}{\grefine[result=\rho']}
+    \showvjudgement{Guard-reject}\gfail
     
     \section{Sequences}
     
@@ -197,99 +203,84 @@ the singleton sequence containing $x$.
 
 \subsubsection{Evaluating simple parts of guarded expressions}
 
-\[
-\inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-    {\vmrung[context=\emptyseq, guard=\expr]}
-    {\vmrung[context=\emptyseq, guard=\rightarrow \expr,result=\v]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
+%     {\vmrung[context=\emptyseq, guard=\expr]}
+%     {\vmrung[context=\emptyseq, guard=\rightarrow \expr, result=\v]}
+% \]
 
-\[
-\inferrule*[Left=\textsc{ (Eval-Exists) }]
-    {\vmrung[env=\rho\{x \mapsto \bot \}]}
-    {\vmrung[guard=\vexists{x}\; g]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Expseq-Succ) }]
-    {\inferrule* {}
-    {
-    \veval{\expr}{\v}
-    \and
-    \v \neq \tt{false}
-    \and
-    \veval{g}{\result}
-    }}
-    {\vmrung[guard=\expr;\; g]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Expseq-Fail) }]
-    {\inferrule* {}
-    {
-    \veval{\expr}{\tt{false}}
-    }}
-    {\vmrung[guard=\expr;\; g, result=\reject]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (Eval-Exists) }]
+%     {\vmrung[env=\rho\{x \mapsto \bot \}]}
+%     {\vmrung[guard=\vexists{x}\; g]}
+% \]
 
 
 \subsubsection{Shifting an equation to the context}
 \[
-\inferrule*[Left=\textsc{ (G-Move-To-Ctx) }]
-    {\inferrule*{\vmrung[context=eq \cdot \context]}
+\inferrule*[Left=\textsc{ (Guard-Move-To-Ctx) }]
+    {\inferrule*{\vmgs[context=g \cdot \context]}
     {}
     }
-    {\vmrung[guard=eq;\; g]}
+    {\vmgs[guards={gs \cdot g \cdot gs'}]}
 \]
 
 \subsubsection{Choosing and solving an equation}
 
 \[
-\inferrule*[Left=\textsc{ (Eval-Eq-Refine) }]
-    {\eqrefine
+\inferrule*[Left=\textsc{ (Solve-Guard-Refine) }]
+    {\grefine[result=\Rhoprime]
     \and
-    \vmrung[env=\Rhoprime,context=\TT]}
-    {\vmrung[context=\TeqT{\eq},result=\v]}
+    \vmgs[env=\Rhoprime,context=\;\TT]}
+    {\vmgs[context=\TeqT{g}]}
 \]
 
 \[
-\inferrule*[Left=\textsc{ (Eval-Eq-Fail) }]
-    {\eqfail}
-    {\vmrung[context=\TeqT{\eq},result=\reject]}
+\inferrule*[Left=\textsc{ (Solve-Guard-Reject) }]
+    {\gfail}
+    {\vmgs[context=\TeqT{g},solution=\reject]}
 \]
 \subsubsection{Properties of equations}
 
-\[
-\inferrule*[Left=\textsc{ (Single-Eq-Assoc) }]
-    {\vmrung[context=\TeqT{\expr[2] = \expr[1]}]}
-    {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (Single-Eq-Assoc) }]
+%     {\vmrung[context=\TeqT{\expr[2] = \expr[1]}]}
+%     {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
+% \]
 
 \[
-\inferrule*[Left=\textsc{ (Multi-Eq-Assoc) }]
-    {\vmrung[context=\TeqT{\expr[2] = \expr[1] \cdot \expr[1] = \expr[2]}]}
-    {\vmrung[context=\TeqT{\expr[1] = \expr[2] \cdot \expr[2] = \expr[1]}]}
+\inferrule*[Left=\textsc{ (Multi-Guard-Assoc) }]
+    {\vmrung[context=\TeqT{g_{1} \cdot g_{2}}]}
+    {\vmrung[context=\TeqT{g_{2} \cdot g_{1}}]}
 \]
 
-\subsubsection{Desugaring of Complex Equations}
-\[
-\inferrule*[Left=\textsc{ (Desugar-EqExps) }]
-    {\inferrule* {}
-    {
-    x,\; \; \rm{are distinct and fresh}
-    \\\\
-    \vmrung[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-          context=\eqTT{x = \expr[1] \cdot y = \expr[2] \cdot x = y}]}}
-    {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
-\]
 
-\[
-\inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
-    {
-    \vmrung[context=\TeqT{\lbrack \expr[i]=\expr[i]'\; 
-           \vert\; 1 \leq i \leq n \rbrack}]}
-    {\vmrung[context=\TeqT{K(\expr[1], \dots 
-            \expr[n]) = K(\expr[1]', \dots \expr[n]')}]}
-\]
+% \[
+% \inferrule*[Left=\textsc{ (Multi-Eq-Assoc) }]
+%     {\vmrung[context=\TeqT{\expr[2] = \expr[1] \cdot \expr[1] = \expr[2]}]}
+%     {\vmrung[context=\TeqT{\expr[1] = \expr[2] \cdot \expr[2] = \expr[1]}]}
+% \]
+
+% \subsubsection{Desugaring of Complex Equations}
+% \[
+% \inferrule*[Left=\textsc{ (Desugar-EqExps) }]
+%     {\inferrule* {}
+%     {
+%     x,\; \; \rm{are distinct and fresh}
+%     \\\\
+%     \vmrung[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
+%           context=\eqTT{x = \expr[1] \cdot y = \expr[2] \cdot x = y}]}}
+%     {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
+% \]
+
+% \[
+% \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
+%     {
+%     \vmrung[context=\TeqT{\lbrack \expr[i]=\expr[i]'\; 
+%            \vert\; 1 \leq i \leq n \rbrack}]}
+%     {\vmrung[context=\TeqT{K(\expr[1], \dots 
+%             \expr[n]) = K(\expr[1]', \dots \expr[n]')}]}
+% \]
 
 \subsubsection{Refinement with different types of equations}
 
@@ -299,11 +290,11 @@ the singleton sequence containing $x$.
     {
     x \in \dom \rho
     \\\\
-    \veval{\expr}{\v}
+    \vmeval[result=\v]
     \\\\
     \rho(x) = \bot
     }}
-    {\eqrefine[eq={x = \expr},newenv=\Rho\bracketed{x \mapsto \v}]}
+    {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
 \]
 
 \[
@@ -312,11 +303,11 @@ the singleton sequence containing $x$.
     {
     x \in \dom \rho
     \\\\
-    \veval{\expr}{\v}
+    \vmeval[result=\v]
     \\\\
     \rho(x) = \v
     }}
-    {\eqrefine[eq={x = \expr},newenv=\Rho\bracketed{x \mapsto \v}]}
+    {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
 \]
 
 \[
@@ -325,13 +316,13 @@ the singleton sequence containing $x$.
     {
     x \in \dom \rho
     \\\\
-    \veval{\expr}{\v}
+    \vmeval[result=\v]
     \\\\ 
     \rho(x) = \v'
     \\\\
     \v \neq \v'
     }}
-    {\eqrefine[eq={x = \expr},newenv=\dagger]}
+    {\eqrefine[eq={x = \expr},newenv=\reject]}
 \]
 
 \[
@@ -340,7 +331,7 @@ the singleton sequence containing $x$.
     {
     x \not\in \dom \rho
     }}
-    {\eqrefine[eq={x = \expr},newenv=\dagger]}
+    {\eqrefine[eq={x = \expr},newenv=\reject]}
 \]
 
 \[
@@ -363,7 +354,7 @@ the singleton sequence containing $x$.
     \rho(x) = \v,\; \rho(y) = \v'
     \\\\
     \v \neq \v'}}
-    {\eqrefine[eq={x = y},newenv=\dagger]}
+    {\eqrefine[eq={x = y},newenv=\reject]}
 \]
 
 % \[
@@ -387,13 +378,13 @@ the singleton sequence containing $x$.
     \\\\
     \rho(x) = \bot,\; \rho(y) = \v
     }}
-    {\eqrefine[eq={x = y},newenv=\rho\bracketed{x \mapsto \v}]}
+    {\eqrefine[eq={x = y},newenv={\Rho[x \mapsto \v]}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (G-Vcon-Single-Fail) }]
     {K \neq K'}
-    {\eqrefine[eq={K = K'}, newenv=\dagger]}
+    {\eqrefine[eq={K = K'}, newenv=\reject]}
 \]
 
 \[
@@ -408,7 +399,7 @@ the singleton sequence containing $x$.
     {K \neq K'}
     {\eqrefine[eq={K(\expr[1], \dots 
             \expr[n]) = K'(\expr[1]', \dots \expr[n]')},
-            newenv=\dagger]}
+            newenv=\reject]}
 \]
 
 \[
@@ -416,68 +407,135 @@ the singleton sequence containing $x$.
     {n \neq m}
     {\eqrefine[eq={K(\expr[1], \dots 
             \expr[n]) = K(\expr[1]', \dots \expr[m]')},
-            newenv=\dagger]}
+            newenv=\reject]}
 \]
+
+\[
+\inferrule*[Left=\textsc{ (G-Expseq-Succ) }]
+    {\inferrule* {}
+    {
+    \vmeval[result=\v]}}
+    {\grefine[guard=\expr, result=\bracketed{}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Expseq-Fail) }]
+    {\vmeval[result={\fail}]}
+    {\grefine[guard=\expr, result=\reject]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Choice-First) }]
+    {\vmgs[context=\emptyseq, solution=\rho']}
+    {\grefine[guard={\choiceg{gs}{gs'}}, result=\rho']}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (G-Choice-Second) }]
+    {\vmgs[context=\emptyseq, solution=\rho'] 
+    \and 
+    \vmgs[context=\emptyseq, guards=gs']}
+    {\grefine[guard={\choiceg{gs}{gs'}}, result=s]}
+\]
+
 
 
 \subsection{Evaluating General Expressions}
 
 
-% \[
-% \inferrule*[Left=\textsc{ (If-Fi-Fail) }]
-%     {\ }
-%     {\veval{\iffi{\ }}{\emptyseq}}
-% \]
+\[
+\inferrule*[Left=\textsc{ (If-Fi-Fail) }]
+    {\ }
+    {\vmeval[exp={\iffi{\ }}, result={\fail}]}
+\]
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Success) }]
-    {\vmrung[] \Downarrow \v}
-    {\veval{\iffi{g\; \square\; \dots}}{\v}}
+{\inferrule* {}
+    {\rho' = \Rho[x_{1} \mapsto \bot \dots x_{n} \mapsto \bot]}
+    \\\\
+    {\vmgs[env=\rho', context=\emptyseq, result=\rho'']}
+    \\\\ 
+    {\vmeval[env={\rho''}]}}
+    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; gs \rightarrow e\; \square\; \dots}}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (If-Fi-Reject) }]
-    {\inferrule* {}
-    {\vmrung[result=\reject]}
-    \and 
-    \veval{\iffi{\dots}}{\v}}
-    {\veval{\iffi{g\; \square\; \dots }}{\v}}
+{\inferrule* {}
+    {\rho' = \Rho[x_{1} \mapsto \bot \dots x_{n} \mapsto \bot]}
+    \\\\
+    {\vmgs[env=\rho', context=\emptyseq, result=\reject]}
+    \\\\
+    \vmeval[exp={\iffi{\dots}}]}
+    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; gs \rightarrow e\; \square\; \dots}}]}
 \]
+
 
 \[
 \inferrule*[Left=\textsc{ (Vcon-Empty) }]
     {\ }
-    {\veval{K}{K}}
+    {\vmeval[exp={K}, result={K}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Vcon-Multi) }]
     {\inferrule* {}
     {
-    \veval{\expr[i]}{v_{i}}
+    \vmeval[exp={\expr[i]}, result={v_{i}}]
     \and 
     1 \leq i \leq n
     }}
-    {\veval{K(\expr[1], \dots \expr[n])}{K(v_{1}, 
-    \dots v_{i})}}
+    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={K(v_{1}, 
+    \dots v_{i})}]}
 \]
+
+\[
+\inferrule*[Left=\textsc{ (Vcon-Multi-Fail) }]
+    {\inferrule* {}
+    {
+    \exists e_{i}.\; 1 \leq i \leq n : \vmeval[exp={\expr[i]}, result={\fail}]
+    }}
+    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={\fail}]}
+\]
+
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Name) }]
     {x \in \dom \rho 
     \\\\
     \rho(x) = \v}
-    {\veval{x}{\v}}
+    {\vmeval[exp={x}, result={\v}]}
 \]
 
 \[
+\inferrule*[Left=\textsc{ (Eval-Name-Fail) }]
+    {x \notin \dom \rho}
+    {\vmeval[exp={x}, result={\fail}]}
+\]
+
+% \[
+% \inferrule*[Left=\textsc{ (Eval-Funapp-Fail) }]
+%     {\vmeval[exp={\expr[1]}]
+%     \\\\
+%     r \rm{ does not have the form } {\lambda x.\expr}}
+%     {\vmeval[exp={\expr[1]\; \expr[2]}, result=\fail]}
+% \]
+
+\[
 \inferrule*[Left=\textsc{ (Eval-Funapp) }]
-    {\veval{\expr[1]}{\lambda x.\expr}
+    {\vmeval[exp={\expr[1]}, result={\lambda x.\expr}]
     \\\\
-    \veval{\expr[2]}{\v'}
+    \vmeval[exp={\expr[2]}, result={\v'}]
     \\\\
-    \vevalext{\bracketed{x \mapsto \v'}}{\expr}{\v}}
-    {\veval{\expr[1]\; \expr[2]}{\v}}
+    \vmeval[envext=\bracketed{x \mapsto \v'}]}
+    {\vmeval[exp={\expr[1]\; \expr[2]}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Literal) }]
+    {\ }
+    {\vmeval[exp={\v}, result={\v}]}
 \]
 
 \end{document}

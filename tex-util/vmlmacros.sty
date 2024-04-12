@@ -69,7 +69,7 @@
 
 
 % Context 
-\newcommand\rhohat{\hat{\rho}}
+\newcommand\rhohat{\ensuremath{\hat{\rho}}}
 \newcommand\tempstuck[1][\bracketed{eq}]{\tt{?t.}\it{#1}}
 \newcommand\context{\ensuremath{\mathcal{T}}}
 
@@ -77,6 +77,7 @@
 % Symbols 
 \newcommand\expr[1][]{\ensuremath{e_{#1}}}
 \newcommand\guard[1][]{\ensuremath{g_{#1}}}
+\newcommand\g[1][]{\ensuremath{g_{#1}}}
 
 \renewcommand\v[1][]{\ensuremath{v_{#1}}}
 
@@ -84,6 +85,7 @@
 \newcommand\reject{\bf{reject}}
 \newcommand\valbar{\ensuremath{v^{\alpha}}}
 \newcommand\result{\it{r}}
+\newcommand\solution{\it{s}}
 \newcommand\arrowe{\rightarrow e}
 
 \newcommand\ttleftarrow{\tt{\char`\<-}}
@@ -98,8 +100,10 @@
 \newcommand\ealphai{\ensuremath{e_{\alpha_{i}}}}
 \newcommand\Dalpha{\ensuremath{\mathcal{D}_\alpha}}
 \newcommand\valpha{\ensuremath{\vartheta}}
-\newcommand\Rho{\ensuremath{\rho}}
+\newcommand\Rho[1][]{\ensuremath{\rho}\bracketed{#1}}
 \newcommand\Rhoprime{\ensuremath{\rho'}}
+
+\newcommand\choiceg[2]{#1 \; \choice \; #2}
 
 \newcommand\uppsidown{
     \raisebox{1.25ex}{
@@ -129,8 +133,8 @@
 
 \newcommand{\vjudgement}[2]{#1 \rightarrowtail{} #2}
   
-\newcommand{\veval}[2]{\langle \rho,  #1 \rangle \Downarrow #2}
-\newcommand{\vevalext}[3]{\langle \rho#1,  #2 \rangle \Downarrow #3}
+\newcommand{\veval}[2]{REDO}
+\newcommand{\vevalext}[3]{REDO}
 
 % Quick display a v- judgement form
 \newcommand{\showvjudgement}[3][Right]{%
@@ -218,9 +222,12 @@
 \defcomponent{pat}{p}
 \defcomponent{value}{v}
 \defcomponent{result}{\result}
+\defcomponent{solution}{\solution}
 \defcomponent{envext}{}
 \defcomponent{tlp}{\tlp}
 \defcomponent{newenv}{\rho'}
+\defcomponent{newctx}{\context'}
+\defcomponent{gsolveresult}{\langle\c{newctx},\c{newenv}\rangle}
 \defcomponent{eq}{\eq}
 \defcomponent{name}{x}
 
@@ -237,7 +244,35 @@
    {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guard} \Downarrow \c{result}}}}
-   
+
+\newcommand\vmgs[1][]{% do a list of guards
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guards} \rightarrowtail \c{solution}}}}
+
+
+\newcommand\vmeval[1][]{%  do many guards
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\langle \c{env}\c{envext}, \c{exp} \rangle \Downarrow \c{result}}}}
+
+
+\newcommand\eqrefine[1][]{%  equation refines environment
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\c{env}\c{envext} \vdash \c{eq} \rightarrowtail \c{newenv}}}}
+
+
+\newcommand\eqfail{\eqrefine[newenv=\dagger]}
+
+\newcommand\grefine[1][]{%  do many guards
+  {\setkeys{state}{#1}%
+  \let\c=\component
+  \ensuremath{\c{env}\c{envext} \vdash \c{guard} \rightarrowtail \c{result}}}}
+
+\newcommand\gfail{\grefine[result=\reject]}
+
+
 \newcommand\prun[1][]{%  run P-plus code
   {\setkeys{state}{#1}%
     \let\c=\component
@@ -269,19 +304,6 @@
     \ensuremath{\br{\c{env}\c{envext}, \c{tlp}, v} \rightarrowtail \c{newenv}}}}
 
   \newcommand\tlpfail{\tlpmatch[newenv=\dagger]}
-
-
-\newcommand\eqrefine[1][]{%  equation refines environment
-  {\setkeys{state}{#1}%
-  \let\c=\component
-  \ensuremath{\langle \c{env}\c{envext}, \c{guard} \rangle \rightarrowtail \c{newenv}}}}
-
-\newcommand\eqfail{\eqrefine[newenv=\dagger]}
-
-\newcommand\doguards[1][]{%  do many guards
-  {\setkeys{state}{#1}%
-  \let\c=\component
-  \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guards} \rightarrowtail \c{result}}}}
 
 
 \defcomponent{vterm}{e}
