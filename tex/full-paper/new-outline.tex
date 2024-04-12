@@ -163,8 +163,9 @@ how \VMinus\ subsumes pattern matching with popular extensions.
 \section{Pattern Matching and equations}
 \label{pmandequations}
 
-I'll flush out the definitions, forms, and tradeoffs of pattern matching and
-equations. This will inform the compromises I make in \VMinus\ down the line. 
+In this section I'll flush out the definitions, forms, and tradeoffs of pattern
+matching and equations. This will inform the compromises I make in \VMinus\ down
+the line. 
 
 \subsection{Pattern matching}
 \label{pmoverobservers}
@@ -272,10 +273,11 @@ fun area sh =
     \begin{enumerate}
         \item \ref{fig:pmarea}, which uses pattern matching, more closely
         resembles the algebraic laws for \tt{area}. Good! 
-        \item \ref{fig:observerarea} had to call observers multiple times,
-        duplicating code. \ref{fig:pmarea} was able to extract the \tt{shape}s'
-        internal values with a single pattern. Again, \ref{fig:pmarea}
-        wins.
+        \item \ref{fig:observerarea} had to call observers like \tt{squareSide}
+        multiple times, and each observer needs \tt{sh} as an argument.
+        \ref{fig:pmarea} was able to extract the \tt{shape}s' internal values
+        with a single pattern, and the name \tt{sh} is not duplicated anywhere
+        in its body. Again, \ref{fig:pmarea} wins. 
         \item Where did \tt{isSquare}, \tt{sqSide}, and all the other observers
         come from? To even \it{implement} \ref{fig:observerarea}, a programmer
         has to define a whole new set of observers for \tt{shape}s! Most
@@ -477,7 +479,7 @@ exclaimBigArea sh                   == "Your shape is small.",
         \begin{verbatim}
           
 
-          tripleLookup : finitemap -> int -> int
+            tripleLookup : finitemap -> int -> int
 
             tripleLookup rho x == z, where 
                                        lookup rho x == Some w
@@ -540,7 +542,7 @@ exclaimBigArea sh                   == "Your shape is small.",
                            , Just y <- lookup rho w
                            , Just z <- lookup rho y
                            = Just z
-                        tripleLookup rho _ = handleFailure x
+                        tripleLookup _ x = handleFailure x
         \end{verbatim}
         \end{center}    
     \caption{Pattern guards swoop in to restore the Nice Properties, and all is
@@ -688,7 +690,7 @@ game_of_token _ == ("Irrelevant", 0), otherwise
 
     In addition to the inherent appeal of brevity, or-patterns serve to
     concentrate complexity at a single juncture and create single points of
-    truth. And in cases with nested functions, like in
+    truth. And by eliminating helper functions, like the ones in
     Figure~\ref{fig:helpergot}, or-patterns actually boost performance.
       
     \subsubsection{Wrapping up pattern matching and extensions}
@@ -727,7 +729,7 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     a core calculus for the functional logic programming language[cite- flps]
     Verse [cite- Verse]. 
 
-    Even if you've read the Verse paper, \VC's equations and the paradigms of
+    Even if you read the Verse paper, \VC's equations and the paradigms of
     functional logic programming might look unfamiliar to your pattern
     matching-accustomed brains. To help ease you into familiarity with
     equations, I'll ground explanations and examples in how they relate to
@@ -744,21 +746,23 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     in \it{e} are unified with values. Much like pattern matching, unification
     can fail if the runtime attempts to bind incompatible values or structures. 
 
-    Let's look at what equations look like in real, written Verse code. I've
-    written our \tt{area} function in \VC\ extended with a \tt{float} type and a
-    multiplication operator \tt{*}- see Figure~\ref{fig:versearea}. 
+    Equations offer a form of binding that looks like a single pattern match.
+    What about a list of many patterns and right-hand sides, as in a case
+    expression? For this, \VC\ has \it{choice} (\choice). The full semantics of
+    choice are too complex for me to cover in this paper, but you can get away
+    with knowing that choice, when combined with the \tt{one} operator, has a
+    very similar semantics to case; that is, “proceed and create bindings if any
+    one of these computations succeed.” 
 
-    
-    % Pat is
-    % curious about exactly this, so she asks her friend Verv, a Verse enthusiast,
-    % to show how he would write \tt{length}, reminding him that she only knows
-    % pattern matching and doesn't have a background in functional logic
-    % programming. Verv comes up with Figure~\ref{fig:verselen}.     
+    Let's look at what equations, \tt{one}, and choice look like in real,
+    written Verse code. I've written our \tt{area} function in \VC\ extended
+    with a \tt{float} type and a multiplication operator \tt{*}- see
+    Figure~\ref{fig:versearea}. 
 
     \begin{figure}[]
         \verselst
         \begin{lstlisting}[numbers=none]
-$\exists$ area. area = \sh. 
+$\exists$ area. area = $\lambda$ sh. 
   one {  $\exists$ x. sh   = $\langle$SQUARE, s$\rangle$; s * s
        | $\exists$ w h. sh = $\langle$TRIANGLE, w, h$\rangle$; 
               0.5 * w * h
@@ -774,36 +778,133 @@ $\exists$ area. area = \sh.
     Like in the pattern-matching example in good old \ref{fig:pmarea}, the
     right-hand sides of \tt{area} are \it{guarded} by a “check;” now, the check
     is successful unification in an equation rather than a successful match on a
-    pattern. 
+    pattern. Similarly, \tt{one} with a list of choices 
 
-    Why use equations? Let's start with a digestible claim: I prefer \VC\ to
-    observers, and I imagine many functional programmers would as well. To 
-    support this claim, I appeal to the Nice Properties: 
+    Why use equations? Let's start with a digestible claim: I prefer \VC's
+    equations to observers, and I imagine many functional programmers would as
+    well. To support this claim, I appeal to the Nice Properties: 
 
     \begin{enumerate}
-      \item \tt{area} in \VC\ looks like the algebraic laws, with the addition
-      of the explicit $\exists$. It's a bit more math-y, but that might not be
-      a bad thing: though it doesn't resemble the algebraic laws a programmer
-      would write, it likely resembles the equations that a mathematician would. 
-      \item \tt{area} in \VC\ does not duplicate virtually any code. 
-      \item \tt{area} in \VC\ deconstructs user-defined types with equations as
-      easily as \ref{fig:pmarea} does with pattern matching. 
-      \item \tt{area} in \VC\ has all important names named very explicitly.
+      \item \tt{area} using equations looks like the algebraic laws, with the
+      addition of the explicit $\exists$. It's a bit more math-y, but that might
+      not be a bad thing: though it doesn't resemble the algebraic laws a
+      programmer would write, it likely resembles the equations that a
+      mathematician would. 
+      \item \tt{area} using equations does not duplicate virtually any code. 
+      \item \tt{area} using equations deconstructs user-defined types as easily
+      as \ref{fig:pmarea} does with pattern matching. 
+      \item \tt{area} using equations has all important internal values named
+      very explicitly.
       \item This Property may not hold, because \VC\ on its own is untyped.
       Without a type system, a compiler cannot help me with non-exhaustive
       cases. However, there is no published compiler, type system or no, for
       Verse, and only when one is made available can I make this assertion. For
       this reason, and for the sake of focusing on more important details, I
-      choose to proceed in my analysis of \VC\ without considering this
-      Property. 
+      choose to proceed in my analysis of equations in \VC\ without considering
+      this Property. 
     \end{enumerate}
+
+    If you still believe these Properties to be desirable, you understand why I
+    claim programmers prefer equations to observers. Now I'll make a stronger
+    claim: equations are \it{at least as good as} pattern matching with popular
+    extensions. How can I claim this? By appealing again to the Nice Properties!
+    Do you remember how in Section~\ref{pmoverobservers}, I demonstrated how
+    pattern matching had to resort to extensions to regain the Properties when
+    challenging examples stole them away? In Figure~\ref{fig:verseextfuncs},
+    I've implemented those examples in \VC\ (this time extended with strings,
+    floats, and \tt{*}) using choice and equations. Take a look for yourself! 
+
+    \begin{figure}[ht] 
+        \label{ fig7} 
+        \begin{minipage}[h]{0.54\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+                            showstringspaces=false,
+                            frame=single]
+$\exists$ exclaimTall. exclaimTall = $\lambda$ sh. 
+  one { 
+      $\exists$ s. sh = $\langle$Square s$\rangle$; 
+      s > 100.0; "Wow! That's a tall square!"
+    | $\exists$ w h. sh = $\langle$Triangle, w, h$\rangle$; 
+      h > 100.0; "Goodness! Towering triangle!"
+    | $\exists$ b1 b2 h. sh = $\langle$Trapezoid, b1, b2, h$\rangle$;
+      h > 100.0; "Zounds! Tremendous trapezoid!"
+    | "Your shape is small." }
+            \end{lstlisting}
+                \Description{exclaimTall}
+        \subcaption{\tt{exclaimTall} in \VC\ }
+            \label{fig:verseexclaimtall} 
+        %   \vspace{4ex}
+        \end{minipage}%%
+        \begin{minipage}[h]{0.5\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                        frame=single]
+$\exists$ tripleLookup. tripleLookup = $\lambda$ rho x. 
+    one { $\exists$ w. lookup rho x = $\langle$Just w$\rangle$; 
+          $\exists$ y. lookup rho w = $\langle$Just y$\rangle$; 
+          $\exists$ z. lookup rho y = $\langle$Just z$\rangle$;
+          Just z
+        | handleFailure x }
+          \end{lstlisting}
+                \Description{exclaimTall}
+            \subcaption{\tt{tripleLookup} in \VC\ }
+            \label{fig:versetriplelookup} 
+        \vspace{4ex}
+        \end{minipage} 
+        \begin{minipage}[h]{\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em, 
+                            frame=single]
+$\exists$ game_of_token. game_of_token = $\lambda$ token. 
+  $\exists$ f. one {
+         token = one { $\langle$BattlePass, f$\rangle$ | $\langle$ChugJug, f$\rangle$ | $\langle$TomatoTown, f$\rangle$}; 
+           $\langle$"Fortnite", f$\rangle$
+       | token = one { $\langle$HuntersMark, f$\rangle$ | $\langle$SawCleaver, f$\rangle$}; 
+           $\langle$"Bloodborne", 2 * f$\rangle$
+       | token = one { $\langle$MoghLordOfBlood, f$\rangle$ | $\langle$PreatorRykard, f$\rangle$}; 
+           $\langle$"Elden Ring", 3 * f$\rangle$
+       |   $\langle$"Irrelevant", 0$\rangle$ }
+          \end{lstlisting}
+                \Description{game_of_token in \VC}
+        \subcaption{\tt{game\_of\_token} in \VC\ }
+            \label{fig:versegot} 
+        \vspace{4ex}
+        \end{minipage}%% 
+    \caption{Code for the \ref{pmoverobservers} functions with equations looks
+    similar, and it doesn't need extensions.}
+    \label{fig:verseextfuncs}
+      \end{figure}
         
+    The code in Figure~\ref{fig:verseextfuncs} has all the Nice Properties
+    (again, disregarding the ambiguous 5th.) This is promising for \VC. If it
+    rivals pattern matching with popular extensions in desirable properties, and
+    \VC\ does everything using only equations and choice, it seems like the
+    language is a strong option for writing code! 
+
+    So what's the catch? Programmers everywhere have not thrown up their hands,
+    renounced pattern matching, and adopted a puritanical dogma of equations. 
+    Sadly, this is not merely a matter of preference. 
+
+    \VC's equations appear to be comparably pleasing to pattern matching in
+    their brevity and expressiveness. However, full Verse allows computations
+    that are problematic, cost-wise. In \VC, names (logical variables) are
+    \tt{values}, and can just as easily be the result of evaluating an
+    expression as an integer or tuple. To bind these names, \VC, like other
+    functional logic languages, relies on unifying its logical variables at
+    runtime to meet a set of program constraints [cite]. Unifying logical
+    variables at runtime classically requires backtracking [cite], which can
+    lead to exponential runtime cost [cite]. 
+        
+    Furthermore, rather than returning a single value, an expression in \VC\
+    evaluates to return a \it{sequence} of zero or more values. As such,
+    unifying the results of expressions can quickly lead to """massive
+    combinatorials""" whose size can be difficult to predict. (Todo: technical phrase for 'something massive.') 
 
 
-Subject: Equations. 
+    By contrast\dots pattern matching\dots decision tree. 
 
-But Verse is expensive 
-
+% Subject: Equations. 
     
 
 %     Obe watches sadly from a distance: Pat smiles and enjoys Verv's
@@ -928,9 +1029,27 @@ Call for compromise: 2 languages.
 \1 \PPlus 
 \1 \VMinus 
 \1 Syntax, semantics 
-\section{\VMinus can be compiled to decision trees}
-\1 D, decision trees, we are consistent 
-\1 Translation, proof: \VMinus to \D
+\section{\VMinus\ can be compiled to decision trees}
+Code in \VMinus\ cannot backtrack at runtime. To enforce this invariant, 
+I show \VMinus\ can be compiled to a decision tree. 
+
+A decision tree is\dots
+To study decision trees, I define \D\dots
+
+Examples of decision trees (likely in \D )
+
+\D\ is a simple generalization of Maragnet et al. 
+
+Semantics of \D 
+
+\D\ has a great cost model. 
+
+Translation from \VMinus\ to~\D. 
+
+Theorem: translation from \VMinus\ to~\D\ preserves semantics. 
+
+% \1 D, decision trees, we are consistent 
+% \1 Translation, proof: \VMinus to \D
 \section{\VMinus subsumes patterns}
 \1 Translation, proof: \PPlus to \VMinus
 \section{Rest}

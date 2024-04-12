@@ -7,3 +7,4 @@
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qparentgameoftoken, with redundant right-hand sides.\\E$"}
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcase expressions test a scrutinee (ys in \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q) against a list of patterns ([], x::xs).\\E$"}
 {"rule":"SERIAL_COMMA_ON","sentence":"^\\QEven if you've read the Verse paper, VC and the paradigms of functional logic programming might look unfamiliar to your pattern matching-accustomed brains.\\E$"}
+{"rule":"EN_UNPAIRED_BRACKETS","sentence":"^\\QThe full semantics of choice are too complex for me to cover in this paper, but you can get away with knowing that, when combined with the one operator, choice in provides the \"proceed and create bindings if any one of these computations succeed” semantics that we're looking\\E$"}
