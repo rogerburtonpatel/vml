@@ -87,16 +87,20 @@ runtime cost.
 \section{Introduction}
 % Subjects: Pattern matching and Equations 
 
-Pattern matching is a popular tool for functional programmers to examine and
-deconstruct data. Pattern matching enables programmers to implicitly examine and
-deconstruct data by matching them directly against a number of possible forms.
-Pattern matching is also well-established in the literature[cite], and is lauded
-for its ability to be compiled to a \it{decision tree}, a data structure that
-enforces linear runtime performance by guaranteeing no part of the data will be
-examined more than once. 
-
+Pattern matching is a beloved tool among functional programmers for examining
+and deconstructing data. 
+% It does so implicitly by matching constructed data
+% directly against a number of possible forms.
+% Maybe combine? 
+Pattern matching is also an established and well-researched topic in
+academy[cite]. In particular, it is lauded for its ability to be compiled to a
+\it{decision tree}, a data structure that enforces linear runtime performance by
+guaranteeing no part of the data will be examined more than once.[cite]
+% Extensions should have a section # to indicate they're coming 
 But pattern matching has seen a number of extensions across popular programming
-languages. Why? Because pattern matching cannot succinctly express certain
+languages. Why? 
+% A little too coloquial
+Because pattern matching cannot succinctly express certain
 common computations, and, without extensions, it forces programmers who wish to
 express these computations to duplicate code, nest case expressions, and create
 multiple points of truth. 
@@ -109,19 +113,36 @@ Verse] introduced a tempting possibility in a new way to implicitly deconstruct
 data: equations. Equations look expressive, and it appears at a glance that they
 can express everything that pattern matching can, including the popular
 extensions. 
-
+% Make it very clear that Verse has nothing to do with PM 
 But a full implementation of Verse is complicated, cost-wise. Verse is a
 functional logic programming language, and that can mean expressions can
 backtrack at runtime and return multiple results, both of which are
 hard to predict in their costs. 
 
-What would really be excellent is a compromise. Can the expressiveness of
-Verse's equations be combined with the decision tree property of patterns? 
+What would really be excellent is a compromise.
+% A little too coloquial
+Can the expressiveness of Verse's equations be combined with the decision tree
+property of patterns? 
 
 
 \bf{My contribution in this thesis} is to show that \VMinus, a language that
 uses Verse's equations, can be compiled to a decision tree. I also demonstrate
 how \VMinus\ subsumes pattern matching with popular extensions. 
+
+Add some more things to expect in the paper: 
+
+Central contribution of this thesis is X. In order to achieve this, 
+I also made the following contributions: 
+
+Formalize subset of Verse into a core language \VMinus, bigstep opsem 
+
+Formalize pattern matching in a core language \PPlus 
+
+Formalize translation between them 
+
+Give section for each of these! 
+
+Implementation of each language 
 
 
 % I've built
@@ -192,9 +213,9 @@ on out:
     \item With pattern matching, it's easier to avoid duplicating code.
     \item Pattern matching plays nicer with user-defined types. 
     \item Pattern matching militates toward naming important intermediate
-    values, while observers do not. 
+    values. 
     \item With pattern matching, a compiler may be able to tell if the code
-    omits an important case; with observers, it cannot. 
+    omits an important case. 
 \end{enumerate}
 
 I'll demonstrate how pattern matching creates code that demonstrates the Nice
@@ -707,19 +728,19 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     [cite]. 
 
 
-    While I still like pattern matching, I find the extension story somewhat
-    unsatisfying. At the very least, I want to be able to use pattern matching,
-    with the extensions I want, in a single language. Or, I want an alternative
-    that gives me the expressive power of pattern matching with these
-    extensions. 
+    I find the extension story somewhat unsatisfying. At the very least, I want
+    to be able to use pattern matching, with the extensions I want, in a single
+    language. Or, I want an alternative that gives me the expressive power of
+    pattern matching with these extensions. 
 
-    I spotted an intriguing alternative to pattern matching: \it{equations},
-    from the Verse Calculus[cite - Verse]. Equations present a different, yet
-    powerful, way to write code that makes decisions and deconstructs data. In
-    the next section, I'll introduce you to equations similarly to I how I
-    introduced to you pattern matching. Once you're familiar with equations,
-    you'll be ready to compare their strengths and weaknesses with those of
-    pattern matching, and judge the compromise I propose. 
+    Last year, I spotted an intriguing alternative to pattern matching:
+    \it{equations}, from the Verse Calculus[cite - Verse]. Equations present a
+    different, yet powerful, way to write code that makes decisions and
+    deconstructs data. In the next section, I'll introduce you to equations
+    similarly to I how I introduced to you pattern matching. Once you're
+    familiar with equations, you'll be ready to compare their strengths and
+    weaknesses with those of pattern matching, and judge the compromise I
+    propose. 
 
 \subsection{Verse's equations}
     \label{verseoverobservers}
@@ -889,7 +910,7 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     \VC's equations appear to be comparably pleasing to pattern matching in
     their brevity and expressiveness. However, full Verse allows computations
     that are problematic, cost-wise. In \VC, names (logical variables) are
-    \tt{values}, and can just as easily be the result of evaluating an
+    \it{values}, and can just as easily be the result of evaluating an
     expression as an integer or tuple. To bind these names, \VC, like other
     functional logic languages, relies on unifying its logical variables at
     runtime to meet a set of program constraints [cite]. Unifying logical
@@ -898,89 +919,23 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
         
     Furthermore, rather than returning a single value, an expression in \VC\
     evaluates to return a \it{sequence} of zero or more values. As such,
-    unifying the results of expressions can quickly lead to """massive
-    combinatorials""" whose size can be difficult to predict. (Todo: technical phrase for 'something massive.') 
+    unifying the results of many expressions can quickly lead to large 
+    combinatorials whose size can be difficult to predict. 
 
+    % An example would be nice. 
 
-    By contrast\dots pattern matching\dots decision tree. 
-
-% Subject: Equations. 
+    Pattern matching, by contrast, has a desirable cost model. Maragnet et al.
+    [cite] showed that pattern matching can be compiled to a \it{decision tree},
+    a data structure that enforces linear runtime performance by guaranteeing no
+    part of the scrutinee will be examined more than once. A decision tree,
+    however, forbids backtracking by nature: once the program makes a decision
+    based on the form of a value, it can't re-test it later with new
+    information. 
     
-
-%     Obe watches sadly from a distance: Pat smiles and enjoys Verv's
-%     implementation of \tt{length}, preferring it to the one using observers (you
-%     might, as well). Verv's \tt{length} is a bit more math-y than hers, but that
-%     might not be a bad thing: though it doesn't resemble the algebraic laws a
-%     programmer would write, it likely resembles the equations that a
-%     mathematician would. 
-
-    
-%     \1 \bf{Verse is comparably pleasing to PM} 
-    
-%     You and Pat notice that in Verse, unlike in our pattern matching languages,
-%     programmers must introduce names explicitly with the existential $\exists$.
-%     At runtime, equations will attempt to unify all these names with values.
-%     When unification succeeds, equations will bind the names to those values,
-%     just as pattern matching binds names to values when a match succeeds. On
-%     line~3 of the example, the existential $\exists$ introduces two fresh names,
-%     \tt{x} and \tt{xs}, before attempting to bind them to (by unifying them
-%     with) \tt{ys}. These fresh names correspond to the \tt{x} and \tt{xs} in
-%     Figure \ref{fig:pmlen}. 
-
-%     You and Pat see that despite these differences, Verse's equations appear
-%     comparable to pattern matching, and that the language enjoys several forms
-%     that solve the same problems as pattern matching's extensions. 
-
-%     \2 Equations and conditions: 
-
-%     Like patterns in pattern matching, equations in Verse always guard
-%     expressions; they cannot be returned. Verse enforces this restriction in the
-%     syntax: expressions may take the form \it{eq; e}, where \it{eq} is an
-%     equation or an expression. Importantly, either form of \it{eq} guards {e}.
-%     If \it{eq} fails (returns no results), regardless of whether it is an
-%     expression or an equation, \it{e} will not be evaluated. This means
-%     programmers can also express “perform a computation if a condition succeeds”
-%     with a boolean\footnote{Verse does not have true booleans. Instead, it
-%     replaces 'true' and 'false' with the notion of 'success' and 'failure.'}
-%     expression in the \it{eq} position. 
-
-%     \2 \it{e} as a side condition; \it{x = e} as a guard 
-
-%     \2 What about or-patterns? Choice. 
-
-%     \2 Choice: we can't go over choice in this paper. But it can do “proceed if
-%     any one succeeds, with bindings.” 
-
-%     % % programmers introduce names explicitly 
-
-%     % % leading to differences: 
-%     % % 105 mistake. 
-
-
-%     % INLINE EXAMPLES. 
-
-%     % Verse's equations comparably pleasing to pattern matching in their brevity
-%     % and expressiveness, though they differ in a few key ways. For one, in Verse,
-%     % the programmer \it{explicitly} introduces the names that appear inside an
-%     % equation with the existential $\exists$. These names will be bound to the
-%     % components of a value when a match succeeds. On line~3 of the example, we
-%     % see the existential $\exists$ introduce two fresh names, \tt{x} and \tt{xs},
-%     % before attempting to bind them to \tt{ys}. These fresh names correspond to
-%     % the \tt{x} and \tt{xs} in (\cref{fig:pmlen}). 
-
-%     % Also, in Verse's equations, names with prior bindings \it{retain those
-%     % bindings} during matching. This is different from pattern matching, where a
-%     % name in a pattern is always considered fresh and will always succeed in
-%     % binding to a value. This is best illustrated with an example (Figure~TODO). 
-%     % We discuss the implications of this difference in Section~(TODO which).
 
 %     % Todo: show "105 student mistake" example. 
 
 %     % Todo: write more. 
-
-%     % \rab{The transition here feels shaky at best. I'd like help connecting the
-%     % two points: 1. Verse is comparably pleasing to PM, albeit a bit different
-%     % and 2. However, Verse has an unpredictable cost model.}
 
 %     % BIOHAZARD END 
 
@@ -995,20 +950,21 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
 %     \2 Verv examples 
 %     \2 But expensive. Verv EXAMPLE. Then discuss. 
 
-%     Verse's equations appear to be comparably pleasing to pattern matching
-%     in their brevity and expressiveness. However, full Verse allows/encourages
+%     Verse's equations appear to be comparably pleasing to pattern matching in
+%     their brevity and expressiveness. However, full Verse allows/encourages
 %     computations that are problematic, cost-wise. In Verse, names (logical
 %     variables) are \tt{values}, and can just as easily be the result of
-%     evaluating an expression as an integer or tuple. To bind these names, Verse,
-%     like other functional logic languages, relies on unifying its logical
-%     variables at runtime to meet a set of program constraints [cite]. Unifying
-%     logical variables at runtime classically requires backtracking [cite], which
-%     can lead to exponential runtime cost [cite]. 
+%     evaluating an expression as an integer or tuple. To bind these names,
+%     Verse, like other functional logic languages, relies on unifying its
+%     logical variables at runtime to meet a set of program constraints [cite].
+%     Unifying logical variables at runtime classically requires backtracking
+%     [cite], which can lead to exponential runtime cost [cite]. 
         
 %     Furthermore, rather than returning a single value, an expression in Verse
 %     evaluates to return a \it{sequence} of zero or more values. As such,
 %     unifying the results of expressions can quickly lead to """massive
-%     combinatorials""" whose size can be difficult to predict. (Todo: technical phrase for 'something massive.') 
+%     combinatorials""" whose size can be difficult to predict. (Todo: technical
+%     phrase for 'something massive.') 
 
 
 %     \2 Crisp example of this 
@@ -1020,11 +976,13 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
 %     \end{outline}
 % \section{Simplification for Study and Synthesis}
 
-\subsection{Can we have compromise?}
+\section{A compromise}
 
-Call for compromise: 2 languages. 
+\subsection{Introducing \PPlus}
 
-\section{Simplification for study and synthesis}
+\subsection{Introducing \VMinus}
+
+\subsection{Simplification for study and synthesis}
 
 \1 \PPlus 
 \1 \VMinus 
