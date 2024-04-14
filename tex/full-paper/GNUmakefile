@@ -8,17 +8,22 @@ compile := env TEXINPUTS=$(TEXINPUTS) latexmk -g -xelatex -pdf -output-directory
 
 
 # builds the full paper from the outline
-all: build_with_section_numbers build_full
+all: with_outline_bullets full
 
-build_with_section_numbers: full-paper-with-outline.tex
-	$(compile) $^
+with_outline_bullets: outline.pdf
+	@: go
 
-build_full: full-paper-with-outline.tex
-	$(shell sed -E 's#(\\[0-9](.*$$)|\\begin{outline}.*$$|\\end{outline}.*$$)##g' full-paper-with-outline.tex > full-paper.tex)
+full: full-paper-with-outline.tex
+	$(shell sed -E 's#(\\[0-9](.*$$)|\\begin{outline}.*$$|\\end{outline}.*$$)##g' outline.tex > full-paper.tex)
 	$(compile) full-paper.tex
 
-outline: full-outline.pdf
+outline: new-outline.pdf
 	@: go
 
 %.pdf : %.tex
 	$(compile) $^
+
+.PHONY: clean
+
+clean: 
+	rm -rf *.pdf .tex-out

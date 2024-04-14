@@ -3,7 +3,6 @@ structure PPlusParse : sig
 end = struct
 
   structure L = PPlusLex
-  (* structure A = OldPPlus AST *)
   structure A = PPlus (* AST *)
 
   fun listShow _ [] = "[]"
@@ -57,6 +56,7 @@ end = struct
   val bar          = reserved "|"
   val rightarrow   = reserved "->"
   val leftarrow    = reserved "<-"
+  val wildcard     = reserved "_"
 
   val word = reserved
   
@@ -68,7 +68,7 @@ end = struct
 
   (* always-error parser; useful for messages *)
   fun expected what =
-    let fun bads ts = Error.ERROR ("looking for " ^ what ^
+    let fun bads ts = Error.ERROR ("Parse error: looking for " ^ what ^
                                    ", got this input: " ^ showTokens ts)
     in  P.check ( bads <$> many one )
     end
@@ -92,8 +92,7 @@ end = struct
         String.isPrefix "make-" x orelse member x vcons
     end
 
-  val vcon = 
-    Core.K <$> (sat isVcon vcon)
+  val vcon = Core.K <$> (sat isVcon vcon)
 
   fun ppname n = A.C (Core.NAME n)
   fun ppvconapp vc es = A.C (Core.VCONAPP (vc, es))
@@ -108,15 +107,15 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
 
   fun nullaryvcon vc = A.C (Core.VCONAPP (vc, []))
 
-
   val exp = P.fix (fn exp : A.exp P.producer => 
     let         
     val pattern = P.fix (fn pattern => 
       let val atom = P.fix (fn atom =>
-      curry A.CONAPP <$> vcon <*> many atom                               
-      <|> A.WHEN     <$> (word "when" >> exp)                                    
-      <|> A.PNAME    <$> name                                                    
-      <|> bracketed pattern)
+      curry A.CONAPP <$> vcon <*> many atom
+        <|> A.WHEN     <$> (word "when" >> exp)
+        <|> wildcard >> (succeed A.WILDCARD)
+        <|> A.PNAME    <$> name
+        <|> bracketed pattern)
     val factor = A.PATGUARD <$> (P.pair <$> atom <*> leftarrow >> exp)       
         <|> atom 
     val term = A.PATSEQ <$> (P.pair <$> factor <~> comma <*> pattern)      
@@ -137,7 +136,7 @@ atom ::= x | K {atom} | when exp | ❨p❩ *)
                       word "of"   >> barSeparated (choice exp)               
         <|> bracketed exp)
     in 
-      (* reserved "pat" >> pattern >> succeed (ppname "x") <|>                       *)
+      (* reserved "pat" >> pattern >> succeed (ppname "x") <|>  *)
               (* debugging *)
       uncurry ppfunapp <$> (P.pair <$> subexp <*> subexp)                    
       <|> subexp

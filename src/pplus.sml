@@ -4,9 +4,10 @@ structure PPlus :> sig
 
   datatype 'e pattern = PNAME of name 
                       | WHEN of 'e 
+                      | WILDCARD
+                      | CONAPP of vcon * 'e pattern list
                       | PATGUARD of 'e pattern * 'e 
                       | ORPAT of 'e pattern * 'e pattern 
-                      | CONAPP of vcon * 'e pattern list
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
@@ -32,9 +33,10 @@ struct
 
   datatype 'e pattern = PNAME of name 
                       | WHEN of 'e 
+                      | WILDCARD
+                      | CONAPP of vcon * 'e pattern list
                       | PATGUARD of 'e pattern * 'e 
                       | ORPAT of 'e pattern * 'e pattern 
-                      | CONAPP of vcon * 'e pattern list
                       | PATSEQ of 'e pattern * 'e pattern 
 
   datatype 'a ppcase = CASE of 'a * ('a pattern * 'a) list
@@ -73,6 +75,7 @@ struct
         C.vconAppStr (fn (PNAME n') => n' 
                           | cmplx => br patString cmplx) n ps
     | patString (WHEN cond)       = ("when "      ^ expString cond)
+    | patString WILDCARD       = "_"
     | patString (ORPAT (p1, p2))  = (patString p1 ^ " | "  ^ patString p2)
     | patString (PATSEQ (p1, p2)) = (patString p1 ^  ", "  ^ patString p2)
     | patString (PATGUARD (p, e)) = (patString p  ^ " <- " ^ expString e)
@@ -85,6 +88,7 @@ struct
   case p 
     of  PNAME n          => PNAME (f n)
       | WHEN e           => WHEN (g e)
+      | WILDCARD         => WILDCARD
       | PATGUARD (p', e) => PATGUARD (patmap f g p', f e)
       | ORPAT (p1, p2)   => ORPAT (patmap f g p1, patmap f g p2)
       | PATSEQ (p1, p2)  => PATSEQ (patmap f g p1, patmap f g p2)
@@ -156,6 +160,7 @@ struct
       end 
 
   and match rho (PNAME x,   v) = bind x v empty
+    | match rho (WILDCARD, _)  = empty
     | match rho (WHEN e, _)     = 
       (case eval rho e 
         of C.VCON ((C.K "false"), _) => raise Core.NoMatch 
@@ -166,7 +171,7 @@ struct
     | match rho (PATSEQ (p1, p2), v)  = 
         disjointUnion [match rho (p1, v), match rho (p2, v)]
     | match rho (CONAPP (C.K k, ps), C.VCON (C.K k', vs)) =
-     if k = k' 
+     if k = k' andalso length ps = length vs
      then disjointUnion (ListPair.mapEq (match rho) (ps, vs))
      else raise Core.NoMatch
   | match rho (CONAPP _, _) = raise Core.NoMatch

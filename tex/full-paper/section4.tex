@@ -1,0 +1,125 @@
+\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+\institution{Tufts University}
+\streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+  }
+\begin{document}
+  
+
+\section{{\VMinus} can be compiled to a decision tree}
+% [Evidence that \dots efficiency]
+\begin{outline}[enumerate]
+    \1 In our semantics of \PPlus\ and \VMinus, we adhere to the strict
+    invariant that no value is examined more than once at runtime. But we wish
+    to go further in our assertion, so we compile \VMinus to a decision tree. 
+
+    \1 \bf{Examples of Decision Trees - From Maragnet. }
+    \1 For our compilation, we introduce \D, a language of decision trees. 
+    \1 \bf{Definition of \D}
+    \2 \bf{Indeed, we are consistent with Maragnet }
+    \1 \bf{D is a simple generalization of Maragnet, et al. }
+    \1 \bf{Semantics of \D: ML Runtime! Yippee!}
+    \1 \bf{\D\ has a great cost model: }
+
+    \bf{A decision tree can be exponential in size but never examines a word of
+    the scrutinee more than once. }
+
+    \1 \bf{Algorithm: Translation from \VMinus\ to \D\ : match compiler }
+    \1 \bf{Theorem: Translation from \VMinus\ to \D\ preserves semantics }
+    \2 \bf{Likely inductive hypothesis. 1-4 sentences on proof max. }
+\end{outline}
+
+\section{\PPlus -> \VMinus is interesting (optional)}
+\begin{outline}[enumerate]
+    \1 \bf{\VMinus subsumes pattern matching}
+    \1 \bf{Algorithm: Translation from \PPlus\ to \VMinus}
+    \1 \bf{Theorem: Translation from \PPlus\ to \VMinus preserves semantics}
+    \1 \bf{Claim: Translation \PPlus\ -> \D\ is consistent with Maragnet and others}
+\end{outline}
+
+\section{Related Work}
+\section{Future Work}
+\begin{outline}[enumerate]
+    \1 \bf{Why we wish for $\alpha$s}
+    \1 \bf{What's up with \PPlus\ ? It's worth study in its own right- in future work.}
+    \2 \bf{\PPlus is interesting because it combines or-patterns with pattern }
+        guards. No major functional language does this. 
+    \1 \bf{Programs written in Verse using ideas from \VMinus\ might have a }
+    friendlier cost model (depending on compiler)
+    \1 \bf{\VMinus might give Verse programmers good ideas }
+        (That is, how to solve problems in Verse)
+    \2 \bf{Examples of programming in Verse in the style of \VMinus }
+\end{outline}
+
+\section{Conclusion, Discussion}
+
+\renewcommand\thesection{\Alph{section}}
+\setcounter{section}{0}
+\section{Proofs}
+\begin{outline}
+    \1 \bf{Proof: Translation from \VMinus to \D\ preserves semantics }
+    \1 \bf{Proof: Translation from \PPlus\ to \VMinus preserves semantics }
+    \1 \bf{Proof: Translation from \VMinus to Verse preserves semantics     }
+\end{outline}
+
+\section{Trust me on \VMinus (It's reduced to Verse)}
+\begin{outline}
+    \1 \bf{\VMinus\ has something to do with Verse, semantically }
+    \1 \bf{Our semantics of Verse is consistent with ICFP's semantics of Verse }
+    \1 \bf{Definition: Our semantics of Verse}
+    \1 \bf{Theorem: Translation from \VMinus to Verse preserves semantics     }
+\end{outline}
+
+\begin{table}[ht]
+    \centering
+    \small
+    \begin{tabular}{l l l}
+        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
+        \hline
+        $P$ : Programs & $\bracketed{d}$ & \\
+        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
+        $\expr$ : Expressions & $x, y, z$ & \\
+        & $K\bracketed{\expr}$ &  \\
+        & $\lambda x.\; \expr$ & \\
+        & $\expr[1]\; \expr[2]$ & \\
+        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
+        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
+        & $\dt$ & \D \\
+        $\v$ : Values & $K\bracketed{\v}$ & \\
+        & $\lambda x.\; \expr$ & \\
+        $p$ : Patterns & $x$ & \PPlus \\
+        & $K\; \bracketed{p}$ & \PPlus \\
+        & $\mathit{when}\; \expr$ & \PPlus \\
+        & $p, p'$ & \PPlus \\
+        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
+        & $p_{1}\pbar p_{2}$ & \PPlus \\
+        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
+        & $\expr;\; g$ & \VMinus \\
+        & $\vexists{x} g$ & \VMinus \\
+        & $x = \expr;\; g$ & \VMinus \\
+        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
+        & $\expr$ & \D \\
+        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
+        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
+    \end{tabular}
+    \caption{Example LaTeX Table}
+    \label{fig:unilang}
+\end{table}
+
+\end{document}

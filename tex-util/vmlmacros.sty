@@ -5,7 +5,7 @@
 \RequirePackage{geometry}
 \RequirePackage{amsthm}
 \RequirePackage{amssymb}
-\RequirePackage{tikz}
+% \RequirePackage{tikz}
 \RequirePackage{graphicx}
 \RequirePackage{ebproof}
 \RequirePackage{alltt}
@@ -21,8 +21,12 @@
 \RequirePackage{color}
 \RequirePackage{simplebnf}
 \RequirePackage{cleveref}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
 
- 
+
+
+
 %%%%%%%%%% LANGUAGES %%%%%%%%%%
 \newcommand\VMinus{\ensuremath{V^{-}}}
 \newcommand\PPlus{\ensuremath{P^{+}}}
@@ -32,6 +36,7 @@
 \newcommand\VC{\ensuremath{\mathcal{VC}}}
 
 %%%%%%%%%% GENERAL MATH %%%%%%%%%%
+\DeclareMathOperator{\dom}{dom}
 \newcommand\gt{\mathrel{>}}
 \newcommand\lt{\mathrel{<}}
 
@@ -48,11 +53,10 @@
 
 %%%%%%%%%% PPlus ABSTRACT SYNTAX %%%%%%%%%%
 \newcommand\tlp{\ensuremath{p^{t}}}
-\newcommand\pbar{\ensuremath{\text{\large\texttt{\char`\|}}\mskip6mu}}
+\newcommand\pbar{\ensuremath{\text{\large\texttt{\char`\|}}\mskip1mu}}
 \newcommand\porp{\ensuremath{p_{1} \pbar p_{2}}}
-\newcommand\whene{\ensuremath{\mathit{when{e}}}}
 \newcommand\whenexpr{\ensuremath{\mathit{when} \; \expr}}
-\newcommand\pcommap{\ensuremath{p, p'}}
+\newcommand\pcommap{\ensuremath{p_{1}, p_{2}}}
 \newcommand\parrowe{\ensuremath{p \leftarrow \expr}}
 
 
@@ -376,14 +380,14 @@
   tabsize=2,
   columns=fixed,
   breaklines=true,
-  frame=l,
+  % frame=l,
   numbers=left,
   numberstyle=\small\ttfamily,
   morekeywords= {
     val, case, of, |, when, ->, <-
   },
   morestring=[b]",
-  morecomment=[s]{(*}{*)},
+  morecomment=[l]{;},
   stringstyle=\color{black},
   identifierstyle=\color{teal},
   keywordstyle=\color{orange},
@@ -802,5 +806,217 @@
     {\ }
     {\vmeval[exp={\v}, result={\v}]}
 \]
+
+}
+
+
+\newcommand\ppsemantics {
+
+\subsection{Rules (Big-step Operational Semantics) for {\PPlus}:}
+
+      Some of these rules are a variation on the rules found in Ramsey (2022,
+      Section 8.3). 
+      
+      
+      \subsection{Evaluating Expressions}
+      
+      \[
+      \inferrule*[Left=\textsc{ (Vcon-Empty) }]
+          {\ }
+          {\ppeval[exp={K}, result={K}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (Vcon-Multi) }]
+          {\inferrule* {}
+          {
+          \ppeval[exp={\expr[i]}, result={v_{i}}]
+          \and 
+          1 \leq i \leq n
+          }}
+          {\ppeval[exp={K(\expr[1], \dots \expr[n])}, result={K(v_{1}, 
+          \dots v_{i})}]}
+      \]
+      
+      
+      \[
+      \inferrule*[Left=\textsc{ (Name) }]
+          {x \in \dom \rho 
+          \\\\
+          \rho(x) = \v}
+          {\ppeval[exp={x}, result={\v}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (Lambda-Decl) }]
+          {\ }
+          {\prun[exp={\lambda x.\expr}, value={\lambda x.\expr}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (Funapp) }]
+          {\ppeval[exp={\expr[1]}, result={\lambda x.\expr}]
+          \\\\
+          \ppeval[exp={\expr[2]}, result={\v'}]
+          \\\\
+          \ppeval[envext=\bracketed{x \mapsto \v'}]}
+          {\ppeval[exp={\expr[1]\; \expr[2]}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (Eval-Literal) }]
+          {\ }
+          {\ppeval[exp={\v}, result={\v}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (CaseScrutinee) }]
+          {\inferrule* {}
+          {\prun[value=\v]}
+          \and 
+          \prun[exp=
+              {\it{case}\; \v \;
+              [p_{1}\; {\expr[1]}], \dots, [p_{n}\; {\expr[n]}]},
+              value=\v']}    
+          {\prun[exp=
+          {\it{case}\; {\expr}\;
+          [p_{1}\; {\expr[1]}], \dots, [p_{n}\; {\expr[n]}]},
+          value=\v']}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (CaseMatch) }]
+          {\inferrule* {}
+          {\pmatch[pat={p_{1}}, newenv=\rho']}
+          \and
+          {\prun[exp= {\expr[1]}, env=\rho + \rho']}}
+          {\prun[exp=
+          {\it{case}\; \v \; 
+          [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]]},
+          value=\v']}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (CaseFail) }]
+          {\inferrule* {}
+          {\pmatch[pat={p_{1}}, newenv=\dagger]}
+          \and 
+          \prun[exp={\it{case}\; \v\;  
+          [p_{2}\; \expr[2]], \dots, [p_{n}\; \expr[n]]},
+          value=\v']}    
+          {\prun[exp=
+          {\it{case}\; \v \; 
+          [p_{1}\; \expr[1]], \dots, [p_{n}\; \expr[n]]},
+          value=\v']}
+      \]
+      
+      
+      
+      \subsection{Rules for pattern matching}
+      
+      
+      \[
+      \inferrule*[Left=\textsc{ (MatchVcon) }]
+          {\inferrule* {}
+          {
+          \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution_{i}], \and 1 \leq i \leq m
+          \\\\
+          \solution = \solution_{1} \uplus \dots \uplus \solution_{m}
+          }}
+          {\pmatch[pat={K [p_{1} \dots 
+                  p_{m}]}, value={K [v_{1}' \dots v_{m}']},
+                  newenv=\solution]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (FailVcon) }]
+          {\v \rm{ does not have the form }  K [v_{1}', \dots v_{m}']}
+          {\pmatch[pat={K\; p_{1}, \dots p_{m}}, 
+                  newenv=\dagger]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (MatchBareVcon) }]
+          {\ }
+          {\pmatch[pat={K}, value={K},
+                  newenv=\bracketed{}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (FailBareVcon) }]
+          {\v \neq {K}}
+          {\pmatch[pat={K},
+                  newenv=\dagger]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (MatchVar) }]
+          {\ }
+          {\pmatch[pat={x},
+                  newenv=\bracketed{x \mapsto \v}]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (MatchWhen) }]
+          {\prun[value=\v'] \and \v' \neq \mathit{false}}
+          {\pmatch[pat={\whenexpr},
+                  newenv=\bracketed{}]}
+      \]
+      
+      \[
+        \inferrule*[Left=\textsc{ (MatchWildcard) }]
+            {\ }
+            {\pmatch[pat={_},
+                    newenv=\bracketed{}]}
+        \]
+
+      \[
+      \inferrule*[Left=\textsc{ (FailWhen) }]
+      {\prun[value=\v'] \and \v' = \mathit{false}}
+      {\pmatch[pat={\whenexpr},
+                  newenv=\dagger]}
+      \]
+      
+      
+      \[
+      \inferrule*[Left=\textsc{ (ArrowExpPattern) }]
+      {\prun[value=\v'] \and \pmatch[pat=p, value=\v', newenv=\solution]}
+      {\pmatch[pat={\parrowe},
+                  newenv=\solution]}
+      \]
+      
+      
+      \[
+      \inferrule*[Left=\textsc{ (PatMultiFail) }]
+      {\pmatch[pat=p, newenv=\dagger]}
+      {\pmatch[pat={\pcommap},
+                  newenv=\dagger]}
+      \]
+      
+      
+      \[
+      \inferrule*[Left=\textsc{ (PatMultiSolution) }]
+      {\inferrule* {}
+      {\pmatch[pat=p, newenv=\Rhoprime]}
+      \\\\
+      \pmatch[env=\Rho \uplus \Rhoprime, pat=p', newenv=\solution]}
+      {\pmatch[pat={p, p'}, newenv=\solution]}
+      \]
+      
+      \[
+      \inferrule*[Left=\textsc{ (OrPatFst) }]
+          {\pmatch[pat={p_{1}}]}
+          {\pmatch[pat={\porp}]}
+      \]
+      
+      
+      \[
+      \inferrule*[Left=\textsc{ (OrPatSnd) }]
+          {\pmatch[pat=p_{1}, newenv=\dagger]
+          \and 
+          \pmatch[pat={p_{2}}, newenv=\solution]}
+          {\pmatch[pat={\porp}, newenv=\solution]}
+      \]
+      
 
 }

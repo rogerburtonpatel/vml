@@ -59,6 +59,7 @@ struct
             case p of P.PNAME n'   => ([n'], 
                                   (* prune duplicate bindings *)
                                   [coreEq (n, C.NAME n')])
+              | P.WILDCARD             => ([], [])
               | P.WHEN e             => ([], [V.CONDITION (translate e)])
               | P.CONAPP (vc, ps) => 
                   (* introduce one fresh per ps  *)

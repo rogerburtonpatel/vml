@@ -8,8 +8,6 @@
 \usepackage{simplebnf}
 \setcounter{secnumdepth}{1}
 
-\DeclareMathOperator{\dom}{dom}
-
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
@@ -96,7 +94,6 @@ and is not a value constructor name or a reserved word.
     ;;
     $K$ : \textsf{Value Constructors} ::=
     | $\tt{true}\; \vert\; \tt{false}$ : booleans
-    % | $\tt{\#}x$ : name beginning with \tt{\#}
     | $\tt{p-Z}x$ : name beginning with capital letter
     % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
     \end{bnf}
@@ -191,8 +188,8 @@ and is not a value constructor name or a reserved word.
 
 %     TODO: include case literal rule and disjoint union section "Don't
 % incorporate technical material by reference. You should explain disjoint union
-% and +, but not necessarily the way I did. Your proximate audience is your thesis
-% committee. Your ultimate audience is PL professionals."    
+% and +, but not necessarily the way I did. Your proximate audience is your
+% thesis committee. Your ultimate audience is PL professionals."    
     \bigskip 
 
 

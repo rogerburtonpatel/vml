@@ -88,7 +88,7 @@ struct
 
 
   val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", ",", sbackslash,
+                  "->", "<-", "when", "_", ",", sbackslash,
                   (* debugging *)
                   "parse", "pat"
                   ]
@@ -115,7 +115,7 @@ struct
 
   fun onereserved c = char c >> succeed (RESERVED (Char.toString c))
 
-  val anyreserved =   onereserved #"'"
+  val reserveddelim =   onereserved #"'"
                   <|> onereserved #"."
                   <|> onereserved #","
                   <|> char backslash >> succeed (RESERVED sbackslash)
@@ -123,7 +123,7 @@ struct
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  anyreserved
+    bracketLexer   (  reserveddelim
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )

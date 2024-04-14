@@ -1,0 +1,67 @@
+\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+
+\begin{document}
+
+\section{Introduction}
+% Subjects: Pattern matching and Equations 
+
+Pattern matching is a beloved tool among functional programmers for examining
+and deconstructing data. 
+% It does so implicitly by matching constructed data
+% directly against a number of possible forms.
+% Maybe combine? 
+Pattern matching is also an established and well-researched topic in
+academy[cite]. In particular, it is lauded for its ability to be compiled to a
+\it{decision tree}, a data structure that enforces linear runtime performance by
+guaranteeing no part of the data will be examined more than once.[cite]
+% Extensions should have a section # to indicate they're coming 
+But pattern matching has seen a number of extensions across popular programming
+languages. Why? 
+% A little too coloquial
+Because pattern matching cannot succinctly express certain
+common computations, and, without extensions, it forces programmers who wish to
+express these computations to duplicate code, nest case expressions, and create
+multiple points of truth. 
+
+Extensions are nice, but they aren't unified across programming languages.
+Rather than continuing to extend pattern matching in different directions \it{ad
+infinitum}, it might be nice to find an alternative that doesn't need extensions
+to succinctly solve the problems programmers face. Last year, Verse[cite -
+Verse] introduced a tempting possibility in a new way to implicitly deconstruct
+data: equations. Equations look expressive, and it appears at a glance that they
+can express everything that pattern matching can, including the popular
+extensions. 
+% Make it very clear that Verse has nothing to do with PM 
+But a full implementation of Verse is complicated, cost-wise. Verse is a
+functional logic programming language, and that can mean expressions can
+backtrack at runtime and return multiple results, both of which are
+hard to predict in their costs. 
+
+What would really be excellent is a compromise.
+% A little too coloquial
+Can the expressiveness of Verse's equations be combined with the decision tree
+property of patterns? 
+
+
+\bf{My contribution in this thesis} is to show that \VMinus, a language that
+uses Verse's equations, can be compiled to a decision tree. I also demonstrate
+how \VMinus\ subsumes pattern matching with popular extensions. 
+
+Add some more things to expect in the paper: 
+
+Central contribution of this thesis is X. In order to achieve this, 
+I also made the following contributions: 
+
+Formalize subset of Verse into a core language \VMinus, bigstep opsem 
+
+Formalize pattern matching in a core language \PPlus 
+
+Formalize translation between them 
+
+Give section for each of these! 
+
+Implementation of each language 
+
+\end{document}

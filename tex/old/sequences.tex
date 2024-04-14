@@ -1,0 +1,19 @@
+
+%     \section{Sequences}
+% \begin{tabular}{ll}
+%   \toprule
+%       \multicolumn2{l}{\emph{Sequences}} \\
+%   \midrule
+%       $\emptyseq$& the empty sequence \\
+%       $S_1 \cdot S_2 $&  Concatenate sequence $S_1$ and sequence $S_2$ \\
+%       $x \cdot S_2 $& Cons $x$ onto sequence $S_2$ \\
+%   \bottomrule
+%   \end{tabular}  
+%     The trivial sequence is \emptyseq. Sequences can be concatenated with infix 
+% $\cdot$. In an appropriate context, a value like $x$ stands for 
+% the singleton sequence containing $x$. 
+% \begin{align*}
+%     \emptyseq \cdot \ys &\equiv \ys \\
+%     \ys \cdot \emptyseq &\equiv \ys \\
+%     (\xs \cdot \ys) \cdot \zs &\equiv \xs \cdot (\ys \cdot \zs)
+% \end{align*}

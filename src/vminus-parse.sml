@@ -3,7 +3,6 @@ structure VMinusParse : sig
 end = struct
 
     structure L = VMinusLex
-
     structure V = VMinus
 
     fun listShow _ [] = "[]"
@@ -101,8 +100,7 @@ end = struct
         String.isPrefix "make-" x orelse member x vcons
     end
 
-  val vcon = 
-    Core.K <$> (sat isVcon vcon)
+  val vcon = Core.K <$> (sat isVcon vcon)
 
 
   (* turn any single- or multi-token string into a parser for that token *)
@@ -154,8 +152,8 @@ end = struct
         <|> vlambdaexp  <$> bslash >> name <~> dot <*> exp                         
         <|> vname       <$> name                                                   
         <|> viffi       <$> word "if" 
-                    >> boxSeparated guarded_exp 
-                 <~> word "fi"
+                              >> boxSeparated guarded_exp 
+                        <~> word "fi"
         <|>      bracketed exp)
     in 
          uncurry vfunapp <$> (P.pair <$> subexp <*> subexp)                    

@@ -20,6 +20,7 @@ struct
               | patFreeNames (P.CONAPP (_, ps)) = 
                                   List.concat (List.map patFreeNames ps)
               | patFreeNames (P.WHEN _) = [] 
+              | patFreeNames P.WILDCARD = [] 
               | patFreeNames (P.ORPAT (p1, p2)) = 
                           List.concat [patFreeNames p1, patFreeNames p2] 
               | patFreeNames (P.PATGUARD (p, _)) = patFreeNames p 
@@ -84,6 +85,7 @@ for used names, look them up in the environment *)
                   let val (e', _) = (pplus patrenamings e) 
                   in (P.WHEN e', patrenamings)
                   end 
+               | P.WILDCARD => (P.WILDCARD, patrenamings)
                | P.PATGUARD (p', e) => 
                   let val (e', _)              = pplus patrenamings e 
                       val (p'', patrenamings') = renamePat patrenamings p' 
