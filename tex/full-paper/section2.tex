@@ -25,9 +25,9 @@
 \section{Pattern Matching and equations}
 \label{pmandequations}
 
-In this section I'll flush out the definitions, forms, and tradeoffs of pattern
-matching and equations. This will inform the compromises I make in \VMinus\ down
-the line in Section~\ref{vminus}.
+In this section, I flush out the definitions, forms, and tradeoffs of pattern
+matching and equations. These tradeoffs inform the compromises I make in
+\VMinus\ down the line in Section~\ref{vminus}.
 
 \subsection{Pattern matching}
 \label{pmoverobservers}
@@ -36,18 +36,20 @@ the line in Section~\ref{vminus}.
 
 Pattern matching lets programmers examine and deconstruct data by matching them
 against patterns. When a pattern $p$ matches with a value $v$, it can produce
-bindings for any sub-values of $v$. 
+bindings for any sub-values of $v$. For example, pattern $x::xs$ matches any 
+application of the value constructor \it{cons} (\it{::}), and binds the first 
+element of the cons cell to $x$ and the second to $xs$. 
 
 Why use pattern matching? What could programmers use instead? One tool a
-programmer might use to deconstruct data is \it{observers}[cite- Liskov and
-Guttag]: functions that explicitly inquire a piece of data's structure and
-manually extract its components. Examples of observers in functional programming
-languages include Scheme's \tt{null?}, \tt{car}, and \tt{cdr}, and ML's
-\tt{null}, \tt{hd}, and \tt{tl}. But many function programmers favor pattern
-matching. I claim to know a reason why: \it{code written using pattern matching
-and its extensions has superior properties to code written using observers}.
-I've listed these below, and I'll refer to them as the Nice Properties from here
-on out: 
+programmer might use to deconstruct data is \it{observers}
+\cite{liskov:abstraction}: functions that explicitly inquire a piece of data's
+structure and manually extract its components. Examples of observers in
+functional programming languages include Scheme's \tt{null?}, \tt{car}, and
+\tt{cdr}, and ML's \tt{null}, \tt{hd}, and \tt{tl}. But many function
+programmers favor pattern matching over observers. I claim to know a reason why:
+\it{code written using pattern matching and its extensions has superior
+properties to code written using observers}. I've listed these below, and I'll
+refer to them as the Nice Properties from here on out: 
 \bf{\begin{enumerate}
     \item With pattern matching, code more closely resembles algebraic laws. 
     \label{p1}
@@ -158,7 +160,8 @@ fun area sh =
         compiler to complain, and if it's passed a \tt{CIRCLE} at runtime, the
         program will likely crash! In \ref{fig:pmarea}, the compiler will warn
         the user of the possibility of a \tt{Match} exception, and even tell
-        them that they must add \tt{CIRCLE} to rule out this possibility. 
+        them that they must add a pattern for \tt{CIRCLE} to rule out this
+        possibility. 
     \end{enumerate}
 
     Having had the chance to compare Figures \ref{fig:observerarea}
@@ -167,16 +170,16 @@ fun area sh =
 
     Figure~\ref{fig:pmarea} provides an opportunity to introduce a few terms
     that are common in pattern matching. \ref{fig:pmarea}~is a classic example
-    of where pattern matching most commonly occurs: within a case expression.
-    Case expressions test a \it{scrutinee} (\tt{sh} in~\ref{fig:pmarea}) against
-    a list of patterns (\tt{SQUARE s}, etc.). When the result of evaluating the
-    scrutinee matches with a pattern, the program evaluates the right-hand side
-    of the respective branch (\tt{s * s}, etc.) within the case
-    expression.\footnote{OCaml, which you'll see in future sections, calls case
-    \tt{match}. Some literature\cite{guardproposal} calls this a \it{head
-    expression}. I follow Ramsey's\cite{bpc} and Maragnet's\cite{maranget}
-    example in calling the things \it{case} and \it{scrutinee}. Any of these
-    terms does the job.} 
+    of where pattern matching most commonly occurs: within a \it{case}
+    expression. A \it{case} expression tests a \it{scrutinee} (\tt{sh}
+    in~\ref{fig:pmarea}) against a list of patterns (\tt{SQUARE s}, etc.). When
+    the result of evaluating the scrutinee matches with a pattern, the program
+    evaluates the right-hand side of the respective branch (\tt{s * s}, etc.)
+    within the \it{case} expression.\footnote{OCaml, which you'll see in future
+    sections, calls \it{case} \tt{match}. Some literature~\cite{guardproposal}
+    calls this a \it{head expression}. I follow Ramsey's~\cite{bpc} and
+    Maragnet's~\cite{maranget} example in calling the things \it{case} and
+    \it{scrutinee}. Any of these terms does the job.} 
 % \1 Pattern matching has these properties, observers do not. 
 
 \subsection{Popular extensions to pattern matching}
@@ -264,8 +267,9 @@ exclaimBigArea sh                   == "Your shape is small.",
         \label{fig:ifexclaimtall}
     \end{figure}
     
-    Here, I'm using the special variable \tt{\_}- a wildcard pattern- to
-    indicate that I don't care about the bindings of a pattern. 
+    Here, I'm using the special variable \tt{\_}- that's the underscore
+    character, a wildcard pattern- to indicate that I don't care about the
+    bindings of a pattern. 
 
     I (and hopefully you, the reader) are not thrilled with this code. It gets
     the job done, but it fails to adhere to Nice Properties \ref{p1}
@@ -317,22 +321,20 @@ exclaimBigArea sh                   == "Your shape is small.",
     \subsubsection{Pattern guards}
     \label{guards}
 
-    To highlight a common use of pattern guards, I modify an example from Erwig
-    \& Peyton-Jones\cite{guardproposal}, the proposal for pattern guards in GHC.
-    Suppose I have an OCaml abstract data type of finite maps, with a lookup
-    operation: 
+    To highlight a common use of pattern guards to address such a limitation, I
+    modify an example from Erwig \& Peyton-Jones~\cite{guardproposal}, the
+    proposal for pattern guards in GHC. Suppose I have an OCaml abstract data
+    type of finite maps, with a lookup operation: 
 
-    \medskip
     \begin{minipage}[t]{\textwidth}
         \centering 
         \begin{verbatim}
             lookup : finitemap -> int -> int option
         \end{verbatim}
     \end{minipage}
-    
     Let's say I want to perform three successive lookups, and call a “fail”
-    function if either of them returns \tt{None}. I want a function with 
-    this type and algebraic laws: 
+    function if \it{any} of them returns \tt{None}. Specifically, I want a
+    function with this type and algebraic laws: 
 
     \begin{minipage}[t]{\textwidth}
         \centering 
@@ -424,7 +426,7 @@ exclaimBigArea sh                   == "Your shape is small.",
     
     If you need further convincing on why programmers want for guards, look no
     further than Erwig \& Peyton-Jones's \it{Pattern Guards and Transformational
-    Patterns}\cite{guardproposal}, the proposal for pattern guards in GHC: the
+    Patterns}~\cite{guardproposal}, the proposal for pattern guards in GHC: the
     authors show several other examples where guards drastically simplify
     otherwise-maddening code. 
     
@@ -432,10 +434,8 @@ exclaimBigArea sh                   == "Your shape is small.",
     guards to utilize names bound in preceding guards, enabling imperative
     pattern-matched steps with expressive capabilities akin to Haskell's \tt{do}
     notation. It should come as no surprise that pattern guards are built in to
-    GHC. 
-
+    GHC. \nolinebreak
 \subsubsection{Or-patterns}
-
     I conclude our tour of extensions to pattern matching with or-patterns,
     which are built in to OCaml. Let's consider a final example. I have a type
     \tt{token} which represents a token in a video game and how much fun it is,
@@ -568,7 +568,7 @@ let game_of_token token = match token with
     extensions. Remember when we had to switch from OCaml to Haskell to use
     guards, and back to OCaml for or-patterns? The two extensions are mutually
     exclusive in Haskell and OCaml, and also Scala, Erlang/Elixir, Rust, F\#,
-    and Agda\cite{haskell, ocaml, scala, erlang, elixir, rust, fsharp, agda}. 
+    and Agda~\cite{haskell, ocaml, scala, erlang, elixir, rust, fsharp, agda}. 
 
 
     I find the extension story somewhat unsatisfying. At the very least, I want
@@ -577,7 +577,7 @@ let game_of_token token = match token with
     pattern matching with these extensions. 
 
     Last year, I spotted an intriguing alternative to pattern matching:
-    \it{equations}, from the Verse Calculus\cite{verse}. Equations present a
+    \it{equations}, from the Verse Calculus~\cite{verse}. Equations present a
     different, yet powerful, way to write code that makes decisions and
     deconstructs data. In the next section, I'll introduce you to equations
     similarly to I how I introduced to you pattern matching. Once you're
@@ -590,9 +590,9 @@ let game_of_token token = match token with
 
     % \1 Equations 
     Allow me to turn your attention to the equations of the Verse Calculus
-    (\VC), a core calculus for the functional logic programming
-    language\cite{antoy2010functional, hanus2013functional} Verse\cite{verse}.
-    (For the remainder of this paper, I use “\VC” and “Verse” interchangeably.)
+    (\VC), a core calculus for the functional logic programming language
+    \it{Verse}~\cite{antoy2010functional, hanus2013functional, verse}. (For the
+    remainder of this paper, I use “\VC” and “Verse” interchangeably.)
 
     Even if you read the Verse paper, \VC's equations and the paradigms of
     functional logic programming might look unfamiliar to your pattern
@@ -761,16 +761,16 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     expression as an integer or tuple. To bind these names, \VC, like other
     functional logic languages, relies on \it{unification} of its logical
     variables and \it{search} at runtime to meet a set of program
-    constraints\cite{antoy2010functional, hanus2013functional}. Combining
+    constraints~\cite{antoy2010functional, hanus2013functional}. Combining
     unifying logical variables with search at runtime classically requires
     backtracking, which can lead to exponential runtime
-    cost\cite{hanus2013functional, wadler1985replace, clark1982introduction}. 
+    cost~\cite{hanus2013functional, wadler1985replace, clark1982introduction}. 
 
     % Todo: An example would be nice. Backtracking/evaluating backwards, then
     % done. 
 
     Pattern matching, by contrast, has a desirable cost model.
-    Maranget\cite{maranget} showed that pattern matching can be compiled to a
+    Maranget~\cite{maranget} showed that pattern matching can be compiled to a
     \it{decision tree}, a data structure that enforces linear runtime
     performance by guaranteeing no part of the scrutinee will be examined more
     than once. A decision tree, however, forbids backtracking by nature: once

@@ -570,8 +570,6 @@
 
 \subsection{Rules (Big-step Operational Semantics) for ${\VMinus}$:}
     
-\subsubsection{Processing guards}
-
 % \[
 % \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
 %     {\vmrung[context=\emptyseq, guard=\expr]}
@@ -598,7 +596,7 @@
 
 \[
 \inferrule*[Left=\textsc{ (Solve-Guard-Refine) }]
-    {\grefine[result=\Rhoprime]
+    {\grefine[solution=\Rhoprime]
     \and
     \vmgs[env=\Rhoprime,context=\;\TT]}
     {\vmgs[context=\TeqT{g}]}
@@ -963,8 +961,7 @@
 
 \subsection{Rules (Big-step Operational Semantics) for {\PPlus}:}
 
-      Some of these rules are a variation on the rules found in Ramsey (2022,
-      Section 8.3). 
+      Some of these rules are a variation on the rules found in Ramsey~\cite{bpc}. 
       
       
       \subsubsection{Evaluating General Expressions}
