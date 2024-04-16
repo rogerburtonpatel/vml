@@ -27,7 +27,7 @@
 
 In this section I'll flush out the definitions, forms, and tradeoffs of pattern
 matching and equations. This will inform the compromises I make in \VMinus\ down
-the line. 
+the line in Section~\ref{vminus}.
 
 \subsection{Pattern matching}
 \label{pmoverobservers}
@@ -35,7 +35,8 @@ the line.
 % \1 What is pattern matching 
 
 Pattern matching lets programmers examine and deconstruct data by matching them
-against patterns. RAMSEY DEFINITION AND MOVE ON. 
+against patterns. When a pattern $p$ matches with a value $v$, it can produce
+bindings for any sub-values of $v$. 
 
 Why use pattern matching? What could programmers use instead? One tool a
 programmer might use to deconstruct data is \it{observers}[cite- Liskov and
@@ -47,22 +48,25 @@ matching. I claim to know a reason why: \it{code written using pattern matching
 and its extensions has superior properties to code written using observers}.
 I've listed these below, and I'll refer to them as the Nice Properties from here
 on out: 
-
-\rab{I'll find better formatting for this.}
-\begin{enumerate}
+\bf{\begin{enumerate}
     \item With pattern matching, code more closely resembles algebraic laws. 
+    \label{p1}
     \item With pattern matching, it's easier to avoid duplicating code.
+    \label{p2}
     \item Pattern matching plays nicer with user-defined types. 
+    \label{p3}
     \item Pattern matching militates toward naming important intermediate
-    values. 
+    values. \nolinebreak
+    \label{p4}
     \item With pattern matching, a compiler may be able to tell if the code
     omits an important case. 
-\end{enumerate}
-
+    \label{p5}
+\end{enumerate}}
 I'll demonstrate how pattern matching creates code that demonstrates the Nice
 Properties, even in a tiny example. Consider a \it{shape} datatype in Standard
 ML, which represents shapes by their side lengths: 
 
+\medskip 
 \begin{minipage}[t]{\textwidth}
     \begin{verbatim}
         datatype shape = SQUARE of real 
@@ -70,10 +74,12 @@ ML, which represents shapes by their side lengths:
                        | TRAPEZOID of real * real * real
 \end{verbatim}
 \end{minipage}
+\medskip 
 
 Let's define an \tt{area} function on \it{shape}s, with this type and these
 algebraic laws: 
 
+\medskip 
 \begin{minipage}[t]{\textwidth}
     \begin{verbatim}
         area : shape -> real 
@@ -83,6 +89,7 @@ algebraic laws:
         *)
 \end{verbatim}
 \end{minipage}
+\medskip 
 
 Now consider two implementations of \tt{area}, one with observers and one with
 pattern matching, in Figure~\ref{fig:area}.
@@ -131,28 +138,27 @@ fun area sh =
     the problems that observers have, let's see how each of our Nice Properties
     holds up in \tt{area}: 
     
-    \rab{I'll find better formatting for this.}
     \begin{enumerate}
-        \item \ref{fig:pmarea}, which uses pattern matching, more closely
-        resembles the algebraic laws for \tt{area}. Good! 
-        \item \ref{fig:observerarea} had to call observers like \tt{squareSide}
-        multiple times, and each observer needs \tt{sh} as an argument.
-        \ref{fig:pmarea} was able to extract the \tt{shape}s' internal values
-        with a single pattern, and the name \tt{sh} is not duplicated anywhere
-        in its body. Again, \ref{fig:pmarea} wins. 
-        \item Where did \tt{isSquare}, \tt{sqSide}, and all the other observers
-        come from? To even \it{implement} \ref{fig:observerarea}, a programmer
-        has to define a whole new set of observers for \tt{shape}s! Most
-        programmers find this tiresome indeed. \ref{fig:pmarea} did not have to
-        do any of this. 
-        \item To extract the internal values, \ref{fig:pmarea} had to name them,
-        and their names serve as documentation. 
-        \item If the user adds another value constructor to \tt{shape}- say,
-        \tt{CIRCLE}, \ref{fig:observerarea} will not cause the compiler to
-        complain, and if it's passed a \tt{CIRCLE} at runtime, the program will
-        likely crash! In \ref{fig:pmarea}, the compiler will warn the user of
-        the possibility of a \tt{Match} exception, and even tell them that they
-        must add \tt{CIRCLE} to rule out this possibility. 
+        \item[\bf{(1)}] \ref{fig:pmarea}, which uses pattern matching, more
+        closely resembles the algebraic laws for \tt{area}. Good! 
+        \item[\bf{(2)}] \ref{fig:observerarea} had to call observers like
+        \tt{squareSide} multiple times, and each observer needs \tt{sh} as an
+        argument. \ref{fig:pmarea} was able to extract the \tt{shape}s' internal
+        values with a single pattern, and the name \tt{sh} is not duplicated
+        anywhere in its body. Again, \ref{fig:pmarea} wins. 
+        \item[\bf{(3)}] Where did \tt{isSquare}, \tt{sqSide}, and all the other
+        observers come from? To even \it{implement} \ref{fig:observerarea}, a
+        programmer has to define a whole new set of observers for \tt{shape}s!
+        Most programmers find this tiresome indeed. \ref{fig:pmarea} did not
+        have to do any of this. 
+        \item[\bf{(4)}] To extract the internal values, \ref{fig:pmarea} had to
+        name them, and their names serve as documentation. 
+        \item[\bf{(5)}] If the user adds another value constructor to
+        \tt{shape}- say, \tt{CIRCLE}, \ref{fig:observerarea} will not cause the
+        compiler to complain, and if it's passed a \tt{CIRCLE} at runtime, the
+        program will likely crash! In \ref{fig:pmarea}, the compiler will warn
+        the user of the possibility of a \tt{Match} exception, and even tell
+        them that they must add \tt{CIRCLE} to rule out this possibility. 
     \end{enumerate}
 
     Having had the chance to compare Figures \ref{fig:observerarea}
@@ -167,26 +173,18 @@ fun area sh =
     scrutinee matches with a pattern, the program evaluates the right-hand side
     of the respective branch (\tt{s * s}, etc.) within the case
     expression.\footnote{OCaml, which you'll see in future sections, calls case
-    \tt{match}. Some literature (cite SPJ) calls this a \it{head expression}. I
-    follow Ramsey's (cite) and Maragnet's (cite) example in calling the things
-    \it{case} and \it{scrutinee}. Any of these terms does the job.} 
-
-Of course, pattern matching is not always better than observers. But its
-ubiquitous adoption into popular functional programming languages[cite] and its
-longstanding presence in the literature[cite] speak to how programmers prefer
-it. 
-
-\rab{This sentence feels terrible. I feel like I need some kind of transition
-here, though. I'd like your help.}
-
+    \tt{match}. Some literature\cite{guardproposal} calls this a \it{head
+    expression}. I follow Ramsey's\cite{bpc} and Maragnet's\cite{maranget}
+    example in calling the things \it{case} and \it{scrutinee}. Any of these
+    terms does the job.} 
 % \1 Pattern matching has these properties, observers do not. 
 
 \subsection{Popular extensions to pattern matching}
 \label{extensions}
 
     Extensions to pattern matching simplify cases that are otherwise
-    troublesome. Specifically, extensions help restore the Nice Properties when
-    pattern matching fails to satisfy them. 
+    troublesome. Specifically, extensions help restore the Nice Properties in
+    cases where pattern matching fails to satisfy them. 
     
     In this section, I illustrate several such instances of exactly this, and
     demonstrate how extensions help programmers write code that adheres to the
@@ -204,14 +202,14 @@ here, though. I'd like your help.}
 
 \subsubsection{Side conditions}
 
-    First, I illustrate why programmers want \it{side conditions}\footnote{I use
-    the term \it{side conditions} to refer to a pattern followed by a boolean
-    expression. Some languages call this a \it{guard}, which I use to describe a
-    different, more powerful extension to pattern matching in
-    Section~\ref{guards}.}, an extension to pattern matching common in most
-    popular functional programming languages, including OCaml, Erlang, Scala,
-    and~Haskell\footnote{Haskell uses guards to subsume side conditions. I
-    discuss guards in Section~\ref{guards}.}. 
+    First, I illustrate why programmers want \it{side conditions}, an extension
+    to pattern matching common in most popular functional programming languages,
+    including OCaml, Erlang, Scala, and~Haskell\footnote{I use the term \it{side
+    conditions} to refer to a pattern followed by a boolean expression. Some
+    languages call this a \it{guard}, which I use to describe a different, more
+    powerful extension to pattern matching in Section~\ref{guards}.  
+    Technically, Haskell \it{only} has guards, but they subsume side conditions,
+    so I hand-wavingly say that it does have side conditions.}. 
     
     Let's dive in! I'll define a (rather silly) function \tt{exclaimTall} in
     OCaml on \tt{shape}s. I'll have to translate our \tt{shape} datatype to
@@ -266,22 +264,23 @@ exclaimBigArea sh                   == "Your shape is small.",
         \label{fig:ifexclaimtall}
     \end{figure}
     
-    Here, I'm using the special variable \tt{\_} to indicate that I don't care
-    about a pattern. 
+    Here, I'm using the special variable \tt{\_}- a wildcard pattern- to
+    indicate that I don't care about the bindings of a pattern. 
 
-    I (and hopefully you, the reader) are not thrilled with this code. The code
-    gets the job done, but it fails to adhere to Nice Properties 1 and 2: the
-    code does not look like the algebraic laws, and it duplicates right-hand
-    side, \tt{"Your shape is small"}, many times. I find the code unpleasant to
-    read, too: the actual “good” return values of the function, the exclamatory
-    strings, are gummed up in the middle of the \tt{if-then-else} expressions.
+    I (and hopefully you, the reader) are not thrilled with this code. It gets
+    the job done, but it fails to adhere to Nice Properties \ref{p1}
+    and~\ref{p2}: the code does not look like the algebraic laws, and it
+    duplicates right-hand side, \tt{"Your shape is small"}, three times. I find
+    the code unpleasant to read, too: the actual “good” return values of the
+    function, the exclamatory strings, are gummed up in the middle of the
+    \tt{if-then-else} expressions.
     
     Fortunately, this code can be simplified by using the \tt{shape} patterns
     with a \it{side condition}, i.e., a syntactic form for “match a pattern
     \it{and} a boolean condition.” The \tt{when} keyword in OCaml provides such
     a form, as seen in Figure~\ref{fig:whenexclaimtall}.
         
-        \begin{figure}[ht]
+        \begin{figure}[]
             \begin{verbatim}
                 let exclaimTall sh =
                   match sh with 
@@ -300,7 +299,6 @@ exclaimBigArea sh                   == "Your shape is small.",
             \label{fig:whenexclaimtall}
         \end{figure}
 
-    
     A side condition streamlines pattern-and-boolean cases and minimize
     overhead. And a side condition can exploit bindings that emerge from the
     preceding pattern match. For instance, the \tt{when} clauses in
@@ -313,18 +311,18 @@ exclaimBigArea sh                   == "Your shape is small.",
     check can make a decision based off of an expression evaluating to \tt{true}
     or \tt{false}. But it can't make a decision based off an arbitrary pattern
     match, and it can't bind names for the programmer to use in the right-hand
-    side. What 
-    
-    In the next section, I'll showcase why this limitation matters, and how
+    side. In the next section, I showcase when this limitation matters, and how
     another extension addresses it. 
 
     \subsubsection{Pattern guards}
     \label{guards}
 
-    To highlight a common use of pattern guards, I'll borrow from [cite SPJ],
-    the proposal for pattern guards in GHC. Suppose I have an OCaml abstract
-    data type of finite maps, with a lookup operation: 
+    To highlight a common use of pattern guards, I modify an example from Erwig
+    \& Peyton-Jones\cite{guardproposal}, the proposal for pattern guards in GHC.
+    Suppose I have an OCaml abstract data type of finite maps, with a lookup
+    operation: 
 
+    \medskip
     \begin{minipage}[t]{\textwidth}
         \centering 
         \begin{verbatim}
@@ -376,18 +374,19 @@ exclaimBigArea sh                   == "Your shape is small.",
               | _ -> handleFailure x
             \end{verbatim}
         \caption{\tt{tripleLookup} in OCaml with bare pattern matching breaks
-                    Nice Property 2: avoiding duplicated code. } 
+                    Nice Property~\ref{p2}: avoiding duplicated code. } 
                     
         \Description{An implementation of the tripleLookup with three levels of
         nested pattern matching.}
         \label{fig:pmtriplelookup}
     \end{figure}
 
-    Once again, the code works, but it's lost Nice Properties 2 and 1 by
-    duplicating three calls to \tt{handleFailure} and stuffing the screen full
-    of syntax that distracts from the algebraic laws. Unfortunately, it's not
-    obvious how a side condition could help us here, because we need pattern
-    matching to extract and name internal values from constructed data.
+    Once again, the code works, but it's lost Nice Properties \ref{p2}
+    and~\ref{p1} by duplicating three calls to \tt{handleFailure} and stuffing
+    the screen full of syntax that distracts from the algebraic laws.
+    Unfortunately, it's not obvious how a side condition could help us here,
+    because we need pattern matching to extract and name internal values from
+    constructed data.
 
     To restore the Nice Properties, I'll introduce a more powerful extension to
     pattern matching: \it{pattern guards}, a form of “smart pattern” in which
@@ -424,9 +423,10 @@ exclaimBigArea sh                   == "Your shape is small.",
     condition, so guards subsume side conditions! 
     
     If you need further convincing on why programmers want for guards, look no
-    further than [cite], the proposal for pattern guards in GHC: the authors
-    show several other examples where guards drastically simplify
-    otherwise-maddening code [cite- Erwig \& Peyton Jones]. 
+    further than Erwig \& Peyton-Jones's \it{Pattern Guards and Transformational
+    Patterns}\cite{guardproposal}, the proposal for pattern guards in GHC: the
+    authors show several other examples where guards drastically simplify
+    otherwise-maddening code. 
     
     The power of pattern guards lies in the ability for expressions within
     guards to utilize names bound in preceding guards, enabling imperative
@@ -480,10 +480,11 @@ game_of_token _ == ("Irrelevant", 0), otherwise
         
         I can write code for \tt{game\_of\_token} in OCaml using bare patterns
         (Figure~\ref{fig:baregot}), but I'm dissatisfied with how it fails the
-        first three of the Nice Properties: it has many duplicated right-hand
-        sides, it is visually dissimilarity to the algebraic laws, and the
-        function, even though it uses pattern matching, doesn't really play nice
-        with my custom type; deconstructing it is tedious and redundant.         
+        first three (\ref{p1}, \ref{p2}, \ref{p3}) of the Nice Properties: it
+        has many duplicated right-hand sides, it is visually dissimilarity to
+        the algebraic laws, and the function, even though it uses pattern
+        matching, doesn't really play nice with my custom type; deconstructing
+        it is tedious and redundant.         
         
         \begin{figure}
             \begin{center}
@@ -508,8 +509,8 @@ game_of_token _ == ("Irrelevant", 0), otherwise
 
         I could try to use a couple of helper functions to reduce clutter, and
         write something like Figure~\ref{fig:helpergot}. It looks ok, but I'm
-        still hurting for Nice Properties 2 and 3, and the additional calls
-        hurt performance. 
+        still hurting for Nice Properties \ref{p2} and \ref{p3}, and the
+        additional calls hurt performance. 
 
         \begin{figure}
             \begin{center}
@@ -537,14 +538,14 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     \begin{figure}
     \begin{center}
     \begin{verbatim}
-        let game_of_token token = match token with 
-            | BattlePass f | ChugJug f | TomatoTown f  -> ("Fortnite", f)
-            | HuntersMark f | SawCleaver f             -> ("Bloodborne", 2 * f)
-            | MoghLordOfBlood f | PreatorRykard f      -> ("Elden Ring", 3 * f)
-            | _                                        -> ("Irrelevant", 0)
+let game_of_token token = match token with 
+    | BattlePass f | ChugJug f | TomatoTown f  -> ("Fortnite", f)
+    | HuntersMark f | SawCleaver f             -> ("Bloodborne", 2 * f)
+    | MoghLordOfBlood f | PreatorRykard f      -> ("Elden Ring", 3 * f)
+    | _                                        -> ("Irrelevant", 0)
     \end{verbatim}
     \end{center}    
-    \caption{Or-patterns, condense \tt{game\_of\_token}
+    \caption{Or-patterns condense \tt{game\_of\_token}
     significantly, and it is easier to read line-by-line.} 
     \Description{An
     implementation of game_of_token using or-patterns.}
@@ -566,8 +567,8 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     are stuck! Indeed, no major functional language has all three of these
     extensions. Remember when we had to switch from OCaml to Haskell to use
     guards, and back to OCaml for or-patterns? The two extensions are mutually
-    exclusive in Haskell, OCaml, Scala, Erlang/Elixir, Rust, F\#, Agda, and more
-    [cite]. 
+    exclusive in Haskell and OCaml, and also Scala, Erlang/Elixir, Rust, F\#,
+    and Agda\cite{haskell, ocaml, scala, erlang, elixir, rust, fsharp, agda}. 
 
 
     I find the extension story somewhat unsatisfying. At the very least, I want
@@ -576,7 +577,7 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     pattern matching with these extensions. 
 
     Last year, I spotted an intriguing alternative to pattern matching:
-    \it{equations}, from the Verse Calculus[cite - Verse]. Equations present a
+    \it{equations}, from the Verse Calculus\cite{verse}. Equations present a
     different, yet powerful, way to write code that makes decisions and
     deconstructs data. In the next section, I'll introduce you to equations
     similarly to I how I introduced to you pattern matching. Once you're
@@ -588,9 +589,10 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     \label{verseoverobservers}
 
     % \1 Equations 
-    Allow me to turn your attention to the equations of the Verse Calculus (\VC),
-    a core calculus for the functional logic programming language[cite- flps]
-    Verse [cite- Verse]. 
+    Allow me to turn your attention to the equations of the Verse Calculus
+    (\VC), a core calculus for the functional logic programming
+    language\cite{antoy2010functional, hanus2013functional} Verse\cite{verse}.
+    (For the remainder of this paper, I use “\VC” and “Verse” interchangeably.)
 
     Even if you read the Verse paper, \VC's equations and the paradigms of
     functional logic programming might look unfamiliar to your pattern
@@ -619,7 +621,7 @@ game_of_token _ == ("Irrelevant", 0), otherwise
 
     Let's look at what equations, \tt{one}, and choice look like in real,
     written Verse code. I've written our \tt{area} function in \VC\ extended
-    with a \tt{float} type and a multiplication operator \tt{*}- see
+    with a \tt{float} type and a multiplication operator \tt{*} in
     Figure~\ref{fig:versearea}. 
 
     \begin{figure}[]
@@ -641,7 +643,8 @@ $\exists$ area. area = $\lambda$ sh.
     Like in the pattern-matching example in good old \ref{fig:pmarea}, the
     right-hand sides of \tt{area} are \it{guarded} by a “check;” now, the check
     is successful unification in an equation rather than a successful match on a
-    pattern. Similarly, \tt{one} with a list of choices 
+    pattern. Similarly, \tt{one} with a list of choices represents matching on
+    any \it{one} pattern to evaluate a single right-hand side. 
 
     Why use equations? Let's start with a digestible claim: I prefer \VC's
     equations to observers, and I imagine many functional programmers would as
@@ -717,7 +720,7 @@ $\exists$ tripleLookup. tripleLookup = $\lambda$ rho x.
         \begin{minipage}[h]{\linewidth}
           \verselst
           \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em, 
-                            frame=single]
+                            frame=single, showstringspaces=false]
 $\exists$ game_of_token. game_of_token = $\lambda$ token. 
   $\exists$ f. one {
          token = one { $\langle$BattlePass, f$\rangle$ | $\langle$ChugJug, f$\rangle$ | $\langle$TomatoTown, f$\rangle$}; 
@@ -744,6 +747,9 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     \VC\ does everything using only equations and choice, it seems like the
     language is a strong option for writing code! 
 
+    \subsection{\VC\ has a challenging cost model}
+    \label{vcbadcost}
+
     So what's the catch? Programmers everywhere have not thrown up their hands,
     renounced pattern matching, and adopted a puritanical dogma of equations. 
     Sadly, this is not merely a matter of preference. 
@@ -753,32 +759,23 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     that are problematic, cost-wise. In \VC, names (logical variables) are
     \it{values}, and can just as easily be the result of evaluating an
     expression as an integer or tuple. To bind these names, \VC, like other
-    functional logic languages, relies on unifying its logical variables[cite]
-    and search[cite] at runtime to meet a set of program constraints [cite].
-    Combining unifying logical variables with search at runtime classically
-    requires backtracking [cite], which can lead to exponential runtime cost
-    [cite]. 
-
-    TODO NEEDS REWRITE: Combine these 2 parts $\uparrow \downarrow$ and 
-    say what you mean: choice + names as values == unification and search. 
-    Those 2 together, particularly search, need backtracking. NEED AN EXAMPLE. 
-    Evaluating a function backwards is good enough. 
-        
-    Furthermore, rather than returning a single value, an expression in \VC\
-    evaluates to return a \it{sequence} of zero or more values. As such,
-    unifying the results of many expressions can quickly lead to large 
-    combinatorials whose size can be difficult to predict. 
+    functional logic languages, relies on \it{unification} of its logical
+    variables and \it{search} at runtime to meet a set of program
+    constraints\cite{antoy2010functional, hanus2013functional}. Combining
+    unifying logical variables with search at runtime classically requires
+    backtracking, which can lead to exponential runtime
+    cost\cite{hanus2013functional, wadler1985replace, clark1982introduction}. 
 
     % Todo: An example would be nice. Backtracking/evaluating backwards, then
     % done. 
 
-    Pattern matching, by contrast, has a desirable cost model. Maragnet et al.
-    [cite] showed that pattern matching can be compiled to a \it{decision tree},
-    a data structure that enforces linear runtime performance by guaranteeing no
-    part of the scrutinee will be examined more than once. A decision tree,
-    however, forbids backtracking by nature: once the program makes a decision
-    based on the form of a value, it can't re-test it later with new
-    information. 
+    Pattern matching, by contrast, has a desirable cost model.
+    Maranget\cite{maranget} showed that pattern matching can be compiled to a
+    \it{decision tree}, a data structure that enforces linear runtime
+    performance by guaranteeing no part of the scrutinee will be examined more
+    than once. A decision tree, however, forbids backtracking by nature: once
+    the program makes a decision based on the form of a value, it can't re-test
+    it later with new information. 
     
 
 \end{document}

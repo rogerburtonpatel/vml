@@ -8,9 +8,6 @@
 \usepackage{simplebnf}
 \setcounter{secnumdepth}{1}
 
-\DeclareMathOperator{\dom}{dom}
-
-
 
 % \setlength{\grammarparsep}{20pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{10em} % increase separation between LHS/RHS
@@ -597,11 +594,12 @@ the singleton sequence containing $x$.
         
         \subsection{Expressions}
         
-        % \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} An expression in
-        core Verse evaluates to produce possibly-empty sequence of values. In
-        {\VMinus}, values depend on the form of abstract expression $\alpha.$ If
-        $\alpha$ is a Verse-like expression, \valpha ~will be a value sequence. If
-        it is an ML-like expression, it will be a single value. 
+        % \newcommand\GNoTree{\vmrun \rightsquigarrow \uppsidown} 
+        An expression in core Verse evaluates to produce possibly-empty sequence
+        of values. In {\VMinus}, values depend on the form of abstract
+        expression $\alpha.$ If $\alpha$ is a Verse-like expression, \valpha
+        ~will be a value sequence. If it is an ML-like expression, it will be a
+        single value. 
         
         A guarded expression evaluates to produce a \bf{result}. A result is either
         a metavalue \valpha ~or reject. 

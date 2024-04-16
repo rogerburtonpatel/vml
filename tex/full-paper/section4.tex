@@ -22,104 +22,181 @@
 \begin{document}
   
 
-\section{{\VMinus} can be compiled to a decision tree}
+\section{\VMinus\ can be compiled to a decision tree}
+\label{vminustod}
 % [Evidence that \dots efficiency]
-\begin{outline}[enumerate]
-    \1 In our semantics of \PPlus\ and \VMinus, we adhere to the strict
-    invariant that no value is examined more than once at runtime. But we wish
-    to go further in our assertion, so we compile \VMinus to a decision tree. 
+    Section~\ref{vcbadcost} claimed that pattern matching has a desirable
+    efficiency property. More specifically, pattern matching can be compiled to
+    a decision tree, which Baudinet and MacQueen built the foundation for in
+    \it{Tree pattern matching for ML.}\cite{macqueen1985tree} and Maranget
+    expanded on in his distinguished work, \it{Compiling Pattern Matching to
+    Good Decision Trees}\cite{maranget}. To demonstrate that \VMinus has the
+    same desirable cost model as pattern matching, I present an algorithm for
+    compiling \VMinus to a decision tree. This algorithm runs during \DTran, the
+    transformation from \VMinus\ to \D. Its domain, instead of a \it{case}
+    expression, is \VMinus's \it{if-fi}. 
+       
+    \subsection{\D\ is a simple generalization of Maranget's trees} 
 
-    \1 \bf{Examples of Decision Trees - From Maragnet. }
-    \1 For our compilation, we introduce \D, a language of decision trees. 
-    \1 \bf{Definition of \D}
-    \2 \bf{Indeed, we are consistent with Maragnet }
-    \1 \bf{D is a simple generalization of Maragnet, et al. }
-    \1 \bf{Semantics of \D: ML Runtime! Yippee!}
-    \1 \bf{\D\ has a great cost model: }
+    % \rab{Do italics on italics cancel out in a cs paper as well? I un-italicized
+    % D in this automatically-italicized subsection title; is that right?}
 
-    \bf{A decision tree can be exponential in size but never examines a word of
-    the scrutinee more than once. }
+    Decision trees in \D\ are engineered to look like Maranget's trees. There
+    are a few minor differences: First, Maranget's compilation algorithm is more
+    complex than the one in this paper, and involves an intermediate
+    representation of occurrence vectors and clause matrices which the algorithm
+    I present does not use. Second, Maranget's trees are evaluated using a stack
+    of values to scrutinize, while \D's trees are evaluated with internal
+    environment of values. 
 
-    \1 \bf{Algorithm: Translation from \VMinus\ to \D\ : match compiler }
-    \1 \bf{Theorem: Translation from \VMinus\ to \D\ preserves semantics }
-    \2 \bf{Likely inductive hypothesis. 1-4 sentences on proof max. }
-\end{outline}
+    The underlying structures of Maranget's and \D's decision trees, however,
+    are analogous. The same operation is the heart of their evaluation: they
+    take a value, examine it, and choose a branch based on its form (Maranget
+    calls the operation \textsc{Switch}; we call it \it{test}). 
 
-\section{\PPlus -> \VMinus is interesting (optional)}
-\begin{outline}[enumerate]
-    \1 \bf{\VMinus subsumes pattern matching}
-    \1 \bf{Algorithm: Translation from \PPlus\ to \VMinus}
-    \1 \bf{Theorem: Translation from \PPlus\ to \VMinus preserves semantics}
-    \1 \bf{Claim: Translation \PPlus\ -> \D\ is consistent with Maragnet and others}
-\end{outline}
+    Let's look at an example from \it{Compiling Pattern Matching to Good
+    Decision Trees} which shows the structure of a simple pattern-matching
+    function and its corresponding decision tree, then at a corresponding tree
+    in \D. 
 
-\section{Related Work}
-\section{Future Work}
-\begin{outline}[enumerate]
-    \1 \bf{Why we wish for $\alpha$s}
-    \1 \bf{What's up with \PPlus\ ? It's worth study in its own right- in future work.}
-    \2 \bf{\PPlus is interesting because it combines or-patterns with pattern }
-        guards. No major functional language does this. 
-    \1 \bf{Programs written in Verse using ideas from \VMinus\ might have a }
-    friendlier cost model (depending on compiler)
-    \1 \bf{\VMinus might give Verse programmers good ideas }
-        (That is, how to solve problems in Verse)
-    \2 \bf{Examples of programming in Verse in the style of \VMinus }
-\end{outline}
+    Maranget beings with the function, \tt{merge}, which merges two lists: 
 
-\section{Conclusion, Discussion}
+    \begin{figure}[H]
+        \includegraphics[scale=0.7]{../images/merge.png}
+        \Description{Maranget's merge implementation}
+        \caption{The skeleton of Maranget's \tt{merge}}
+    \end{figure}
 
-\renewcommand\thesection{\Alph{section}}
-\setcounter{section}{0}
-\section{Proofs}
-\begin{outline}
-    \1 \bf{Proof: Translation from \VMinus to \D\ preserves semantics }
-    \1 \bf{Proof: Translation from \PPlus\ to \VMinus preserves semantics }
-    \1 \bf{Proof: Translation from \VMinus to Verse preserves semantics     }
-\end{outline}
+    He then shows an intermediate representation in his compilation algorithm,
+    the occurrence vector and clause matrix: 
 
-\section{Trust me on \VMinus (It's reduced to Verse)}
-\begin{outline}
-    \1 \bf{\VMinus\ has something to do with Verse, semantically }
-    \1 \bf{Our semantics of Verse is consistent with ICFP's semantics of Verse }
-    \1 \bf{Definition: Our semantics of Verse}
-    \1 \bf{Theorem: Translation from \VMinus to Verse preserves semantics     }
-\end{outline}
+    \begin{figure}[H]
+        \includegraphics[scale=0.7]{../images/occurence-and-matrix.png}
+        \Description{Occurrence vector of names, and clause matrix of matches}
+        \caption{The occurrence vector and clause matrix are intermediate
+        representations in Maranget's compilation. I do not exploit this
+        representation in my own algorithm, but it helps to understand his final
+        tree.}
+    \end{figure}
 
-\begin{table}[ht]
-    \centering
-    \small
-    \begin{tabular}{l l l}
-        \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
-        \hline
-        $P$ : Programs & $\bracketed{d}$ & \\
-        $d$ : Definitions & $\mathit{val}\; x\; \mathit{=}\; \expr$ & \\
-        $\expr$ : Expressions & $x, y, z$ & \\
-        & $K\bracketed{\expr}$ &  \\
-        & $\lambda x.\; \expr$ & \\
-        & $\expr[1]\; \expr[2]$ & \\
-        & $\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}$ & \PPlus \\
-        & $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ & \VMinus \\
-        & $\dt$ & \D \\
-        $\v$ : Values & $K\bracketed{\v}$ & \\
-        & $\lambda x.\; \expr$ & \\
-        $p$ : Patterns & $x$ & \PPlus \\
-        & $K\; \bracketed{p}$ & \PPlus \\
-        & $\mathit{when}\; \expr$ & \PPlus \\
-        & $p, p'$ & \PPlus \\
-        & $p\; \boldsymbol{\leftarrow}\; \expr$ & \PPlus \\
-        & $p_{1}\pbar p_{2}$ & \PPlus \\
-        $g$ : Guarded Expressions & $\boldsymbol{\rightarrow}\expr$ & \VMinus \\
-        & $\expr;\; g$ & \VMinus \\
-        & $\vexists{x} g$ & \VMinus \\
-        & $x = \expr;\; g$ & \VMinus \\
-        \dt : Decision Trees & $\mathit{case}\; x\; \mathit{of}\; \bracketed{\vert\; K\bracketed{x}\; \mathit{=>}\; \dt} [\vert\; x\; \mathit{=>} \dt]$ & \D \\
-        & $\expr$ & \D \\
-        & $\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt$ & \D \\
-        & $\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt$ & \D \\
-    \end{tabular}
-    \caption{Example LaTeX Table}
-    \label{fig:unilang}
-\end{table}
+    Finally, he shows the final decision tree: 
+
+    \begin{figure}[H]
+        \includegraphics[scale=0.7]{../images/dtree.png}
+        \Description{The final decision tree for merge} 
+        \caption{The final compiled decision tree for \tt{merge}, right-to-left}
+    \end{figure}
+
+    Here is the decision tree for \tt{merge} in \D. 
+
+    \begin{figure}[H]
+        \rab{This will be inserted when the match compiler is complete and we 
+        know exactly what this tree looks like.}
+        \Description{The decision tree for merge, now in D} 
+        \caption{The tree for \tt{merge} in D looks \dots \rab{we'll know soon!}}
+    \end{figure}
+
+
+    \subsection{Rules (Big-step Operational Semantics) for \D:}
+    
+    \rab{Here is where the operational semantics for \D\ will live.}
+    % \dsemantics
+
+    \subsection{\D\ has a favorable cost model}
+    I choose decision trees as a target for compilation for the simple reason of
+    their appealing cost model. A decision tree can be exponential in size but
+    never examines a word of the scrutinee more than once. It is the compilation
+    from \VMinus\ to \D that must enforce this invariant by determining which
+    equations in an \it{if-fi} represent “decision points” and compiling them to
+    unique \it{test} nodes in the resulting tree. 
+    
+    \subsection{The \DTran\ algorithm: \VMinus\ $\rightarrow$ \D}
+
+    Before presenting the algorithm \DTran, I will explain in plain English how
+    it works, with a bit of hand-waving. The algorithm is non-trivial, so my
+    hope is that the English answers any questions you may have after reading 
+    the formalism. 
+
+    When presented with an \it{if-fi}, \DTran\ introduces all the names under
+    the all existential $\exists$'s to a context which determines if a name is
+    \it{known} or \it{unknown}. At the start, each name introduced by $\exists$
+    is \it{unknown}. Since all names are unique at this stage, there are no
+    clashes. 
+
+
+    \rab{I describe the algorithm in plain English here.}
+
+    % \DTran\ then repeatedly chooses a guarded expression $G$ and attempts the
+    % following: 
+
+    % \begin{enumerate}
+    %     \item If there are no guards, insert a \it{match} node with the
+    %     right-hand side of $G$. 
+    %     \item Choose an equation in $G$ of the form $x = K \dots$ s.t. $x$ is
+    %     \it{known}. 
+    %     \item If one is found, use it to generate a \it{test} node, building
+    %     each subtree of the \it{test} by pruning all branches in \it{all}
+    %     guarded expressions of the \it{if-fi} in which $x = e$ and $e \neq K
+    %     \dots$ and invoking \DTran\ on the remaining ones with a context where
+    %     $x$ is known. The algorithm builds the default tree of the \it{test} by
+    %     finding it in the \it{if-fi} or assembling one that fails at runtime. 
+    %     \item If no equation of the form \it{x = K \dots} is found, try to 
+    %     find a condition $e$ s.t. all names in $e$ are known. 
+    %     \item If one is found, use it to generate a \it{let}-\it{if-then-else}
+    %     pair, pruning each subtree of $e$. 
+    %     \item If no condition $e$ is found, try to find an equation $x = e$ s.t.
+    %     both $x$ and all names in $e$ are \it{known}.
+    %     \item If one is found, generate a \it{let} node, make $x$ known, prune
+    %     the \it{if-fi} of all duplicate instances of that $x = e$, and invoke
+    %     \DTran\ again. 
+    %     \item If none is found, the \it{if-fi} cannot be compiled to a decision
+    %     tree. The algorithm halts with an error. 
+    % \end{enumerate}
+
+    The algorithm terminates when inserts a final \it{match} node for a
+    right-hand side expression $e$ when the list of guards preceding $e$ is
+    empty or a list of assignments from names to unbound names. Termination of
+    \DTran\ is guaranteed because each recursive call passes a list of guarded
+    expressions in which the number of guards is strictly smaller, so eventually
+    the algorithm reaches a state in which the first unmatched branch is all
+    trivially-satisfied guards. 
+
+    % \DTran\ makes the distinction for an equation \it{x = e}
+    % based off of this model: 
+    % \begin{enumerate}
+    % \item 
+    % \end{enumerate}
+    % No guards  ==  MATCH
+    % CONDITION  ==   if known, convert to LET, IF
+    % EQN (x, e) ==
+    %    - if x is known and e is VCONAPP, generate TEST
+    %    - if x is known and e is not VCONAPP and e is known
+    %         generate LET, IF
+    %    - if x is unknown and e is known, then generate LET
+       
+%  What if we don't find any of the above? 
+%  There must be only unknown guards. 
+%  Can't compile! 
+    
+    % For an equation that
+    % represents a binding of values to values, the algorithm inserts a \it{let}
+    % node, and for a condition guard \it{e}, it inserts a \it{let} followed by 
+    % an \it{if-then-else}. 
+    
+    
+    
+    \rab{Here will live the formal algorithm for \DTran}.
+
+    \subsection{Translation from \VMinus\ to \D\ preserves semantics}
+    
+    Translating \it{if-fi} to a decision tree should preserve semantics. The
+    following theorem formalizes this claim: 
+
+    \rab{Here will live the theorem of semantics preservation}. 
+    
+    \begin{proof}
+        See appendix A. 
+    \end{proof}
+    % \2 \bf{Likely inductive hypothesis. 1-4 sentences on proof max. }
 
 \end{document}

@@ -22,49 +22,45 @@
 \begin{document}
   
 \section{A compromise}
-  % To explore the design space of pattern matching, equations, and decision
-  % trees,
     I have created and implemented a semantics for three core languages that aim
     to bridge the gap between pattern matching, equations, and decision trees.
-    They are \PPlus, which has pattern matching with all three popular
-    extensions, \VMinus, which has equations without backtracking or multiple
-    results, and \D, which has decision trees. 
+    They are \PPlus, which has pattern matching with all the above extensions,
+    \VMinus, which has equations without backtracking or multiple results, and
+    \D, which has decision trees. \PPlus\ and \VMinus serve to explore the
+    design space of pattern matching and equations, while \D\ serves as the
+    target of translation to reason about efficiency. 
 
     In this section, I present the three languages. Their semantics appear in
-    Figures X, Y, and Z, respectively, and in Appendix A. TODO In my design, I
-    took inspiration from Verse: each of \PPlus, \VMinus, and \D\ has a
-    conventional sub-language that is the lambda calculus extended with named
-    value constructors:
-    
-    
-    TODO FLUSH THIS OUT
-
-    I chose named value constructors over \VC's tuples
-    because they look more like patterns. 
-
+    Figures X, Y, and Z, respectively, and in Appendix A. In my design, I took
+    inspiration from Verse: each of \PPlus, \VMinus, and \D\ has a conventional
+    sub-language that is the lambda calculus extended with named value
+    constructors \it{K} applied to zero or more values. I chose named value
+    constructors over \VC's tuples because they look more like patterns. 
     
     Because they share a core, and to facilitate comparisons and proofs, I have
     decided to present \VMinus\, \PPlus\, and \D\ as three subsets of a single
-    unifying language, whose abstract syntax is given in Figure
-    \ref{fig:unilang} TODO. Column “Unique To” indicates which components of
+    unifying language, whose abstract syntax is given in
+    Figure~\ref{fig:unilang}. Column “Unique To” indicates which components of
     this unifying language belong to the sub-languages. For all intents and
     purposes, the three languages are distinct; it is because they all share the
     same core of lambdas, value constructors (\it{K}), names, and function
     application that I have decided to house them under the same umbrella
     figure. 
     
-    Like in \VC, every lambda calculus term is valid in our langauges and has
+    Like in \VC, every lambda calculus term is valid in our languages and has
     the same semantics. Also like the lambda calculus and \VC, all three
-    languages are untyped. Creating a type system for \PPlus\ and \VMinus\ is a
-    worthy effort but is the subject of another paper. \D\ mainly exists as the
-    target of translations, so typing it is neither particularly interesting nor
-    worthwhile. 
+    languages are \it{strict}, meaning expressions are always evaluated when
+    they are bound to variables, and they are all untyped. Creating a type
+    system for \PPlus\ and \VMinus\ is a worthy effort but is the subject of
+    another paper. \D\ mainly exists as the target of translations, so typing it
+    is neither particularly interesting nor worthwhile. 
     
     In the subsections below, I discuss each language in more detail. Section 7
     discusses futher how \PPlus\ and \VMinus\ relate to modern languages with
     pattern matching and \VC\ respectively. 
 
 \subsection{Introducing \PPlus}
+\label{pplus}
 
     \PPlus\ packages common extensions to pattern matching with a standard core.
     In addition to bare pattern matching— names and applications of value
@@ -74,10 +70,10 @@
     for purpose of study. Furthermore, \PPlus\ introduces a new form of pattern:
     \pcommap. This allows a pattern in \PPlus\ be a \it{sequence} of
     sub-patterns, allowing a programmer to stuff as many patterns as they want
-    in the space of a single one. I discuss the implications of this in Section
-    TODO.
+    in the space of a single one. I discuss the implications of this in
+    Section~\ref{ppweird}.
 
-    \bf{\PPlus\ concrete Syntax}
+\subsection{Formal Semantics of \PPlus}
 
 \begin{figure}
 \begin{center}
@@ -117,9 +113,10 @@ $K$ : \textsf{Value Constructors} ::=
 \end{center}
 \Description{The concrete syntax of PPlus.}
 \caption{\PPlus: Concrete syntax}
+\label{fig:ppsyntax}
 \end{figure}
 
-  \subsection{Forms of Judgement for {\PPlus}:}
+  % \subsection{Forms of Judgement for {\PPlus}:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
@@ -172,17 +169,37 @@ Pattern matching is defined inductively:
     matches. 
 \end{itemize}
 
-When a pattern is of the form $K, p_{1}, \dots, p_{n}$, each sub-pattern
-$p_{i}$ may introducing new variables during pattern matching. Bindings for
-all these variables must be combined in a single environment. \it{Disjoint
-union} is an operation on two environments:
-TODO FROM BOOK 
+When a pattern is of the form $K, p_{1}, \dots, p_{n}$, each sub-pattern $p_{i}$
+may introducing new variables during pattern matching. Bindings for all these
+variables must be combined in a single environment. \it{Disjoint union} is an
+operation on two environments. Its definition borrowed, paraphrased, from Ramsey\cite{bpc}" 
 
-%     TODO: include disjoint union section "Don't
-% incorporate technical material by reference. You should explain disjoint union
-% and +, but not necessarily the way I did. Your proximate audience is your
-% thesis committee. Your ultimate audience is PL professionals."    
+The disjoint union of environments $\rho_{1}$ and $\rho_{2}$ is written
+$\rho_{1} \uplus \rho_{12}$, and it is defined if and only if $\dom \rho_{1}
+\cap \dom \rho_{2} = \emptyset$:
 
+\begin{align*}
+  \dom(\rho_{1} \uplus \rho_{2}) &= \dom \rho_{1} \uplus dom \rho_{2}, \\
+    (\rho_{1} \uplus \rho_{2})(x) &= 
+  \begin{cases}
+    \rho_{1}(x), & \text{if } x \in \dom  \rho_{1} \\
+    \rho_{2}(x), & \text{if } x \in \dom \rho_{2} \\
+\end{cases}
+\end{align*}
+
+Disjoint union across multiple results, when any result is failure, still
+represents failure: 
+
+\begin{gather*}
+  \dagger \uplus \rho = \dagger \quad
+  \rho \uplus \dagger = \dagger \quad
+  \dagger \uplus\, \dagger = \dagger
+\end{gather*}
+
+Finally, when a pattern in a branch in a case expression fully matches, its
+corresponding right-hand side is evaluated with top-level $\rho$ extended with
+the $\rho'$ produced by the pattern match. Environment extension is notated
+$\rho + \rho'$. 
 
 \subsection{Expressions in \PPlus}
 
@@ -192,7 +209,6 @@ TODO FROM BOOK
     \end{align*}
     
     \ppsemantics 
-    % TODO REINCLUDE 
       
       \bigskip 
 
@@ -266,6 +282,7 @@ val game_of_token = \t.
     tuples, and math operators is left as an exercise to the reader. 
     
 \subsection{Addressing how \PPlus\ handles unusual pattern combinations}
+\label{ppweird}
     Given its minimal restrictions on what kind of pattern can appear where,
     \PPlus\ admits of strange looking patterns: consider \tt{Cons (when true)
     zs}. But these should not be alarming, because such syntactic forms reduce
@@ -289,6 +306,7 @@ val game_of_token = \t.
 
 
 \subsection{Introducing \VMinus\ }
+\label{vminus}
 
         To fuel the pursuit of smarter decision-making, I now draw inspiration
         from \VC. I begin by trimming away the aforementioned culprits that
@@ -322,18 +340,20 @@ val game_of_token = \t.
         rationale behind this is straightforward: if an expression returns a
         name, and subsequently, the program imposes a new constraint on that
         name, it may necessitate the reevaluation of the earlier expression—- a
-        scenario I strive to avoid. An example in \VC\ illustrates this precise
-        scenario:
+        scenario I strive to avoid. 
+        
+        % An example in \VC\ illustrates this precise
+        % scenario: 
 
-        FIRST PAPER EXAMPLE 
+        % FIRST PAPER EXAMPLE 
 
-        IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
+        % IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
         
-         Doesn't backtrack
+        %  Doesn't backtrack
         
-         No multiple results 
+        %  No multiple results 
         
-         Doesn't evaluate functions backwards, have top-level patterns like verse, the list goes on 
+        %  Doesn't evaluate functions backwards, have top-level patterns like verse, the list goes on 
 
         % If you're well-versed in functional logic programming, may perceive that
         % imposing such restrictions on choice and names effectively strips away
@@ -347,119 +367,204 @@ val game_of_token = \t.
         % juxtapose them with pattern matching.    
 
         Indeed, having stripped out the functional logic programming elements of
-        \VC, we are left with just the decision-making bits. To wrap these, we
-        add a classic decision-making construct: guarded commands [cite-
-        Dijkstra paper, others.] The result is \VMinus. \VMinus is defined in
-        Figure~(TODO, whatever extension solution you choose). 
+        \VC, only the decision-making bits are left over. To wrap these, I add a
+        classic decision-making construct: guarded commands\cite{dijkstra} The result is \VMinus. \VMinus's concrete syntax is
+        defined in Figure~\ref{fig:vmsyntax}. 
 
         % \bf{Choice forces "name knowing." Names must be known in all branches 
         % if bound to unknown variable or bound to known variable if any name 
         % is unknown}.
         
-        With these modifications in place, alongside a few additional
-        adjustments to the placement of existentials and the timing of choice
-        evaluation (footnote: we discuss these later), we unveil a redefined decision-making core. To complete this
-        transformation, we incorporate a venerable decision-making construct:
-        Guarded commands [cite: Dijkstra]. The result is \VMinus. 
+        % With these modifications in place, alongside a few additional
+        % adjustments to the placement of existentials and the timing of choice
+        % evaluation (footnote: we discuss these later), I unveil a redefined
+        % decision-making core. To complete this transformation, we incorporate a
+        % venerable decision-making construct: Guarded commands [cite: Dijkstra].
+        % The result is \VMinus. 
+        \begin{figure}[H]
+          \begin{center}
+              \begin{bnf}
+              $P$ : \textsf{Programs} ::=
+              $\bracketed{d}$ : definition
+              ;;
+              $d$ : \textsf{Definitions} ::=
+              | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
+              ;;
+              $\expr$ : \textsf{Expressions} ::=
+              | $v$ : literal values 
+              | $x, y, z$ : names
+              | $\tt{if}\; [\; G\; \bracketed{\tt{[]}\; G}\;]\; \tt{fi}$ : if-fi 
+              | $K \bracketed{\expr}$ : value constructor application 
+              | $\expr[1]\; \expr[2]$ : function application 
+              | $\ttbackslash x\tt{.}\; \expr$ : lambda declaration 
+              ;;
+              $G$ : \textsf{Guarded Expressions} ::=  
+              $[\tt{E }{\bracketed{x}}{\tt{.}}] \bracketed{g} \;\ttrightarrow\; \expr$ : names, guards, and body
+              ;;
+              $g$ : \textsf{Guards} ::=  
+              | $\expr$ : intermediate expression 
+              | $x \;\tt{=}\; \expr$ : equation 
+              | $ g \bracketed{\tt{;} g} \; \pbar \; g \bracketed{\tt{;} g}$ : choice 
+              ;;
+              $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+              | $\ttbackslash x\tt{.}\; \expr$ : lambda value
+              \end{bnf}
+          \end{center}
+          \Description{The concrete syntax of PPlus.}
+              \caption{\VMinus: Concrete syntax}
+              \label{fig:vmsyntax}
+              \end{figure}      
 
-    \bf{Definition of \VMinus}
+    \bf{Programming in \VMinus}
 
-    
-    \bf{\VMinus\ admits of many of the same pleasing computations as full Verse. }
-    
+
+        
     Even with multiple modifications, \VMinus\ still allows for many of the same
-    pleasing computations as full Verse. Programmers can... 
+    pleasing computations as full Verse. Programmers in \VMinus can\dots
         \begin{enumerate}
-            \item Introduce a set of equations, to be solved in a nondeterministic order 
+            \item Introduce a set of equations, to be solved in a
+            nondeterministic order 
             \item Guard expressions with those equations 
-            \item Flexibly express "proceed when any of these operations succeeds" with choice 
+            \item Flexibly express “proceed when any of these operations
+            succeeds” with the new semantics of choice.  
         \end{enumerate}
 
-    Figure~TODO provides an example of how a programmer might utilize
-    \VMinus\ to solve the previous problems: 
+    Figure~\ref{fig:vminusfuncs} provides an example of how a programmer can
+    utilize \VMinus\ to solve the previous problems: 
     
-    \bf{Examples of programming in \VMinus }
     
-    \bf{Show: beautiful examples. }
-    
-    Look! It looks just like Verse! 
+    \begin{figure}[ht] 
+      \begin{minipage}[h]{0.54\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+          showstringspaces=false,
+          frame=single]
+val exclaimTall = \sh.
+  if sh = Square s; (> s) 100 -> 
+            Wow! That's A Tall Square!  
+    [] E w h. sh = Triangle w h; (> s) 100 ->
+            Goodness! Towering Triangle!
+    [] E b1 b2 h. sh = Trapezoid b1 b2 h; 
+     (> s) 100 -> Zounds! Tremendous Trapezoid!
+    [] ->  Your Shape Is Small
+  fi 
+  \end{lstlisting}
+      \Description{exclaimTall in VMinus}
+      \subcaption{\tt{exclaimTall} in \VMinus}
+          \label{fig:vmexclaimtall} 
+      %   \vspace{4ex}
+      \end{minipage}%%
+      \begin{minipage}[h]{0.5\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                      frame=single]
+  val tripleLookup = \ rho. \x.
+    if E x w y z v1 v2 v3. 
+      v1 = (lookup rho) x; v1 = Some w; 
+      v2 = (lookup rho) w; v2 = Some y; 
+      v3 = (lookup rho) y; v3 = Some z; -> 
+            z 
+      [] -> handleFailure x
+    fi 
+   \end{lstlisting}
+        \Description{tripleLookup in VMinus}
+        \subcaption{\tt{tripleLookup} in \VMinus}
+            \label{fig:vmtriplelookup} 
+        \vspace{4ex}
+      \end{minipage} 
+      \begin{minipage}[h]{\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em,
+          showstringspaces=false,
+          frame=single]
+val game_of_token = \t. 
+  if E f. (t = BattlePass f  | t = ChugJug f | t = TomatoTown f) -> 
+        P (Fortnite f)
+  [] E f. (t = HuntersMark f | t = SawCleaver f)                 -> 
+        P (Bloodborne ((* 2) f))
+  [] E f. (t = MoghLordOfBlood f | t = PreatorRykard f)          -> 
+        P (EldenRing ((* 3) f))
+  [] -> P (Irrelevant 0)
+  fi 
+\end{lstlisting}
+      \Description{game_of_token in VMinus}
+      \subcaption{\tt{game\_of\_token} in \VMinus}
+          \label{fig:vmgot}
+      \vspace{4ex}
+      \end{minipage}%% 
+      \caption{The functions in \VMinus\ have a desirably concise
+      implementation, as before.}
+  \label{fig:vminusfuncs}
+    \end{figure}   
+
+    \VMinus\ looks satisfyingly similar to both \PPlus\ and \VC. 
    
-    \bf{\VMinus\ is at least as good as \PPlus? Or just as comparable? }
-        Or incomparable? (Why not both?)
-    
     \subsection{\VMinus\ and \PPlus, side by side}
+    I compare \VMinus\ with \PPlus\ as an exercise in comparing equations with
+    pattern matching. They certainly look similar, which hints that \VMinus\
+    might be as expressive as pattern matching with the three extensions. 
+    Proving this claim is the topic of Section~\ref{pplustovminus}. 
 
-    \begin{itemize}
-        \item We compare \VMinus\ with \PPlus\ as an exercise in comparing
-        equations with pattern matching. 
-        \item They definitely look similar: as expressive as pattern. Great! 
-        \item{BIG PAYLOAD ALERT}
-        \item Bonus 1: You don't need the scrutinee in \VMinus. 
-        \item Bonus 2: Binding, checking are all in one construct: =. No
-                $\leftarrow$ vs case. No guessing what value patterns match to. 
-                And, unlike ML, Haskell, OCaml: no need for \tt{let}.
-        \item Bonus 3: Names. Explicit name introduction means we can use a name
-        from before and know if it's a pattern or an expression. This prevents
-        common mistakes like the kind 105 students make. 
-    \end{itemize}
-    
+    When might a programmer prefer \VMinus\ over \PPlus, or vice versa? After
+    programming in both, I have come up with three empirical observations: 
 
-    \bf{\bf{This is likely motivated strongly by examples of comparable code.}}
+    \begin{enumerate}
+      \item \it{The scrutinee:} When there is no obvious single scrutinee, \VMinus is more succinct.
+      When there is a scrutinee, \PPlus is more succinct. 
+      \item \it{Binding and decision-making:} Binding and decision-making are
+      joined in a single construct in \VMinus: \tt{=}. \PPlus\ needs different
+      kinds of syntax, like \tt{<-}, to express different kinds of binding. And
+      a programmer wanting for \tt{let} in \PPlus\ will never feel this need in
+      \VMinus: \tt{=} subsumes that, too. 
+      \item \it{Names:} In \VMinus, names are explicitly introduced. In
+      practice, this helps prevent a common mistake in pattern matching in which
+      a programmer attempts to match a value $v$ on an in-scope name $x$,
+      expecting the match to succeed iff $x$ evaluates to $v$ at runtime, only
+      to see the match always succeed. 
+    \end{enumerate}     
 
-    Let's say 2-3 examples here
+    \rab{How do you feel about examples for each of these points here? This
+    section is very long, but they help drive these points home.}
 
+% \subsection{Concrete Syntax of \VMinus}
 
-\bigskip
+% \bigskip
 
+% \begin{center}
+%     \begin{bnf}
+%     $P$ : \textsf{Programs} ::=
+%     $\bracketed{d}$ : definition
+%     ;;
+%     $d$ : \textsf{Definitions} ::=
+%     | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
+%     ;;
+%     $\expr$ : \textsf{Expressions} ::=
+%     | $v$ : literal values 
+%     | $x, y, z$ : names
+%     | $\tt{if}\; \tt{[}\; G\; \bracketed{\square\; G}\; \tt{]}\; \tt{fi}$ : if-fi 
+%     | $K \bracketed{\expr}$ : value constructor application 
+%     | $\expr[1]\; \expr[2]$ : function application 
+%     | $\lambda x.\; \expr$ : lambda declaration 
+%     ;;
+%     $G$ : \textsf{Guarded Expressions} ::=  
+%     $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\expr$ : names, guards, and body
+%     ;;
+%     $g$ : \textsf{Guards} ::=  
+%     | $\expr$ : intermediate expression 
+%     | $x = \expr$ : equation 
+%     | $ g \bracketed{; g} \; \choice \; g \bracketed{; g}$ : choice 
+%     ;;
+%     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+%     | $\lambda x.\; \expr$ : lambda value
+%     ;;
+%     \end{bnf}
+% \end{center}
 
-\begin{center}
-    \begin{bnf}
-    $P$ : \textsf{Programs} ::=
-    $\bracketed{d}$ : definition
-    ;;
-    $d$ : \textsf{Definitions} ::=
-    | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
-    ;;
-    $\expr$ : \textsf{Expressions} ::=
-    | $v$ : literal values 
-    | $x, y, z$ : names
-    | $\tt{if}\; \tt{[}\; G\; \bracketed{\square\; G}\; \tt{]}\; \tt{fi}$ : if-fi 
-    | $K \bracketed{\expr}$ : value constructor application 
-    | $\expr[1]\; \expr[2]$ : function application 
-    | $\lambda x.\; \expr$ : lambda declaration 
-    ;;
-    $G$ : \textsf{Guarded Expressions} ::=  
-    $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\expr$ : names, guards, and body
-    ;;
-    $g$ : \textsf{Guards} ::=  
-    | $\expr$ : intermediate expression 
-    | $x = \expr$ : equation 
-    | $ g \bracketed{; g} \; \choice \; g \bracketed{; g}$ : choice 
-    ;;
-    $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-    | $\lambda x.\; \expr$ : lambda value
-    ;;
-    \end{bnf}
-\end{center}
+% A \it{name} is any token that is not an integer literal, 
+% does not contain whitespace, a bracket, or parenthesis, 
+% and is not a value constructor name or a reserved word.
 
-A \it{name} is any token that is not an integer literal, 
-does not contain whitespace, a bracket, or parenthesis, 
-and is not a value constructor name or a reserved word.
-        
-\subsection{Refinement ordering on environments}
-
-\begin{align*}
-\rho \subseteq \Rhoprime \text{ when }&\dom\rho  \subseteq \dom \Rhoprime\\
-\text{ and } &\forall x \in \dom \rho: \rho(x) \subseteq \Rhoprime(x)
-\end{align*}
-
-
-
-\vfilbreak
-
-
-
-\subsection{Forms of Judgement for ${\VMinus}$:}
+\subsection{Formal Semantics of ${\VMinus}$:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
@@ -484,14 +589,6 @@ and is not a value constructor name or a reserved word.
 \end{tabular}    
 
 \bigskip
-
-  
-    
-    \medskip
-    
-    Success only refines the environment; that~is, when
-    ${\vtuple{\rho, \expr}} \rightarrowtail{} {\Rhoprime}$, 
-    we~expect $\rho \subseteq \Rhoprime$.
     
     \subsection{Expressions}
     
@@ -509,8 +606,6 @@ and is not a value constructor name or a reserved word.
     
     \showvjudgement{Eval}{\vmeval}
     \showvjudgement{Process-Guards}{\vmgs}
-    
-    \bigskip
 \subsection{Guards}
 
 In {\VMinus}, we solve guards similarly to how the authors of the original Verse
@@ -529,7 +624,41 @@ $\dagger$ will cause the top-level list of guards to also produce $\dagger$.
     \showvjudgement{Guard-Refine}{\grefine[result=\rho']}
     \showvjudgement{Guard-reject}\gfail
 
-TODO Uncomment for semantics here
+    \subsection{Refinement ordering on environments}
+
+    \begin{align*}
+    \rho \subseteq \Rhoprime \text{ when }&\dom\rho  \subseteq \dom \Rhoprime\\
+    \text{ and } &\forall x \in \dom \rho: \rho(x) \subseteq \Rhoprime(x)
+    \end{align*}
+    
+    \medskip
+        
+    Success only refines the environment; that~is, when ${\vtuple{\rho, \expr}}
+    \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
+    
+    \vfilbreak
+
 \vmsemantics
+
+\subsection{Introducing \D}
+\label{d}
+
+While \PPlus\ and \VMinus exist for writing programs, \D\ exists as the target
+of translation. This is because the decision-making construct in \D, the
+\it{decision tree}, is impractical for programmers but practical for theorists
+who wish to prove properties of efficiency. Specifically, a decision tree is an
+automaton that implements pattern matching with the invariant that no part of
+the scrutinee of a \it{case} expression is examined more than once at runtime.
+Through this invariant, a decision tree guarantees linear runtime performance of
+pattern matching. This desirable property of decision trees is paired with the
+disadvantage of potential code size explosion. 
+
+Decision trees are classically used as an intermediate representation for
+compiling \it{case} expressions. In this work, I will use them as a target for
+compiling \it{if-fi} in \VMinus. I do so to prove that equations, at least given
+their restrictions in \VMinus, can be compiled to a decision tree. 
+
+\D\ is a simple generalization of the trees found in Maranget\cite{maranget}. I
+discuss the specifics of \D's decision trees in the following section. 
 
 \end{document}

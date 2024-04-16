@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: full-paper.aux
+The style file: plain.bst
+Database file #1: sources.bib
+Warning--entry type for "elixir" isn't style-file defined
+--line 46 of file sources.bib
+Warning--empty journal in haskell
+You've used 24 entries,
+            2118 wiz_defined-function locations,
+            625 strings with 7403 characters,
+and the built_in function-call counts, 7812 in all, are:
+= -- 765
+> -- 362
+< -- 7
++ -- 150
+- -- 120
+* -- 476
+:= -- 1294
+add.period$ -- 73
+call.type$ -- 24
+change.case$ -- 126
+chr.to.int$ -- 0
+cite$ -- 25
+duplicate$ -- 316
+empty$ -- 612
+format.name$ -- 120
+if$ -- 1653
+int.to.chr$ -- 0
+int.to.str$ -- 24
+missing$ -- 23
+newline$ -- 122
+num.names$ -- 48
+pop$ -- 156
+preamble$ -- 1
+purify$ -- 106
+quote$ -- 0
+skip$ -- 249
+stack$ -- 0
+substring$ -- 424
+swap$ -- 82
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 90
+warning$ -- 1
+while$ -- 77
+width$ -- 26
+write$ -- 253
+(There were 2 warnings)

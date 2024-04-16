@@ -127,6 +127,8 @@ struct
 
   val predefs = ["print"]
 
+  exception DuplicateNames of name 
+
   fun eval rho (C ce) = 
     (case ce of 
       C.LITERAL v => v
@@ -148,7 +150,9 @@ struct
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
   | eval rho (I (CASE (C (C.LITERAL v), (p, rhs) :: choices))) =
-            (let val rho' = match rho (p, v)
+            (let val rho' = (match rho (p, v)
+                             handle DisjointUnionFailed x => 
+                              raise DuplicateNames x)
             in  eval (rho <+> rho') rhs
             end
             handle Core.NoMatch => 
