@@ -27,14 +27,13 @@
 % [Evidence that \dots efficiency]
     Section~\ref{vcbadcost} claimed that pattern matching has a desirable
     efficiency property. More specifically, pattern matching can be compiled to
-    a decision tree, which Baudinet and MacQueen built the foundation for in
-    \it{Tree pattern matching for ML.}~\cite{macqueen1985tree} and Maranget
-    expanded on in his distinguished work, \it{Compiling Pattern Matching to
-    Good Decision Trees}~\cite{maranget}. To demonstrate that \VMinus has the
-    same desirable cost model as pattern matching, I present an algorithm for
-    compiling \VMinus to a decision tree. This algorithm runs during \DTran, the
-    transformation from \VMinus\ to \D. Its domain, instead of a \it{case}
-    expression, is \VMinus's \it{if-fi}. 
+    a decision tree, which~~\citet{macqueen1985tree} built the foundation for in
+    \it{Tree pattern matching for ML.} and~\citet{maranget} expanded on in his
+    distinguished work, \it{Compiling Pattern Matching to Good Decision Trees}.
+    To demonstrate that \VMinus has the same desirable cost model as pattern
+    matching, I present an algorithm for compiling \VMinus to a decision tree.
+    This algorithm runs during \DTran, the transformation from \VMinus\ to \D.
+    Its domain, instead of a \it{case} expression, is \VMinus's \it{if-fi}. 
        
     \subsection{\D\ is a simple generalization of Maranget's trees} 
 

@@ -1,50 +1,52 @@
 This is BibTeX, Version 0.99d (TeX Live 2023)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: full-paper.aux
-The style file: plain.bst
+The style file: authordate3.bst
 Database file #1: sources.bib
 Warning--entry type for "elixir" isn't style-file defined
 --line 46 of file sources.bib
+Warning--empty year in scala
 Warning--empty journal in haskell
+Warning--empty year in elixir
 You've used 25 entries,
-            2118 wiz_defined-function locations,
-            631 strings with 7541 characters,
-and the built_in function-call counts, 8067 in all, are:
-= -- 788
-> -- 375
-< -- 7
-+ -- 155
-- -- 124
-* -- 489
-:= -- 1339
-add.period$ -- 76
+            2453 wiz_defined-function locations,
+            706 strings with 7787 characters,
+and the built_in function-call counts, 9999 in all, are:
+= -- 987
+> -- 356
+< -- 92
++ -- 114
+- -- 102
+* -- 810
+:= -- 1622
+add.period$ -- 98
 call.type$ -- 25
-change.case$ -- 130
-chr.to.int$ -- 0
-cite$ -- 26
-duplicate$ -- 328
-empty$ -- 634
-format.name$ -- 124
-if$ -- 1707
-int.to.chr$ -- 0
-int.to.str$ -- 25
+change.case$ -- 159
+chr.to.int$ -- 25
+cite$ -- 28
+duplicate$ -- 396
+empty$ -- 705
+format.name$ -- 141
+if$ -- 2062
+int.to.chr$ -- 1
+int.to.str$ -- 0
 missing$ -- 25
-newline$ -- 127
-num.names$ -- 50
-pop$ -- 164
+newline$ -- 128
+num.names$ -- 75
+pop$ -- 162
 preamble$ -- 1
-purify$ -- 110
+purify$ -- 184
 quote$ -- 0
-skip$ -- 256
+skip$ -- 415
 stack$ -- 0
-substring$ -- 429
-swap$ -- 83
+substring$ -- 585
+swap$ -- 110
 text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 92
-warning$ -- 1
+type$ -- 192
+warning$ -- 3
 while$ -- 79
-width$ -- 27
-write$ -- 264
-(There were 2 warnings)
+width$ -- 0
+write$ -- 310
+(There were 4 warnings)

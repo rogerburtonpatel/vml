@@ -172,7 +172,7 @@ Pattern matching is defined inductively:
 When a pattern is of the form $K, p_{1}, \dots, p_{n}$, each sub-pattern $p_{i}$
 may introducing new variables during pattern matching. Bindings for all these
 variables must be combined in a single environment. \it{Disjoint union} is an
-operation on two environments. Its definition borrowed, paraphrased, from Ramsey~\cite{bpc}" 
+operation on two environments. Its definition borrowed, paraphrased, from Ramsey~\citep{bpc}" 
 
 The disjoint union of environments $\rho_{1}$ and $\rho_{2}$ is written
 $\rho_{1} \uplus \rho_{12}$, and it is defined if and only if $\dom \rho_{1}
@@ -368,7 +368,7 @@ val game_of_token = \t.
 
         Indeed, having stripped out the functional logic programming elements of
         \VC, only the decision-making bits are left over. To wrap these, I add a
-        classic decision-making construct: guarded commands~\cite{dijkstra} The result is \VMinus. \VMinus's concrete syntax is
+        classic decision-making construct: guarded commands~\citep{dijkstra} The result is \VMinus. \VMinus's concrete syntax is
         defined in Figure~\ref{fig:vmsyntax}. 
 
         % \bf{Choice forces "name knowing." Names must be known in all branches 
@@ -478,11 +478,11 @@ val exclaimTall = \sh.
           showstringspaces=false,
           frame=single]
 val game_of_token = \t. 
-  if E f. (t = BattlePass f  | t = ChugJug f | t = TomatoTown f) -> 
+  if E f. (t = BattlePass f  | (t = ChugJug f | t = TomatoTown f)) -> 
         P (Fortnite f)
-  [] E f. (t = HuntersMark f | t = SawCleaver f)                 -> 
+  [] E f. (t = HuntersMark f | t = SawCleaver f)                   -> 
         P (Bloodborne ((* 2) f))
-  [] E f. (t = MoghLordOfBlood f | t = PreatorRykard f)          -> 
+  [] E f. (t = MoghLordOfBlood f | t = PreatorRykard f)            -> 
         P (EldenRing ((* 3) f))
   [] -> P (Irrelevant 0)
   fi 
@@ -658,7 +658,7 @@ compiling \it{case} expressions. In this work, I will use them as a target for
 compiling \it{if-fi} in \VMinus. I do so to prove that equations, at least given
 their restrictions in \VMinus, can be compiled to a decision tree. 
 
-\D\ is a simple generalization of the trees found in Maranget~\cite{maranget}. I
+\D\ is a simple generalization of the trees found in Maranget~\citep{maranget}. I
 discuss the specifics of \D's decision trees in the following section. 
 
 \end{document}

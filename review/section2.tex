@@ -42,7 +42,7 @@ element of the cons cell to $x$ and the second to $xs$.
 
 Why use pattern matching? What could programmers use instead? One tool a
 programmer might use to deconstruct data is \it{observers}
-\cite{liskov:abstraction}: functions that explicitly inquire a piece of data's
+\citep{liskov:abstraction}: functions that explicitly inquire a piece of data's
 structure and manually extract its components. Examples of observers in
 functional programming languages include Scheme's \tt{null?}, \tt{car}, and
 \tt{cdr}, and ML's \tt{null}, \tt{hd}, and \tt{tl}. But many function
@@ -176,10 +176,10 @@ fun area sh =
     the result of evaluating the scrutinee matches with a pattern, the program
     evaluates the right-hand side of the respective branch (\tt{s * s}, etc.)
     within the \it{case} expression.\footnote{OCaml, which you'll see in future
-    sections, calls \it{case} \tt{match}. Some literature~\cite{guardproposal}
-    calls this a \it{head expression}. I follow Ramsey's~\cite{bpc} and
-    Maragnet's~\cite{maranget} example in calling the things \it{case} and
-    \it{scrutinee}. Any of these terms does the job.} 
+    sections, calls \it{case} \tt{match}. Some literature~\citep{guardproposal}
+    calls this a \it{head expression}. I follow the example of~\citet{bpc} and
+    \citet{maranget} in calling the things \it{case} and \it{scrutinee}. Any of
+    these terms does the job.} 
 % \1 Pattern matching has these properties, observers do not. 
 
 \subsection{Popular extensions to pattern matching}
@@ -322,9 +322,9 @@ exclaimBigArea sh                   == "Your shape is small.",
     \label{guards}
 
     To highlight a common use of pattern guards to address such a limitation, I
-    modify an example from Erwig \& Peyton-Jones~\cite{guardproposal}, the
-    proposal for pattern guards in GHC. Suppose I have an OCaml abstract data
-    type of finite maps, with a lookup operation: 
+    modify an example from \citet{guardproposal}, the proposal for pattern
+    guards in GHC. Suppose I have an OCaml abstract data type of finite maps,
+    with a lookup operation: 
 
     \begin{minipage}[t]{\textwidth}
         \centering 
@@ -425,8 +425,8 @@ exclaimBigArea sh                   == "Your shape is small.",
     condition, so guards subsume side conditions! 
     
     If you need further convincing on why programmers want for guards, look no
-    further than Erwig \& Peyton-Jones's \it{Pattern Guards and Transformational
-    Patterns}~\cite{guardproposal}, the proposal for pattern guards in GHC: the
+    further than Erwig \& Peyton Jones's \it{Pattern Guards and Transformational
+    Patterns}~\citep{guardproposal}, the proposal for pattern guards in GHC: the
     authors show several other examples where guards drastically simplify
     otherwise-maddening code. 
     
@@ -568,7 +568,7 @@ let game_of_token token = match token with
     extensions. Remember when we had to switch from OCaml to Haskell to use
     guards, and back to OCaml for or-patterns? The two extensions are mutually
     exclusive in Haskell and OCaml, and also Scala, Erlang/Elixir, Rust, F\#,
-    and Agda~\cite{haskell, ocaml, scala, erlang, elixir, rust, fsharp, agda}. 
+    and Agda~\citep{haskell, ocaml, scala, erlang, elixir, rust, fsharp, agda}. 
 
 
     I find the extension story somewhat unsatisfying. At the very least, I want
@@ -577,7 +577,7 @@ let game_of_token token = match token with
     pattern matching with these extensions. 
 
     Last year, I spotted an intriguing alternative to pattern matching:
-    \it{equations}, from the Verse Calculus~\cite{verse}. Equations present a
+    \it{equations}, from the Verse Calculus~\citep{verse}. Equations present a
     different, yet powerful, way to write code that makes decisions and
     deconstructs data. In the next section, I'll introduce you to equations
     similarly to I how I introduced to you pattern matching. Once you're
@@ -591,7 +591,7 @@ let game_of_token token = match token with
     % \1 Equations 
     Allow me to turn your attention to the equations of the Verse Calculus
     (\VC), a core calculus for the functional logic programming language
-    \it{Verse}~\cite{antoy2010functional, hanus2013functional, verse}. (For the
+    \it{Verse}~\citep{antoy2010functional, hanus2013functional, verse}. (For the
     remainder of this paper, I use “\VC” and “Verse” interchangeably.)
 
     Even if you read the Verse paper, \VC's equations and the paradigms of
@@ -761,21 +761,20 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     expression as an integer or tuple. To bind these names, \VC, like other
     functional logic languages, relies on \it{unification} of its logical
     variables and \it{search} at runtime to meet a set of program
-    constraints~\cite{antoy2010functional, hanus2013functional}. Combining
+    constraints~\citep{antoy2010functional, hanus2013functional}. Combining
     unifying logical variables with search at runtime classically requires
     backtracking, which can lead to exponential runtime
-    cost~\cite{hanus2013functional, wadler1985replace, clark1982introduction}. 
+    cost~\citep{hanus2013functional, wadler1985replace, clark1982introduction}. 
 
     % Todo: An example would be nice. Backtracking/evaluating backwards, then
     % done. 
 
-    Pattern matching, by contrast, has a desirable cost model.
-    Maranget~\cite{maranget} showed that pattern matching can be compiled to a
-    \it{decision tree}, a data structure that enforces linear runtime
-    performance by guaranteeing no part of the scrutinee will be examined more
-    than once. A decision tree, however, forbids backtracking by nature: once
-    the program makes a decision based on the form of a value, it can't re-test
-    it later with new information. 
+    Pattern matching, by contrast, has a desirable cost model. \citet{maranget}
+    showed that pattern matching can be compiled to a \it{decision tree}, a data
+    structure that enforces linear runtime performance by guaranteeing no part
+    of the scrutinee will be examined more than once. A decision tree, however,
+    forbids backtracking by nature: once the program makes a decision based on
+    the form of a value, it can't re-test it later with new information. 
     
 
 \end{document}

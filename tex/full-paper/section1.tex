@@ -13,13 +13,13 @@ and deconstructing data.
 % directly against a number of possible forms.
 % Maybe combine? 
 It is also an established and well-researched topic in
-academy~\cite{burton1993pattern, palao1996new, wadler1987views, macqueen1985tree,
+academy~\citep{burton1993pattern, palao1996new, wadler1987views, macqueen1985tree,
 bpc}. Pattern matching is appreciated by programmers and researchers alike for
 two main reasons: It enables \it{implicit} data deconstruction, and it has a
 desirable cost model. Specifically (regarding the latter), pattern matching can
 be compiled to a \it{decision tree}, a data structure that enforces linear
 runtime performance by guaranteeing no part of the data will be examined more
-than once.~\cite{maranget}
+than once.~\citep{maranget}
 
 However, pattern matching cannot succinctly express certain common computations,
 so designers of popular programming languages have introduced \it{extensions} to
@@ -31,7 +31,7 @@ Extensions strengthen pattern matching, but they aren't unified across
 programming languages. Rather than continuing to extend pattern matching in
 different directions \it{ad infinitum}, it might be nice to find an alternative
 to pattern matching that doesn't need extensions to succinctly solve the
-problems programmers face. Last year, Verse~\cite{verse} introduced
+problems programmers face. Last year, Verse~\citep{verse} introduced
 a tempting possibility for an such an alternative. Verse shed light on a
 different way to implicitly deconstruct data without pattern matching:
 \it{equations}. Equations look expressive, and it appears at a glance that they
