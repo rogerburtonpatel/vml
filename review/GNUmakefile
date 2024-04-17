@@ -6,11 +6,16 @@ compile := env TEXINPUTS=$(TEXINPUTS) latexmk -g -xelatex -pdf -output-directory
 
 .PHONY: all
 
+.PHONY: nr
+
 
 all: full 
 
 full: full-paper.tex
 	$(compile) full-paper.tex
+
+nr:
+	env TEXINPUTS=$(TEXINPUTS) xelatex full-paper
 
 
 %.pdf : %.tex
