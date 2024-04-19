@@ -22,16 +22,31 @@
 \begin{document}
   
 \section{A compromise}
-    I have created and implemented a semantics for three core languages that aim
-    to bridge the gap between pattern matching, equations, and decision trees.
-    They are \PPlus, which has pattern matching with all the above extensions,
-    \VMinus, which has equations without backtracking or multiple results, and
-    \D, which has decision trees. \PPlus\ and \VMinus serve to explore the
-    design space of pattern matching and equations, while \D\ serves as the
-    target of translation to reason about efficiency. 
+    
+    To bridge the gap between pattern matching, equations, and decision trees, I
+    have created and implemented a semantics for three core languages. To model
+    pattern matching with extensions, I introduce \PPlus. To model programming
+    with equations, I introduce \VMinus. And to provide an
+    efficient cost model to which both \PPlus\ and \VMinus\ can be compiled, I
+    introduce \D.
 
+    Of these three languages, the most unusual is \VMinus. It has equations and
+    choice, like \VC, but without multiple results or backtracking. To eliminate
+    multiple results, expressions in \VMinus\ evaluate to at most one result,
+    and choice is not a valid form of expression in the language. To eliminate
+    backtracking, the compiler rejects a \VMinus\ program that would need to
+    backtrack at runtime. 
+    
+    % They are \PPlus, which has pattern matching with all the extensions above,
+    % \VMinus, which has equations without backtracking or multiple results, and
+    % \D, which has decision trees. \PPlus\ and \VMinus serve to explore the
+    % design space of pattern matching and equations, while \D\ serves as the
+    % target of translation to reason about efficiency. 
+
+    % TODO: dsemantics 
     In this section, I present the three languages. Their semantics appear in
-    Figures X, Y, and Z, respectively, and in Appendix A. In my design, I took
+    Sections \ref{pplus}, \ref{vmsemantics}, and~\ref{dsemantics},
+    respectively, and in Appendix~\ref{languagedefs}. In my design, I took
     inspiration from Verse: each of \PPlus, \VMinus, and \D\ has a conventional
     sub-language that is the lambda calculus extended with named value
     constructors \it{K} applied to zero or more values. I chose named value
@@ -39,21 +54,19 @@
     
     Because they share a core, and to facilitate comparisons and proofs, I have
     decided to present \VMinus\, \PPlus\, and \D\ as three subsets of a single
-    unifying language, whose abstract syntax is given in
-    Figure~\ref{fig:unilang}. Column “Unique To” indicates which components of
-    this unifying language belong to the sub-languages. For all intents and
-    purposes, the three languages are distinct; it is because they all share the
-    same core of lambdas, value constructors (\it{K}), names, and function
-    application that I have decided to house them under the same umbrella
-    figure. 
+    unifying language \U, whose abstract syntax is given in
+    Table~\ref{fig:unilang}. Column “Unique To” indicates which components of
+    \U\ belong to the sub-languages. For all intents and purposes, the three
+    languages are distinct; it is because they all share the same core of
+    lambdas, value constructors (\it{K}), names, and function application that I
+    have decided to house them in \U\ together. 
     
-    Like in \VC, every lambda calculus term is valid in our languages and has
+    Like in \VC, every lambda-calculus term is valid in our languages and has
     the same semantics. Also like the lambda calculus and \VC, all three
-    languages are \it{strict}, meaning expressions are always evaluated when
-    they are bound to variables, and they are all untyped. Creating a type
-    system for \PPlus\ and \VMinus\ is a worthy effort but is the subject of
-    another paper. \D\ mainly exists as the target of translations, so typing it
-    is neither particularly interesting nor worthwhile. 
+    languages are \it{strict}, meaning every expression is evaluated when it is
+    bound to a variable, and they are all untyped. Creating a type system for
+    \PPlus\ and \VMinus\ is a worthy effort but is the subject of another paper.
+    Typing for low-level languages like \D\ is outside the scope of this thesis. 
     
     In the subsections below, I discuss each language in more detail.
     Section~\ref{futurework} goes further in analyzing how \PPlus\ and \VMinus\
@@ -172,7 +185,8 @@ Pattern matching is defined inductively:
 When a pattern is of the form $K, p_{1}, \dots, p_{n}$, each sub-pattern $p_{i}$
 may introducing new variables during pattern matching. Bindings for all these
 variables must be combined in a single environment. \it{Disjoint union} is an
-operation on two environments. Its definition borrowed, paraphrased, from Ramsey~\citep{bpc}" 
+operation on two environments. Its definition borrowed, paraphrased, from
+\citet{bpc}: 
 
 The disjoint union of environments $\rho_{1}$ and $\rho_{2}$ is written
 $\rho_{1} \uplus \rho_{12}$, and it is defined if and only if $\dom \rho_{1}
@@ -658,7 +672,7 @@ compiling \it{case} expressions. In this work, I will use them as a target for
 compiling \it{if-fi} in \VMinus. I do so to prove that equations, at least given
 their restrictions in \VMinus, can be compiled to a decision tree. 
 
-\D\ is a simple generalization of the trees found in Maranget~\citep{maranget}. I
-discuss the specifics of \D's decision trees in the following section. 
+\D\ is a simple generalization of the trees found in~\citet{maranget}. I discuss
+the specifics of \D's decision trees in the following section. 
 
 \end{document}

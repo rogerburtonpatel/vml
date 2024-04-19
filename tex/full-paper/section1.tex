@@ -21,11 +21,11 @@ be compiled to a \it{decision tree}, a data structure that enforces linear
 runtime performance by guaranteeing no part of the data will be examined more
 than once.~\citep{maranget}
 
-However, pattern matching cannot succinctly express certain common computations,
-so designers of popular programming languages have introduced \it{extensions} to
-pattern matching (Section~\ref{extensions}). Without extensions, programmers who
-wish to express these computations in these languages are forced to duplicate
-code, nest \it{case} expressions, and create multiple points of truth. 
+However, pattern matching cannot express certain common computations succinctly,
+forcing programmers who wish to express these computations to duplicate code,
+nest \it{case} expressions, and create multiple points of truth. To mitigate
+this, designers of popular programming languages have introduced \it{extensions}
+to pattern matching (Section~\ref{extensions}). 
 
 Extensions strengthen pattern matching, but they aren't unified across
 programming languages. Rather than continuing to extend pattern matching in
@@ -39,17 +39,17 @@ can express everything that pattern matching can, including with popular
 extensions. 
 
 But a full implementation of Verse is complicated, cost-wise. Verse is a
-functional logic programming language, and that can mean expressions can
-backtrack at runtime and return multiple results, both of which are
-hard to predict in their costs. 
+functional logic programming language, and expressions can backtrack at runtime
+and return multiple results, both of which are hard to predict in their costs. 
 
-A worthwhile goal could be to harmonize the expressive quality of Verse's
-equations with the decision tree property of patterns.
+% A worthwhile goal could be to harmonize the expressive quality of Verse's
+% equations with the decision tree property of patterns.
 
-\bf{My central contribution in this thesis} is to show that \VMinus, a language
-that uses Verse's equations with some restrictions, can be compiled to a
-decision tree. I also demonstrate how \VMinus\ subsumes pattern matching with
-popular extensions. 
+\bf{My central contribution in this thesis} is to show that the expressive
+quality of Verse's equations and the decision-tree property of patterns can be
+combined in a single language. Since the language is a streamlined adaptation of
+Verse with a reduced feature set, I call it \VMinus\ (V minus). In this thesis,
+I also show that \VMinus\ subsumes pattern matching with popular extensions. 
 
 In order to achieve this, I also made the following contributions: I formalized
 a subset of Verse into a core language \VMinus with a big-step operational

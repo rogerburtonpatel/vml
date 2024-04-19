@@ -177,9 +177,9 @@ fun area sh =
     evaluates the right-hand side of the respective branch (\tt{s * s}, etc.)
     within the \it{case} expression.\footnote{OCaml, which you'll see in future
     sections, calls \it{case} \tt{match}. Some literature~\citep{guardproposal}
-    calls this a \it{head expression}. I follow Ramsey's~\citep{bpc} and
-    Maragnet's~\citep{maranget} example in calling the things \it{case} and
-    \it{scrutinee}. Any of these terms does the job.} 
+    calls this a \it{head expression}. I follow the example of~\citet{bpc} and
+    \citet{maranget} in calling the things \it{case} and \it{scrutinee}. Any of
+    these terms does the job.} 
 % \1 Pattern matching has these properties, observers do not. 
 
 \subsection{Popular extensions to pattern matching}
@@ -322,9 +322,9 @@ exclaimBigArea sh                   == "Your shape is small.",
     \label{guards}
 
     To highlight a common use of pattern guards to address such a limitation, I
-    modify an example from Erwig \& Peyton Jones~\citep{guardproposal}, the
-    proposal for pattern guards in GHC. Suppose I have an OCaml abstract data
-    type of finite maps, with a lookup operation: 
+    modify an example from \citet{guardproposal}, the proposal for pattern
+    guards in GHC. Suppose I have an OCaml abstract data type of finite maps,
+    with a lookup operation: 
 
     \begin{minipage}[t]{\textwidth}
         \centering 
@@ -769,13 +769,12 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     % Todo: An example would be nice. Backtracking/evaluating backwards, then
     % done. 
 
-    Pattern matching, by contrast, has a desirable cost model.
-    Maranget~\citep{maranget} showed that pattern matching can be compiled to a
-    \it{decision tree}, a data structure that enforces linear runtime
-    performance by guaranteeing no part of the scrutinee will be examined more
-    than once. A decision tree, however, forbids backtracking by nature: once
-    the program makes a decision based on the form of a value, it can't re-test
-    it later with new information. 
+    Pattern matching, by contrast, has a desirable cost model. \citet{maranget}
+    showed that pattern matching can be compiled to a \it{decision tree}, a data
+    structure that enforces linear runtime performance by guaranteeing no part
+    of the scrutinee will be examined more than once. A decision tree, however,
+    forbids backtracking by nature: once the program makes a decision based on
+    the form of a value, it can't re-test it later with new information. 
     
 
 \end{document}

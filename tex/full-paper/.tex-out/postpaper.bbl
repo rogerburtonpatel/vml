@@ -1,8 +1,8 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{}
 
-\bibitem{bpc}
-Norman Ramsey.
+\bibitem[\protect\citename{Ramsey, }2022]{bpc}
+{\sc Ramsey, Norman}. 2022.
 \newblock {\em Programming Languages: Build, Prove, and Compare}.
-\newblock Cambridge University Press, 2022.
+\newblock Cambridge University Press.
 
 \end{thebibliography}
