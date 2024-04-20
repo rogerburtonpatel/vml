@@ -12,14 +12,13 @@ and deconstructing data.
 % It does so implicitly by matching constructed data
 % directly against a number of possible forms.
 % Maybe combine? 
-It is also an established and well-researched topic in
-academy~\citep{burton1993pattern, palao1996new, wadler1987views, macqueen1985tree,
-bpc}. Pattern matching is appreciated by programmers and researchers alike for
-two main reasons: It enables \it{implicit} data deconstruction, and it has a
-desirable cost model. Specifically (regarding the latter), pattern matching can
-be compiled to a \it{decision tree}, a data structure that enforces linear
-runtime performance by guaranteeing no part of the data will be examined more
-than once.~\citep{maranget}
+It is also an established and well-researched topic \citep{wadler1987views, macqueen1985tree, burton1993pattern,
+palao1996new, maranget, bpc}. Pattern matching is appreciated by programmers and
+researchers alike for two main reasons: It enables \it{implicit} data
+deconstruction, and it has a desirable cost model. Specifically (regarding the
+latter), pattern matching can be compiled to a \it{decision tree}, a data
+structure that enforces linear runtime performance by guaranteeing no part of
+the data will be examined more than once.~\citep{maranget}
 
 However, pattern matching cannot express certain common computations succinctly,
 forcing programmers who wish to express these computations to duplicate code,
@@ -27,16 +26,19 @@ nest \it{case} expressions, and create multiple points of truth. To mitigate
 this, designers of popular programming languages have introduced \it{extensions}
 to pattern matching (Section~\ref{extensions}). 
 
-Extensions strengthen pattern matching, but they aren't unified across
-programming languages. Rather than continuing to extend pattern matching in
-different directions \it{ad infinitum}, it might be nice to find an alternative
-to pattern matching that doesn't need extensions to succinctly solve the
-problems programmers face. Last year, Verse~\citep{verse} introduced
-a tempting possibility for an such an alternative. Verse shed light on a
-different way to implicitly deconstruct data without pattern matching:
-\it{equations}. Equations look expressive, and it appears at a glance that they
-can express everything that pattern matching can, including with popular
-extensions. 
+Extensions strengthen pattern matching, but they are not standardized, so each
+popular programming language with pattern matching features its own unique suite
+of extensions. This makes extensions less of a ubiquitous feature of pattern
+matching and more subject to the discretion of the individual language designer.
+Rather than continuing to extend pattern matching across various frontiers
+\it{ad hoc}, a worthwhile goal could be to find an alternative to pattern
+matching that doesn't need extensions to succinctly solve the problems
+programmers face. A tempting possibility for such an alternative was introduced
+last year by the programming language Verse~\citep{verse}. In Verse, a
+programmer can implicitly deconstruct data without pattern matching using a
+different tool the language offers: \it{equations}. Equations are expressive and
+flexible, and it appears that they can express everything that pattern matching
+can, including with popular extensions. 
 
 But a full implementation of Verse is complicated, cost-wise. Verse is a
 functional logic programming language, and expressions can backtrack at runtime
@@ -48,16 +50,18 @@ and return multiple results, both of which are hard to predict in their costs.
 \bf{My central contribution in this thesis} is to show that the expressive
 quality of Verse's equations and the decision-tree property of patterns can be
 combined in a single language. Since the language is a streamlined adaptation of
-Verse with a reduced feature set, I call it \VMinus\ (V minus). In this thesis,
+Verse with a reduced feature set, I call it \VMinus\ (“V minus”). In this thesis,
 I also show that \VMinus\ subsumes pattern matching with popular extensions. 
 
-In order to achieve this, I also made the following contributions: I formalized
-a subset of Verse into a core language \VMinus with a big-step operational
-semantics (Section~\ref{vminus}), I formalized pattern matching in a core
-language \PPlus with a big-step operational semantics (Section~\ref{pplus}), I
-formalized decision trees into a core language \D\ with a big-step operational
-semantics (Section~\ref{d}), I formalized a translation between the languages
-(Sections \ref{vminustod} and~\ref{pplustovminus}), and I implemented each
-language in Standard ML. 
+To support my central contribution, 
+I have formalized pattern matching in a core language \PPlus (“P plus”) with a
+big-step operational semantics (Section~\ref{pplus}),
+I have formalized a subset of Verse into a core language \VMinus with a big-step
+operational semantics (Section~\ref{vminus}), 
+I have formalized decision trees into a core language \D\ (“D”) with a big-step
+operational semantics (Section~\ref{d}), 
+I have formalized a translation between
+the languages (Sections \ref{vminustod} and~\ref{pplustovminus}), 
+and I have implemented each language in Standard ML. 
 
 \end{document}

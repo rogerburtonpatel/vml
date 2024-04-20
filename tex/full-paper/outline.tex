@@ -50,14 +50,15 @@
 \begin{abstract}
 Pattern matching appeals to functional programmers for its expressiveness and
 good cost model via compilation to a decision tree, but certain computations can
-only be expressed verbosely using pattern matching primitives. The problem
-can be solved by extensions, but no single popular programming language
-implements all the extensions to pattern matching. By contrast, equations in
-Verse are both expressive and succinct, with no obvious need for extensions;
-however, Verse's cost model is a challenge. \VMinus, a core language that uses
-Verse's equations with some restrictions, can be compiled to a decision tree.
-\VMinus\ also subsumes \PPlus, a core language with three popular extensions to
-pattern matching. 
+only be expressed verbosely using pattern matching primitives. The problem can
+be solved by extensions, but these are not standardized, and no single popular
+programming language contains all the extensions to pattern matching. By
+contrast, equations in Verse are both expressive and succinct, with no obvious
+need for extensions; however, Verse's cost model is a challenge. To resolve
+these problems, I propose a new language, \VMinus, which uses Verse's equations
+with some restrictions. I show that \VMinus subsumes \PPlus, a core language
+with three popular extensions to pattern matching. I also show that \VMinus can
+be compiled to a decision tree. 
 \end{abstract}
 
 % Pattern matching appeals to functional programmers for its expressiveness and
