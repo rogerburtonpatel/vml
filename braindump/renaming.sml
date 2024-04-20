@@ -11,11 +11,9 @@ SHARED UTILITY FUNCTIONS ON SETS OF TYPE VARIABLES
 *)
 *)
 *)
-* <shared utility functions on sets of type variables>= *) fun freshName (alpha, avoid) = let val basename = stripNumericSuffix alpha
-val candidates =
-streamMap (fn n => basename ^ "_"
-intString n)
-naturals
+* <shared utility functions on sets of type variables>= *) 
+fun freshName (alpha, avoid) = let val basename = stripNumericSuffix alpha
+val candidates = streamMap (fn n => basename ^ "_" intString n) naturals
 fun ok beta = not (member beta avoid)
 in
 case streamGet (streamFilter ok candidates)

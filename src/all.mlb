@@ -13,27 +13,29 @@ $(SML_LIB)/basis/basis.mlb
   Unit.sml
   error.sml
   freshnames.sml
-  
-  core-lang.sml
-  decision-tree.sml
-  vminus.sml
-  pplus.sml
-  verse.sml
-  uverse.sml
-  
-
-  d-of-vminus.sml
   producer.sml
   lexer-combinators.sml
+
+  
+  core-lang.sml
+  pplus.sml
+  vminus.sml
+  decision-tree.sml  
+  
   pplus-lex.sml
   pplus-parse.sml
   vminus-lex.sml
   vminus-parse.sml
+
+  
+
+  d-of-vminus.sml
   vm-of-pp.sml
 
+  renaming.sml
   languages.sml
   dtran.sml
 
+
   main.sml
   
-  renaming.sml

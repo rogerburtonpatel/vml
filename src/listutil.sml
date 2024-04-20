@@ -5,6 +5,7 @@ structure ListUtil :> sig
   val foldri : (int * 'a * 'b -> 'b) -> 'b -> 'a list -> 'b
   val join  : ('a -> string)  -> string -> 'a list -> string
   val member: ''a -> ''a list -> bool 
+  val foldlmap : ('acc * 'a -> 'acc * 'b) -> 'acc -> 'a list -> 'acc * 'b list 
 end
   =
 struct
@@ -42,5 +43,12 @@ struct
 
   fun member x xs = List.exists (fn y => x = y) xs
 
+
+  fun foldlmap f acc [] = (acc, []) 
+    | foldlmap f acc (x::xs) = 
+        let fun conssnd y (a, ys) = (a, y::ys)
+            val (acc', y) = f (acc, x)
+            in conssnd y (foldlmap f acc' xs )
+            end
 
 end
