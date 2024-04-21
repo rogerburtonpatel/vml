@@ -110,16 +110,18 @@
 
     \section{Related Work}
 
-    The dual foundations of this paper are Augustsson et al.'s
-    Verse~\citep{verse} and Maranget's decision trees~\citep{maranget}.
-    Augustsson et al. give the formal rewrite semantics for \VC; Maranget gives
-    an elegant formalism of decision trees. An excellent example of language
-    designers appealing to extensions in pattern matching is Erwig \&
-    Peyton Jones~\citep{guardproposal}. Compiling Pattern
-    Matching~\citep{augustsson1985compiling} by Augustsson gives a foundation in
-    exactly what it says. Ramsey and Scott have a crisp example of a
-    match-compilation algorithm (pattern matching to decision trees) in When Do
-    Match-Compilation Heuristics Matter?~\citep{scottramsey}. 
+    The dual foundations of this paper are Augustsson et al.'s Verse
+    Calculus~\citep{verse} and Maranget's decision trees~\citep{maranget}.
+    Augustsson et al. give the formal rewrite semantics for the Verse Calculus;
+    Maranget gives an elegant formalism of decision trees. 
+    
+    Extensions to pattern matching, and how they appeal to language designers,
+    find an excellent example in Erwig \& Peyton Jones~\citep{guardproposal}.
+    
+    Compiling Pattern Matching~\citep{augustsson1985compiling} by Augustsson
+    gives a foundation in exactly what it says. Ramsey and Scott have a crisp
+    example of a match-compilation algorithm (pattern matching to decision
+    trees) in When Do Match-Compilation Heuristics Matter?~\citep{scottramsey}. 
     
     \section{Future Work}        
     \label{futurework}
@@ -266,9 +268,7 @@
 
     I have introduced the languages \PPlus and \VMinus to explore the design
     space of pattern matching and equations, and \D, \PtoVTran, and \DTran\ to
-    show how these languages can be compiled to a decision tree. With these
-    languages and transformations, I aim to bridge the gaps between pattern
-    matching, equations, and efficient compilation. 
+    show how these languages can make decisions efficiently. 
 
     The languages are made for use and experimentation: they are syntactically
     simple and have conceptually accessible operational semantics. I hope that
