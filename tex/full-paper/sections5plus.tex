@@ -22,10 +22,10 @@
 \begin{document}
 \section{Equations subsume pattern matching with popular extensions}
 \label{pplustovminus}
-    In my introduction I stated that \VMinus\ can be compiled to a decision
-    tree, and that \VMinus\ subsumes pattern matching with popular extensions.
+    In my introduction I stated that \VMinus can be compiled to a decision
+    tree, and that \VMinus subsumes pattern matching with popular extensions.
     Having proved the former, I now prove the latter. I do so by showing an
-    algorithm \PtoVTran\ which translates \PPlus\ to \VMinus, and proving that
+    algorithm \PtoVTran\ which translates \PPlus to \VMinus, and proving that
     the translation preserves semantics. 
 
     \subsection{Domains}
@@ -33,7 +33,7 @@
     I give the names and domains of the translation functions: 
     
     \begin{align*}
-        &\PtoVTran: \PPlus\ Exp\; \rightarrow\; \VMinus\ Exp \\
+        &\PtoVTran: \PPlus Exp\; \rightarrow\; \VMinus Exp \\
         &\PTran: Pattern\; \rightarrow\; Name\; \rightarrow\; Name\ list\ *\ Guard\ list \\
         % &\mathcal{B}: Pattern\; ->\; Name\; Set \\
     \end{align*}
@@ -101,7 +101,7 @@
         them?}
 
     To compile \it{case} expressions to decision trees like Maranget does,
-    translate \PPlus\ to \D\ using $(\DTran\; o\; \PtoVTran)$.
+    translate \PPlus to \D using $(\DTran\; o\; \PtoVTran)$.
     
     Finally, I claim that the translation from \it{case} expressions to decision
     trees, $(\DTran\; o\; \PtoVTran)$, is consistent with Maranget and
@@ -112,7 +112,7 @@
 
     The dual foundations of this paper are Augustsson et al.'s
     Verse~\citep{verse} and Maranget's decision trees~\citep{maranget}.
-    Augustsson et al. give the formal rewrite semantics for \VC\; Maranget gives
+    Augustsson et al. give the formal rewrite semantics for \VC; Maranget gives
     an elegant formalism of decision trees. An excellent example of language
     designers appealing to extensions in pattern matching is Erwig \&
     Peyton Jones~\citep{guardproposal}. Compiling Pattern
@@ -123,10 +123,10 @@
     
     \section{Future Work}        
     \label{futurework}
-        \subsubsection{Typing \PPlus\ and \VMinus}
+        \subsubsection{Typing \PPlus and \VMinus}
         \label{typingppandvm}
 
-        I have described how a type system for both \PPlus\ and \VMinus\ is a
+        I have described how a type system for both \PPlus and \VMinus is a
         worthwhile effort. Notably, a type system can help restore Nice Property
         5: with a type system, the compiler can warn programmers of a missing or
         extraneous match condition in a \it{case} expression, and potentially an
@@ -151,13 +151,13 @@
         and decision tree might look like this: 
         \begin{center}
             \begin{bnf}
-                $\VMinus_{\alpha}$ : \VMinus\ with $\alpha$ ::=
+                $\VMinus_{\alpha}$ : \VMinus with $\alpha$ ::=
                 $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ : if-fi with $\alpha$
                 ;;
                 $G_{\alpha}$ : Guarded Expressions with $\alpha$ ::=
                 $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\alpha$ : 
                 ;;
-                $\PPlus_{\alpha}$ : \PPlus\ with $\alpha$::=
+                $\PPlus_{\alpha}$ : \PPlus with $\alpha$::=
                 $\tt{case}\; \expr\; \bracketed{p\; \ttrightarrow\; \alpha}$ : \it{case} expression with $\alpha$ 
                 ;;
                 $t_{\alpha}$ : Decision Trees with $\alpha$ ::= 
@@ -166,17 +166,17 @@
             \end{bnf}
         \end{center}
 
-        Why would one want to do this? Well, recall that \VMinus\ had to be
+        Why would one want to do this? Well, recall that \VMinus had to be
         stripped of multiple results and other \VC-like constructs in order to
-        retain its desirable efficiency properties. $\alpha$ lets \VMinus\ and
+        retain its desirable efficiency properties. $\alpha$ lets \VMinus and
         the other languages do efficient decision-making without worrying about
         the form of the result. If the result is a complex multi-value or a
         computation that involves backtracking, it will be agnostic of the
         decision-making. $\alpha$ makes right-hand sides polymorphic and
-        abstract, so a programmer could potentially insert expressions from \VC\
+        abstract, so a programmer could potentially insert expressions from \VC
         in their place and know that the decision-making before the $\alpha$
         will still be efficient. This would allow for fuller interoperability
-        between \VC\ and \VMinus. Section~\ref{vminusandvc} further describes
+        between \VC and \VMinus. Section~\ref{vminusandvc} further describes
         why bridging the gap between the two languages might be a worthwhile
         exercise. 
 
@@ -206,15 +206,15 @@
             
 %         \showvjudgement{Eval-Alpha}{\veval{\alpha}{\valpha}}
 
-% Of note in both \VMinus\ and \D\ is that the 'decision-making construct'
+% Of note in both \VMinus and \D is that the 'decision-making construct'
 % is annotated with an $\alpha$. This annotation gives us type flexibility on the
 % right-hand side of the \it{terminating} case for each construct
-% (\tt{$\rightarrow$ exp} in \VMinus\ and the match node in \D.) 
+% (\tt{$\rightarrow$ exp} in \VMinus and the match node in \D.) 
 
 
-        \subsubsection{Studying \PPlus\ independently}
+        \subsubsection{Studying \PPlus independently}
         \label{pplusindependently}
-        \PPlus\ has side conditions, guards, and or-patterns. No major
+        \PPlus has side conditions, guards, and or-patterns. No major
         functional language has all three of these extensions. Back
         Section~\ref{extensions}'s examples, I had to switch from OCaml to
         Haskell to use guards, and back to OCaml for or-patterns. The two
@@ -238,19 +238,19 @@
         
         At ICFP last year, Tim Sweeney said that he wanted Verse to be an
         accessible programming language to write a scalable, collaborative
-        metaverse~\citep{timtalk}. Can \VMinus\ be aid in this goal? I can imagine
+        metaverse~\citep{timtalk}. Can \VMinus be aid in this goal? I can imagine
         two ways in which it might:
         
         \begin{enumerate}
-            \item \VMinus\ could be  a tool to help ease programmers who are
+            \item \VMinus could be  a tool to help ease programmers who are
             more familiar with pattern matching into the realm of functional
             logic programming with equations. 
-            \item Programs written in Verse using ideas from \VMinus\ might have
+            \item Programs written in Verse using ideas from \VMinus might have
             a friendlier cost model (depending on the compiler)
         \end{enumerate}
         
-        To point~1, \VMinus\ sits both syntactically and semantically in between
-        \PPlus\ and \VC, which might help a new programmer to Verse bridge the
+        To point~1, \VMinus sits both syntactically and semantically in between
+        \PPlus and \VC, which might help a new programmer to Verse bridge the
         conceptual gap between pattern matching and equations. Also, \PtoVTran,
         the $\PPlus \rightarrow \VMinus$ translation, could help a programmer 
         who wishes to write code using pattern matching see how their ideas 
@@ -264,7 +264,7 @@
 
     \section{Conclusion}
 
-    I have introduced the languages \PPlus\ and \VMinus\ to explore the design
+    I have introduced the languages \PPlus and \VMinus to explore the design
     space of pattern matching and equations, and \D, \PtoVTran, and \DTran\ to
     show how these languages can be compiled to a decision tree. With these
     languages and transformations, I aim to bridge the gaps between pattern

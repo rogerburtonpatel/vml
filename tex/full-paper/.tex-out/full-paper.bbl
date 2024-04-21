@@ -1,143 +1,309 @@
-\begin{thebibliography}{}
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\bibitem[\protect\citename{Antoy \& Hanus, }2010]{antoy2010functional}
-{\sc Antoy, Sergio, \& Hanus, Michael}. 2010.
-\newblock Functional logic programming.
-\newblock {\em Communications of the ACM}, {\bf 53}(4), 74--85.
+\begin{thebibliography}{25}
 
-\bibitem[\protect\citename{Augustsson, }1985]{augustsson1985compiling}
-{\sc Augustsson, Lennart}. 1985.
-\newblock Compiling pattern matching.
-\newblock {\em Pages  368--381 of:} {\em Conference on Functional Programming
-  Languages and Computer Architecture}.
-\newblock Springer.
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
 
-\bibitem[\protect\citename{Augustsson {\em et~al.}, }2023]{verse}
-{\sc Augustsson, Lennart, Breitner, Joachim, Claessen, Koen, Jhala, Ranjit,
-  Peyton~Jones, Simon, Shivers, Olin, Steele~Jr, Guy~L, \& Sweeney, Tim}. 2023.
-\newblock The verse calculus: a core calculus for deterministic functional
-  logic programming.
-\newblock {\em Proceedings of the ACM on Programming Languages}, {\bf 7}(ICFP),
-  417--447.
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
 
-\bibitem[\protect\citename{Barklund \& Virding, }1999]{erlang}
-{\sc Barklund, Jonas, \& Virding, Robert}. 1999.
-\newblock Erlang 4.7. 3 Reference Manual DRAFT (0.7).
-\newblock {\em Ericsson AB}, ~79.
-
-\bibitem[\protect\citename{Burton \& Cameron, }1993]{burton1993pattern}
-{\sc Burton, F~Warren, \& Cameron, Robert~D}. 1993.
-\newblock Pattern matching with abstract data types1.
-\newblock {\em Journal of Functional Programming}, {\bf 3}(2), 171--190.
-
-\bibitem[\protect\citename{Clark, }1982]{clark1982introduction}
-{\sc Clark, KL}. 1982.
-\newblock An introduction to logic programming.
-\newblock {\em Introductory Readings in Expert Systems, ed. D. Michie},
-  93--112.
-
-\bibitem[\protect\citename{developers, }n.d.]{scala}
-{\sc developers, Scala}.
-\newblock {\em Pattern Matching - The Scala Programming Language}.
-\newblock \url{https://docs.scala-lang.org/tour/pattern-matching.html}.
-
-\bibitem[\protect\citename{Dijkstra \& Scholten, }2012]{dijkstra}
-{\sc Dijkstra, Edsger~W, \& Scholten, Carel~S}. 2012.
-\newblock {\em Predicate calculus and program semantics}.
-\newblock Springer Science \& Business Media.
-
-\bibitem[\protect\citename{Erwig \& Jones, }2001]{guardproposal}
-{\sc Erwig, Martin, \& Jones, Simon~Peyton}. 2001.
-\newblock Pattern guards and transformational patterns.
-\newblock {\em Electronic Notes in Theoretical Computer Science}, {\bf 41}(1),
-  3.
-
-\bibitem[\protect\citename{Hanus, }2013]{hanus2013functional}
-{\sc Hanus, Michael}. 2013.
-\newblock Functional logic programming: From theory to Curry.
-\newblock {\em Programming Logics: Essays in Memory of Harald Ganzinger},
-  123--168.
-
-\bibitem[\protect\citename{Klabnik \& Nichols, }2023]{rust}
-{\sc Klabnik, Steve, \& Nichols, Carol}. 2023.
-\newblock {\em The Rust programming language}.
-\newblock No Starch Press.
-
-\bibitem[\protect\citename{Kokke {\em et~al.}, }2020]{agda}
-{\sc Kokke, Wen, Siek, Jeremy~G, \& Wadler, Philip}. 2020.
-\newblock Programming language foundations in Agda.
-\newblock {\em Science of Computer Programming}, {\bf 194}, 102440.
-
-\bibitem[\protect\citename{Leroy {\em et~al.}, }2023]{ocaml}
-{\sc Leroy, Xavier, Doligez, Damien, Frisch, Alain, Garrigue, Jacques,
-  R{\'e}my, Didier, Sivaramakrishnan, KC, \& Vouillon, J{\'e}r{\^o}me}. 2023.
-\newblock {\em The OCaml system release 5.1: Documentation and user's manual}.
-\newblock Ph.D. thesis, Inria.
-
-\bibitem[\protect\citename{Liskov \& Guttag, }1986]{liskov:abstraction}
-{\sc Liskov, Barbara, \& Guttag, John}. 1986.
-\newblock {\em Abstraction and Specification in Program Development}.
-\newblock Cambridge, MA: MIT Press/McGraw-Hill.
-
-\bibitem[\protect\citename{MacQueen \& Baudinet, }1985]{macqueen1985tree}
-{\sc MacQueen, David, \& Baudinet, M}. 1985.
-\newblock Tree Pattern matching for ML.
-\newblock {\em Unpublished manuscript}.
-
-\bibitem[\protect\citename{Maranget, }2008]{maranget}
-{\sc Maranget, Luc}. 2008.
-\newblock Compiling pattern matching to good decision trees.
-\newblock {\em Pages  35--46 of:} {\em Proceedings of the 2008 ACM SIGPLAN
-  workshop on ML}.
-
-\bibitem[\protect\citename{Marlow {\em et~al.}, }2010]{haskell}
-{\sc Marlow, Simon, {\em et~al.}} 2010.
-\newblock Haskell 2010 Language Report: Chapter 3.
-
-\bibitem[\protect\citename{Palao~Gostanza {\em et~al.}, }1996]{palao1996new}
-{\sc Palao~Gostanza, Pedro, Pena, Ricardo, \& N{\'u}nez, Manuel}. 1996.
-\newblock A new look at pattern matching in abstract data types.
-\newblock {\em ACM SIGPLAN Notices}, {\bf 31}(6), 110--121.
-
-\bibitem[\protect\citename{Ramsey, }2022]{bpc}
-{\sc Ramsey, Norman}. 2022.
-\newblock {\em Programming Languages: Build, Prove, and Compare}.
-\newblock Cambridge University Press.
-
-\bibitem[\protect\citename{Scott \& Ramsey, }2000]{scottramsey}
-{\sc Scott, Kevin, \& Ramsey, Norman}. 2000.
-\newblock When do match-compilation heuristics matter.
-\newblock {\em University of Virginia, Charlottesville, VA}.
-
-\bibitem[\protect\citename{Sweeney, }2023]{timtalk}
-{\sc Sweeney, Tim}. 2023.
-\newblock {\em Ask me anything with Tim Sweeney}.
+\bibitem[Antoy and Hanus(2010)]%
+        {antoy2010functional}
+\bibfield{author}{\bibinfo{person}{Sergio Antoy} {and} \bibinfo{person}{Michael
+  Hanus}.} \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{Functional logic programming}.
+\newblock \bibinfo{journal}{\emph{Commun. ACM}} \bibinfo{volume}{53},
+  \bibinfo{number}{4} (\bibinfo{year}{2010}), \bibinfo{pages}{74--85}.
 \newblock
-  \url{https://www.youtube.com/watch?v=LXEqsV7vF-E&list=PLyrlk8Xaylp5yZHjvOlJo_63AtJiOQhag&index=51}.
 
-\bibitem[\protect\citename{Syme {\em et~al.}, }2010]{fsharp}
-{\sc Syme, Don, Hoban, Luke, Liu, Tao, Lomov, Dmitry, Margetson, James,
-  McNamara, Brian, Pamer, Joe, Orwick, Penny, Quirk, Daniel, Smith, Chris, {\em
-  et~al.}} 2010.
-\newblock The F\# 2.0 language specification.
-\newblock {\em Microsoft, August}.
 
-\bibitem[\protect\citename{Team, }n.d.]{elixir}
-{\sc Team, The~Elixir}.
-\newblock {\em Elixir Documentation}.
+\bibitem[Augustsson(1985)]%
+        {augustsson1985compiling}
+\bibfield{author}{\bibinfo{person}{Lennart Augustsson}.}
+  \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{Compiling pattern matching}. In
+  \bibinfo{booktitle}{\emph{Conference on Functional Programming Languages and
+  Computer Architecture}}. Springer, \bibinfo{pages}{368--381}.
+\newblock
 
-\bibitem[\protect\citename{Wadler, }1985]{wadler1985replace}
-{\sc Wadler, Philip}. 1985.
-\newblock How to replace failure by a list of successes a method for exception
-  handling, backtracking, and pattern matching in lazy functional languages.
-\newblock {\em Pages  113--128 of:} {\em Conference on Functional Programming
-  Languages and Computer Architecture}.
-\newblock Springer.
 
-\bibitem[\protect\citename{Wadler, }1987]{wadler1987views}
-{\sc Wadler, Philip}. 1987.
-\newblock Views: A way for pattern matching to cohabit with data abstraction.
-\newblock {\em Pages  307--313 of:} {\em Proceedings of the 14th ACM
-  SIGACT-SIGPLAN symposium on Principles of programming languages}.
+\bibitem[Augustsson et~al\mbox{.}(2023)]%
+        {verse}
+\bibfield{author}{\bibinfo{person}{Lennart Augustsson},
+  \bibinfo{person}{Joachim Breitner}, \bibinfo{person}{Koen Claessen},
+  \bibinfo{person}{Ranjit Jhala}, \bibinfo{person}{Simon Peyton~Jones},
+  \bibinfo{person}{Olin Shivers}, \bibinfo{person}{Guy~L Steele~Jr}, {and}
+  \bibinfo{person}{Tim Sweeney}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{The verse calculus: a core calculus for
+  deterministic functional logic programming}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the ACM on Programming
+  Languages}} \bibinfo{volume}{7}, \bibinfo{number}{ICFP}
+  (\bibinfo{year}{2023}), \bibinfo{pages}{417--447}.
+\newblock
+
+
+\bibitem[Barklund and Virding(1999)]%
+        {erlang}
+\bibfield{author}{\bibinfo{person}{Jonas Barklund} {and}
+  \bibinfo{person}{Robert Virding}.} \bibinfo{year}{1999}\natexlab{}.
+\newblock \showarticletitle{Erlang 4.7. 3 Reference Manual DRAFT (0.7)}.
+\newblock \bibinfo{journal}{\emph{Ericsson AB}} (\bibinfo{year}{1999}),
+  \bibinfo{pages}{79}.
+\newblock
+
+
+\bibitem[Burton and Cameron(1993)]%
+        {burton1993pattern}
+\bibfield{author}{\bibinfo{person}{F~Warren Burton} {and}
+  \bibinfo{person}{Robert~D Cameron}.} \bibinfo{year}{1993}\natexlab{}.
+\newblock \showarticletitle{Pattern matching with abstract data types1}.
+\newblock \bibinfo{journal}{\emph{Journal of Functional Programming}}
+  \bibinfo{volume}{3}, \bibinfo{number}{2} (\bibinfo{year}{1993}),
+  \bibinfo{pages}{171--190}.
+\newblock
+
+
+\bibitem[Clark(1982)]%
+        {clark1982introduction}
+\bibfield{author}{\bibinfo{person}{KL Clark}.} \bibinfo{year}{1982}\natexlab{}.
+\newblock \showarticletitle{An introduction to logic programming}.
+\newblock \bibinfo{journal}{\emph{Introductory Readings in Expert Systems, ed.
+  D. Michie}} (\bibinfo{year}{1982}), \bibinfo{pages}{93--112}.
+\newblock
+
+
+\bibitem[developers({[n.\,d.]})]%
+        {scala}
+\bibfield{author}{\bibinfo{person}{Scala developers}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{Pattern Matching - The Scala Programming Language}.
+\newblock
+  \bibinfo{howpublished}{\url{https://docs.scala-lang.org/tour/pattern-matching.html}}.
+\newblock
+
+
+\bibitem[Dijkstra and Scholten(2012)]%
+        {dijkstra}
+\bibfield{author}{\bibinfo{person}{Edsger~W Dijkstra} {and}
+  \bibinfo{person}{Carel~S Scholten}.} \bibinfo{year}{2012}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Predicate calculus and program semantics}}.
+\newblock \bibinfo{publisher}{Springer Science \& Business Media}.
+\newblock
+
+
+\bibitem[Erwig and Jones(2001)]%
+        {guardproposal}
+\bibfield{author}{\bibinfo{person}{Martin Erwig} {and}
+  \bibinfo{person}{Simon~Peyton Jones}.} \bibinfo{year}{2001}\natexlab{}.
+\newblock \showarticletitle{Pattern guards and transformational patterns}.
+\newblock \bibinfo{journal}{\emph{Electronic Notes in Theoretical Computer
+  Science}} \bibinfo{volume}{41}, \bibinfo{number}{1} (\bibinfo{year}{2001}),
+  \bibinfo{pages}{3}.
+\newblock
+
+
+\bibitem[Hanus(2013)]%
+        {hanus2013functional}
+\bibfield{author}{\bibinfo{person}{Michael Hanus}.}
+  \bibinfo{year}{2013}\natexlab{}.
+\newblock \showarticletitle{Functional logic programming: From theory to
+  Curry}.
+\newblock \bibinfo{journal}{\emph{Programming Logics: Essays in Memory of
+  Harald Ganzinger}} (\bibinfo{year}{2013}), \bibinfo{pages}{123--168}.
+\newblock
+
+
+\bibitem[Klabnik and Nichols(2023)]%
+        {rust}
+\bibfield{author}{\bibinfo{person}{Steve Klabnik} {and} \bibinfo{person}{Carol
+  Nichols}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{The Rust programming language}}.
+\newblock \bibinfo{publisher}{No Starch Press}.
+\newblock
+
+
+\bibitem[Kokke et~al\mbox{.}(2020)]%
+        {agda}
+\bibfield{author}{\bibinfo{person}{Wen Kokke}, \bibinfo{person}{Jeremy~G Siek},
+  {and} \bibinfo{person}{Philip Wadler}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{Programming language foundations in Agda}.
+\newblock \bibinfo{journal}{\emph{Science of Computer Programming}}
+  \bibinfo{volume}{194} (\bibinfo{year}{2020}), \bibinfo{pages}{102440}.
+\newblock
+
+
+\bibitem[Leroy et~al\mbox{.}(2023)]%
+        {ocaml}
+\bibfield{author}{\bibinfo{person}{Xavier Leroy}, \bibinfo{person}{Damien
+  Doligez}, \bibinfo{person}{Alain Frisch}, \bibinfo{person}{Jacques Garrigue},
+  \bibinfo{person}{Didier R{\'e}my}, \bibinfo{person}{KC Sivaramakrishnan},
+  {and} \bibinfo{person}{J{\'e}r{\^o}me Vouillon}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \emph{\bibinfo{title}{The OCaml system release 5.1: Documentation and
+  user's manual}}.
+\newblock \bibinfo{thesistype}{Ph.\,D. Dissertation}. \bibinfo{school}{Inria}.
+\newblock
+
+
+\bibitem[Liskov and Guttag(1986)]%
+        {liskov:abstraction}
+\bibfield{author}{\bibinfo{person}{Barbara Liskov} {and} \bibinfo{person}{John
+  Guttag}.} \bibinfo{year}{1986}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Abstraction and Specification in Program
+  Development}}.
+\newblock \bibinfo{publisher}{MIT Press/McGraw-Hill},
+  \bibinfo{address}{Cambridge, MA}.
+\newblock
+
+
+\bibitem[MacQueen and Baudinet(1985)]%
+        {macqueen1985tree}
+\bibfield{author}{\bibinfo{person}{David MacQueen} {and} \bibinfo{person}{M
+  Baudinet}.} \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{Tree Pattern matching for ML}.
+\newblock \bibinfo{journal}{\emph{Unpublished manuscript}}
+  (\bibinfo{year}{1985}).
+\newblock
+
+
+\bibitem[Maranget(2008)]%
+        {maranget}
+\bibfield{author}{\bibinfo{person}{Luc Maranget}.}
+  \bibinfo{year}{2008}\natexlab{}.
+\newblock \showarticletitle{Compiling pattern matching to good decision trees}.
+  In \bibinfo{booktitle}{\emph{Proceedings of the 2008 ACM SIGPLAN workshop on
+  ML}}. \bibinfo{pages}{35--46}.
+\newblock
+
+
+\bibitem[Marlow et~al\mbox{.}(2010)]%
+        {haskell}
+\bibfield{author}{\bibinfo{person}{Simon Marlow} {et~al\mbox{.}}}
+  \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{Haskell 2010 Language Report: Chapter 3}.
+\newblock  (\bibinfo{year}{2010}).
+\newblock
+
+
+\bibitem[Palao~Gostanza et~al\mbox{.}(1996)]%
+        {palao1996new}
+\bibfield{author}{\bibinfo{person}{Pedro Palao~Gostanza},
+  \bibinfo{person}{Ricardo Pena}, {and} \bibinfo{person}{Manuel N{\'u}nez}.}
+  \bibinfo{year}{1996}\natexlab{}.
+\newblock \showarticletitle{A new look at pattern matching in abstract data
+  types}.
+\newblock \bibinfo{journal}{\emph{ACM SIGPLAN Notices}} \bibinfo{volume}{31},
+  \bibinfo{number}{6} (\bibinfo{year}{1996}), \bibinfo{pages}{110--121}.
+\newblock
+
+
+\bibitem[Ramsey(2022)]%
+        {bpc}
+\bibfield{author}{\bibinfo{person}{Norman Ramsey}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Programming Languages: Build, Prove, and
+  Compare}}.
+\newblock \bibinfo{publisher}{Cambridge University Press}.
+\newblock
+
+
+\bibitem[Scott and Ramsey(2000)]%
+        {scottramsey}
+\bibfield{author}{\bibinfo{person}{Kevin Scott} {and} \bibinfo{person}{Norman
+  Ramsey}.} \bibinfo{year}{2000}\natexlab{}.
+\newblock \showarticletitle{When do match-compilation heuristics matter}.
+\newblock \bibinfo{journal}{\emph{University of Virginia, Charlottesville, VA}}
+  (\bibinfo{year}{2000}).
+\newblock
+
+
+\bibitem[Sweeney(2023)]%
+        {timtalk}
+\bibfield{author}{\bibinfo{person}{Tim Sweeney}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Ask me anything with Tim Sweeney}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.youtube.com/watch?v=LXEqsV7vF-E&list=PLyrlk8Xaylp5yZHjvOlJo_63AtJiOQhag&index=51}}.
+\newblock
+
+
+\bibitem[Syme et~al\mbox{.}(2010)]%
+        {fsharp}
+\bibfield{author}{\bibinfo{person}{Don Syme}, \bibinfo{person}{Luke Hoban},
+  \bibinfo{person}{Tao Liu}, \bibinfo{person}{Dmitry Lomov},
+  \bibinfo{person}{James Margetson}, \bibinfo{person}{Brian McNamara},
+  \bibinfo{person}{Joe Pamer}, \bibinfo{person}{Penny Orwick},
+  \bibinfo{person}{Daniel Quirk}, \bibinfo{person}{Chris Smith},
+  {et~al\mbox{.}}} \bibinfo{year}{2010}\natexlab{}.
+\newblock \showarticletitle{The F\# 2.0 language specification}.
+\newblock \bibinfo{journal}{\emph{Microsoft, August}} (\bibinfo{year}{2010}).
+\newblock
+
+
+\bibitem[Team({[n.\,d.]})]%
+        {elixir}
+\bibfield{author}{\bibinfo{person}{The~Elixir Team}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Elixir Documentation}}.
+\newblock Hexdocs.pm.
+\newblock
+\urldef\tempurl%
+\url{https://hexdocs.pm/elixir/index.html}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Wadler(1985)]%
+        {wadler1985replace}
+\bibfield{author}{\bibinfo{person}{Philip Wadler}.}
+  \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{How to replace failure by a list of successes a
+  method for exception handling, backtracking, and pattern matching in lazy
+  functional languages}. In \bibinfo{booktitle}{\emph{Conference on Functional
+  Programming Languages and Computer Architecture}}. Springer,
+  \bibinfo{pages}{113--128}.
+\newblock
+
+
+\bibitem[Wadler(1987)]%
+        {wadler1987views}
+\bibfield{author}{\bibinfo{person}{Philip Wadler}.}
+  \bibinfo{year}{1987}\natexlab{}.
+\newblock \showarticletitle{Views: A way for pattern matching to cohabit with
+  data abstraction}. In \bibinfo{booktitle}{\emph{Proceedings of the 14th ACM
+  SIGACT-SIGPLAN symposium on Principles of programming languages}}.
+  \bibinfo{pages}{307--313}.
+\newblock
+
 
 \end{thebibliography}

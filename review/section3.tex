@@ -26,19 +26,19 @@
     to bridge the gap between pattern matching, equations, and decision trees.
     They are \PPlus, which has pattern matching with all the above extensions,
     \VMinus, which has equations without backtracking or multiple results, and
-    \D, which has decision trees. \PPlus\ and \VMinus serve to explore the
-    design space of pattern matching and equations, while \D\ serves as the
+    \D, which has decision trees. \PPlus and \VMinus serve to explore the
+    design space of pattern matching and equations, while \D serves as the
     target of translation to reason about efficiency. 
 
     In this section, I present the three languages. Their semantics appear in
     Figures X, Y, and Z, respectively, and in Appendix A. In my design, I took
-    inspiration from Verse: each of \PPlus, \VMinus, and \D\ has a conventional
+    inspiration from Verse: each of \PPlus, \VMinus, and \D has a conventional
     sub-language that is the lambda calculus extended with named value
     constructors \it{K} applied to zero or more values. I chose named value
     constructors over \VC's tuples because they look more like patterns. 
     
     Because they share a core, and to facilitate comparisons and proofs, I have
-    decided to present \VMinus\, \PPlus\, and \D\ as three subsets of a single
+    decided to present \VMinus, \PPlus, and \D as three subsets of a single
     unifying language, whose abstract syntax is given in
     Figure~\ref{fig:unilang}. Column “Unique To” indicates which components of
     this unifying language belong to the sub-languages. For all intents and
@@ -51,24 +51,24 @@
     the same semantics. Also like the lambda calculus and \VC, all three
     languages are \it{strict}, meaning expressions are always evaluated when
     they are bound to variables, and they are all untyped. Creating a type
-    system for \PPlus\ and \VMinus\ is a worthy effort but is the subject of
-    another paper. \D\ mainly exists as the target of translations, so typing it
+    system for \PPlus and \VMinus is a worthy effort but is the subject of
+    another paper. \D mainly exists as the target of translations, so typing it
     is neither particularly interesting nor worthwhile. 
     
     In the subsections below, I discuss each language in more detail.
-    Section~\ref{futurework} goes further in analyzing how \PPlus\ and \VMinus\
+    Section~\ref{futurework} goes further in analyzing how \PPlus and \VMinus
     relate to modern languages with pattern matching and to \VC respectively. 
 
 \subsection{Introducing \PPlus}
 \label{pplus}
 
-    \PPlus\ packages common extensions to pattern matching with a standard core.
+    \PPlus packages common extensions to pattern matching with a standard core.
     In addition to bare pattern matching— names and applications of value
     constructors— the language includes pattern guards, or-patterns, and side
     conditions. You may point out that pattern guards subsume side conditions
     (yes, they do!); we include side conditions and separate them from guards
-    for purpose of study. Furthermore, \PPlus\ introduces a new form of pattern:
-    \pcommap. This allows a pattern in \PPlus\ be a \it{sequence} of
+    for purpose of study. Furthermore, \PPlus introduces a new form of pattern:
+    \pcommap. This allows a pattern in \PPlus be a \it{sequence} of
     sub-patterns, allowing a programmer to stuff as many patterns as they want
     in the space of a single one. I discuss the implications of this in
     Section~\ref{ppweird}.
@@ -116,7 +116,7 @@ $K$ : \textsf{Value Constructors} ::=
 \label{fig:ppsyntax}
 \end{figure}
 
-  % \subsection{Forms of Judgement for {\PPlus}:}
+  % \subsection{Forms of Judgement for \PPlus:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
@@ -204,7 +204,7 @@ $\rho + \rho'$.
 
 \subsection{Expressions in \PPlus}
 
-    An expression in {\PPlus} evaluates to produce a single value. 
+    An expression in \PPlus evaluates to produce a single value. 
     \begin{align*}
         &\prun
     \end{align*}
@@ -215,7 +215,7 @@ $\rho + \rho'$.
 
     
     Figure~\ref{fig:ppfuncs} provides an example of how a programmer might utilize
-    \PPlus\ to solve the previous problems: 
+    \PPlus to solve the previous problems: 
 
     \begin{figure}[ht] 
       \begin{minipage}[h]{0.54\linewidth}
@@ -271,21 +271,21 @@ val game_of_token = \t.
           \label{fig:ppgot}
       \vspace{4ex}
       \end{minipage}%% 
-      \caption{The functions in \PPlus\ have the same desirable implementation
+      \caption{The functions in \PPlus have the same desirable implementation
       as before.}
   \label{fig:ppfuncs}
     \end{figure}        
     
-    I've had to make some syntactic concessions: \PPlus\ doesn't have strings or
+    I've had to make some syntactic concessions: \PPlus doesn't have strings or
     tuples, so I've used masquerading value constructors, and the parser has no
     left recursion or notion of infix operators, so I've had to parenthesize a
-    few expressions. Extending \PPlus\ with strings, left recursion, true
+    few expressions. Extending \PPlus with strings, left recursion, true
     tuples, and math operators is left as an exercise to the reader. 
     
-\subsection{Addressing how \PPlus\ handles unusual pattern combinations}
+\subsection{Addressing how \PPlus handles unusual pattern combinations}
 \label{ppweird}
     Given its minimal restrictions on what kind of pattern can appear where,
-    \PPlus\ admits of strange-looking patterns: consider \tt{Cons (when true)
+    \PPlus admits of strange-looking patterns: consider \tt{Cons (when true)
     zs}. But these should not be alarming, because such syntactic forms reduce
     to normal forms by (direct) application of algebraic laws: 
 
@@ -300,13 +300,13 @@ val game_of_token = \t.
     
     
     Repeatedly applying these laws until the program reaches a fixed point
-    normalizes placements of \it{when}. Laws (2) and (3) work because \PPlus\
+    normalizes placements of \it{when}. Laws (2) and (3) work because \PPlus
     has no side effects and the laws assume all names are unique (the compiler
     takes care of this), so changing the order in which patterns match has no
     effect on semantics.         
 
 
-\subsection{Introducing \VMinus\ }
+\subsection{Introducing \VMinus }
 \label{vminus}
 
         To fuel the pursuit of smarter decision-making, I now draw inspiration
@@ -335,7 +335,7 @@ val game_of_token = \t.
         \item The existential $\exists$ may not appear under choice.
         \end{enumerate}
 
-        I introduce one more crucial modification to the \VC\ runtime: a name in
+        I introduce one more crucial modification to the \VC runtime: a name in
         \VMinus is an \it{expression} rather than a \it{value}. This alteration,
         coupled with my adjustments to choice, eradicates backtracking. Our
         rationale behind this is straightforward: if an expression returns a
@@ -343,7 +343,7 @@ val game_of_token = \t.
         name, it may necessitate the reevaluation of the earlier expression—- a
         scenario I strive to avoid. 
         
-        % An example in \VC\ illustrates this precise
+        % An example in \VC illustrates this precise
         % scenario: 
 
         % FIRST PAPER EXAMPLE 
@@ -420,7 +420,7 @@ val game_of_token = \t.
 
 
         
-    Even with multiple modifications, \VMinus\ still allows for many of the same
+    Even with multiple modifications, \VMinus still allows for many of the same
     pleasing computations as full Verse. Programmers in \VMinus can\dots
         \begin{enumerate}
             \item Introduce a set of equations, to be solved in a
@@ -431,7 +431,7 @@ val game_of_token = \t.
         \end{enumerate}
 
     Figure~\ref{fig:vminusfuncs} provides an example of how a programmer can
-    utilize \VMinus\ to solve the previous problems: 
+    utilize \VMinus to solve the previous problems: 
     
     
     \begin{figure}[ht] 
@@ -493,29 +493,29 @@ val game_of_token = \t.
           \label{fig:vmgot}
       \vspace{4ex}
       \end{minipage}%% 
-      \caption{The functions in \VMinus\ have a desirably concise
+      \caption{The functions in \VMinus have a desirably concise
       implementation, as before.}
   \label{fig:vminusfuncs}
     \end{figure}   
 
-    \VMinus\ looks satisfyingly similar to both \PPlus\ and \VC. 
+    \VMinus looks satisfyingly similar to both \PPlus and \VC. 
    
-    \subsection{\VMinus\ and \PPlus, side by side}
-    I compare \VMinus\ with \PPlus\ as an exercise in comparing equations with
-    pattern matching. They certainly look similar, which hints that \VMinus\
+    \subsection{\VMinus and \PPlus, side by side}
+    I compare \VMinus with \PPlus as an exercise in comparing equations with
+    pattern matching. They certainly look similar, which hints that \VMinus
     might be as expressive as pattern matching with the three extensions. 
     Proving this claim is the topic of Section~\ref{pplustovminus}. 
 
-    When might a programmer prefer \VMinus\ over \PPlus, or vice versa? After
+    When might a programmer prefer \VMinus over \PPlus, or vice versa? After
     programming in both, I have come up with three empirical observations: 
 
     \begin{enumerate}
       \item \it{The scrutinee:} When there is no obvious single scrutinee, \VMinus is more succinct.
       When there is a scrutinee, \PPlus is more succinct. 
       \item \it{Binding and decision-making:} Binding and decision-making are
-      joined in a single construct in \VMinus: \tt{=}. \PPlus\ needs different
+      joined in a single construct in \VMinus: \tt{=}. \PPlus needs different
       kinds of syntax, like \tt{<-}, to express different kinds of binding. And
-      a programmer wanting for \tt{let} in \PPlus\ will never feel this need in
+      a programmer wanting for \tt{let} in \PPlus will never feel this need in
       \VMinus: \tt{=} subsumes that, too. 
       \item \it{Names:} In \VMinus, names are explicitly introduced. In
       practice, this helps prevent a common mistake in pattern matching in which
@@ -565,7 +565,7 @@ val game_of_token = \t.
 % does not contain whitespace, a bracket, or parenthesis, 
 % and is not a value constructor name or a reserved word.
 
-\subsection{Formal Semantics of ${\VMinus}$:}
+\subsection{Formal Semantics of $\VMinus$:}
 \begin{tabular}{ll}
 \toprule
     \multicolumn2{l}{\emph{Metavariables}} \\
@@ -596,7 +596,7 @@ val game_of_token = \t.
     \newcommand\GNoTree{\vmrung \rightsquigarrow \uppsidown} 
     
     An expression in core Verse evaluates to produce possibly-empty sequence of
-    values. In {\VMinus}, expressions evaluate to a single value. 
+    values. In \VMinus, expressions evaluate to a single value. 
     % We will explore a Verse variant in which expressions may evaluate to
     % multiple values. 
 
@@ -609,7 +609,7 @@ val game_of_token = \t.
     \showvjudgement{Process-Guards}{\vmgs}
 \subsection{Guards}
 
-In {\VMinus}, we solve guards similarly to how the authors of the original Verse
+In \VMinus, we solve guards similarly to how the authors of the original Verse
 paper solve equations: we pick one, attempt to solve for it, and move on. 
 
 In our semantics, we do this with a \it{list} of guards: we pick a guard,
@@ -644,7 +644,7 @@ $\dagger$ will cause the top-level list of guards to also produce $\dagger$.
 \subsection{Introducing \D}
 \label{d}
 
-While \PPlus\ and \VMinus exist for writing programs, \D\ exists as the target
+While \PPlus and \VMinus exist for writing programs, \D exists as the target
 of translation. This is because the decision-making construct in \D, the
 \it{decision tree}, is impractical for programmers but practical for theorists
 who wish to prove properties of efficiency. Specifically, a decision tree is an
@@ -659,7 +659,7 @@ compiling \it{case} expressions. In this work, I will use them as a target for
 compiling \it{if-fi} in \VMinus. I do so to prove that equations, at least given
 their restrictions in \VMinus, can be compiled to a decision tree. 
 
-\D\ is a simple generalization of the trees found in~\citet{maranget}. I discuss
+\D is a simple generalization of the trees found in~\citet{maranget}. I discuss
 the specifics of \D's decision trees in the following section. 
 
 \end{document}

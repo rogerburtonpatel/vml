@@ -66,6 +66,7 @@
 \newcommand\pcommap{\ensuremath{p_{1}, p_{2}}}
 \newcommand\parrowe{\ensuremath{p \leftarrow \expr}}
 \newcommand\caseabstract{\ensuremath{\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}}}
+\newcommand\wildcard{\ensuremath{\_}}
 
 %%%%%%%%%% VMinus ABSTRACT SYNTAX %%%%%%%%%%
 
@@ -569,8 +570,13 @@
 %%%%%%%%%%%%%%%%% SEMANTICS %%%%%%%%%%%%%%%%%
 \newcommand\vmsemantics{% 
 
-\subsection{Rules (Big-step Operational Semantics) for ${\VMinus}$:}
-\label{vmsemantics}
+\subsubsection{Judgement forms for \VMinus}
+
+\showvjudgement{Eval}{\vmeval}
+
+\showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
+\showvjudgement{Guard-reject}\gfail
+
 % \[
 % \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
 %     {\vmrung[context=\emptyseq, guard=\expr]}
@@ -958,14 +964,14 @@
 }
 
 
-\newcommand\ppsemantics {
-\label{ppsemantics}
+\newcommand\ppsemantics {      
 
-\subsection{Rules (Big-step Operational Semantics) for {\PPlus}:}
+      \subsubsection{Judgement forms for \VMinus}
 
-      Some of these rules are a variation on the rules found in Ramsey~\cite{bpc}. 
-      
-      
+      \showvjudgement{Eval}{\ppeval}
+      \showvjudgement{Match-Success}{\pmatch}
+      \showvjudgement{Match-Fail}{\pfail}
+
       \subsubsection{Evaluating General Expressions}
       
       \[

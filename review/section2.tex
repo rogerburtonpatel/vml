@@ -27,7 +27,7 @@
 
 In this section, I flush out the definitions, forms, and tradeoffs of pattern
 matching and equations. These tradeoffs inform the compromises I make in
-\VMinus\ down the line in Section~\ref{vminus}.
+\VMinus down the line in Section~\ref{vminus}.
 
 \subsection{Pattern matching}
 \label{pmoverobservers}
@@ -600,7 +600,7 @@ let game_of_token token = match token with
     equations, I'll ground explanations and examples in how they relate to
     pattern matching. 
 
-    \VC\ uses \it{equations} instead of pattern matching to test for structural
+    \VC uses \it{equations} instead of pattern matching to test for structural
     equality and create bindings. Like pattern matching, equations scrutinize
     and deconstruct data at runtime by testing for structural equality and
     unifying names with values. Unlike pattern matching, \VC's equations can
@@ -613,14 +613,14 @@ let game_of_token token = match token with
 
     Equations offer a form of binding that looks like a single pattern match.
     What about a list of many patterns and right-hand sides, as in a case
-    expression? For this, \VC\ has \it{choice} (\choice). The full semantics of
+    expression? For this, \VC has \it{choice} (\choice). The full semantics of
     choice are too complex for me to cover in this paper, but you can get away
     with knowing that choice, when combined with the \tt{one} operator, has a
     very similar semantics to case; that is, “proceed and create bindings if any
     one of these computations succeed.” 
 
     Let's look at what equations, \tt{one}, and choice look like in real,
-    written Verse code. I've written our \tt{area} function in \VC\ extended
+    written Verse code. I've written our \tt{area} function in \VC extended
     with a \tt{float} type and a multiplication operator \tt{*} in
     Figure~\ref{fig:versearea}. 
 
@@ -634,7 +634,7 @@ $\exists$ area. area = $\lambda$ sh.
        | $\exists$ b1 b2 h. sh = $\langle$TRAPEZOID, b1, b2, h$\rangle$; 
               0.5 * b1 * b2 * h}
         \end{lstlisting}
-    \caption{\tt{area} in \VC\ uses existentials and equations rather than
+    \caption{\tt{area} in \VC uses existentials and equations rather than
     pattern matching.} 
     \Description{An implementation of area in Verse.}
     \label{fig:versearea}
@@ -661,12 +661,12 @@ $\exists$ area. area = $\lambda$ sh.
       as \ref{fig:pmarea} does with pattern matching. 
       \item \tt{area} using equations has all important internal values named
       very explicitly.
-      \item This Property may not hold, because \VC\ on its own is untyped.
+      \item This Property may not hold, because \VC on its own is untyped.
       Without a type system, a compiler cannot help me with non-exhaustive
       cases. However, there is no published compiler, type system or no, for
       Verse, and only when one is made available can I make this assertion. For
       this reason, and for the sake of focusing on more important details, I
-      choose to proceed in my analysis of equations in \VC\ without considering
+      choose to proceed in my analysis of equations in \VC without considering
       this Property. 
     \end{enumerate}
 
@@ -677,7 +677,7 @@ $\exists$ area. area = $\lambda$ sh.
     Do you remember how in Section~\ref{pmoverobservers}, I demonstrated how
     pattern matching had to resort to extensions to regain the Properties when
     challenging examples stole them away? In Figure~\ref{fig:verseextfuncs},
-    I've implemented those examples in \VC\ (this time extended with strings,
+    I've implemented those examples in \VC (this time extended with strings,
     floats, and \tt{*}) using choice and equations. Take a look for yourself! 
 
     \begin{figure}[ht] 
@@ -697,7 +697,7 @@ $\exists$ exclaimTall. exclaimTall = $\lambda$ sh.
     | "Your shape is small." }
             \end{lstlisting}
                 \Description{exclaimTall}
-        \subcaption{\tt{exclaimTall} in \VC\ }
+        \subcaption{\tt{exclaimTall} in \VC }
             \label{fig:verseexclaimtall} 
         %   \vspace{4ex}
         \end{minipage}%%
@@ -713,7 +713,7 @@ $\exists$ tripleLookup. tripleLookup = $\lambda$ rho x.
         | handleFailure x }
           \end{lstlisting}
                 \Description{exclaimTall}
-            \subcaption{\tt{tripleLookup} in \VC\ }
+            \subcaption{\tt{tripleLookup} in \VC }
             \label{fig:versetriplelookup} 
         \vspace{4ex}
         \end{minipage} 
@@ -732,7 +732,7 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
        |   $\langle$"Irrelevant", 0$\rangle$ }
           \end{lstlisting}
                 \Description{game_of_token in \VC}
-        \subcaption{\tt{game\_of\_token} in \VC\ }
+        \subcaption{\tt{game\_of\_token} in \VC }
             \label{fig:versegot} 
         \vspace{4ex}
         \end{minipage}%% 
@@ -744,10 +744,10 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     The code in Figure~\ref{fig:verseextfuncs} has all the Nice Properties
     (again, disregarding the ambiguous 5th.) This is promising for \VC. If it
     rivals pattern matching with popular extensions in desirable properties, and
-    \VC\ does everything using only equations and choice, it seems like the
+    \VC does everything using only equations and choice, it seems like the
     language is a strong option for writing code! 
 
-    \subsection{\VC\ has a challenging cost model}
+    \subsection{\VC has a challenging cost model}
     \label{vcbadcost}
 
     So what's the catch? Programmers everywhere have not thrown up their hands,

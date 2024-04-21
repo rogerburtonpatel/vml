@@ -1,46 +1,56 @@
 This is BibTeX, Version 0.99d (TeX Live 2023)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: postpaper.aux
-The style file: authordate3.bst
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: sources.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty address in bpc
 You've used 1 entry,
-            2453 wiz_defined-function locations,
-            577 strings with 4337 characters,
-and the built_in function-call counts, 320 in all, are:
-= -- 30
-> -- 8
-< -- 3
-+ -- 2
-- -- 2
-* -- 22
-:= -- 61
-add.period$ -- 4
+            5981 wiz_defined-function locations,
+            1477 strings with 17964 characters,
+and the built_in function-call counts, 811 in all, are:
+= -- 68
+> -- 17
+< -- 0
++ -- 4
+- -- 7
+* -- 45
+:= -- 95
+add.period$ -- 6
 call.type$ -- 1
-change.case$ -- 6
+change.case$ -- 5
 chr.to.int$ -- 1
-cite$ -- 1
-duplicate$ -- 12
-empty$ -- 24
-format.name$ -- 3
-if$ -- 63
-int.to.chr$ -- 1
-int.to.str$ -- 0
+cite$ -- 2
+duplicate$ -- 75
+empty$ -- 53
+format.name$ -- 7
+if$ -- 157
+int.to.chr$ -- 2
+int.to.str$ -- 1
 missing$ -- 2
-newline$ -- 8
-num.names$ -- 3
-pop$ -- 6
+newline$ -- 48
+num.names$ -- 7
+pop$ -- 31
 preamble$ -- 1
-purify$ -- 7
+purify$ -- 13
 quote$ -- 0
-skip$ -- 14
+skip$ -- 27
 stack$ -- 0
-substring$ -- 11
-swap$ -- 2
+substring$ -- 49
+swap$ -- 6
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 6
-warning$ -- 0
-while$ -- 2
+type$ -- 15
+warning$ -- 1
+while$ -- 7
 width$ -- 0
-write$ -- 14
+write$ -- 58
+(There was 1 warning)

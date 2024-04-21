@@ -7,8 +7,10 @@
   \providecommand\BibTeX{{%
     \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 \usepackage{outlines}
+\usepackage{natbib}
 \setlength{\headheight}{14.0pt}
 \setlength{\footskip}{13.3pt}
+\citestyle{acmauthoryear}
 \begin{document}
 \title{An Alternative to Pattern Matching, Inspired by Verse}
 
@@ -45,20 +47,32 @@
 % \postcode{02155}
 % }
 
-\renewcommand{\shortauthors}{Burtonpatel et al.}
+\renewcommand{\shortauthors}{Burtonpatel}
 
 \begin{abstract}
-
 Pattern matching appeals to functional programmers for its expressiveness and
-good cost model via compilation to a decision tree, but it can fail to
-succinctly express certain computations. Extensions to pattern matching aim to
-shore up its weaknesses, but they are not unified across popular programming
-languages. By contrast, equations in Verse are both expressive and succinct,
-with no obvious need for extensions; however, Verse's cost model is a challenge.
-\VMinus, a core language that uses Verse's equations with some restrictions, can
-be compiled to a decision tree. \VMinus\ also subsumes \PPlus, a core language
-with three popular extensions to pattern matching. 
-  \end{abstract}
+good cost model via compilation to a decision tree, but certain computations can
+only be expressed verbosely using pattern matching primitives. The problem can
+be solved by extensions, but these are not standardized, and no single popular
+programming language contains all the extensions to pattern matching. By
+contrast, equations in Verse are both expressive and succinct, with no obvious
+need for extensions; however, Verse's cost model is a challenge. To resolve
+these problems, I propose a new language, \VMinus, which uses Verse's equations
+with some restrictions. I show that \VMinus subsumes \PPlus, a core language
+with three popular extensions to pattern matching. I also show that \VMinus can
+be compiled to a decision tree. 
+\end{abstract}
+
+% Pattern matching appeals to functional programmers for its expressiveness and
+% good cost model via compilation to a decision tree, but certain computations can
+% only be expressed verbosely using pattern matching primitives. The problem can
+% be solved by extensions, but no single popular programming language implements
+% all the extensions to pattern matching. By contrast, equations in Verse are both
+% expressive and succinct, with no obvious need for extensions; however, Verse's
+% cost model is a challenge. I formalize \VMinus, a core language that uses
+% Verse's equations with some restrictions, and show that it can be compiled to a
+% decision tree. I also show that \VMinus\ subsumes \PPlus, a core language with
+% three popular extensions to pattern matching. 
 
 \maketitle
     

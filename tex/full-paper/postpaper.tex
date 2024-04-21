@@ -53,7 +53,7 @@ programming languages with music. Ultimately, we decided that I should pursue
 this project instead, and I am grateful to him for his mentorship in that moment
 and onwards. 
 
-My family- my mother, Jennifer Burton, my father, Aniruddh Patel, and my
+My family--- my mother, Jennifer Burton, my father, Aniruddh Patel, and my
 sister, Lilia Burtonpatel, have all given me support, encouragement, and
 (arguably most importantly) food. My gratitude for them is immeasurable. 
 
@@ -80,7 +80,7 @@ year \it{increíble}. I could not have smiled through it all without you.
 Thank you all. 
 
 \section{References}
-\bibliographystyle{authordate3}
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{sources}
 
 \renewcommand\thesection{\Alph{section}}
@@ -91,6 +91,27 @@ Thank you all.
 \1 \bf{Proof: Translation from \PPlus\ to \VMinus preserves semantics }
 % \1 \bf{Proof: Translation from \VMinus to Verse preserves semantics}
 \end{outline}
+
+\section{Addressing how \PPlus handles unusual pattern combinations}
+\label{ppweird}
+    \PPlus admits of strange-looking patterns: consider \tt{Cons (when true)
+    zs}. But these should not be alarming, because such syntactic forms reduce
+    to normal forms by (direct) application of algebraic laws: 
+
+    \begin{align}
+      K (\whenexpr) \;p2\; \dots &=== K \;\_ \;p2\; \dots, \whenexpr \\
+      K (\whenexpr, \;p2\;) \;p3\; \dots  &=== K \;p2\; \;p3\; \dots, \whenexpr \\
+      K (p1\;, \whenexpr) \;p3\; \dots  &=== K \;p1\; \;p3\; \dots, \whenexpr \\
+      K (\whenexpr \pbar p2\;) \;p3\; \dots &=== (K \;\_ \;p3\; \dots, \whenexpr) \pbar (K \;p2\; \;p3\; \dots) \\
+      K (p1 \pbar \whenexpr) \;p3\; \dots &=== (K \;p2\; \;p3\; \dots) \pbar (K \;\_ \;p3\; \dots, \whenexpr)  \\
+      \whenexpr \leftarrow e &=== \;\_ <- e, \whenexpr
+    \end{align}   
+    
+    Repeatedly applying these laws until the program reaches a fixed point
+    normalizes placements of \it{when}. Laws (2) and (3) work because \PPlus
+    has no side effects and the laws assume all names are unique (the compiler
+    takes care of this), so changing the order in which patterns match has no
+    effect on semantics.         
 
 \section{Is \VMinus\ a true subset of \VC?}
 \VMinus\ certainly appears to relate to \VC\ semantically. Translating

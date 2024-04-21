@@ -22,7 +22,7 @@
 \begin{document}
   
 
-\section{\VMinus\ can be compiled to a decision tree}
+\section{\VMinus can be compiled to a decision tree}
 \label{vminustod}
 % [Evidence that \dots efficiency]
     Section~\ref{vcbadcost} claimed that pattern matching has a desirable
@@ -32,15 +32,15 @@
     distinguished work, \it{Compiling Pattern Matching to Good Decision Trees}.
     To demonstrate that \VMinus has the same desirable cost model as pattern
     matching, I present an algorithm for compiling \VMinus to a decision tree.
-    This algorithm runs during \DTran, the transformation from \VMinus\ to \D.
+    This algorithm runs during \DTran, the transformation from \VMinus to \D.
     Its domain, instead of a \it{case} expression, is \VMinus's \it{if-fi}. 
        
-    \subsection{\D\ is a simple generalization of Maranget's trees} 
+    \subsection{\D is a simple generalization of Maranget's trees} 
 
     % \rab{Do italics on italics cancel out in a cs paper as well? I un-italicized
     % D in this automatically-italicized subsection title; is that right?}
 
-    Decision trees in \D\ are engineered to look like Maranget's trees. There
+    Decision trees in \D are engineered to look like Maranget's trees. There
     are a few minor differences: First, Maranget's compilation algorithm is more
     complex than the one in this paper, and involves an intermediate
     representation of occurrence vectors and clause matrices which the algorithm
@@ -98,18 +98,18 @@
 
     \subsection{Rules (Big-step Operational Semantics) for \D:}
     
-    \rab{Here is where the operational semantics for \D\ will live.}
+    \rab{Here is where the operational semantics for \D will live.}
     % \dsemantics
 
-    \subsection{\D\ has a favorable cost model}
+    \subsection{\D has a favorable cost model}
     I choose decision trees as a target for compilation for the simple reason of
     their appealing cost model. A decision tree can be exponential in size but
     never examines a word of the scrutinee more than once. It is the compilation
-    from \VMinus\ to \D that must enforce this invariant by determining which
+    from \VMinus to \D that must enforce this invariant by determining which
     equations in an \it{if-fi} represent “decision points” and compiling them to
     unique \it{test} nodes in the resulting tree. 
     
-    \subsection{The \DTran\ algorithm: \VMinus\ $\rightarrow$ \D}
+    \subsection{The \DTran\ algorithm: \VMinus $\rightarrow$ \D}
 
     Before presenting the algorithm \DTran, I will explain in plain English how
     it works, with a bit of hand-waving. The algorithm is non-trivial, so my
@@ -186,7 +186,7 @@
     
     \rab{Here will live the formal algorithm for \DTran}.
 
-    \subsection{Translation from \VMinus\ to \D\ preserves semantics}
+    \subsection{Translation from \VMinus to \D preserves semantics}
     
     Translating \it{if-fi} to a decision tree should preserve semantics. The
     following theorem formalizes this claim: 
