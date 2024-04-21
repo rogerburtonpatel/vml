@@ -369,12 +369,12 @@ val game_of_token = \t.
         a challenge. 
         
         The elements of \VC that lead to unpredictable or costly run times are
-        backtracking and multiple results. So, I remove them. Removing these
-        language traits strips much of the identity of \VC; however, I do so in
-        order to build from only \VC's \it{equations} while staying grounded in
-        an otherwise-typical programming context of single results and no
+        backtracking and multiple results. So, I begin with a subset of \VC with
+        these elements removed. Removing them strips much of the identity of
+        \VC, but it leaves its \it{equations} to build on top of in an
+        otherwise-typical programming context of single results and no
         backtracking at runtime. 
-
+        
         TODO START HERE. 
 
         \begin{enumerate}
@@ -385,12 +385,14 @@ val game_of_token = \t.
         
         Then introduce the examples, and then the concrete syntax. 
 
-        Both backtracking and multiple results often
-        manifest within \VC's choice operator, which tempt its removal
-        altogether. However, I am drawn to harnessing the expressive potential
-        of this operator, particularly when paired with \VC's 'one' keyword.
-        When employed with choice as a condition, 'one' elegantly signifies
-        'proceed if any branch of the choice succeeds. 
+        Both backtracking and multiple results often manifest within \VC's
+        choice operator, which tempt its removal altogether. 
+        
+        However, I am drawn
+        to harnessing the expressive potential of this operator, particularly
+        when paired with \VC's 'one' keyword. When employed with choice as a
+        condition, 'one' elegantly signifies 'proceed if any branch of the
+        choice succeeds. 
         
         To this end, I propose a new language, \VMinus, in which choice is
         permitted with several modifications:
@@ -528,14 +530,14 @@ val exclaimTall = \sh.
         \vmlst 
         \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
                       frame=single]
-  val tripleLookup = \ rho. \x.
-    if E x w y z v1 v2 v3. 
-      v1 = (lookup rho) x; v1 = Some w; 
-      v2 = (lookup rho) w; v2 = Some y; 
-      v3 = (lookup rho) y; v3 = Some z; -> 
-            z 
-      [] -> handleFailure x
-    fi 
+val tripleLookup = \ rho. \x.
+  if E x w y z v1 v2 v3. 
+    v1 = (lookup rho) x; v1 = Some w; 
+    v2 = (lookup rho) w; v2 = Some y; 
+    v3 = (lookup rho) y; v3 = Some z; 
+       -> z 
+    [] -> handleFailure x
+  fi 
    \end{lstlisting}
         \Description{tripleLookup in VMinus}
         \subcaption{\tt{tripleLookup} in \VMinus}
@@ -567,35 +569,11 @@ val game_of_token = \t.
   \label{fig:vminusfuncs}
     \end{figure}   
 
-    \VMinus looks satisfyingly similar to both \PPlus and \VC. 
+    \VMinus looks satisfyingly similar to both \PPlus and \VC. The \VMinus
+    examples in Figure~\ref{fig:vminusfuncs} have the same number of cases as
+    the \PPlus examples in Figure~\ref{fig:ppfuncs}, and share the existential
+    and equations with the \VC examples in Figure~\ref{fig:verseextfuncs}. 
    
-    \subsection{\VMinus and \PPlus, side by side}
-    I compare \VMinus with \PPlus as an exercise in comparing equations with
-    pattern matching. They certainly look similar, which hints that \VMinus
-    might be as expressive as pattern matching with the three extensions. 
-    Proving this claim is the topic of Section~\ref{pplustovminus}. 
-
-    When might a programmer prefer \VMinus over \PPlus, or vice versa? After
-    programming in both, I have come up with three empirical observations: 
-
-    \begin{enumerate}
-      \item \it{The scrutinee:} When there is no obvious single scrutinee, \VMinus is more succinct.
-      When there is a scrutinee, \PPlus is more succinct. 
-      \item \it{Binding and decision-making:} Binding and decision-making are
-      joined in a single construct in \VMinus: \tt{=}. \PPlus needs different
-      kinds of syntax, like \tt{<-}, to express different kinds of binding. And
-      a programmer wanting for \tt{let} in \PPlus will never feel this need in
-      \VMinus: \tt{=} subsumes that, too. 
-      \item \it{Names:} In \VMinus, names are explicitly introduced. In
-      practice, this helps prevent a common mistake in pattern matching in which
-      a programmer attempts to match a value $v$ on an in-scope name $x$,
-      expecting the match to succeed iff $x$ evaluates to $v$ at runtime, only
-      to see the match always succeed. 
-    \end{enumerate}     
-
-    \rab{How do you feel about examples for each of these points here? This
-    section is very long, but they help drive these points home.}
-
 % \subsection{Concrete Syntax of \VMinus}
 
 % \bigskip
