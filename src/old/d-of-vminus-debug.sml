@@ -125,6 +125,7 @@ struct
   fun dropUnconstrainedNames (vcon, atoms) choices =
     let val constrained =
               foldl (fn (gs_rhs, xs) => addConstrainedNames (gs_rhs, xs)) Set.empty choices
+        (* val () = app IOUtil.eprint ["constrained: ", String.concatWith ", " (Set.elems constrained), "\n"] *)
     in  (vcon, List.filter (fn x => Set.member (x, constrained)) atoms)
     end
 
@@ -254,6 +255,9 @@ struct
               | (g as V.CONDITION e)::gs' => Option.map (curry op :: g) (refine gs')
               (* todo weak- want to refine in condition as well *)
               | (g as V.EQN (n, V.C (C.VCONAPP (vc, es))))::gs' => 
+                (* (println ("refining " ^ V.guardString g ^ " against " 
+                                    ^ x ^ ", " ^ vname ^ "(" 
+                                    ^ String.concatWith " " ns ^ ")") ; *)
                   if n = x then 
                     if vc' = vc andalso length es = length ns
                     then Option.map (curry op @ (ListPair.map V.EQN (ns, es))) 
@@ -261,7 +265,10 @@ struct
                                     (refine gs')
                     else NONE  
                   else 
+                      (* (println ("moving on with " ^ x) ;  *)
                       Option.map (curry op :: g) (refine gs')
+                      (* ) *)
+                  (* )   *)
               | (g as V.EQN _)::gs' => Option.map (curry op :: g) (refine gs')
         in case refine gs_ of NONE => NONE | SOME refined => SOME (refined, rhs)
     end 
@@ -317,10 +324,17 @@ struct
       case findAnyConstructorApplication context choices
         of SOME x =>  
         let val cons = nub $ List.concat $ map (allApplicationsEquatedTo x o fst) choices
+            (* val () = println ("found application at name " ^ x) *)
             fun refineChoicesWith (app : C.vcon * int) = 
               let val k_ns = givenames app
                   val ns = snd k_ns
+                  (* val () = println ("ns :" ^ String.concatWith ", " ns) *)
+                  (* val () = println ("choices before: " ^ choicesString choices) *)
                   val choices' = mapPartial (refineGexp x k_ns) choices
+                  (* val app' = dropUnconstrainedNames k_ns choices' *)
+                  (* val ns' = snd app' *)
+                  (* val () = println ("leftover choices: " ^ choicesString choices') *)
+                  (* val () = dumpctx (makeAllUnkown ns context) *)
               in (app, 
                   D.EXTRACT (x, ns, compile (makeAllKnown ns context) choices'))
               end 
@@ -337,6 +351,7 @@ struct
         (case findAnyLHSBinding context choices
           of SOME (x, e) => 
             let val eq =  V.EQN (x, e)
+                (* val () = println ("lhs: " ^ V.guardString eq) *)
                 val choices_no_eq = choices -- eq withsubst (x, e)
                 val choices_no_e = choices --- eq --- (V.CONDITION e)
             in  D.TRY_LET (x, translate context e, 
@@ -346,13 +361,16 @@ struct
         | NONE => 
         (case findAnyRHSBinding context choices
           of SOME (x, y as V.C (C.NAME y')) => 
+            (* (println ("rhs: " ^ V.guardString (V.EQN (x, y))) ; *)
               D.TRY_LET (x, D.C (C.NAME y'), compile (makeKnown y' context) 
                         (choices -- (V.EQN (x, y))), NONE)
+            (* ) *)
           | SOME (x, e) => can'tunify x e
           | NONE => 
         (case findAnyConstraint context choices
           of SOME (x, e) => 
             let val eq = V.EQN (x, e)
+                (* val () = println ("contraint: " ^ V.guardString eq) *)
                 val c  = V.CONDITION e
                 val cmp_pruned = choices -- eq withsubst (x, e)
                 val no_eq_choices_no_c = choices --- eq -- c
@@ -386,6 +404,7 @@ struct
 
   fun def context (VMinus.DEF (n, e)) = 
     let val newcontext = makeKnown n context
+        (* val () = print ("context: " ^  Env.toString (fn KNOWN => "KNOWN" | _ => "UNKNOWN") context ^ "\n") *)
     in (D.DEF (n, translate newcontext e), newcontext)
     end 
 

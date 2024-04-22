@@ -144,7 +144,7 @@ struct
   val _ = registerize : constraint -> ((name * name) list -> 'a) -> 'a
 
 
-  fun nub xs = Set.elems (Set.ofList xs)
+  fun nub xs = Set.elems (Set.ofList xs
 
   fun compile fresh (root, []) = Impossible.impossible "no choices"
     | compile fresh (root, frontiers as (first :: _)) =

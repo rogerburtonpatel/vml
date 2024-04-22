@@ -59,9 +59,9 @@ struct
 
   val vmofPP : PPlus.def list -> VMinus.def list = 
     map VMofPP.def
-  
+
   val dofVM : VMinus.def list -> D.def list = 
-    map DofVminus.def
+    DofVminus.defs
 
   fun PPLUS_of PPLUS = pplusOfFile
     | PPLUS_of  _    = raise Backward
@@ -95,7 +95,7 @@ struct
   fun curry f x y = f (x, y)
 
   fun emitD outfile = D.progString >>> curry TextIO.output outfile
-
+  
   (**** The Universal Forward Translator ****)
 
   exception NotForward of language * language  (* for external consumption *)

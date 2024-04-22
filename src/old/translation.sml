@@ -22,7 +22,7 @@ struct
               | P.FUNAPP (e1, e2)  => VM.FUNAPP (vmOfP e1, vmOfP e2)
               | P.LAMBDAEXP (n, b)  => VM.LAMBDAEXP (n, vmOfP b)
               | P.CASE (scrutinee, branches) => 
-                let val freshNameGen = FreshName.freshNameGenGen ()
+                let val freshNameGen = FreshName.freshNameGen
                     val e' = vmOfP scrutinee 
                         (* val _ = print ((VM.expString e') ^ "\n") *)
                     val (pats, rhss) = ListPair.unzip branches 
@@ -70,7 +70,7 @@ struct
               | P.FUNAPP (e1, e2)  => VMS.FUNAPP (vmSimpleOfP e1, vmSimpleOfP e2)
               | P.LAMBDAEXP (n, b)  => VMS.LAMBDAEXP (n, vmSimpleOfP b)
               | P.CASE (scrutinee, branches) => 
-                let val freshNameGen = FreshName.freshNameGenGen ()
+                let val freshNameGen = FreshName.freshNameGen
                     val e' = vmSimpleOfP scrutinee 
                         (* val _ = print ((VMS.expString e') ^ "\n") *)
                     val (pats, rhss) = ListPair.unzip branches 

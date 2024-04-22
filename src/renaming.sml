@@ -41,7 +41,7 @@ for binding sites:
   start by gathering a set of all names used, and generate distinct. 
 for used names, look them up in the environment *)
 
-  fun uncurryFlip f (x, y) = let val (a, b) = f x y in (b, a) end
+  fun uncurryFlip f (x, y) = f y x
 
   fun pplus (renamings : name env) (P.C ce) = 
         (case ce of 

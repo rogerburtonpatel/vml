@@ -20,7 +20,7 @@ struct
 
   fun translate e = 
     let 
-      val freshNameGen = FreshName.freshNameGenGen ()
+      val freshNameGen = FreshName.freshNameGen
       
       fun translate' (P.C ce) = V.C (Core.map translate' ce)
         | translate' (P.I (P.CASE (scrutinee, branches))) = 

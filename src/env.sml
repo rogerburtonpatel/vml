@@ -10,6 +10,9 @@ structure Env :> sig
   val binds : 'a env * name -> bool
 
   val keys : 'a env -> name list 
+  val values : 'a env -> 'a list 
+
+  val map : ('a -> 'b) -> 'a env -> 'b env
 
   val toString : ('a -> string) -> 'a env -> string
   val <+> : 'a env * 'a env -> 'a env  (* BPC, chap 5 *)
@@ -66,8 +69,12 @@ struct
   val concat = List.concat
 
   fun fst (x, y) = x
+  fun snd (x, y) = y
 
   fun keys rho = map fst rho
+  fun values rho = map snd rho
+
+  fun map f (rho : 'a env) = List.map (fn (n, x) => (n, f x)) rho
 
 end
   

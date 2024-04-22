@@ -11,11 +11,11 @@ struct
   val globalcounter = ref 0
 
    fun freshNameGen () = (globalcounter := !globalcounter + 1 ; 
-                          "..x" ^ Int.toString (!globalcounter))
+                          ".x" ^ Int.toString (!globalcounter))
 
   fun freshNameGenGen () = 
     let val counter = ref 0 
-    in fn () => (counter := !counter + 1 ; "..x" ^ Int.toString (!counter))
+    in fn () => (counter := !counter + 1 ; ".x" ^ Int.toString (!counter))
     end 
 
   fun genOfList (gen : (unit -> string)) xs = map (fn _ => gen ()) xs

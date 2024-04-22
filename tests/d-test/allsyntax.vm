@@ -1,0 +1,89 @@
+# val x = x
+# val x = K
+# val x = K y
+# val x = f x
+# val x = f (f x)
+# val x = K y (K z)
+# val x = \y. y
+# val x = (\y. y) (\y. y)
+# val x = if
+# 
+# fi
+# val x = if
+#   E x. -> x
+# fi
+# val x = if
+#   E x. x = x -> x
+# fi
+# val x = if
+#   E x t. x = x t; t = x x -> x
+# fi
+# val g = if
+#   E x t. x = K t; t = K -> x
+# fi
+# val x = if
+#     E x. x = x -> x
+# fi
+# val x = if
+#     x = K -> x
+# fi
+# val x = K
+# val g2 = if
+#      E y. y = K2; x = K y -> x
+#  fi
+#  val x = if
+#      E y z x3 x4 x1 x2. x = K x1 x2; x1 = x; x2 = K x3 x4; x3 = K; x4 = K -> x4
+#  fi
+# val x = if
+#     E x f. (x = x | x = f) -> x
+# fi
+# val x = if
+#     E x y z x3 x4 x1 x2 f. (x = K x1 x2; x1 = x; x2 = K x3 x4; x3 = y; x4 = z | x = f) -> x
+# fi
+# val x = if
+#     E x y z x3 x4 x1 x2. x = K x1 x2; x1 = x; x2 = K x3 x4; x3 = y; x4 = z -> x
+# []  E f. x = f -> x
+# fi
+# val x = if
+#     E x y z x3 x4 x1 x2. x = K x1 x2; x1 = x; x2 = K x3 x4; x3 = y; x4 = z -> x
+# []  E f x. (x = f | x = x) -> x
+# fi
+# val x = if
+#     E x y. x = x; x = y -> x
+# fi
+# val x = if
+#     E x y. x = x; y = x; y = y -> x
+# fi
+# val x = if
+#     E x x1. x = x; x = x; x = x; x1 = true; x1 = false -> x
+# []  E x. x = x -> x
+# fi
+# val go_forth = if
+#     E x x1 y x2. property = Correct x1; x1 = x; y = x; y = y; x2 = y; x2 = true; x -> Go_forth
+# []  E fail. property = fail -> fail
+# fi
+# val x = if
+#     E y x x1. (x = x | x = y; x = x; x = x; x1 = true; x1 = false; true) -> x
+# []  E x. x = x -> x
+# fi
+# val go_forth = if
+#     E x1 x x2 y x3. (property = Correct x1; x1 = x | property = Good_enough x2; x2 = x; y = x; y = y; x3 = y; x3 = true; x) -> Go_forth
+# []  E fail. property = fail -> fail
+# fi
+# val x = f 3
+# val property = Correct true
+# val go_forth = \y. y
+# val fail = \prop. prop
+# val go_forth = if
+#     E x1 x x2 y x3. (property = Correct x1; x1 = x | property = Good_enough x2; x2 = x; y = x; y = y; x3 = y; x3 = true; x) -> go_forth y
+# []  E failcase. property = failcase -> fail Property_failed
+# fi
+# 
+
+val x = K 
+
+val len = \xs.  
+    if xs = NIL; x = K1 -> ZERO
+     [] E y ys. xs = CONS y ys -> INDUCT
+     [] xs = NIL; x = K -> OTHER 
+    fi 
