@@ -46,24 +46,10 @@ programmer might use to deconstruct data is \it{observers}
 structure and extract its components. Examples of observers in functional
 programming languages include Scheme's \tt{null?}, \tt{car}, and \tt{cdr}, and
 ML's \tt{null}, \tt{hd}, and \tt{tl}. But many functional programmers favor
-pattern matching over observers. I list some reasons why below, and I refer to
-these as Nice Properties for the rest of the paper. 
-\bf{\begin{enumerate}
-    \item With pattern matching, code more closely resembles algebraic laws. 
-    \label{p1}
-    \item With pattern matching, it's easier to avoid duplicating code.
-    \label{p2}
-    \item Pattern matching plays nicer with constructed data. 
-    \label{p3}
-    \item Pattern matching militates toward naming important intermediate
-    values. \nolinebreak
-    \label{p4}
-    \item With pattern matching, a compiler may be able to tell if the code
-    omits an important case. 
-    \label{p5}
-\end{enumerate}} I'll demonstrate how pattern matching creates code that
-demonstrates the Nice Properties, even in a tiny example. Consider a \it{shape}
-datatype in Standard ML, which represents shapes by their dimensions: 
+pattern matching over observers. I demonstrate with an example and a claim. 
+
+Consider a \it{shape} datatype in Standard ML, which represents shapes by their
+dimensions: 
 
 \medskip 
 \begin{minipage}[t]{\textwidth}
@@ -75,7 +61,7 @@ datatype in Standard ML, which represents shapes by their dimensions:
 \end{minipage}
 \medskip 
 
-Let's define an \tt{area} function on \it{shape}s, with this type and these
+I define an \tt{area} function on \it{shape}s, with this type and these
 algebraic laws: 
 
 \medskip 
@@ -132,30 +118,57 @@ fun area sh =
     Implementing the observers \tt{isSquare}, \tt{isTriangle}, \tt{sqSide},
     \tt{triW}, \tt{traB1}, \tt{traB2}, and \tt{traH} is left as an
     (excruciating) exercise to the reader. 
-    
+
     If that prospect doesn't convince you that pattern matching avoids a lot of
-    the problems that observers have, let's see how each of our Nice Properties
-    holds up in \tt{area}: 
+    the problems that observers have, I'll show five general reasons why
+    programmers prefer pattern matching over observes. I refer to these as
+    Nice~Properties for the rest of the paper. They are broken into two groups:
+    Group~A, which contains properties of pattern matching that programmers
+    enjoy in general, and Group~B,  which contains properties strictly to do
+    with pattern matching's specific strengths over observers. 
+
+      \begin{enumerate}
+        \item [\textbf{A.}]
+        \begin{enumerate}[label=\arabic*]
+          \item With pattern matching, code more closely resembles algebraic laws. 
+          \label{p1}
+          \item With pattern matching, it's easier to avoid duplicating code.
+          \label{p2}
+          \item With pattern matching, a compiler may be able to tell if the
+          code omits an important case through \it{exhaustiveness analysis}.
+          \label{p5}
+      \end{enumerate}
+        
+        \item [\textbf{B.}]
+        \begin{enumerate}[start=4, label=\arabic*]
+          \item Pattern matching plays nicer with constructed data. 
+          \label{p3}
+          \item With pattern matching, important intermediate values are always
+          given a name. 
+          \nolinebreak
+          \label{p4}
+        \end{enumerate}
+      \end{enumerate}
+
+    Nice Properties \ref{p1}~and~\ref{p2} are the most important of these: they
+    allow programmers to write code that looks like what they write at the
+    whiteboard, with flexible laws and minimal duplication. I show in
+    Section~\ref{extensions} that extensions to pattern matching largely exist
+    to uphold these two properties. 
+    
+    Let's see how each of our Nice Properties holds up in \tt{area}: 
     
     \begin{enumerate}
-        \item[\bf{(1)}] \ref{fig:pmarea}, which uses pattern matching, more
+      \item [\textbf{A.}]
+      \begin{enumerate}[label=\arabic*]
+        \item[\ref{p1}] \ref{fig:pmarea}, which uses pattern matching, more
         closely resembles the algebraic laws for \tt{area}. 
-        \item[\bf{(2)}] \ref{fig:observerarea} had to call observers like
+        \item[\ref{p2}] \ref{fig:observerarea} had to call observers like
         \tt{squareSide} multiple times, and each observer needs \tt{sh} as an
         argument. \ref{fig:pmarea} was able to extract the \tt{shape}s' internal
         values with a single pattern, and the name \tt{sh} is not duplicated
         anywhere in its body. 
-        \item[\bf{(3)}] Where did \tt{isSquare}, \tt{sqSide}, and all the other
-        observers come from? To even \it{implement} \ref{fig:observerarea}, a
-        programmer has to define a whole new set of observers for
-        \tt{shape}s!\footnote{Sometimes the compiler throws programmers a bone:
-        with some constructed data, i.e., Scheme's records, the compiler
-        provides observers automatically. In others, like with algebraic
-        datatypes in ML, it does not.} Most programmers find this tiresome
-        indeed. \ref{fig:pmarea} did not have to do any of this.
-        \item[\bf{(4)}] To extract the internal values, \ref{fig:pmarea} had to
-        name them, and their names serve as documentation. 
-        \item[\bf{(5)}] If the user adds another value constructor to
+        \item[\ref{p5}] If the user adds another value constructor to
         \tt{shape}--- say, \tt{CIRCLE}, \ref{fig:observerarea} will not cause
         the compiler to complain, and if it's passed a \tt{CIRCLE} at runtime,
         the program will likely crash! In \ref{fig:pmarea}, the compiler will
@@ -163,6 +176,22 @@ fun area sh =
         tell them that they must add a pattern for \tt{CIRCLE} to rule out this
         possibility. 
     \end{enumerate}
+      
+    \item [\textbf{B.}]
+      \begin{enumerate}[start=4, label=\arabic*]
+        \item[\ref{p3}] Where did \tt{isSquare}, \tt{sqSide}, and all the other
+        observers come from? To even \it{implement} \ref{fig:observerarea}, a
+        programmer has to define a whole new set of observers for
+        \tt{shape}s!\footnote{Sometimes the compiler throws programmers a bone:
+        with some constructed data, i.e., Scheme's records, the compiler
+        provides observers automatically. In others, like with algebraic
+        datatypes in ML, it does not.} Most programmers find this tiresome
+        indeed. \ref{fig:pmarea} did not have to do any of this.
+        \item[\ref{p4}] To extract the internal values, \ref{fig:pmarea} had to
+        name them, and their names serve as documentation. 
+      \end{enumerate}
+    \end{enumerate}
+
 
     Having had the chance to compare Figures \ref{fig:observerarea}
     and~\ref{fig:pmarea}, if you moderately prefer the latter, that's good: most
@@ -187,8 +216,8 @@ fun area sh =
 \label{extensions}
 
     Extensions to pattern matching simplify cases that are otherwise
-    troublesome. Specifically, extensions help restore the Nice Properties in
-    cases where pattern matching fails to satisfy them. 
+    troublesome. Specifically, extensions help restore Nice Properties
+    \ref{p1}~and~\ref{p2} in cases where pattern matching fails to satisfy them. 
     
     In this section, I illustrate several such instances of exactly this, and
     demonstrate how extensions help programmers write code that adheres to the
@@ -305,11 +334,21 @@ exclaimBigArea sh                   == "Your shape is small.",
         \end{figure}
 
     A side condition streamlines pattern-and-boolean cases and minimize
-    overhead. And a side condition can exploit bindings that emerge from the
-    preceding pattern match. For instance, the \tt{when} clauses in
-    Figure~\ref{fig:whenexclaimtall} exploit names \tt{s} and \tt{h}, which are
-    bound in the match of \tt{sh} to \tt{Square s}, \tt{Triangle (\_, h)}, and
-    \tt{Trapezoid (\_, \_, h)}, respectively. 
+    overhead, restoring Nice Properties \ref{p1}~and~\ref{p2}. And a side
+    condition can exploit bindings that emerge from the preceding pattern match.
+    For instance, the \tt{when} clauses in Figure~\ref{fig:whenexclaimtall}
+    exploit names \tt{s} and \tt{h}, which are bound in the match of \tt{sh} to
+    \tt{Square s}, \tt{Triangle (\_, h)}, and \tt{Trapezoid (\_, \_, h)},
+    respectively. 
+
+    Importantly, side conditions come at a cost: their inclusion means that
+    keeping Nice Property~\ref{p5} becomes an NP-hard problem, because the
+    compiler must now perform exhaustiveness analysis not only on patterns, but
+    on arbitrary expressions. Modern compilers give a weaker form of
+    exhaustiveness that only deals with patterns, and side conditions are worth
+    the tradeoff for restoring the two most important of the Nice Properties:
+    minimal code duplication and ease of translation from laws to code
+    (\ref{p1}, \ref{p2}).
 
     A side condition can incorporate an extra “check”- in this case, a boolean
     expression--- within a pattern. But side conditions have a limitation. The

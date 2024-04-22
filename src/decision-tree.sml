@@ -62,9 +62,9 @@ struct
   and emitTree t = 
     let fun emitCase [] default = Impossible.impossible "no patterns to match on"
            | emitCase (x::xs) default = 
-           let fun emitBranch ((Core.K vc, i), tr) = "(" ^ vc ^ ", " ^ Int.toString i ^ ") => " ^ emitTree' tr ^ "\n"
+           let fun emitBranch ((Core.K vc, i), tr) = "(" ^ vc ^ ", " ^ Int.toString i ^ ") -> " ^ emitTree' tr ^ "\n"
            val emittedBranches = foldr (fn (b, acc) => "| " ^ emitBranch b ^ acc) "" xs
-        in emitBranch x ^ emittedBranches ^ (if isSome default then "| _ => " ^ emitTree' (valOf default) else "")
+        in emitBranch x ^ emittedBranches ^ (if isSome default then "| _ -> " ^ emitTree' (valOf default) else "")
         end 
     and emitTree' (MATCH a) = expString a
           | emitTree' (TEST (n, pats, default)) = "test " ^ n ^ ":\n " ^ emitCase pats default

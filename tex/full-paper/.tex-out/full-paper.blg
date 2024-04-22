@@ -14,9 +14,10 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Warning--empty publisher in augustsson1985compiling
 Warning--empty address in augustsson1985compiling
 Warning--no number and no volume in erlang
+Warning--there's a number but no series in church1985calculi
+Warning--empty address in church1985calculi
 Warning--no number and no volume in clark1982introduction
 Warning--empty year in scala
-Warning--empty address in dijkstra
 Warning--no number and no volume in hanus2013functional
 Warning--empty address in rust
 Warning--no number and no volume in macqueen1985tree
@@ -38,43 +39,43 @@ Warning--empty publisher in wadler1987views
 Warning--empty address in wadler1987views
 You've used 25 entries,
             5981 wiz_defined-function locations,
-            1605 strings with 21446 characters,
-and the built_in function-call counts, 25656 in all, are:
-= -- 3398
-> -- 771
-< -- 0
-+ -- 263
-- -- 306
-* -- 1655
-:= -- 2554
-add.period$ -- 130
+            1606 strings with 21351 characters,
+and the built_in function-call counts, 25577 in all, are:
+= -- 3379
+> -- 757
+< -- 1
++ -- 260
+- -- 299
+* -- 1651
+:= -- 2543
+add.period$ -- 132
 call.type$ -- 25
-change.case$ -- 160
+change.case$ -- 159
 chr.to.int$ -- 25
-cite$ -- 50
-duplicate$ -- 2259
-empty$ -- 1599
-format.name$ -- 362
-if$ -- 6312
+cite$ -- 51
+duplicate$ -- 2265
+empty$ -- 1602
+format.name$ -- 351
+if$ -- 6296
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 80
+missing$ -- 82
 newline$ -- 240
 num.names$ -- 175
-pop$ -- 926
+pop$ -- 929
 preamble$ -- 1
-purify$ -- 350
+purify$ -- 349
 quote$ -- 0
-skip$ -- 805
+skip$ -- 799
 stack$ -- 0
-substring$ -- 1767
-swap$ -- 207
-text.length$ -- 0
+substring$ -- 1770
+swap$ -- 211
+text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 508
-warning$ -- 25
+type$ -- 493
+warning$ -- 26
 while$ -- 188
 width$ -- 0
-write$ -- 512
-(There were 25 warnings)
+write$ -- 514
+(There were 26 warnings)

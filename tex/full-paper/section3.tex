@@ -119,39 +119,7 @@
 
 \begin{figure}
 \begin{center}
-\begin{bnf}
-$P$ : \textsf{Programs} ::=
-$\bracketed{d}$ : definition
-;;
-$d$ : \textsf{Definitions} ::=
-| $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
-;;
-$\expr$ : Expressions ::= 
-| $v$ : literal values 
-| $x, y, z$ : names
-| $K\bracketed{\expr}$ : value constructor application 
-| $\ttbackslash x.\; \expr$ : lambda declaration  
-| $\expr[1]\; \expr[2]$ : function application 
-| $\tt{case}\; \expr\; \bracketed{p\; \ttrightarrow\; \expr}$ : \it{case} expression 
-| \ttbraced{$\expr$}
-;;
-$p$ : \textsf{Patterns} ::= $p_{1}\pbar p_{2}$ : or-pattern
-| $p \tt{,} p'$ : pattern guard 
-| $p\; \tt{<-}\; \expr$ : pattern from explicit expression  
-| $x$ : name 
-| $\tt{\_}$ : wildcard 
-| $K\; \bracketed{p}$ : value constructor application 
-| $\tt{when}\; \expr$
-| \ttbraced{$p$}
-;;
-$\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-| $\ttbackslash x.\; \expr$ : lambda value 
-;;
-$K$ : \textsf{Value Constructors} ::=
-| $\tt{true}\; \vert\; \tt{false}$ : booleans
-| $\tt{A-Z}x$ : name beginning with capital letter
-% | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
-\end{bnf}
+\ppcsyntax
 \end{center}
 \Description{The concrete syntax of PPlus.}
 \caption{\PPlus: Concrete syntax}
@@ -369,50 +337,92 @@ val game_of_token = \t.
         a challenge. 
         
         The elements of \VC that lead to unpredictable or costly run times are
-        backtracking and multiple results. So, I begin with a subset of \VC with
-        these elements removed. Removing them strips much of the identity of
-        \VC, but it leaves its \it{equations} to build on top of in an
-        otherwise-typical programming context of single results and no
-        backtracking at runtime. 
-        
-        TODO START HERE. 
+        backtracking and multiple results. So, I begin with a subset of \VC,
+        which I call \VMinus ("V minus"), with these elements removed. Removing
+        them strips much of the identity of \VC, but it leaves its
+        \it{equations} to build on top of in an otherwise-typical programming
+        context of single results and no backtracking at runtime. 
 
-        \begin{enumerate}
-          \item \VMinus uses equations to guard computation. 
-          \item \VMinus uses choice, but more restricted. 
-          \item \VMinus uses success and failure. 
-        \end{enumerate}
-        
-        Then introduce the examples, and then the concrete syntax. 
+        Having stripped out the functional logic programming elements of \VC
+        (backtracking and multiple results), only the decision-making bits are
+        left over. To wrap these, I add a classic decision-making construct:
+        guarded commands~\citep{dijkstra} The result is \VMinus. 
 
-        Both backtracking and multiple results often manifest within \VC's
-        choice operator, which tempt its removal altogether. 
-        
-        However, I am drawn
-        to harnessing the expressive potential of this operator, particularly
-        when paired with \VC's 'one' keyword. When employed with choice as a
-        condition, 'one' elegantly signifies 'proceed if any branch of the
-        choice succeeds. 
-        
-        To this end, I propose a new language, \VMinus, in which choice is
-        permitted with several modifications:
+        \VMinus's concrete syntax is defined in Figure~\ref{fig:vmsyntax}.
+        \VMinus takes several key concepts from \VC, with several key
+        differences, illustrated in Table~\ref{tab:vmvsvc}. 
 
-        \begin{enumerate}
-        \item Choice may only appear as a condition or 'guard', not as a result
-        or the right-hand side of a binding.
-        \item If any branch of the choice succeeds, the choice succeeds,
-        producing any bindings found in that branch. The program examines the
-        branches in a left-to-right order.
-        \item The existential $\exists$ may not appear under choice.
-        \end{enumerate}
 
-        I introduce one more crucial modification to the \VC runtime: a name in
-        \VMinus is an \it{expression} rather than a \it{value}. This alteration,
-        coupled with my adjustments to choice, eradicates backtracking. Our
-        rationale behind this is straightforward: if an expression returns a
-        name, and subsequently, the program imposes a new constraint on that
-        name, it may necessitate the reevaluation of the earlier expression—- a
-        scenario I strive to avoid. 
+        \begin{table}[htbp]
+          \centering
+          \begin{tabular}{|p{0.5\linewidth}|p{0.48\linewidth}|}
+              \hline
+              \bfseries Like \VC & \bfseries Unlike \VC \\
+              \hline
+              \VMinus uses equations to guard computation.  & \VMinus solves an equation at most once at runtime and never backtracks. \\
+              \hline
+              \VMinus uses choice. & \VMinus's choice can only guard computation and its result is never returned. \\
+              \hline
+              \VMinus uses \textit{success} and \textit{failure} to make decisions. & An expression in \VMinus returns at most one value. \\
+              \hline
+          \end{tabular}
+          \caption{Key similarities and differences between \VMinus and \VC}
+          \label{tab:vmvsvc}
+      \end{table}
+
+      \begin{lemma}
+        An expression in \VMinus can return at most one result. 
+      \end{lemma}
+
+      \newcommand\ev{\ensuremath{e_{v}}\xspace}
+      \begin{proof}
+        The syntax of \VMinus (Figure~\ref{fig:vmsyntax}) forbids any expression
+        to return the result of evaluating choice. Let \ev be a \VMinus
+        expression. If choice appears in \ev, it may only appear in a guard.
+        Guards may only precede expressions and are never returned. Therefore,
+        \ev\ may never return the result of evaluating choice, and there is no
+        other syntactic form in \VMinus that allows for multiple results. 
+
+        % The only values in \VMinus are value constructor application and lambda,
+        % each of which is itself a single result. 
+      \end{proof}
+
+      \begin{lemma}
+        An expression in \VMinus can never backtrack at runtime. 
+      \end{lemma}
+      \newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
+      \begin{proof}
+        In progress. 
+      \end{proof}
+
+        % Both backtracking and multiple results often manifest within \VC's
+        % choice operator, which tempt its removal altogether. 
+        
+        % However, I am drawn
+        % to harnessing the expressive potential of this operator, particularly
+        % when paired with \VC's 'one' keyword. When employed with choice as a
+        % condition, 'one' elegantly signifies 'proceed if any branch of the
+        % choice succeeds. 
+        
+        % To this end, I propose a new language, \VMinus, in which choice is
+        % permitted with several modifications:
+
+        % \begin{enumerate}
+        % \item Choice may only appear as a condition or 'guard', not as a result
+        % or the right-hand side of a binding.
+        % \item If any branch of the choice succeeds, the choice succeeds,
+        % producing any bindings found in that branch. The program examines the
+        % branches in a left-to-right order.
+        % \item The existential $\exists$ may not appear under choice.
+        % \end{enumerate}
+
+        % I introduce one more crucial modification to the \VC runtime: a name in
+        % \VMinus is an \it{expression} rather than a \it{value}. This alteration,
+        % coupled with my adjustments to choice, eradicates backtracking. Our
+        % rationale behind this is straightforward: if an expression returns a
+        % name, and subsequently, the program imposes a new constraint on that
+        % name, it may necessitate the reevaluation of the earlier expression—- a
+        % scenario I strive to avoid. 
         
         % An example in \VC illustrates this precise
         % scenario: 
@@ -437,11 +447,6 @@ val game_of_token = \t.
         % core tenets. Instead, our aim is to extract a select few—namely, its
         % equations, existentials, and nondeterministic evaluation order—and
         % juxtapose them with pattern matching.    
-
-        Indeed, having stripped out the functional logic programming elements of
-        \VC, only the decision-making bits are left over. To wrap these, I add a
-        classic decision-making construct: guarded commands~\citep{dijkstra} The result is \VMinus. \VMinus's concrete syntax is
-        defined in Figure~\ref{fig:vmsyntax}. 
 
         % \bf{Choice forces "name knowing." Names must be known in all branches 
         % if bound to unknown variable or bound to known variable if any name 
@@ -482,15 +487,13 @@ val game_of_token = \t.
               | $\ttbackslash x\tt{.}\; \expr$ : lambda value
               \end{bnf}
           \end{center}
-          \Description{The concrete syntax of PPlus.}
+          \Description{The concrete syntax of VMinus.}
               \caption{\VMinus: Concrete syntax}
               \label{fig:vmsyntax}
               \end{figure}      
 
-    \bf{Programming in \VMinus}
+    \subsection{Programming in \VMinus}
 
-
-        
     Even with multiple modifications, \VMinus still allows for many of the same
     pleasing computations as full Verse. A programmer can\dots
         \begin{enumerate}
@@ -498,7 +501,8 @@ val game_of_token = \t.
             nondeterministic order 
             \item Guard expressions with those equations 
             \item Flexibly express “proceed when any of these operations
-            succeeds” with the new semantics of choice.  
+            succeeds” with the new semantics of choice
+            (Section~\ref{vmsemantics}). 
         \end{enumerate}
 
     Figure~\ref{fig:vminusfuncs} provides an example of how a programmer can

@@ -93,6 +93,15 @@
 \newblock
 
 
+\bibitem[Church(1985)]%
+        {church1985calculi}
+\bibfield{author}{\bibinfo{person}{Alonzo Church}.}
+  \bibinfo{year}{1985}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{The calculi of lambda-conversion}}.
+\newblock Number~6. \bibinfo{publisher}{Princeton University Press}.
+\newblock
+
+
 \bibitem[Clark(1982)]%
         {clark1982introduction}
 \bibfield{author}{\bibinfo{person}{KL Clark}.} \bibinfo{year}{1982}\natexlab{}.
@@ -112,12 +121,13 @@
 \newblock
 
 
-\bibitem[Dijkstra and Scholten(2012)]%
+\bibitem[Dijkstra(1976)]%
         {dijkstra}
-\bibfield{author}{\bibinfo{person}{Edsger~W Dijkstra} {and}
-  \bibinfo{person}{Carel~S Scholten}.} \bibinfo{year}{2012}\natexlab{}.
-\newblock \bibinfo{booktitle}{\emph{Predicate calculus and program semantics}}.
-\newblock \bibinfo{publisher}{Springer Science \& Business Media}.
+\bibfield{author}{\bibinfo{person}{Edsger~W. Dijkstra}.}
+  \bibinfo{year}{1976}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{A Discipline of Programming}}.
+\newblock \bibinfo{publisher}{Prentice Hall}, \bibinfo{address}{Englewood
+  Cliffs, NJ}.
 \newblock
 
 
@@ -244,16 +254,6 @@
 \newblock \showarticletitle{When do match-compilation heuristics matter}.
 \newblock \bibinfo{journal}{\emph{University of Virginia, Charlottesville, VA}}
   (\bibinfo{year}{2000}).
-\newblock
-
-
-\bibitem[Sweeney(2023)]%
-        {timtalk}
-\bibfield{author}{\bibinfo{person}{Tim Sweeney}.}
-  \bibinfo{year}{2023}\natexlab{}.
-\newblock \bibinfo{title}{Ask me anything with Tim Sweeney}.
-\newblock
-  \bibinfo{howpublished}{\url{https://www.youtube.com/watch?v=LXEqsV7vF-E&list=PLyrlk8Xaylp5yZHjvOlJo_63AtJiOQhag&index=51}}.
 \newblock
 
 

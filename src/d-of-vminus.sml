@@ -337,8 +337,9 @@ struct
         (case findAnyLHSBinding context choices
           of SOME (x, e) => 
             let val eq =  V.EQN (x, e)
+                val c  = (V.CONDITION e)
                 val choices_no_eq = choices -- eq withsubst (x, e)
-                val choices_no_e = choices --- eq --- (V.CONDITION e)
+                val choices_no_e = choices --- eq --- c
             in  D.TRY_LET (x, translate context e, 
                             compile (makeKnown x context) choices_no_eq, 
                             SOME (compile context choices_no_e))

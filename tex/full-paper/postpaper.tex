@@ -88,43 +88,25 @@ Thank you all.
 \section{Proofs}
 \begin{outline}
 \1 \bf{Proof: Translation from \VMinus to \D\ preserves semantics }
+\begin{proof}
+  In progress. 
+\end{proof}
 \1 \bf{Proof: Translation from \PPlus\ to \VMinus preserves semantics }
+\begin{proof}
+  In progress. 
+\end{proof}
 % \1 \bf{Proof: Translation from \VMinus to Verse preserves semantics}
 \end{outline}
 
-\section{Discussion TODO}
-To fuel the pursuit of smarter decision-making, I now draw inspiration
-from \VC. Equations in \VC look attractive, but the cost model of \VC is
-a challenge. 
+\section{Discussion}
 
-The elements of \VC that lead to unpredictable or costly run times are
-backtracking and multiple results. So, I begin with a subset of \VC with
-these elements removed. Removing them strips much of the identity of
-\VC, but it leaves its \it{equations} to build on top of in an
-otherwise-typical programming context of single results and no
-backtracking at runtime. 
+Both backtracking and multiple results often manifest within \VC's choice
+operator, which tempt its removal from \VMinus altogether. However, I am drawn
+to harnessing the expressive potential of this operator, particularly when
+paired with \VC's 'one' keyword. When employed with choice as a condition, 'one'
+elegantly signifies 'proceed if any branch of the choice succeeds. 
 
-TODO START HERE. 
-
-\begin{enumerate}
-  \item \VMinus uses equations to guard computation. 
-  \item \VMinus uses choice, but more restricted. 
-  \item \VMinus uses success and failure. 
-\end{enumerate}
-
-Then introduce the examples, and then the concrete syntax. 
-
-Both backtracking and multiple results often manifest within \VC's
-choice operator, which tempt its removal altogether. 
-
-However, I am drawn
-to harnessing the expressive potential of this operator, particularly
-when paired with \VC's 'one' keyword. When employed with choice as a
-condition, 'one' elegantly signifies 'proceed if any branch of the
-choice succeeds. 
-
-To this end, I propose a new language, \VMinus, in which choice is
-permitted with several modifications:
+To this end, in \VMinus, choice is permitted with several modifications:
 
 \begin{enumerate}
 \item Choice may only appear as a condition or 'guard', not as a result
@@ -143,7 +125,7 @@ name, and subsequently, the program imposes a new constraint on that
 name, it may necessitate the reevaluation of the earlier expression—- a
 scenario I strive to avoid. 
 
-\subsection{\VMinus and \PPlus, side by side}
+\subsubsection{\VMinus and \PPlus, side by side}
 I compare \VMinus with \PPlus as an exercise in comparing equations with
 pattern matching. They certainly look similar, which hints that \VMinus
 might be as expressive as pattern matching with the three extensions. 
@@ -167,8 +149,8 @@ programming in both, I have come up with three empirical observations:
   to see the match always succeed. 
 \end{enumerate}     
 
-\rab{How do you feel about examples for each of these points here? This
-section is very long, but they help drive these points home.}
+% \rab{How do you feel about examples for each of these points here? This
+% section is very long, but they help drive these points home.}
 
 
 % An example in \VC illustrates this precise
