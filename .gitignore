@@ -10,7 +10,7 @@
 *.log
 *.fls
 *.pdf
-!reveiw/thesis.pdf
+!thesis.pdf
 /.tex-out/*
 /tex/syntax-judgement/.tex-out/*
 # binaries and linking
