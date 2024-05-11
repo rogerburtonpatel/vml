@@ -22,8 +22,9 @@
 \RequirePackage{xspace}
 \RequirePackage{enumitem}
 \RequirePackage{tikz}
+\RequirePackage{extarrows}
+\RequirePackage[utf8]{inputenc}
 \RequirePackage[noEnd=true]{algpseudocodex}
-
 % TODO remove if unused 
 % \RequirePackage{tikz}
 % \RequirePackage{ebproof}
@@ -59,7 +60,7 @@
 \newcommand\Tlp{\it{Top-level Pattern}}
 
 %%%%%%%%%% GENERAL ABSTRACT SYNTAX %%%%%%%%%%
-\newcommand\valabstract{\ensuremath{\mathit{val}\; x\; \mathit{=}\; \expr}}
+\newcommand\valabstract{\ensuremath{\bf{val}\; x\; \mathit{=}\; \expr}}
 
 %%%%%%%%%% PPlus ABSTRACT SYNTAX %%%%%%%%%%
 \newcommand\tlp{\ensuremath{p^{t}}}
@@ -68,28 +69,33 @@
 \newcommand\whenexpr{\ensuremath{\mathit{when} \; \expr}}
 \newcommand\pcommap{\ensuremath{p_{1}, p_{2}}}
 \newcommand\parrowe{\ensuremath{p \leftarrow \expr}}
-\newcommand\caseabstract{\ensuremath{\mathit{case}\; \expr\; \bracketed{p\; \rightarrow\; \expr}}}
+\newcommand\caseabstract{\ensuremath{\bf{case}\; \expr\; \bracketed{p\; \boldsymbol{\rightarrow}\expr}}}
 \newcommand\wildcard{\ensuremath{\_}}
 
 %%%%%%%%%% VMinus ABSTRACT SYNTAX %%%%%%%%%%
 
 % Symbols 
+\newcommand\ybar[1][]{\ensuremath{{\overline{y}}_{#1}}}
+\newcommand\xbar[1][]{\ensuremath{{\overline{x}}_{#1}}}
+\newcommand\gbar[1][]{\ensuremath{\gs_{#1}}}
+
 \newcommand{\choice}{\,{\vrule width 1.5pt height 8pt}\,}
 \newcommand{\vlambda}[1]{\lambda\ \langle #1 \rangle.}
 \newcommand{\vexists}[1]{\ensuremath{\exists\, #1.}}
 
-\newcommand\iffiabstract{\ensuremath{\mathit{if}\; \mathit{[}\; G\; \bracketed{[] G}\; \mathit{]}\; \mathit{fi}}}
-\newcommand\gexpabstract{\ensuremath{[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\expr}}
-\newcommand\choiceabstract{\ensuremath{\choiceg{g \bracketed{; g}}{g \bracketed{; g}}}}
+\newcommand\iffiabstract{\ensuremath{\bf{if}\; \Gs\; \bf{fi}}}
+\newcommand\branchabstract{\ensuremath{\Gs}}
+\newcommand\gexpabstract{\ensuremath{[\vexists{\xbar}]\; \gs \boldsymbol{\rightarrow}\expr}}
+\newcommand\choiceabstract{\ensuremath{\choiceg{\gs}{\gs\,'}}}
 
 %%%%%%%%%% D ABSTRACT SYNTAX %%%%%%%%%%
 
-\newcommand\decisiontreeabstract{\ensuremath{\mathit{test}\; x\; \bracketed{K/i}\; \rightarrow\; \dt} [x\; \rightarrow \dt]}
-\newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt}}
-\newcommand\treetryletabstract{\ensuremath{\mathit{try-let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt[; \mathit{otherwise}\; \dt]}}
-\newcommand\treecmpabstract{\ensuremath{\mathit{cmp}\; x\; \mathit{=}\; \expr\; \mathit{:}\; \dt, \dt, \dt}}
+\newcommand\decisiontreeabstract{\ensuremath{\mathit{test}\; x\; \bracketed{K_{i}/\ybar[i]\; \rightarrow\; \dt}}\; [x\; \rightarrow \dt]}
+% \newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt}}
+\newcommand\treetryletabstract{\ensuremath{\mathit{try}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt[; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt]}}
+\newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{\xlongequal{\;}}\; \expr\; \mathit{then}\; \dt\; \mathit{else}\;  \dt\; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt}}
 \newcommand\treeextractabstract{\ensuremath{\mathit{extract}\; x\; \bracketed{y}\; \expr\; \mathit{ in }\; \dt}}
-\newcommand\treefailabstract{\ensuremath{\mathit{fail}}}
+\newcommand\treefailabstract{\ensuremath{\bf{fail}}}
 
 \newcommand\utable {%
 \begin{table}[ht]
@@ -108,28 +114,34 @@
                             & \caseabstract         & \PPlus \\
                             & \iffiabstract         & \VMinus \\
                             & $\dt$                 & \D \\
+      \\
       $\v$ : Values          & $K\bracketed{\v}$     & \\
                             & $\lambda x.\; \expr$  & \\
-      $p$ : Patterns         & $x$                   & \PPlus \\
-                            & $\_$                  & \PPlus \\
-                            & $K\; \bracketed{p}$   & \PPlus \\
-                            & $\whenexpr$           & \PPlus \\
-                            & $\pcommap$            & \PPlus \\
-                            & $\parrowe$            & \PPlus \\
-                            & $\porp$               & \PPlus \\
-      $G$ : Guarded Expressions & \gexpabstract      & \VMinus \\
-      $g$ : \textsf{Guards}  & $x = \expr$           & \VMinus \\
-                            & $\expr$               & \VMinus \\
-                            & \choiceabstract       & \VMinus \\
-      $\dt$ : Decision Trees   & $\decisiontreeabstract$ & \D \\
-                            & $\expr$               & \D \\
-                            \treetryletabstract         & \D \\
-                            \treecmpabstract         & \D \\
-                            \treeextractabstract         & \D \\
-                            \treefailabstract         & \D \\
+      \\
+      $p$ : Patterns         & $x$                  &  \\
+                            & $\_$                  &  \\
+                            & $K\; \bracketed{p}$   &  \\
+                            & $\whenexpr$           & {\smash{$\left . \vrule height 7ex depth 7ex width 0pt \right\}\; \PPlus$}} \\
+                            & $\pcommap$            & \\
+                            & $\parrowe$            & \\
+                            & $\porp$               & \\
+      \\
+      $\G$ : Guarded Expressions & \gexpabstract      & \\
+      $\g$ : \textsf{Guards}  & $x = \expr$           & \raisebox{-0.3em}{\smash{$\left . \vrule height 5ex depth 5ex width 0pt \right\}\; \VMinus$}} \\
+                            & $\expr$               & \\
+                            & \choiceabstract       & \\
+                            % need raisebox here 0.5\baselineskip from "one below middle"
+      \\                            
+      $\dt$ : Decision Trees & $\decisiontreeabstract$ & \\
+                             & $\expr$                    & \\
+                             & \treetryletabstract        & {\smash{$\left . \vrule height 8ex depth 6ex width 0pt \right\}\; \D$}} \\
+                             & \treeifabstract           &  \\
+                             % & \treeextractabstract       & \\
+                             & \treefailabstract          & \\
+      \\
   \end{tabular}
   \caption{Abstract Syntax of all languages, 
-           with deliniations in column \bf{Unique To}}
+           with delineations in column \bf{Unique To}}
   \label{fig:unilang}
 \end{table}
 }
@@ -217,23 +229,31 @@
 
 
 % Symbols 
-\newcommand\expr[1][]{\ensuremath{e_{#1}}}
-\newcommand\guard[1][]{\ensuremath{g_{#1}}}
-\newcommand\g[1][]{\ensuremath{g_{#1}}}
+\newcommand\expr[1][]{\ensuremath{e_{#1}}\xspace}
+\newcommand\pat[1][]{\ensuremath{p_{#1}}\xspace}
+\newcommand\guard[1][]{\ensuremath{g_{#1}}\xspace}
+\newcommand\g[1][]{\ensuremath{g_{#1}}\xspace}
+\newcommand\gs[1][]{\ensuremath{\overline{g_{#1}}}\xspace}
+\newcommand\G[1][]{\ensuremath{G_{#1}}\xspace}
+\newcommand\B[1][]{\ensuremath{B_{#1}}\xspace}
+\newcommand\Gs[1][]{\ensuremath{\overline{G_{#1}}}\xspace}
+\newcommand\name[1][]{\ensuremath{x_{#1}}\xspace}
 
-\renewcommand\v[1][]{\ensuremath{v_{#1}}}
 
-\newcommand\fail{\bf{fail}}
-\newcommand\reject{\bf{reject}}
-\newcommand\valbar{\ensuremath{v^{\alpha}}}
-\newcommand\result{\it{r}}
-\newcommand\solution{\it{s}}
-\newcommand\arrowe{\rightarrow e}
+\renewcommand\v[1][]{\ensuremath{v_{#1}}\xspace}
+
+\newcommand\fail{\bf{fail}\xspace}
+\newcommand\reject{\bf{reject}\xspace}
+\newcommand\result[1][]{\ensuremath{r_{#1}}\xspace}
+\newcommand\solution[1][]{\ensuremath{s_{#1}}\xspace}
+\newcommand\arrowe{\ensuremath{\rightarrow \expr}\xspace}
 
 \newcommand\ttleftarrow{\tt{\char`\<-}}
 \newcommand\ttrightarrow{\tt{-\char`\>}}
 \newcommand\ttbackslash{\tt{\char`\\}}
 
+% Alphas, largely unused now 
+\newcommand\valbar{\ensuremath{v^{\alpha}}}
 \newcommand\galpha{\ensuremath{g_{\alpha}}}
 \newcommand\ealpha[1][]{\ensuremath{e_{\alpha_{#1}}}}
 \newcommand\ealphaone{\ensuremath{e_{\alpha_{1}}}}
@@ -335,6 +355,47 @@
 \newcommand\zs{\ensuremath{\mathit{zs}}}
 \newcommand\emptyseq{\ensuremath{\varepsilon}}
 
+% Script letters, translation
+
+\newcommand\script[1]{\ensuremath{\mathcal{#1}}}
+
+% Failed attempt at parameterization 
+
+% \makeatletter
+% \newcommand{\translation}[2][]{%
+% \newcommand{\dx}[1][]{%
+%    \ifthenelse{ \equal{#1}{} }
+%       {\ensuremath{\;\mathrm{d}x}}
+%       {\ensuremath{\;\mathrm{d}#1}}
+% }
+%   \ensuremath{\script{#1}%
+%     \def\tmp{#2}%
+%     \ifx\tmp\@empty
+%     \else
+%         [\!#2\!]    
+%     \fi}}
+% \makeatother
+
+% just names, lazy 
+\newcommand\PtoVTran{\script{E}\xspace}
+\newcommand\PTran{\script{P}\xspace}
+\newcommand\DTran{\script{D}\xspace}
+\newcommand\ITran{\script{I}\xspace}
+\newcommand\Compile{\ensuremath{\mathit{compile}}\xspace}
+
+% with bracketed parameter
+\newcommand\translation[2]{\ensuremath{#1\oxs{#2}}}
+\newcommand\ptovtran[1]{\translation{\PtoVTran}{#1}}
+\newcommand\ptran[1]{\translation{\PTran}{#1}}
+\newcommand\dtran[1]{\translation{\DTran}{#1}}
+\newcommand\itran[1]{\translation{\ITran}{#1}}
+\newcommand\compiletran[1]{\translation{\Compile}{#1}}
+
+\newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
+
+    % rough opsem-based stuff: to change
+\newcommand{\br}[1]{\langle #1 \rangle}
+
 
 %%%%%%%%%% INFERENCE RULES %%%%%%%%%%
 
@@ -369,26 +430,34 @@
 
 \defcomponent{env}{\rho}
 \defcomponent{context}{\context}
+\defcomponent{newcontext}{\context'}
+% For translation where context and rho are analagous
+\defcomponent{ctx}{\rho}
+\defcomponent{ctxext}{}
+\defcomponent{newctx}{\rho'}
 \defcomponent{term}{\galpha}
-\defcomponent{guard}{g}
-\defcomponent{guards}{gs}
-\defcomponent{exp}{e}
-\defcomponent{pat}{p}
-\defcomponent{value}{v}
+\defcomponent{guard}{\g}
+\defcomponent{guards}{\gs}
+\defcomponent{gexp}{\G}
+\defcomponent{gexps}{\Gs}
+\defcomponent{exp}{\expr}
+\defcomponent{pat}{\pat}
+\defcomponent{value}{\v}
 \defcomponent{result}{\result}
 \defcomponent{solution}{\solution}
 \defcomponent{envext}{}
 \defcomponent{tlp}{\tlp}
 \defcomponent{newenv}{\rho'}
-\defcomponent{newctx}{\context'}
 \defcomponent{gsolveresult}{\langle\c{newctx},\c{newenv}\rangle}
 \defcomponent{eq}{\eq}
-\defcomponent{name}{x}
+\defcomponent{name}{\name}
 \defcomponent{tree}{\dt}
 
 
 \newcommand\emptycontext{\varepsilon}
 \newcommand\emptyenv{\mathord{\{\,\}}}
+
+
 
 \newcommand\vmrun[1][]{%  run V-minus code
   {\setkeys{state}{#1}%
@@ -473,47 +542,26 @@
   \newcommand\tlpfail{\tlpmatch[newenv=\dagger]}
 
 
-\defcomponent{vterm}{e}
-\defcomponent{vresult}{e'}
+\defcomponent{vterm}{\expr}
+\defcomponent{vresult}{\expr'}
 
 \newcommand\vrun[1][]{% run Verse code
   {\setkeys{state}{#1}%
    \let\c=\component
    \ensuremath{\c{vterm} \mathrel{\rightarrow^{*}} \c{vresult}}}}
 
-\newcommand\script[1]{\ensuremath{\mathcal{#1}}}
 
-% \makeatletter
-% \newcommand{\translation}[2][]{%
-% \newcommand{\dx}[1][]{%
-%    \ifthenelse{ \equal{#1}{} }
-%       {\ensuremath{\;\mathrm{d}x}}
-%       {\ensuremath{\;\mathrm{d}#1}}
-% }
-%   \ensuremath{\script{#1}%
-%     \def\tmp{#2}%
-%     \ifx\tmp\@empty
-%     \else
-%         [\!#2\!]    
-%     \fi}}
-% \makeatother
-
-% lazy 
-\newcommand\PtoVTran{\script{E}}
-\newcommand\PTran{\script{P}}
-\newcommand\DTran{\script{D}}
-\newcommand\ITran{\script{I}}
-\newcommand\translation[2]{\ensuremath{#1\oxs{#2}}}
-\newcommand\ptovtran[1]{\translation{\PtoVTran}{#1}}
-\newcommand\ptran[1]{\translation{\PTran}{#1}}
-\newcommand\dtran[1]{\translation{\DTran}{#1}}
-\newcommand\itran[1]{\translation{\ITran}{#1}}
+\newcommand\vtod[1][]{%   translate V-minus to D
+    {\setkeys{state}{#1}%
+      \let\c=\component
+      \ensuremath{\dtran{\c{exp}} \rightsquigarrow \c{result}}}}
+  
+\newcommand\compile[1][]{%   compile an if-fi
+  {\setkeys{state}{#1}%
+    \let\c=\component
+    \ensuremath{\compiletran{\c{gexps}}\c{ctx}\c{ctxext} \rightsquigarrow \c{result}}}}
 
 
-\newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
-
-    % rough opsem-based stuff: to change
-\newcommand{\br}[1]{\langle #1 \rangle}
 
 % Listings color 
 \definecolor{eclipseBlue}{RGB}{42,0.0,255}
@@ -667,17 +715,17 @@
 % \[
 % \inferrule*[Left=\textsc{ (Eval-Exists) }]
 %     {\vmrung[env=\rho\{x \mapsto \bot \}]}
-%     {\vmrung[guard=\vexists{x}\; g]}
+%     {\vmrung[guard=\vexists{x}\; \g]}
 % \]
 
 
 \subsubsection{Shifting a guard to the context}
 \[
 \inferrule*[Left=\textsc{ (Move-Guard-To-Ctx) }]
-    {\inferrule*{\vmgs[context=g \cdot \context, guards={gs \cdot gs'}]}
+    {\inferrule*{\vmgs[context=\g \cdot \context, guards={\gs \cdot \gs'}]}
     {}
     }
-    {\vmgs[guards={gs \cdot g \cdot gs'}]}
+    {\vmgs[guards={\gs \cdot \g \cdot \gs'}]}
 \]
 
 \subsubsection{Choosing and processing a guard}
@@ -687,13 +735,13 @@
     {\grefine[solution=\Rhoprime]
     \and
     \vmgs[env=\Rhoprime,context=\;\TT]}
-    {\vmgs[context=\TeqT{g}]}
+    {\vmgs[context=\TeqT{\g}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Solve-Guard-Reject) }]
     {\gfail}
-    {\vmgs[context=\TeqT{g},solution=\dagger]}
+    {\vmgs[context=\TeqT{\g},solution=\dagger]}
 \]
 \subsubsection{Properties of guards}
 
@@ -854,9 +902,9 @@
 %   \inferrule*[Left=\textsc{ (Guard-Vcon-Succ) }]
 %       {\inferrule* {}
 %       {
-%       \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution_{i}], \and 1 \leq i \leq m
+%       \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq m
 %       \\\\
-%       \solution = \solution_{1} \uplus \dots \uplus \solution_{m}
+%       \solution = \solution{1} \uplus \dots \uplus \solution{m}
 %       }}
 %       {\pmatch[pat={K [p_{1} \dots 
 %               p_{m}]}, value={K [v_{1}' \dots v_{m}']},
@@ -928,15 +976,15 @@
 \[
 \inferrule*[Left=\textsc{ (Guard-Choice-First) }]
     {\vmgs[context=\emptyseq, solution=\rho']}
-    {\grefine[guard={\choiceg{gs}{gs'}}, solution=\rho']}
+    {\grefine[guard={\choiceg{\gs}{\gs'}}, solution=\rho']}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Guard-Choice-Second) }]
     {\vmgs[context=\emptyseq, solution=\dagger] 
     \and 
-    \vmgs[context=\emptyseq, guards=gs']}
-    {\grefine[guard={\choiceg{gs}{gs'}}]}
+    \vmgs[context=\emptyseq, guards=\gs']}
+    {\grefine[guard={\choiceg{\gs}{\gs'}}]}
 \]
 
 \subsubsection{Evaluating General Expressions}
@@ -955,7 +1003,7 @@
     {\vmgs[env=\rho', context=\emptyseq, solution=\rho'']}
     \\\\ 
     {\vmeval[env={\rho''}]}}
-    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; gs \rightarrow e\; \square\; \dots}}]}
+    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
 \]
 
 \[
@@ -966,7 +1014,7 @@
     {\vmgs[env=\rho', context=\emptyseq, solution=\dagger]}
     \\\\
     \vmeval[exp={\iffi{\dots}}]}
-    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; gs \rightarrow e\; \square\; \dots}}]}
+    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
 \]
 
 
@@ -1154,9 +1202,9 @@
       \inferrule*[Left=\textsc{ (Pat-MatchVcon) }]
           {\inferrule* {}
           {
-          \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution_{i}], \and 1 \leq i \leq m
+          \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq m
           \\\\
-          \solution = \solution_{1} \uplus \dots \uplus \solution_{m}
+          \solution = \solution{1} \uplus \dots \uplus \solution{m}
           }}
           {\pmatch[pat={K [p_{1} \dots 
                   p_{m}]}, value={K [v_{1}' \dots v_{m}']},
@@ -1272,17 +1320,17 @@
 % \[
 % \inferrule*[Left=\textsc{ (Eval-Exists) }]
 %     {\vmrung[env=\rho\{x \mapsto \bot \}]}
-%     {\vmrung[guard=\vexists{x}\; g]}
+%     {\vmrung[guard=\vexists{x}\; \g]}
 % \]
 
 
 % \subsubsection{Shifting a guard to the context}
 % \[
 % \inferrule*[Left=\textsc{ (Guard-Move-To-Ctx) }]
-%     {\inferrule*{\vmgs[context=g \cdot \context]}
+%     {\inferrule*{\vmgs[context=\g \cdot \context]}
 %     {}
 %     }
-%     {\vmgs[guards={gs \cdot g \cdot gs'}]}
+%     {\vmgs[guards={\gs \cdot \g \cdot \gs'}]}
 % \]
 
 % \subsubsection{Choosing and processing a guard}
@@ -1292,13 +1340,13 @@
 %     {\grefine[result=\Rhoprime]
 %     \and
 %     \vmgs[env=\Rhoprime,context=\;\TT]}
-%     {\vmgs[context=\TeqT{g}]}
+%     {\vmgs[context=\TeqT{\g}]}
 % \]
 
 % \[
 % \inferrule*[Left=\textsc{ (Solve-Guard-Reject) }]
 %     {\gfail}
-%     {\vmgs[context=\TeqT{g},solution=\dagger]}
+%     {\vmgs[context=\TeqT{\g},solution=\dagger]}
 % \]
 % \subsubsection{Properties of guards}
 
@@ -1501,15 +1549,15 @@
 % \[
 % \inferrule*[Left=\textsc{ (Guard-Choice-First) }]
 %     {\vmgs[context=\emptyseq, solution=\rho']}
-%     {\grefine[guard={\choiceg{gs}{gs'}}, solution=\rho']}
+%     {\grefine[guard={\choiceg{\gs}{\gs'}}, solution=\rho']}
 % \]
 
 % \[
 % \inferrule*[Left=\textsc{ (Guard-Choice-Second) }]
 %     {\vmgs[context=\emptyseq, solution=\dagger] 
 %     \and 
-%     \vmgs[context=\emptyseq, guards=gs']}
-%     {\grefine[guard={\choiceg{gs}{gs'}}]}
+%     \vmgs[context=\emptyseq, guards=\gs']}
+%     {\grefine[guard={\choiceg{\gs}{\gs'}}]}
 % \]
 
 
@@ -1578,7 +1626,7 @@
 %     {\vmgs[env=\rho', context=\emptyseq, solution=\rho'']}
 %     \\\\ 
 %     {\vmeval[env={\rho''}]}}
-%     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; gs \rightarrow e\; \square\; \dots}}]}
+%     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
 % \]
 
 % \[
@@ -1589,7 +1637,7 @@
 %     {\vmgs[env=\rho', context=\emptyseq, solution=\dagger]}
 %     \\\\
 %     \vmeval[exp={\iffi{\dots}}]}
-%     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; gs \rightarrow e\; \square\; \dots}}]}
+%     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
 % \]
 
 

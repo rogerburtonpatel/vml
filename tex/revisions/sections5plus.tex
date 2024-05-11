@@ -158,8 +158,41 @@
     Scott and Ramsey's algorithm structurally inspired mine, and I was privy to
     source code from the algorithm whose study aided my implementation. 
     
-    \section{Future Work}        
+    
+    \section{Conclusion}
+
+    I have introduced the languages \PPlus and \VMinus to demonstrate the
+    viability of equations as an alternative to pattern matching, and \D,
+    \PtoVTran, and \DTran\ to show how both languages can be compiled to
+    efficient code. I have shown with equivalent examples how programs written
+    in \VMinus has the same desirable properties as equivalent programs written
+    in \PPlus, and I have also shown that translating from pattern matching to
+    equations preserves the desirable properties. Finally, I have shown how
+    \VMinus, like pattern matching, can be compiled to efficient code. In doing
+    so, I have demonstrated that programming with equations is a promising
+    alternative to pattern matching. 
+
+    I have also fully implemented the languages. They exist for use and
+    experimentation: they are syntactically simple and have conceptually
+    accessible operational semantics. I hope that programmers will explore and
+    develop their own opinions of these languages, which are publically
+    available at \url{https://github.com/rogerburtonpatel/vml}. 
+
+    Finally, and in particular with \VMinus, I hope to provide a stepping stone
+    between pattern matching and equations that a new programmer to Verse will
+    find illuminating. 
+    
+    % hope to have paved a small
+    % segment of the path that the curious programmer or language enthusiast who
+    % wishes to better understand Verse will take. Be they transitioning to
+    % equations from pattern matching to equations or curious about how those
+    % equations might be compilable to decision trees, I hope they find the
+    % languages, and this document, illuminating. 
+    
+    \section{Discussion and Future Work}        
     \label{futurework}
+
+        TODO: What to discuss about V- syntax not closed under subst? 
 
         \subsubsection{Desirable formalisms about translations}
         First and foremost, to flush out the proofs of semantics preservation of
@@ -169,14 +202,16 @@
         equivalent. 
 
         \subsubsection{Desirable formalisms about \VMinus}
-        Several formalisms would strengthen the viability of \VMinus, and 
-        are good targets for future work: 
-
-        \begin{enumerate}
-            \item Proving \VMinus is deterministic 
-            \item Proving the big-step semantics of \VMinus is consistent with
-            the published semantics of \VC.
-        \end{enumerate}
+        Two formalisms would strengthen the viability of \VMinus, and are
+        essential targets for future work: \bf{Proving \VMinus~is
+        deterministic}, and \bf{proving the big-step semantics of \VMinus~is
+        consistent with the published semantics of \VC.} As the authors of the
+        Verse paper proved that the rewrite semantics of Verse is
+        skew-confluent, I must prove that big-step semantics of \VMinus is
+        deterministic, despite the nondeterminism of choosing a guard. Second,
+        \VMinus~is designed to be Verse-like, and formalizing the relationship
+        between the two strengthens \VMinus's viability as an intermediate
+        language between pattern matching and equations. 
 
 
         \subsubsection{Exhaustiveness analysis \PPlus and \VMinus}
@@ -324,34 +359,5 @@
         any discovery that allows them to increase the efficiency of full-Verse
         programs. 
 
-    \section{Conclusion}
 
-    I have introduced the languages \PPlus and \VMinus to demonstrate the
-    viability of equations as an alternative to pattern matching, and \D,
-    \PtoVTran, and \DTran\ to show how both languages can be compiled to
-    efficient code. I have shown with equivalent examples how programs written
-    in \VMinus has the same desirable properties as equivalent programs written
-    in \PPlus, and I have also shown that translating from pattern matching to
-    equations preserves the desirable properties. Finally, I have shown how
-    \VMinus, like pattern matching, can be compiled to efficient code. In doing
-    so, I have demonstrated that programming with equations is a promising
-    alternative to pattern matching. 
-
-    I have also fully implemented the languages. They exist for use and
-    experimentation: they are syntactically simple and have conceptually
-    accessible operational semantics. I hope that programmers will explore and
-    develop their own opinions of these languages, which are publically
-    available at \url{https://github.com/rogerburtonpatel/vml}. 
-
-    Finally, and in particular with \VMinus, I hope to provide a stepping stone
-    between pattern matching and equations that a new programmer to Verse will
-    find illuminating. 
-    
-    % hope to have paved a small
-    % segment of the path that the curious programmer or language enthusiast who
-    % wishes to better understand Verse will take. Be they transitioning to
-    % equations from pattern matching to equations or curious about how those
-    % equations might be compilable to decision trees, I hope they find the
-    % languages, and this document, illuminating. 
-    
 \end{document}

@@ -157,6 +157,8 @@ structure VMinus :> VMINUS
     C.NAME n => if not (rho binds n)
                 then raise C.NameNotBound n 
                 else n exists_in rho
+  | C.LITERAL (C.LAMBDA (n, captured, body)) =>
+        currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
   | C.LITERAL v => val_solvable rho v
   | C.VCONAPP (_, es) => List.all (currently_solvable rho) es
   | C.LAMBDAEXP (n, body) => currently_solvable (makeKnown n rho) body
@@ -165,8 +167,8 @@ structure VMinus :> VMINUS
     | currently_solvable rho (I (IF_FI [])) = true
     | currently_solvable rho (I (IF_FI branches)) =  
         List.all (branch_currently_solvable rho) branches
-  and val_solvable rho (C.LAMBDA (n, body)) = 
-                                      currently_solvable (makeKnown n rho) body
+  and val_solvable rho (C.LAMBDA (n, captured, body)) = 
+        currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
     | val_solvable rho (C.VCON (vc, vs)) = List.all (val_solvable rho) vs
   and guard_solvable rho g = 
         case g of CONDITION e => currently_solvable rho e  
@@ -189,11 +191,11 @@ structure VMinus :> VMINUS
         else tryfindorder rho made_progress (g::stuck) gs  
       | CHOICE (gs1, gs2) => 
           (let val (rho1, _) = tryfindorder rho made_progress [] gs1 
-          in tryfindorder (Env.<+> (rho, rho1)) true stuck gs
+          in tryfindorder (rho <+> rho1) true stuck gs
           end
             handle Unsolvable _ => 
             let val (rho2, _) = tryfindorder rho made_progress [] gs1
-            in tryfindorder (Env.<+> (rho, rho2)) true stuck gs
+            in tryfindorder (rho <+> rho2) true stuck gs
             end 
               handle Unsolvable _ => 
                 tryfindorder rho made_progress (g::stuck) gs))
@@ -269,26 +271,37 @@ structure VMinus :> VMINUS
   in findSplit' [] xs
   end 
 
+  val predefs = ["print"]
+
+  fun embed rho = Env.map SOME rho
+  fun project rho = Env.mapPartial (fn x => x) rho
+
+  fun captureVal rho (C.LAMBDA (n, captured, body)) = 
+        C.LAMBDA (n, project (rho <+> embed captured), body)
+    | captureVal rho (C.VCON (vc, vs)) = C.VCON (vc, map (captureVal rho) vs)
+
   fun eval rho (C ce) = 
     (case ce of
-      C.LITERAL v => v
+      (* C.LITERAL (C.LAMBDA (n, captured, body)) =>  *)
+      C.LITERAL v => captureVal rho v
     | C.NAME n    => find_or_die n rho
     | C.VCONAPP (vc, es)    => C.VCON (vc, map (eval rho) es)
-    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
-    | C.FUNAPP (C (C.NAME "print"), param)  => 
-    (* dirty trick to print values *)
-                    ( println (C.valString expString (eval rho param)) 
-                          ; C.VCON (C.K "unit", [])
-                    ) 
-    | C.FUNAPP (fe, param)  => 
+    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, project rho, body)
+    | C.FUNAPP (C (C.NAME n), arg)  => 
+      if member n predefs 
+      then runpredef n (rho, arg) 
+      else let val v = eval rho (C (C.NAME n))
+            in eval rho (C (C.FUNAPP (C (C.LITERAL v), arg)))
+            end 
+    | C.FUNAPP (fe, arg) => 
               (case eval rho fe 
-                of C.LAMBDA (n, b) => 
-                  let val arg  = eval rho param
-                      val rho' = bind n arg rho
-                    in 
-                     eval rho' b
+                of C.LAMBDA (n, captured, b) => 
+                    let val v_arg = eval rho arg
+                        val rho' = (bind n v_arg rho <+> embed captured)
+                    in eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
+                 
     | eval rho (I (IF_FI ((ns, (gs, rhs))::branches))) = 
         ( let val rho'  = introduceMany ns rho
             val rho'' = solve rho' gs  (* may raise Fail *)
@@ -331,7 +344,12 @@ structure VMinus :> VMINUS
               in solve rho' gs
               end)
           end 
-
+  and runpredef which (rho, arg) = 
+    case which of 
+      "print" => ( println (C.valString expString (eval rho arg)) 
+                  ; C.VCON (C.K "unit", [])
+                 )
+      | _ => Impossible.impossible "runtime bug: running non-predef function"
   fun def rho (DEF (n, e)) = 
     let val v = eval rho e
     in bind n v rho
@@ -494,6 +512,8 @@ struct
     C.NAME n => if not (rho binds n)
                 then raise C.NameNotBound n 
                 else n exists_in rho
+  | C.LITERAL (C.LAMBDA (n, captured, body)) =>
+        currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
   | C.LITERAL v => val_solvable rho v
   | C.VCONAPP (_, es) => List.all (currently_solvable rho) es
   | C.LAMBDAEXP (n, body) => currently_solvable (makeKnown n rho) body
@@ -502,9 +522,9 @@ struct
     | currently_solvable rho (I (IF_FI [])) = true
     | currently_solvable rho (I (IF_FI branches)) =  
         List.all (branch_currently_solvable rho) branches
-  and val_solvable rho (C.LAMBDA (n, body)) = 
-                                      currently_solvable (makeKnown n rho) body
-    | val_solvable rho (C.VCON (vc, vs)) = List.all (val_solvable rho) vs
+    and val_solvable rho (C.LAMBDA (n, captured, body)) = 
+        currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
+  | val_solvable rho (C.VCON (vc, vs)) = List.all (val_solvable rho) vs
   and guard_solvable rho g = 
         case g of CONDITION e => currently_solvable rho e  
                 | EQN (x, e) => x exists_in rho orelse currently_solvable rho e
@@ -533,7 +553,9 @@ struct
   fun desugar (V.C ce) = 
       (case ce of C.LITERAL v => 
         let fun desugarv (C.VCON (vc, vs)) = C.VCON (vc, map desugarv vs)
-              | desugarv (C.LAMBDA (n, body)) = C.LAMBDA (n, desugar body)
+              | desugarv (C.LAMBDA (n, _, body)) = C.LAMBDA (n, empty, desugar body)
+              (* desugaring does not preserve variable capture, 
+                  nor likely should it *)
         in C (C.LITERAL (desugarv v))
         end 
         | C.NAME n => C (C.NAME n)

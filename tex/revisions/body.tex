@@ -1,0 +1,68 @@
+%%
+\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{standalone}
+\usepackage{vmlmacros}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+\usepackage{natbib}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\citestyle{acmauthoryear}
+\begin{document}
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+  \institution{Tufts University}
+  \streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+}
+
+% \author{Norman Ramsey}
+% \email{nr@cs.tufts.edu}
+% \affiliation{%
+% \institution{Tufts University}
+% \streetaddress{177 College Ave}
+% \city{Medford}
+% \state{Massachusetts}
+% \country{USA}
+% \postcode{02155}
+% }
+
+% \author{Milod Kazerounian}
+% \email{milod.mazerouniantufts.edu}
+% \affiliation{%
+% \institution{Tufts University}
+% \streetaddress{177 College Ave}
+% \city{Medford}
+% \state{Massachusetts}
+% \country{USA}
+% \postcode{02155}
+% }
+
+\renewcommand{\shortauthors}{Burtonpatel}
+
+\input{abstract.tex}
+
+% \1 Title
+% \1 Abstract 
+% \1 Acknowledgements - maybe later? 
+% \1 TOC 
+
+\input{section1.tex}
+% \input{section2.tex}
+% \input{section3.tex}
+% \input{section4.tex}
+% \input{sections5plus.tex}
+% \input{postpaper.tex}
+
+\end{document}
+\endinput
+%%

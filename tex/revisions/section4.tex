@@ -138,10 +138,13 @@
 
     In \D, an \it{extract} node extract all from a value constructor at once for
     use in subtrees. The compiler is responsible for introducing the fresh names
-    used in \it{extract}. 
+    used in \it{extract}. \VMinus syntax is not closed under substitution during 
+    match compilation; this is acceptable because the compiler alpha-renames all
+    necessary terms before it translates an \it{if-fi} to a decision tree. 
 
-    In \D, like in \VMinus, expressions can \it{fail}, meaning some of \D's 
-    syntactic forms like \it{try-let} and \it{cmp} need an additional 
+    In \D, like in \VMinus, expressions can \it{fail}, meaning some of \D's
+    syntactic forms like \it{try-let} and \it{cmp} have an extra branch which is
+    executed if the examined expression fails. 
 
 
     \subsection{Rules (Big-step Operational Semantics) for \D:}
@@ -159,11 +162,10 @@
     \newcommand\aend\algorithmicend
 
     \newcommand\branches{\ensuremath{\mathit{branches}}}
-    \newcommand\compile{\ensuremath{\mathit{compile}}}
     \newcommand\mg{\ensuremath{-}}
 
 
-    When presented with an \it{if-fi}, \DTran\ calls the function \compile,
+    When presented with an \it{if-fi}, \DTran\ calls the function \Compile,
     whole algorithm is presented in Figure~\ref{dtran}. \DTran\ first introduces
     all the names under the all existential $\exists$'s to a context which
     determines if a name is \it{known} or \it{unknown}. At the start, each name
@@ -178,7 +180,7 @@
     ${if\; \dots \square\; gs_{1};\; gs_{2} \rightarrow e \;\square\; gs_{3};\; gs_{4} \rightarrow e \;\square \dots \;fi}$
 
 
-    With the new context and desugared \it{if-fi}, \compile\ then repeatedly
+    With the new context and desugared \it{if-fi}, \Compile\ then repeatedly
     chooses a guarded expression $G$ and attempts the following while
     translating $G$'s internal expressions with \DTran: 
 
@@ -190,7 +192,7 @@
         \item If one is found, use it to generate a \it{test} node, building
         each subtree of the \it{test} by pruning all branches in \it{all}
         guarded expressions of the \it{if-fi} in which $x = e$ and $e \neq K
-        \dots$ and invoking \compile\ on the remaining ones with a context where
+        \dots$ and invoking \Compile\ on the remaining ones with a context where
         $x$ is known. Each of these remainders is the child of an \it{extract}
         node which extracts the internals of each possible value constructor
         into a list of names which are introduced to the context. The algorithm
@@ -200,12 +202,12 @@
         an equation $x = e$ s.t. either $x$ is unknown and all names in $e$ are
         known. 
         \item If one is found, use it to generate a \it{try-let} node with two
-        children: one if binding succeeds, and one if $e$ fails. \compile prunes
+        children: one if binding succeeds, and one if $e$ fails. \Compile prunes
         each subtree of the \it{try-let} accordingly.
         \item If no equation is found, try to find an equation $x = y$ s.t. $x$
         is known and $y$ is unknown. 
         \item If one is found, use it to generate a \it{try-let} node with one
-        child for when binding succeeds. \compile prunes the subtree of all 
+        child for when binding succeeds. \Compile prunes the subtree of all 
         instance of $x = y$. 
         \item If no such equation is found, try to find a condition $e$ s.t. all
         names in $e$ are known. 
@@ -215,7 +217,7 @@
         \item If no condition $e$ is found, try to find an equation $x = e$ s.t.
         both $x$ and all names in $e$ are \it{known}.
         \item If one is found, generate a \it{cmp} node, prune the \it{if-fi} of
-        all duplicate instances of that $x = e$, and invoke \compile again. 
+        all duplicate instances of that $x = e$, and invoke \Compile again. 
         \item If none is found, the \it{if-fi} cannot be compiled to a decision
         tree. The algorithm halts with an error. 
     \end{enumerate}
@@ -243,8 +245,8 @@
     known})}$ to mean “$\mathit{context}$ extended with each of $n_x$ bound to
     $\mathit{known}$. 
 
-    Not show in the algorithm is the case where \compile\ cannot choose a $g$ of
-    one of the valid forms; in this case, \compile\ halts with an error. This
+    Not show in the algorithm is the case where \Compile\ cannot choose a $g$ of
+    one of the valid forms; in this case, \Compile\ halts with an error. This
     can happen when no $g$ is currently solvable in the context, as determined
     by the same algorithm that \VMinus uses to pick a guard to solve, or when
     the program would be forced to unify incompatible values, such as any value
@@ -275,58 +277,63 @@
   
     \begin{figure}[H]
       \scriptsize
-        \begin{algorithmic}
-\Require $\forall (n : \rm{name})\; \in \branches, \; n\; \rm{unique}$
-\State \it{compile context \branches} = 
-  \If{\it{null(\branches)}} {\it{fail}}
-  \ElsIf{$\neg\exists{g} \in$ \it{fst(hd(\branches))}} 
-    \State {\it{match (hd branches)}}
-  \Else
-    \State \alet $g$ be a guard such that $g \in \branches$
-    \ain 
-    \If{$g$ has the form $x = K (e_1 \dots e_i)$}
-    \alet 
-    \State 
-    $\mathit{KS = \bracketed{K\; \vert\; \exists\; b \in \branches : x \in \dom(b) \wedge K(\dots) \in x@b }}$ 
-        
-    $\mathit{edges = map(}$ 
-    \State $\mathit{\lambda K.}$ (\alet $ns = n_1 \dots n_i, \; n_x \rm{ fresh}$
-        \ain 
-        \State $\mathit{(K, extract (x, ns, \compile (context + \bracketed{n_1 \dots n_i \mapsto known})}$ 
-        \State $\mathit{(mapPartial (refine\; x\; (K (ns))) branches))}$ 
-        \State \aend) 
-      \State $\mathit{defaults = filter(\lambda b. x \notin \dom(b) \lor K(\dots) \notin x@b)}$ 
-      \State \ain $\mathit{test (x, edges, SOME (compile\; defaults))}$ 
-      \State \aend 
-    \ElsIf {$g$ has the form $x = e$ : $x \;\mathit{unknown},\; e \;\mathit{known}$} 
-      \State $\mathit{try\_let (x, \DTran\; (context\; e)}$, 
-      \State $\mathit{compile (context\bracketed{x \mapsto known}) ((branches -- eq)[x/e])}$,
-      \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$
-    \ElsIf {$g$ has the form $x = y$ : $x \;\mathit{known},\; y \;\mathit{unknown}$} 
-    \State $\mathit{try\_let (x, y, compile (context\bracketed{y \mapsto known}) (branches -- eq), NONE)}$
-    \ElsIf {$g$ has the form $x = e$ : $x \;\mathit{known},\; e \;\mathit{known}$} 
-      \State $\mathit{cmp (x, \DTran\; (context\; e)}$, 
-      \State $\mathit{compile\; context\; ((branches -- eq)[x/e])}$,
-      \State $\mathit{compile\; context\; (branches --- eq -- e)}$,
-      \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$
-    \ElsIf {$g$ has the form $e$ : $e \;\mathit{known}$} 
-    \State $\mathit{try\_let (x, \DTran\; (context\; e)}$, 
-    \State $\mathit{compile (context\bracketed{x \mapsto known}) ((branches -- eq)[x/e])}$,
-    \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$ 
-    \State {, $x$ fresh} \\
-    \aend
-    \EndIf
-  \EndIf
-  \State \bf{where} 
-  \State $\mathit{snd (a, b) = b}$ 
-  \State $\mathit{refine (x, K (ns) b) = }$
-  \If{$\mathit{K' (es) \in x@b \land (K \neq K' \lor length(es) \neq length(ns))}$}
-        $\mathit{NONE}$
-  \Else $\;\mathit{SOME\; b}$
-  \EndIf 
 
-\end{algorithmic}
-    \Description{The \DTran\ algorithm} 
+      sdf
+
+%       \begin{algorithmic}
+% \Require $\forall (n : \rm{name})\; \in \branches, \; n\; \rm{unique}$
+% \State \it{compile context \branches} = 
+%   \If{\it{null(\branches)}} {\it{fail}}
+%   \ElsIf{$\neg\exists{g} \in$ \it{fst(hd(\branches))}} 
+%     \State {\it{match (hd branches)}}
+%   \Else
+%     \State \alet $g$ be a guard such that $g \in \branches$
+%     \ain 
+%     \If{$g$ has the form $x = K (e_1 \dots e_i)$}
+%     \alet 
+%     \State 
+%     $\mathit{KS = \bracketed{K\; \vert\; \exists\; b \in \branches : x \in \dom(b) \wedge K(\dots) \in x@b }}$ 
+        
+%     $\mathit{edges = map(}$ 
+%     \State $\mathit{\lambda K.}$ (\alet $ns = n_1 \dots n_i, \; n_x \rm{ fresh}$
+%         \ain 
+%         \State $\mathit{(K, extract (x, ns, \Compile (context + \bracketed{n_1 \dots n_i \mapsto known})}$ 
+%         \State $\mathit{(mapPartial (refine\; x\; (K (ns))) branches))}$ 
+%         \State \aend) 
+%       \State $\mathit{defaults = filter(\lambda b. x \notin \dom(b) \lor K(\dots) \notin x@b)}$ 
+%       \State \ain $\mathit{test (x, edges, SOME (compile\; defaults))}$ 
+%       \State \aend 
+%     \ElsIf {$g$ has the form $x = e$ : $x \;\mathit{unknown},\; e \;\mathit{known}$} 
+%       \State $\mathit{try\_let (x, \DTran\; (context\; e)}$, 
+%       \State $\mathit{compile (context\bracketed{x \mapsto known}) ((branches -- eq)[x/e])}$,
+%       \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$
+%     \ElsIf {$g$ has the form $x = y$ : $x \;\mathit{known},\; y \;\mathit{unknown}$} 
+%     \State $\mathit{try\_let (x, y, compile (context\bracketed{y \mapsto known}) (branches -- eq), NONE)}$
+%     \ElsIf {$g$ has the form $x = e$ : $x \;\mathit{known},\; e \;\mathit{known}$} 
+%       \State $\mathit{cmp (x, \DTran\; (context\; e)}$, 
+%       \State $\mathit{compile\; context\; ((branches -- eq)[x/e])}$,
+%       \State $\mathit{compile\; context\; (branches --- eq -- e)}$,
+%       \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$
+%     \ElsIf {$g$ has the form $e$ : $e \;\mathit{known}$} 
+%     \State $\mathit{try\_let (x, \DTran\; (context\; e)}$, 
+%     \State $\mathit{compile (context\bracketed{x \mapsto known}) ((branches -- eq)[x/e])}$,
+%     \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$ 
+%     \State {, $x$ fresh} \\
+%     \aend
+%     \EndIf
+%   \EndIf
+%   \State \bf{where} 
+%   \State $\mathit{snd (a, b) = b}$ 
+%   \State $\mathit{refine (x, K (ns) b) = }$
+%   \If{$\mathit{K' (es) \in x@b \land (K \neq K' \lor length(es) \neq length(ns))}$}
+%         $\mathit{NONE}$
+%   \Else $\;\mathit{SOME\; b}$
+%   \EndIf 
+
+% \end{algorithmic}
+
+
+\Description{The \DTran\ algorithm} 
     \caption{The \DTran\ algorithm.}
     \label{dtran}
     \end{figure}    

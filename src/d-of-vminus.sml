@@ -30,6 +30,7 @@ struct
   
   type context = status Env.env
   val emptyContext = Env.empty
+  val empty = Env.empty
 
 
   fun addVar status x rho = Env.bind (x, status, rho)
@@ -113,7 +114,7 @@ struct
         | C.FUNAPP (e1, e2) =>  Set.union' [addFromExp e1, addFromExp e2])
     | addFromExp (V.I (V.IF_FI branches)) = 
       Set.union' (map (addFromBranch o snd) branches)
-  and addFromVal (C.LAMBDA (n, body)) = addFromExp body
+  and addFromVal (C.LAMBDA (n, _, body)) = addFromExp body
     | addFromVal (C.VCON (vc, vs)) = Set.union' (map addFromVal vs)
   and addFromGuard (V.CONDITION e) = addFromExp e
     | addFromGuard (V.EQN (x, e)) = addFromExp e
@@ -285,8 +286,9 @@ struct
 
   fun translate ctx (V.C ce) = 
       let val tr = translate ctx 
-          fun translate_val ctx' (C.LAMBDA (n, body)) = 
-                                 C.LAMBDA (n, translate (makeKnown n ctx') body)
+          fun translate_val ctx' (C.LAMBDA (n, _, body)) = 
+                                 C.LAMBDA (n, empty, translate (makeKnown n ctx') body)
+                    (* translation does not preserve closures, nor should it *)
             | translate_val ctx' (C.VCON (vc, vs)) = 
                                  C.VCON (vc, map (translate_val ctx') vs)
       in  D.C 

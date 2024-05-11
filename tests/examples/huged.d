@@ -1,0 +1,458 @@
+val demo4 = \e. case e of C1 C2 C3 -> One | C1 x C4 -> Two | C1 x C5 -> Three | x -> Four
+val demo4 = \e. test e:
+ (C1, 2) -> extract e into .x7, .x8 in try let .x1 = C2 in try let .x2 = C3 in try let .x4 = C4 in try let .x6 = C5 in let .x7 = .x3 in let .x3 = x in try let .x5 = x in .x7 = .x1? 
+ ->.x8 = .x2? 
+ ->One
+ -> .x8 = .x4? 
+ ->Two
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+.x7 = .x1? 
+ ->.x8 = .x2? 
+ ->One
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+let .x7 = .x3 in let .x3 = x in .x7 = .x1? 
+ ->.x8 = .x2? 
+ ->One
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+try let .x6 = C5 in let .x7 = .x5 in let .x5 = x in .x7 = .x1? 
+ ->.x8 = .x2? 
+ ->One
+ -> .x8 = .x6? 
+ ->Three
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x6? 
+ ->Three
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x6? 
+ ->Three
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x8 = .x6? 
+ ->Three
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+let e = x in .x7 = .x1? 
+ ->.x8 = .x2? 
+ ->One
+ -> Four
+ -> Four
+ -> Four
+ -> Four, 
+ otherwise 
+try let .x4 = C4 in try let .x6 = C5 in let .x7 = .x3 in let .x3 = x in try let .x5 = x in .x8 = .x4? 
+ ->Two
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+.x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+let .x7 = .x3 in let .x3 = x in .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+try let .x6 = C5 in let .x7 = .x5 in let .x5 = x in .x8 = .x6? 
+ ->Three
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+let e = x in Four, 
+ otherwise 
+try let .x4 = C4 in try let .x6 = C5 in let .x7 = .x3 in let .x3 = x in try let .x5 = x in .x8 = .x4? 
+ ->Two
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> .x7 = .x5? 
+ ->.x8 = .x6? 
+ ->Three
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x7? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = .x5? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+.x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+let .x7 = .x3 in let .x3 = x in .x8 = .x4? 
+ ->Two
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+try let .x6 = C5 in let .x7 = .x5 in let .x5 = x in .x8 = .x6? 
+ ->Three
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail
+ -> e = x? 
+ ->Four
+ -> fail
+ -> fail, 
+ otherwise 
+let e = x in Four
+| _ -> let e = x in Four

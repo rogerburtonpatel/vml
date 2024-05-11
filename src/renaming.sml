@@ -16,6 +16,7 @@ struct
   fun rho binds x = Env.binds (rho, x)
   fun add x v rho = Env.bind (x, v, rho)
   fun lookup x rho = Env.find (x, rho)
+  val empty = Env.empty
 
   fun patFreeNames (P.PNAME n) = [n]
               | patFreeNames (P.CONAPP (_, ps)) = 
@@ -113,11 +114,12 @@ for used names, look them up in the environment *)
       end 
   and renameLiteral renamings (v : P.value) = 
     case v of 
-        C.LAMBDA (n, body) => 
+        C.LAMBDA (n, _, body) => 
           let val fresh = freshNameGen ()
               val (n', renamings') = (fresh, add n fresh renamings) 
               val body' = pplus renamings' body
-          in (C.LAMBDA (n', body'))
+          in (C.LAMBDA (n', empty, body'))
+          (* does not rename names in closures, nor should it *)
           end
       | C.VCON (vc, vs) => C.VCON (vc, map (renameLiteral renamings) vs)
 

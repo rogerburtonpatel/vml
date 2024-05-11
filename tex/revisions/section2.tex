@@ -22,67 +22,69 @@
 
 
 
-\section{Pattern Matching and equations}
-\label{pmandequations}
+\section{Pattern Matching and its Extensions}
+\label{pmandextensions}
 
 In this section, I expand on the definitions, forms, and tradeoffs of pattern
 matching and equations. These tradeoffs inform the compromises I make in
-\VMinus down the line in Section~\ref{vminus}.
+\VMinus (Section~\ref{vminus}).
 
-\subsection{Pattern matching}
-\label{pmoverobservers}
 
 % \1 What is pattern matching 
 
 Pattern matching lets programmers examine and deconstruct data by matching them
 against patterns. When a pattern $p$ matches with a value $v$, it can produce
-bindings for any sub-values of $v$. For example, pattern $x::xs$ matches any 
-application of the value constructor \it{cons} (\it{::}), and binds the first 
+bindings for sub-values of $v$. For example, pattern $x::xs$ matches any 
+application of the value constructor \it{cons} (\it{::}), and it binds the first 
 element of the cons cell to $x$ and the second to $xs$. 
 
-Why use pattern matching? What could programmers use instead? One tool a
-programmer might use to deconstruct data is \it{observers}
-\citep{liskov:abstraction}: functions that explicitly inquire a piece of data's
-structure and extract its components. Examples of observers in functional
-programming languages include Scheme's \tt{null?}, \tt{car}, and \tt{cdr}, and
-ML's \tt{null}, \tt{hd}, and \tt{tl}. But many functional programmers favor
-pattern matching over observers. I demonstrate with an example and a claim. 
+Why use pattern matching? What could programmers use instead? Before pattern
+matching was invented, a programmer had to deconstruct data using \it{observers}
+\citep{liskov:abstraction}: functions that explicitly examine a piece of data
+and extract its components. Examples of observers in functional programming
+languages include Scheme's \tt{null?}, \tt{car}, and \tt{cdr}, and ML's
+\tt{null}, \tt{hd}, and \tt{tl}. Given the option of pattern matching, however,
+many functional programmers favor it over observers. I demonstrate with an
+example and a claim. 
 
-Consider a \it{shape} datatype in Standard ML, which represents shapes by their
-dimensions: 
+Consider a \tt{standard\_shape} datatype in Standard ML, which represents shapes
+by their dimensions\footnote{For sake of simplicity, \tt{standard\_shape}s
+always have an area that can be obtained by standard area formulas: $\frac{1}{2}
+* base * height$ for triangles; $\frac{1}{2} * (base_{1} + base_{2}) * height$
+for trapezoids.}: 
 
 \medskip 
 \begin{minipage}[t]{\textwidth}
     \begin{verbatim}
-        datatype shape = SQUARE of real 
-                       | TRIANGLE of real * real 
-                       | TRAPEZOID of real * real * real
+        datatype standard_shape = SQUARE    of real 
+                                | TRIANGLE  of real * real 
+                                | TRAPEZOID of real * real * real
 \end{verbatim}
 \end{minipage}
 \medskip 
 
-I define an \tt{area} function on \it{shape}s, with this type and these
+I define an \tt{area} function on \it{standard\_shape}s, with this type and these
 algebraic laws: 
 
 \medskip 
 \begin{minipage}[t]{\textwidth}
     \begin{verbatim}
-        area : shape -> real 
-        (* area (SQUARE s)              == s * s 
+        area : standard_shape -> real 
+           area (SQUARE s)              == s * s 
            area (TRIANGLE (w, h))       == 0.5 * w * h
-           area (TRAPEZOID (b1, b2, h)) == 0.5 * b1 * b2 * h
-        *)
+           area (TRAPEZOID (b1, b2, h)) == 0.5 * (b1 + b2) * h
+        
 \end{verbatim}
 \end{minipage}
 \medskip 
 
-Now consider two implementations of \tt{area}, one with observers and one with
-pattern matching, in Figure~\ref{fig:area}.
+Now compare two implementations of \tt{area}, one with observers and one with
+pattern matching (Figure~\ref{fig:area}).
 
     \begin{figure}[H]
       \begin{minipage}[t]{0.7\textwidth}
         \begin{verbatim}
-fun area sh =
+fun observers_area sh =
   if isSquare sh
   then sqSide sh * sqSide sh
   else if isTriangle sh 
@@ -91,17 +93,17 @@ fun area sh =
             \end{verbatim}
             \Description{An implementation of area observers}
         \subcaption{\tt{area} with observers}
-            \label{fig:observerarea} 
+            \label{fig:observersarea} 
       \end{minipage}
       \vfill
       \begin{minipage}[t]{0.7\textwidth}
         % \centering 
         \begin{verbatim}
-fun area sh =
+fun pm_area sh =
   case sh 
     of SQUARE s              => s * s
      | TRIANGLE (w, h)       => 0.5 * w * h
-     | TRAPEZOID (b1, b2, h) => 0.5 * b1 * b2 * h
+     | TRAPEZOID (b1, b2, h) => 0.5 * (b1 + b2) * h
                 \end{verbatim}
        \Description{An implementation of area using implicit deconstruction via
        patterns.}
@@ -119,97 +121,103 @@ fun area sh =
     \tt{triW}, \tt{traB1}, \tt{traB2}, and \tt{traH} is left as an
     (excruciating) exercise to the reader. 
 
-    If that prospect doesn't convince you that pattern matching avoids a lot of
-    the problems that observers have, I'll show five general reasons why
-    programmers prefer pattern matching over observes. I refer to these as
-    Nice~Properties for the rest of the paper. They are broken into two groups:
-    Group~A, which contains properties of pattern matching that programmers
-    enjoy in general, and Group~B,  which contains properties strictly to do
-    with pattern matching's specific strengths over observers. 
+    In general, pattern matching is preferred over observers for five reasons. 
 
-      \begin{enumerate}
-        \item [\textbf{A.}]
-        \begin{enumerate}[label=\arabic*]
-          \item With pattern matching, code more closely resembles algebraic laws. 
-          \label{p1}
-          \item With pattern matching, it's easier to avoid duplicating code.
-          \label{p2}
-          \item With pattern matching, a compiler may be able to tell if the
-          code omits an important case through \it{exhaustiveness analysis}.
-          \label{p5}
-      \end{enumerate}
-        
-        \item [\textbf{B.}]
-        \begin{enumerate}[start=4, label=\arabic*]
-          \item Pattern matching plays nicer with constructed data. 
-          \label{p3}
-          \item With pattern matching, important intermediate values are always
-          given a name. 
-          \nolinebreak
-          \label{p4}
-        \end{enumerate}
-      \end{enumerate}
+    \begin{enumerate}
+      \item [\textbf{A.}]
+      \begin{enumerate}[label=\arabic*]
+        \item  \it{Lawlike.} With pattern matching, code more closely
+        resembles algebraic laws. 
+        \label{p1}
+        \item \it{Single copy} With pattern matching, it's easier to avoid
+        duplicating code.
+        \label{p2}
+        \item \it{Exhaustiveness.} With pattern matching, a compiler may be
+        able to tell if the code omits an important case through
+        \it{exhaustiveness analysis}.
+        \label{p5}
+    \end{enumerate}
 
-    Nice Properties \ref{p1}~and~\ref{p2} are the most important of these: they
-    allow programmers to write code that looks like what they write at the
-    whiteboard, with flexible laws and minimal duplication. I show in
-    Section~\ref{extensions} that extensions to pattern matching largely exist
-    to uphold these two properties. 
+    \item [\textbf{B.}]
+    \begin{enumerate}[start=4, label=\arabic*]
+      \item \it{Conciseness.} Pattern matching does not need function
+      calls to deconstruct data. \nolinebreak
+      \label{p3}
+      \item \it{Signposting.} With pattern matching, important
+      intermediate values are always given names. 
+      \nolinebreak
+      \label{p4}
+    \end{enumerate}
+  \end{enumerate}
+
+    I refer to these as Nice~Properties for the rest of the paper. They are broken
+    into two groups: Group~A, which contains properties of pattern matching that
+    programmers enjoy in general, and Group~B,  which contains properties strictly
+    to do with pattern matching's specific strengths over observers. 
+
+    \hyperref[p1]{Lawlike}~and~\hyperref[p1]{Single copy} are the most important
+    of the Nice Properties: they allow programmers to write code that looks like
+    what they write at the whiteboard, with flexible laws and minimal
+    duplication. I show in Section~\ref{extensions} that extensions to pattern
+    matching largely exist to uphold these two properties. 
     
     Let's see how each of our Nice Properties holds up in \tt{area}: 
     
     \begin{enumerate}
       \item [\textbf{A.}]
       \begin{enumerate}[label=\arabic*]
-        \item[\ref{p1}] \ref{fig:pmarea}, which uses pattern matching, more
-        closely resembles the algebraic laws for \tt{area}. 
-        \item[\ref{p2}] \ref{fig:observerarea} had to call observers like
-        \tt{squareSide} multiple times, and each observer needs \tt{sh} as an
-        argument. \ref{fig:pmarea} was able to extract the \tt{shape}s' internal
-        values with a single pattern, and the name \tt{sh} is not duplicated
-        anywhere in its body. 
-        \item[\ref{p5}] If the user adds another value constructor to
-        \tt{shape}--- say, \tt{CIRCLE}, \ref{fig:observerarea} will not cause
-        the compiler to complain, and if it's passed a \tt{CIRCLE} at runtime,
-        the program will likely crash! In \ref{fig:pmarea}, the compiler will
-        warn the user of the possibility of a \tt{Match} exception, and even
-        tell them that they must add a pattern for \tt{CIRCLE} to rule out this
-        possibility. 
+        \item \hyperref[p1]{\it{Lawlike.}}
+        \hyperref[fig:pmarea]{\tt{pm\_area}} more closely resembles the
+        algebraic laws for \tt{area}. 
+        \item \hyperref[p2]{\it{Single copy.}}
+        \hyperref[fig:observersarea]{\tt{observers\_area}} had to call observers
+        like \tt{squareSide} multiple times, and each observer needs \tt{sh} as
+        an argument. \hyperref[fig:pmarea]{\tt{pm\_area}} was able to extract
+        the \tt{standard\_shape}s' internal values with a single pattern, and
+        the name \tt{sh} is not duplicated anywhere in its body. 
+        \item \hyperref[p5]{\it{Exhaustiveness.}} If the user adds another value constructor to
+        \tt{standard\_shape}--- say, \tt{CIRCLE}, the compiler will warn the
+        user of the possibility of a \tt{Match} exception in \hyperref[fig:pmarea]{\tt{pm\_area}}, and
+        even tell them that they must add a pattern for \tt{CIRCLE} to rule out
+        this possibility. \hyperref[fig:observersarea]{\tt{observers\_area}} will not cause the compiler to
+        complain, and if it's passed a \tt{CIRCLE} at runtime, the program will
+        likely crash! 
     \end{enumerate}
       
     \item [\textbf{B.}]
       \begin{enumerate}[start=4, label=\arabic*]
-        \item[\ref{p3}] Where did \tt{isSquare}, \tt{sqSide}, and all the other
-        observers come from? To even \it{implement} \ref{fig:observerarea}, a
+        \item \hyperref[p3]{\it{Conciseness.}} Where did \tt{isSquare}, \tt{sqSide}, and all the other
+        observers come from? To even \it{implement} \hyperref[fig:observersarea]{\tt{observers\_area}}, a
         programmer has to define a whole new set of observers for
-        \tt{shape}s!\footnote{Sometimes the compiler throws programmers a bone:
-        with some constructed data, i.e., Scheme's records, the compiler
-        provides observers automatically. In others, like with algebraic
-        datatypes in ML, it does not.} Most programmers find this tiresome
-        indeed. \ref{fig:pmarea} did not have to do any of this.
-        \item[\ref{p4}] To extract the internal values, \ref{fig:pmarea} had to
-        name them, and their names serve as documentation. 
+        \tt{standard\_shape}s!\footnote{Sometimes the compiler throws
+        programmers a bone: with some constructed data, i.e., Scheme's records,
+        the compiler provides observers automatically. In others, like with
+        algebraic datatypes in ML, it does not.} Most programmers find this
+        tiresome indeed. \hyperref[fig:pmarea]{\tt{pm\_area}} did not have to do any of this.
+        \item \hyperref[p4]{\it{Signposting.}} To extract the internal values,
+        \hyperref[fig:pmarea]{\tt{pm\_area}} had to name them, and their names
+        serve as documentation. 
       \end{enumerate}
     \end{enumerate}
 
 
-    Having had the chance to compare Figures \ref{fig:observerarea}
-    and~\ref{fig:pmarea}, if you moderately prefer the latter, that's good: most
-    functional programmers--- in fact, most \it{programmers}--- likely do as
-    well. 
+    Having had the chance to compare pattern matching and observers, if you
+    moderately prefer pattern matching, that's good: most functional
+    programmers---in fact, most \it{programmers}---likely do as well. 
 
-    Figure~\ref{fig:pmarea} provides an opportunity to introduce a few terms
-    that are common in pattern matching. \ref{fig:pmarea}~is a classic example
-    of where pattern matching most commonly occurs: within a \it{case}
-    expression. A \it{case} expression tests a \it{scrutinee} (\tt{sh}
-    in~\ref{fig:pmarea}) against a list of patterns (\tt{SQUARE s}, etc.). When
-    the result of evaluating the scrutinee matches with a pattern, the program
-    evaluates the right-hand side of the respective branch (\tt{s * s}, etc.)
-    within the \it{case} expression.\footnote{OCaml, which you'll see in future
-    sections, calls \it{case} \tt{match}. Some literature~\citep{guardproposal}
-    calls this a \it{head expression}. I follow the example of~\citet{bpc} and
-    \citet{maranget} in calling the things \it{case} and \it{scrutinee}. Any of
-    these terms does the job.} 
+    \hyperref[fig:pmarea]{\tt{pm\_area}} provides an opportunity to introduce a
+    few terms that are common in pattern matching.
+    \hyperref[fig:pmarea]{\tt{pm\_area}}~is a classic example of where pattern
+    matching most commonly occurs: within a \it{case} expression. A \it{case}
+    expression tests a \it{scrutinee} (\tt{sh}) against a list of \it{branches}.
+    Each branch contains a pattern on the left-hand side (\tt{SQUARE s}, etc.)
+    and an expression on the right-hand side (\tt{s * s}, etc.). When the result
+    of evaluating the scrutinee matches with a pattern, the program evaluates
+    the right-hand side of the respective branch.\footnote{OCaml, which you'll
+    see in future sections, calls \it{case} \tt{match}. Some
+    literature~\citep{guardproposal} calls this a \it{head expression}. I follow
+    the example of~\citet{bpc} and \citet{maranget} in calling the things
+    \it{case} and \it{scrutinee}. Any of these terms does the job.} 
 % \1 Pattern matching has these properties, observers do not. 
 
 \subsection{Popular extensions to pattern matching}
@@ -245,7 +253,7 @@ fun area sh =
     so I hand-wavingly say that it does have side conditions.}. 
     
     I'll define a (rather silly) function \tt{exclaimTall} in OCaml on
-    \tt{shape}s. I'll have to translate our \tt{shape} datatype to OCaml, and
+    \tt{standard\_shape}s. I'll have to translate our \tt{standard\_shape} datatype to OCaml, and
     while I'm at it, I'll write the type and algebraic laws for
     \tt{exclaimTall}:
 
@@ -253,12 +261,12 @@ fun area sh =
         \centering 
         \begin{verbatim}
 
-type shape = Square of float 
+type standard_shape = Square of float 
            | Triangle of float * float
            | Trapezoid of float * float * float
 
-exclaimTall : shape -> string 
-(*
+exclaimTall : standard_shape -> string 
+
 exclaimTall (Square s)              == "Wow! That's a tall square!", 
                                         where s > 100.0
 exclaimTall (Triangle (w, h))       == "Goodness! Towering triangle!",
@@ -267,7 +275,6 @@ exclaimTall (Trapezoid (b1, b2, h)) == "Zounds! Tremendous trapezoid!",
                                         where h > 100.0
 exclaimTall sh                      == "Your shape is small.", 
                                         otherwise
-*)
     \end{verbatim}
     \end{minipage}
 
@@ -309,7 +316,7 @@ exclaimTall sh                      == "Your shape is small.",
     function, the exclamatory strings, are gummed up in the middle of the
     \tt{if-then-else} expressions.
     
-    Fortunately, this code can be simplified by using the \tt{shape} patterns
+    Fortunately, this code can be simplified by using the \tt{standard\_shape} patterns
     with a \it{side condition}, i.e., a syntactic form for “match a pattern
     \it{and} a boolean condition.” The \tt{when} keyword in OCaml provides such
     a form, as seen in Figure~\ref{fig:whenexclaimtall}.
@@ -390,8 +397,9 @@ exclaimTall sh                      == "Your shape is small.",
               tripleLookup rho x == handleFailure x, otherwise
             
               handleFailure : int -> int 
-              (* handleFailure's implementation is unimportant.
-                handleFailure (x : int) = ... some error-handling ... -> x *)  
+
+              handleFailure's implementation is unimportant.
+                handleFailure (x : int) = ... some error-handling ... -> x  
 
         \end{verbatim}
     \end{minipage}
@@ -677,7 +685,7 @@ $\exists$ area. area = $\lambda$ sh.
        | $\exists$ w h. sh = $\langle$TRIANGLE, w, h$\rangle$; 
               0.5 * w * h
        | $\exists$ b1 b2 h. sh = $\langle$TRAPEZOID, b1, b2, h$\rangle$; 
-              0.5 * b1 * b2 * h}
+              0.5 * (b1 + b2) * h}
         \end{lstlisting}
     \caption{\tt{area} in \VC uses existentials and equations rather than
     pattern matching.} 
@@ -685,11 +693,11 @@ $\exists$ area. area = $\lambda$ sh.
     \label{fig:versearea}
     \end{figure}
 
-    Like in the pattern-matching example in~\ref{fig:pmarea}, the right-hand
-    sides of \tt{area} are \it{guarded} by a “check;” now, the check is
-    successful unification in an equation rather than a successful match on a
-    pattern. Similarly, \tt{one} with a list of choices represents matching on
-    any \it{one} pattern to evaluate a single right-hand side. 
+    Like in~\hyperref[fig:pmarea]{\tt{pm\_area}}, the right-hand sides of
+    \tt{area} are \it{guarded} by a “check;” now, the check is successful
+    unification in an equation rather than a successful match on a pattern.
+    Similarly, \tt{one} with a list of choices represents matching on any
+    \it{one} pattern to evaluate a single right-hand side. 
 
     Why use equations? I begin with a digestible claim: \VC's equations are
     preferable to observers. This claim mirrors my argument for pattern
@@ -703,7 +711,7 @@ $\exists$ area. area = $\lambda$ sh.
       equations that a mathematician would. 
       \item \tt{area} using equations does not duplicate virtually any code. 
       \item \tt{area} using equations deconstructs user-defined types as easily
-      as \ref{fig:pmarea} does with pattern matching. 
+      as~\hyperref[fig:pmarea]{\tt{pm\_area}} does with pattern matching. 
       \item \tt{area} using equations has all important internal values named
       very explicitly.
       \item This Property may not hold, because \VC on its own is untyped.
@@ -719,7 +727,7 @@ $\exists$ area. area = $\lambda$ sh.
     claim programmers prefer equations to observers. Now I'll make a stronger
     claim: equations are \it{at least as good as} pattern matching with popular
     extensions. How can I claim this? By appealing again to the Nice Properties!
-    In~Section~\ref{pmoverobservers}, I demonstrated how pattern matching had to
+    In~Section~\ref{pmandextensions}, I demonstrated how pattern matching had to
     resort to extensions to regain the Properties when challenging examples
     stole them away. In Figure~\ref{fig:verseextfuncs}, I've implemented those
     examples in \VC (this time extended with strings, floats, and \tt{*}) using
@@ -781,7 +789,7 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
             \label{fig:versegot} 
         \vspace{4ex}
         \end{minipage}%% 
-    \caption{Code for the \ref{pmoverobservers} functions with equations looks
+    \caption{Code for the \ref{pmandextensions} functions with equations looks
     similar, and it doesn't need extensions.}
     \label{fig:verseextfuncs}
       \end{figure}

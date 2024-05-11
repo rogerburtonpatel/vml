@@ -1,0 +1,30 @@
+\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+% Title included so this document can compile alone
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+
+\begin{document}
+
+
+\begin{abstract}
+    Pattern matching appeals to functional programmers for its expressiveness
+    and good cost model, but pattern matching primitives can only express
+    certain computations verbosely. The problem can be addressed by extensions,
+    but these are not standardized, and no single popular programming language
+    contains them all. By contrast, equations in the Verse programming language
+    are both expressive and succinct, with no obvious need for extensions, but
+    Verse's cost model is a challenge because of backtracking and multiple
+    results. As a compromise, I~propose a new language, \VMinus, which~uses
+    Verse's equations to succinctly express computation while enjoying a
+    friendlier cost model by prohibiting backtracking and multiple results.
+    I~show that \VMinus's equations capture the desirable properties of pattern
+    matching with popular extensions, and I~also show that \VMinus~can be
+    compiled to a decision tree and therefore has the same desirable cost model
+    as pattern matching. Finally, I~have implemented \VMinus in Standard ML,
+    alongside an algorithm for compiling it to a decision tree. 
+\end{abstract}
+
+\maketitle
+
+\end{document}

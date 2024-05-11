@@ -1,0 +1,71 @@
+\contentsline {section}{Abstract}{1}{section*.1}%
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {section}{Contents}{3}{section*.2}%
+\contentsline {section}{\numberline {2}Pattern Matching and equations}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Pattern matching}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Popular extensions to pattern matching}{8}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Side conditions}{8}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Pattern guards}{11}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Or-patterns}{14}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Wrapping up pattern matching and extensions}{15}{subsubsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.3}Verse's equations}{16}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}\ensuremath {\mathcal {VC}}\xspace has a challenging cost model}{19}{subsection.2.4}%
+\contentsline {section}{\numberline {3}A compromise}{20}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Introducing \ensuremath {P^{+}}\xspace }{21}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Formal Semantics of \ensuremath {P^{+}}\xspace }{21}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Expressions in \ensuremath {P^{+}}\xspace }{22}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Pattern matching in \ensuremath {P^{+}}\xspace }{23}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Rules (Big-step Operational Semantics) for \ensuremath {P^{+}}\xspace :}{25}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Judgement forms for \ensuremath {V^{-}}\xspace }{25}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Evaluating General Expressions}{25}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}Rules for pattern matching}{26}{subsubsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.4}Introducing \ensuremath {V^{-}}\xspace }{28}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Programming in \ensuremath {V^{-}}\xspace }{30}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Formal Semantics of $\ensuremath {V^{-}}\xspace $:}{31}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}Expressions}{31}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.6.2}Guards}{32}{subsubsection.3.6.2}%
+\contentsline {subsubsection}{\numberline {3.6.3}Refinement ordering on environments}{33}{subsubsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.7}Rules (Big-step Operational Semantics) for $\ensuremath {V^{-}}\xspace $:}{33}{subsection.3.7}%
+\contentsline {subsubsection}{\numberline {3.7.1}Judgement forms for \ensuremath {V^{-}}\xspace }{33}{subsubsection.3.7.1}%
+\contentsline {subsubsection}{\numberline {3.7.2}Shifting a guard to the context}{33}{subsubsection.3.7.2}%
+\contentsline {subsubsection}{\numberline {3.7.3}Choosing and processing a guard}{34}{subsubsection.3.7.3}%
+\contentsline {subsubsection}{\numberline {3.7.4}Properties of guards}{34}{subsubsection.3.7.4}%
+\contentsline {subsubsection}{\numberline {3.7.5}Refinement with different types of guards}{34}{subsubsection.3.7.5}%
+\contentsline {subsubsection}{\numberline {3.7.6}Evaluating General Expressions}{35}{subsubsection.3.7.6}%
+\contentsline {subsection}{\numberline {3.8}Introducing \ensuremath {D}\xspace }{37}{subsection.3.8}%
+\contentsline {section}{\numberline {4}\ensuremath {V^{-}}\xspace can be compiled to a decision tree}{37}{section.4}%
+\contentsline {subsection}{\numberline {4.1}\ensuremath {D}\xspace is a generalization of Maranget's trees}{38}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Rules (Big-step Operational Semantics) for \ensuremath {D}\xspace :}{39}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}The \ensuremath {\mathcal {D}}\xspace \ algorithm: \ensuremath {V^{-}}\xspace $\rightarrow $ \ensuremath {D}\xspace }{39}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Translation from \ensuremath {V^{-}}\xspace to \ensuremath {D}\xspace preserves semantics}{42}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Equations subsume pattern matching with popular extensions}{42}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Domains}{42}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Translating Expressions}{43}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Translating Patterns}{44}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Significance of the translation}{44}{subsubsection.5.3.1}%
+\contentsline {section}{\numberline {6}Implementations}{45}{section.6}%
+\contentsline {section}{\numberline {7}Related Work}{45}{section.7}%
+\contentsline {section}{\numberline {8}Conclusion}{46}{section.8}%
+\contentsline {section}{\numberline {9}Discussion and Future Work}{46}{section.9}%
+\contentsline {subsubsection}{\numberline {9.0.1}Desirable formalisms about translations}{46}{subsubsection.9.0.1}%
+\contentsline {subsubsection}{\numberline {9.0.2}Desirable formalisms about \ensuremath {V^{-}}\xspace }{46}{subsubsection.9.0.2}%
+\contentsline {subsubsection}{\numberline {9.0.3}Exhaustiveness analysis \ensuremath {P^{+}}\xspace and \ensuremath {V^{-}}\xspace }{47}{subsubsection.9.0.3}%
+\contentsline {subsubsection}{\numberline {9.0.4}Using \ensuremath {V^{-}}\xspace to inform programming in Verse}{47}{subsubsection.9.0.4}%
+\contentsline {section}{\numberline {10}Acknowledgements}{47}{section.10}%
+\contentsline {section}{\numberline {11}References}{48}{section.11}%
+\contentsline {section}{References}{48}{section*.25}%
+\contentsline {section}{\numberline {A}Proofs}{50}{section.1}%
+\contentsline {section}{\numberline {B}Discussion}{50}{section.2}%
+\contentsline {subsubsection}{\numberline {B.0.1}\ensuremath {V^{-}}\xspace and \ensuremath {P^{+}}\xspace , side by side}{50}{subsubsection.2.0.1}%
+\contentsline {section}{\numberline {C}Addressing how \ensuremath {P^{+}}\xspace handles unusual pattern combinations}{51}{section.3}%
+\contentsline {section}{\numberline {D}Is \ensuremath {V^{-}}\xspace \ a true subset of \ensuremath {\mathcal {VC}}\xspace ?}{52}{section.4}%
+\contentsline {section}{\numberline {E}Formal Definitions of all languages}{52}{section.5}%
+\contentsline {subsubsection}{\numberline {E.0.1}Judgement forms for \ensuremath {V^{-}}\xspace }{52}{subsubsection.5.0.1}%
+\contentsline {subsubsection}{\numberline {E.0.2}Evaluating General Expressions}{52}{subsubsection.5.0.2}%
+\contentsline {subsubsection}{\numberline {E.0.3}Rules for pattern matching}{54}{subsubsection.5.0.3}%
+\contentsline {subsubsection}{\numberline {E.0.4}Judgement forms for \ensuremath {V^{-}}\xspace }{56}{subsubsection.5.0.4}%
+\contentsline {subsubsection}{\numberline {E.0.5}Shifting a guard to the context}{56}{subsubsection.5.0.5}%
+\contentsline {subsubsection}{\numberline {E.0.6}Choosing and processing a guard}{56}{subsubsection.5.0.6}%
+\contentsline {subsubsection}{\numberline {E.0.7}Properties of guards}{57}{subsubsection.5.0.7}%
+\contentsline {subsubsection}{\numberline {E.0.8}Refinement with different types of guards}{57}{subsubsection.5.0.8}%
+\contentsline {subsubsection}{\numberline {E.0.9}Evaluating General Expressions}{58}{subsubsection.5.0.9}%

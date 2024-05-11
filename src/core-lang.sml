@@ -7,7 +7,7 @@ structure Core :> sig
                   | LAMBDAEXP of name * 'a 
                   | FUNAPP of 'a * 'a 
     and 'exp value = VCON of vcon   * 'exp value list 
-                   | LAMBDA of name * 'exp
+                   | LAMBDA of name * 'exp value Env.env * 'exp
 
   exception NameNotBound of name 
   exception BadFunApp of string 
@@ -31,7 +31,7 @@ structure Core :> sig
                   | LAMBDAEXP of name * 'a 
                   | FUNAPP of 'a * 'a 
     and 'exp value = VCON of vcon   * 'exp value list 
-                      | LAMBDA of name * 'exp
+                   | LAMBDA of name * 'exp value Env.env * 'exp
 
   exception NameNotBound of name 
   exception BadFunApp of string 
@@ -45,7 +45,7 @@ structure Core :> sig
           | LAMBDAEXP (n, t) => LAMBDAEXP (n, f t)
           | FUNAPP (t1, t2)  => FUNAPP (f t1, f t2) 
   and vmap (f : ('a -> 'b)) v = 
-    case v of LAMBDA (n, e) => LAMBDA (n, f e)
+    case v of LAMBDA (n, captured, e) => LAMBDA (n, Env.map (vmap f) captured, f e)
             | VCON (vc, vs) => VCON (vc, List.map (vmap f) vs)
 
   fun eqval (VCON (v1, vs), VCON (v2, vs')) = 
@@ -69,7 +69,7 @@ structure Core :> sig
     | expString f (FUNAPP (e1, e2)) = f e1 ^ " " ^ f e2
   and valString f (VCON (vc, vals))   = 
           vconAppStr (valString f) vc vals 
-    | valString f (LAMBDA (n, body)) = 
+    | valString f (LAMBDA (n, caputured, body)) = 
         StringEscapes.backslash ^ n ^ ". " ^ (f body)
    and maybeparenthesize f e = 
 (case e of LITERAL v => br' (valString f v)

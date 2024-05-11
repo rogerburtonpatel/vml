@@ -6,7 +6,6 @@ signature DECISION_TREE = sig
 
   datatype ('e, 'a) tree = MATCH of 'a
               | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
-              | IF of 'e   * ('e, 'a) tree * ('e, 'a) tree 
               | TRY_LET of name  * 'e * ('e, 'a) tree * ('e, 'a) tree option
               | CMP of name  * 'e * ('e, 'a) tree * ('e, 'a) tree * ('e, 'a) tree 
               | EXTRACT of name * name list * ('e, 'a) tree 
@@ -34,7 +33,6 @@ struct
 
   datatype ('e, 'a) tree = MATCH of 'a
               | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
-              | IF of 'e   * ('e, 'a) tree * ('e, 'a) tree 
               | TRY_LET of name  * 'e * ('e, 'a) tree * ('e, 'a) tree option
               | CMP of name  * 'e * ('e, 'a) tree * ('e, 'a) tree * ('e, 'a) tree 
               | EXTRACT of name * name list * ('e, 'a) tree 
@@ -48,6 +46,9 @@ struct
   fun br' input = "(" ^ input ^ ")"
 
   structure C = Core 
+  val member = ListUtil.member
+  infix 6 <+>
+  val op <+> = Env.<+>
 
 
   fun expString (C ce) = 
@@ -68,7 +69,6 @@ struct
         end 
     and emitTree' (MATCH a) = expString a
           | emitTree' (TEST (n, pats, default)) = "test " ^ n ^ ":\n " ^ emitCase pats default
-          | emitTree' (IF (e, left, right)) = "if " ^ expString e ^ " then " ^ emitTree' left ^ " else " ^ emitTree' right
           | emitTree' (TRY_LET (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ emitTree' t1 
           | emitTree' (TRY_LET (n, e, t1, SOME t2)) = "try let " ^ n ^ " = " ^ expString e ^ " in " ^ emitTree' t1 ^ ", \n otherwise \n" ^ emitTree' t2
           | emitTree' (CMP (n, e, t1, t2, t3)) = n ^ " = " ^ expString e ^ "? \n ->" ^ emitTree' t1 ^ "\n -> " ^ emitTree' t2 ^ "\n -> " ^ emitTree' t3
@@ -146,24 +146,31 @@ struct
 
   exception Unsolvable
 
+  val predefs = ["print"]
+
+
+  fun captureVal rho (C.LAMBDA (n, captured, body)) = C.LAMBDA (n, captured <+> rho, body)
+    | captureVal rho (C.VCON (vc, vs)) = C.VCON (vc, map (captureVal rho) vs)
+
   fun eval rho (C ce) = 
-    (case ce of
+    (case ce of 
       C.LITERAL v => v
-    | C.NAME n    => find_or_die n rho
-    | C.VCONAPP (vc, es)    => C.VCON (vc, map (eval rho) es)
-    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, body)
-    | C.FUNAPP (C (C.NAME "print"), param)  => 
-    (* dirty trick to print values *)
-                    ( println (C.valString expString (eval rho param)) 
-                          ; C.VCON (C.K "unit", [])
-                    ) 
-    | C.FUNAPP (fe, param)  => 
+    | C.NAME n => lookup n rho  
+    | C.VCONAPP (vc, es) => C.VCON (vc, map (eval rho) es)
+    | C.LAMBDAEXP (n, body) => C.LAMBDA (n, rho, body)
+    | C.FUNAPP (C (C.NAME n), arg)  => 
+      if member n predefs 
+      then runpredef n (rho, arg) 
+      else let val v = eval rho (C (C.NAME n))
+            in eval rho (C (C.FUNAPP (C (C.LITERAL v), arg)))
+            end 
+    | C.FUNAPP (fe, arg) => 
               (case eval rho fe 
-                of C.LAMBDA (n, b) => 
-                  let val arg  = eval rho param
-                      val rho' = bind n arg rho
-                    in 
-                     eval rho' b
+                of C.LAMBDA (n, captured, b) => 
+                    let val v_arg = eval rho arg
+                        val rho' = Env.<+> (bind n v_arg rho, captured)
+                        val () = print ("Here " ^ Env.toString (valString) rho' ^ "\n")
+                    in eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
     | eval rho (I tree) = evalTree rho tree
@@ -182,10 +189,10 @@ struct
                  else evalTree rho (TEST (x, options, default))
               end
              | _ => Impossible.impossible "cannot test non-vcon")
-        | IF (e, t1, t2) => 
+        (* | IF (e, t1, t2) => 
           ((eval rho e 
             handle Fail _ => evalTree rho t2)
-          ; evalTree rho t1)
+          ; evalTree rho t1) *)
         | TRY_LET (n, e, t1, NONE) => 
           let val v = eval rho e 
           in evalTree (bind n v rho) t1
@@ -209,6 +216,13 @@ struct
               end 
              | _ => Impossible.impossible "extracting a non-vcon- bug in MC")
         | FAIL => raise Fail "reached a fail node in a decision tree"
+
+  and runpredef which (rho, arg) = 
+    case which of 
+      "print" => ( println (C.valString expString (eval rho arg)) 
+                  ; C.VCON (C.K "unit", [])
+                 )
+      | _ => Impossible.impossible "runtime bug: running non-predef function"
 
 
 end

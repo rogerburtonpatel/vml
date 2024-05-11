@@ -305,9 +305,9 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 \inferrule*[Left=\textsc{ (MatchVcon) }]
     {\inferrule* {}
     {
-    \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution_{i}], \and 1 \leq i \leq m
+    \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq m
     \\\\
-    \solution = \solution_{1} \uplus \dots \uplus \solution_{m}
+    \solution = \solution{1} \uplus \dots \uplus \solution{m}
     }}
     {\pmatch[pat={K\; [p_{1} \dots 
             p_{m}]}, value={K [v_{1}' \dots v_{m}']},
@@ -406,9 +406,9 @@ Some of these rules are a variation on the rules found in Ramsey (2022, Section
 % \inferrule*[Left=\textsc{ (MatchVcon) }]
 %     {\inferrule* {}
 %     {
-%     \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution_{i}], \and 1 \leq i \leq m
+%     \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq m
 %     \\\\
-%     \solution = \solution_{1} \uplus \dots \uplus \solution_{m}
+%     \solution = \solution{1} \uplus \dots \uplus \solution{m}
 %     }}
 %     {\pmatch[pat={K\; p_{1}, \dots 
 %             p_{m}}, value={K\; [v_{1}', \dots v_{m}']},

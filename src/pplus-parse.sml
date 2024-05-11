@@ -106,12 +106,14 @@ factor ::= atom [<- exp]
 atom ::= x | K {atom} | when exp | ❨p❩ *)
 
   fun nullaryvcon vc = A.C (Core.VCONAPP (vc, []))
+  val emptyconapp : PPlus.exp PPlus.pattern P.producer
+        = flip (curry A.CONAPP) <$> succeed [] <*> vcon
 
   val exp = P.fix (fn exp : A.exp P.producer => 
     let         
     val pattern = P.fix (fn pattern => 
       let val atom = P.fix (fn atom =>
-      curry A.CONAPP <$> vcon <*> many atom
+      curry A.CONAPP <$> vcon <*> many (emptyconapp <|> atom)
         <|> A.WHEN     <$> (word "when" >> exp)
         <|> wildcard >> (succeed A.WILDCARD)
         <|> A.PNAME    <$> name

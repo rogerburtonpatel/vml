@@ -106,16 +106,16 @@
 
 \subsection{Formal Semantics of \PPlus}
 
-    In this section, I present a big-step operational semantics for \PPlus. The
-    semantics describes how expressions in \PPlus are evaluated and how pattern
-    matching works in the language. Instead of a rewrite semantics that desugars
-    extensions into \it{case} expressions, \PPlus has a big-step semantics that
-    directly describes how they are handled by the runtime core.
-    Figure~\ref{fig:ppsyntax} contains the concrete syntax of \PPlus,
-    Figure~\ref{fig:ppmetavars} provides the metavariables used in the judgement
-    forms and~rules of the semantics, and Section~\ref{ppsemantics} contains the
-    forms and rules. Since pattern matching is the heart of \PPlus, I also
-    describe it in plain English.
+    In this section, I present a big-step operational semantics for \VMinus. The
+    semantics describes how expressions in \VMinus are evaluated and how
+    equations (and more generally, guards) work in the language. Instead of a
+    rewrite semantics that makes substitutions within guards, \VMinus has a
+    big-step semantics that directly describes how they are handled by the
+    runtime core. Figure~\ref{fig:vmsyntax} contains the concrete syntax of
+    \VMinus, Figure~\ref{fig:vmmetavars} provides the metavariables used in the
+    judgement forms and~rules of the semantics, and Section~\ref{vmsemantics}
+    contains the forms and rules. Since solving guards is the heart of \VMinus,
+    I also describe it in plain English.
 
 \begin{figure}
 \begin{center}
@@ -390,7 +390,7 @@ val game_of_token = \t.
       \begin{lemma}
         An expression in \VMinus can never backtrack at runtime. 
       \end{lemma}
-      \newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
+      % \newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
       \begin{proof}
         In progress. 
       \end{proof}
@@ -470,12 +470,12 @@ val game_of_token = \t.
               $\expr$ : \textsf{Expressions} ::=
               | $v$ : literal values 
               | $x, y, z$ : names
-              | $\tt{if}\; [\; G\; \bracketed{\tt{[]}\; G}\;]\; \tt{fi}$ : if-fi 
+              | $\tt{if}\; [\; B\; \bracketed{\tt{[]}\; B}\;]\; \tt{fi}$ : if-fi 
               | $K \bracketed{\expr}$ : value constructor application 
               | $\expr[1]\; \expr[2]$ : function application 
               | $\ttbackslash x\tt{.}\; \expr$ : lambda declaration 
               ;;
-              $G$ : \textsf{Guarded Expressions} ::=  
+              $B$ : \textsf{Branches} ::=  
               $[\tt{E }{\bracketed{x}}{\tt{.}}] \bracketed{g} \;\ttrightarrow\; \expr$ : names, guards, and body
               ;;
               $g$ : \textsf{Guards} ::=  
@@ -648,7 +648,7 @@ describe it in plain English.
     $\result$& $\rhohat \mid \dagger$ : guards produce \it{solutions}: a
     refined environment \rhohat\; or rejection\\
     $\mathcal{T}$& Context of all temporarily stuck guards (a sequence) \\ 
-    $G$& A guarded expression \\
+    % $G$& A guarded expression \\
     % \uppsidown& Inability to compile to a decision tree; a compile time error \\
 \bottomrule
 \end{tabular}    
@@ -682,11 +682,11 @@ describe it in plain English.
     similarly to how equations are solved in Verse: the program nondeterministically
     picks one out of a context (\context), attempts to solve it, and moves on. 
 
-In our semantics, this process occurs over a \it{list} of guards in a context
-\context: the program picks a guard from \context, attempts to solve it to
-refine the environment or fail, and repeats. \VMinus can only pick a guard out
-of the context \context\ that it "knows" it can solve. "Knowing" a guard can be
-solved can be determined in \VMinus at compile time. If \VMinus can't pick a
+In our semantics, this process occurs over a \it{list} of guards \gs in a
+context \context: the program picks a guard from \context, attempts to solve it
+to refine the environment or fail, and repeats. \VMinus can only pick a guard
+out of the context \context\ that it "knows" it can solve. "Knowing" a guard can
+be solved can be determined in \VMinus at compile time. If \VMinus can't pick a
 guard and there are guards left over, the semantics gets stuck at compile time. 
 
 \showvjudgement{Solve-Guards}{\vmgs}

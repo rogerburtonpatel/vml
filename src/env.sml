@@ -13,6 +13,7 @@ structure Env :> sig
   val values : 'a env -> 'a list 
 
   val map : ('a -> 'b) -> 'a env -> 'b env
+  val mapPartial : ('a -> 'b option) -> 'a env -> 'b env
 
   val toString : ('a -> string) -> 'a env -> string
   val <+> : 'a env * 'a env -> 'a env  (* BPC, chap 5 *)
@@ -75,6 +76,7 @@ struct
   fun values rho = map snd rho
 
   fun map f (rho : 'a env) = List.map (fn (n, x) => (n, f x)) rho
+  fun mapPartial f (rho : 'a env) = List.mapPartial (fn (n, x) => case f x of SOME v => SOME (n, v) | NONE => NONE) rho
 
 end
   
