@@ -28,32 +28,32 @@
 
 This thesis would not have been possible without the infinitely generous time
 and support of my advisors, Norman Ramsey and Milod Kazerounian. Norman's
-offhand comment of “I wonder if Verse's equations subsume pattern matching” was
+offhand comment of “I~wonder if Verse's equations subsume pattern matching” was
 the entire basis of this work, and his generosity in agreeing to advise a full
 thesis to answer his question will always be profoundly appreciated. During the
 academic year, Norman provided me with materials on both the technical story and
 on how to write about it well. He gave me regular feedback and has helped
 improve my research skills, my technical writing, and my understanding of
-programming languages in general tremendously. I especially appreciate how he
+programming languages in general tremendously. I~especially appreciate how he
 has guided me in-person at the end of my undergraduate when his book~\citep{bpc}
 got me started down the path of PL at the beginning of it. Finally, Norman is
 also fantastically fun to pair program with. 
 
 From the beginning, Milod provided me with encouraging mentorship that kept
 me enthusiastic and determined to complete the project. He was exceptionally
-patient as I gave him whirlwind tour after whirlwind tour of the changing
+patient as I~gave him whirlwind tour after whirlwind tour of the changing
 codebase and problems, and kept me grounded in the problems at hand. He 
 sent me helpful examples of his research to aid me in my proofs, and gave me
-some particularly encouraging words towards the end of the project that I 
+some particularly encouraging words towards the end of the project that I~
 will not soon forget. 
 
 My undergraduate advisor, Mark Sheldon, has always been both supportive and
-kind. I have enjoyed many long talks in his office, and I am deeply grateful
+kind. I~have enjoyed many long talks in his office, and I~am deeply grateful
 that he is on my committee. 
 
 Alva Couch was the advisor of my original thesis idea, which was to compile
-programming languages with music. Ultimately, we decided that I should pursue
-this project instead, and I am grateful to him for his mentorship in that moment
+programming languages with music. Ultimately, we decided that I~should pursue
+this project instead, and I~am grateful to him for his mentorship in that moment
 and onwards. 
 
 My family--- my mother, Jennifer Burton, my father, Aniruddh Patel, and my
@@ -63,22 +63,22 @@ sister, Lilia Burtonpatel, have all given me support, encouragement, and
 My gratitude towards my friends is also without limit. In particular, and in
 no order, Liam Strand, Annika Tanner, Max Stein, Cecelia Crumlish, and
 Charlie Bohnsack all showed specific interest in the work and encouraged me
-as I moved forward. Rachael Clawson was subjected to much rubber-ducking,
+as I~moved forward. Rachael Clawson was subjected to much rubber-ducking,
 and endured valiantly. Aliénor Rice and Marie Kazibwe were as steadfast
-thesis buddies as I could ever hope for. Jasper Geer, my PL partner in
+thesis buddies as I~could ever hope for. Jasper Geer, my PL partner in
 crime, was always one of my favorite people to talk to about my thesis. His
 pursuits in research inspire mine. 
 
 Skylar Gilfeather, my unbelievable friend. Yours is support that goes
 beyond words; care, food, silent and spoken friendship, late night rides to
-anywhere, laughs and tears are some that can try to capture it. I am so, so
+anywhere, laughs and tears are some that can try to capture it. I~am so, so
 grateful for how ceaselessly you've encouraged me on this journey. Every one
-of your friends is lucky to have you in their life, and I am blessed that 
+of your friends is lucky to have you in their life, and I~am blessed that 
 you are such a core part of mine. 
 
-Anna Quirós, I am writing these words as you sleep behind me. Your support
-and love have been immeasurable. I will always be grateful to you for this
-year \it{increíble}. I could not have smiled through it all without you. 
+Anna Quirós, I~am writing these words as you sleep behind me. Your support
+and love have been immeasurable. I~will always be grateful to you for this
+year \it{increíble}. I~could not have smiled through it all without you. 
 
 Thank you all. 
 
@@ -103,7 +103,7 @@ Thank you all.
 \section{Discussion}
 
 Both backtracking and multiple results often manifest within \VC's choice
-operator, which tempt its removal from \VMinus altogether. However, I am drawn
+operator, which tempt its removal from \VMinus altogether. However, I~am drawn
 to harnessing the expressive potential of this operator, particularly when
 paired with \VC's 'one' keyword. When employed with choice as a condition, 'one'
 elegantly signifies 'proceed if any branch of the choice succeeds. 
@@ -119,22 +119,22 @@ branches in a left-to-right order.
 \item The existential $\exists$ may not appear under choice.
 \end{enumerate}
 
-I introduce one more crucial modification to the \VC runtime: a name in
+I~introduce one more crucial modification to the \VC runtime: a name in
 \VMinus is an \it{expression} rather than a \it{value}. This alteration,
 coupled with my adjustments to choice, eradicates backtracking. Our
 rationale behind this is straightforward: if an expression returns a
 name, and subsequently, the program imposes a new constraint on that
 name, it may necessitate the reevaluation of the earlier expression—- a
-scenario I strive to avoid. 
+scenario I~strive to avoid. 
 
 \subsubsection{\VMinus and \PPlus, side by side}
-I compare \VMinus with \PPlus as an exercise in comparing equations with
+I~compare \VMinus with \PPlus as an exercise in comparing equations with
 pattern matching. They certainly look similar, which hints that \VMinus
 might be as expressive as pattern matching with the three extensions. 
 Proving this claim is the topic of Section~\ref{pplustovminus}. 
 
 When might a programmer prefer \VMinus over \PPlus, or vice versa? After
-programming in both, I have come up with three empirical observations: 
+programming in both, I~have come up with three empirical observations: 
 
 \begin{enumerate}
   \item \it{The scrutinee:} When there is no obvious single scrutinee, \VMinus is more succinct.
@@ -180,7 +180,7 @@ programming in both, I have come up with three empirical observations:
 % juxtapose them with pattern matching.    
 
 Indeed, having stripped out the functional logic programming elements of
-\VC, only the decision-making bits are left over. To wrap these, I add a
+\VC, only the decision-making bits are left over. To wrap these, I~add a
 classic decision-making construct: guarded commands~\citep{dijkstra} The result is \VMinus. \VMinus's concrete syntax is
 defined in Figure~\ref{fig:vmsyntax}. 
 
@@ -216,7 +216,52 @@ proving that our semantics of \VMinus are consistent with Augutsson et al.'s
 \section{Formal Definitions of all languages}
 \label{languagedefs}
 
-\utable
+\begin{table}[ht]
+  \centering
+  \small
+  \begin{tabular}{l l l}
+      \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
+      \hline
+      $P$ : Programs        & $\bracketed{d}$        & \\
+      $d$ : Definitions     & \valabstract           & \\
+      $\expr$ : Expressions & $\v$                   & \\
+                            & $x, y, z$             & \\
+                            & $K\bracketed{\expr}$  & \\
+                            & $\lambda x.\; \expr$  & \\
+                            & $\expr[1]\; \expr[2]$ & \\
+                            & \caseabstract         & \PPlus \\
+                            & \iffiabstract         & \VMinus \\
+                            & $\dt$                 & \D \\
+      \\
+      $\v$ : Values          & $K\bracketed{\v}$     & \\
+                            & $\lambda x.\; \expr$  & \\
+      \\
+      $p$ : Patterns         & $x$                  &  \\
+                            & $\_$                  &  \\
+                            & $K\; \bracketed{p}$   &  \\
+                            & $\whenexpr$           & {\smash{$\left . \vrule height 7ex depth 7ex width 0pt \right\}\; \PPlus$}} \\
+                            & $\pcommap$            & \\
+                            & $\parrowe$            & \\
+                            & $\porp$               & \\
+      \\
+      $\G$ : Guarded Expressions & \gexpabstract      & \\
+      $\g$ : \textsf{Guards}  & $x = \expr$           & \raisebox{-0.3em}{\smash{$\left . \vrule height 5ex depth 5ex width 0pt \right\}\; \VMinus$}} \\
+                            & $\expr$               & \\
+                            & \choiceabstract       & \\
+                            % need raisebox here 0.5\baselineskip from "one below middle"
+      \\                            
+      $\dt$ : Decision Trees & $\decisiontreeabstract$ & \\
+                             & $\expr$                    & \\
+                             & \treetryletabstract        & {\smash{$\left . \vrule height 8ex depth 6ex width 0pt \right\}\; \D$}} \\
+                             & \treeifabstract           &  \\
+                             % & \treeextractabstract       & \\
+                             & \treefailabstract          & \\
+      \\
+  \end{tabular}
+  \caption{Abstract Syntax of all languages, 
+           with delineations in column \bf{Unique To}}
+  \label{fig:unilang}
+\end{table}
 \ppsemantics
 \vmsemantics
 

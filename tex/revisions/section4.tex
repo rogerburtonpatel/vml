@@ -25,7 +25,7 @@
 \section{\VMinus can be compiled to a decision tree}
 \label{vminustod}
     To demonstrate that \VMinus has the same desirable cost model as pattern
-    matching, I present an algorithm for compiling \VMinus to a decision tree. I
+    matching, I~present an algorithm for compiling \VMinus to a decision tree. I
     choose the decision tree as a target for compilation for the simple reason
     of its appealing cost model. A decision tree can be exponential in size but
     never examines a word of the \it{scrutinee}--- the value being tested---
@@ -47,10 +47,10 @@
 
   \D's concrete syntax is given in Figure~\ref{fig:dsyntax}. Decision trees in \D
     are engineered to look like Maranget's trees. There are a few minor
-    differences in the algorithm I use and Maranget's: his compilation algorithm
+    differences in the algorithm I~use and Maranget's: his compilation algorithm
     is more complex than the one in this paper, and involves an intermediate
     representation of occurrence vectors and clause matrices which the algorithm
-    I present does not use. Maranget uses vectors and matrices to express
+    I~present does not use. Maranget uses vectors and matrices to express
     multiple simultaneous matches of values to patterns as a single match of a
     vector with a matrix row. This allows him to run a \it{specialization} pass
     that reduces the number of rows in the matrix, ultimately leading to smaller
@@ -93,7 +93,7 @@
 
     %     \Description{Occurrence vector of names, and clause matrix of matches}
     %     \caption{The occurrence vector and clause matrix are intermediate
-    %     representations in Maranget's compilation. I do not exploit this
+    %     representations in Maranget's compilation. I~do not exploit this
     %     representation in my own algorithm, but it helps to understand his final
     %     tree.}
     % \end{figure}
@@ -231,15 +231,15 @@
     the algorithm reaches a state in which the first unmatched branch is all
     trivially-satisfied guards. 
 
-    In the figure, I use the notation $x@b$ to denote the bag of all guards and
+    In the figure, I~use the notation $x@b$ to denote the bag of all guards and
     expressions in branch $b$ in which name $x$ appears. A branch is a list of
     guards followed by a terminal expression; it is a branch of an \it{if-fi}
     stripped of the existential since \DTran\ introduces all names at the top
-    level. I use the notation $\dom(b)$ to describe the set of all names that
-    appear in a branch. I use the notation $\mathit{branches -- g}$ to mean
+    level. I~use the notation $\dom(b)$ to describe the set of all names that
+    appear in a branch. I~use the notation $\mathit{branches -- g}$ to mean
     “$\mathit{branches}$ pruned of guard $g$” and the notation $\mathit{branches
     --- g}$ to mean “$\mathit{branches}$ pruned of all \it{branches} containing
-    $g$.” I use the standard substitution notation $\mathit{branches[x/e]}$ to
+    $g$.” I~use the standard substitution notation $\mathit{branches[x/e]}$ to
     mean “$\mathit{branches}$ with name $x$ substituted for expression $e$.” I
     use a shorthand $\mathit{(context + \bracketed{n_1 \dots n_i \mapsto
     known})}$ to mean “$\mathit{context}$ extended with each of $n_x$ bound to

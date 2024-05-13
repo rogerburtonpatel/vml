@@ -26,8 +26,8 @@
     
     To bridge the gap between pattern matching, equations, and decision trees, I
     have created and implemented a semantics for three core languages. To model
-    pattern matching with extensions, I introduce \PPlus. To model programming
-    with equations, I introduce \VMinus. And to provide an
+    pattern matching with extensions, I~introduce \PPlus. To model programming
+    with equations, I~introduce \VMinus. And to provide an
     efficient cost model to which both \PPlus and \VMinus can be compiled, I
     introduce \D.
 
@@ -45,12 +45,12 @@
     % target of translation to reason about efficiency. 
 
     % TODO: dsemantics 
-    In this section, I present the three languages. Their semantics appear in
+    In this section, I~present the three languages. Their semantics appear in
     Sections \ref{pplus}, \ref{vmsemantics}, and~\ref{dsemantics},
-    respectively, and in Appendix~\ref{languagedefs}. In my design, I took
+    respectively, and in Appendix~\ref{languagedefs}. In my design, I~took
     inspiration from Verse: each of \PPlus, \VMinus, and \D has a conventional
     sub-language that is the lambda calculus extended with named value
-    constructors \it{K} applied to zero or more values. I chose named value
+    constructors \it{K} applied to zero or more values. I~chose named value
     constructors over \VC's tuples because they look more like patterns. 
     
     Because they share a core, and to facilitate comparisons and proofs, I
@@ -59,7 +59,7 @@
     Column “Unique To” indicates which components of \U\ belong to the
     sub-languages. For all intents and purposes, the three languages are
     distinct; it is because they all share the same core of lambdas, value
-    constructors (\it{K}), names, and function application that I have decided
+    constructors (\it{K}), names, and function application that I~have decided
     to house them in \U\ together. 
     
     Like in \VC, every lambda-calculus term is valid in our languages and has
@@ -86,7 +86,7 @@
     all also have lambda, Church Numerals~\citep{church1985calculi} are another
     viable\footnote{Not to mention meditative.} option. 
 
-    In the subsections below, I discuss each language in more detail.
+    In the subsections below, I~discuss each language in more detail.
     Section~\ref{futurework} goes further in analyzing how \PPlus and \VMinus
     relate to modern languages with pattern matching and to \VC respectively. 
 
@@ -97,16 +97,16 @@
     \PPlus offers a standardized core for pattern matching, enhanced by common
     extensions. In addition to bare pattern matching— names and applications of
     value constructors— the language includes pattern guards, or-patterns, and
-    side conditions. Although pattern guards subsume side conditions, I include
+    side conditions. Although pattern guards subsume side conditions, I~include
     side conditions in \PPlus and separate them from guards for purpose of
     study. Furthermore, \PPlus introduces a new form of pattern: \pcommap. This
     allows a pattern in \PPlus be a \it{sequence} of sub-patterns, allowing a
     programmer to stuff as many patterns as they want in the space of a single
-    one. I discuss the implications of this in Section~\ref{ppweird}.
+    one. I~discuss the implications of this in Section~\ref{ppweird}.
 
 \subsection{Formal Semantics of \PPlus}
 
-    In this section, I present a big-step operational semantics for \VMinus. The
+    In this section, I~present a big-step operational semantics for \VMinus. The
     semantics describes how expressions in \VMinus are evaluated and how
     equations (and more generally, guards) work in the language. Instead of a
     rewrite semantics that makes substitutions within guards, \VMinus has a
@@ -115,7 +115,7 @@
     \VMinus, Figure~\ref{fig:vmmetavars} provides the metavariables used in the
     judgement forms and~rules of the semantics, and Section~\ref{vmsemantics}
     contains the forms and rules. Since solving guards is the heart of \VMinus,
-    I also describe it in plain English.
+    I~also describe it in plain English.
 
 \begin{figure}
 \begin{center}
@@ -261,7 +261,7 @@ $\rho + \rho'$.
       
       \bigskip 
     
-    I show how a programmer might utilize \PPlus to solve the previous problems
+    I~show how a programmer might utilize \PPlus to solve the previous problems
     (Section~\ref{extensions}) in Figure~\ref{fig:ppfuncs}. The examples in the
     figure all compile with the \tt{pplus} program. 
 
@@ -332,20 +332,20 @@ val game_of_token = \t.
 \subsection{Introducing \VMinus }
 \label{vminus}
 
-        To fuel the pursuit of smarter decision-making, I now draw inspiration
+        To fuel the pursuit of smarter decision-making, I~now draw inspiration
         from \VC. Equations in \VC look attractive, but the cost model of \VC is
         a challenge. 
         
         The elements of \VC that lead to unpredictable or costly run times are
-        backtracking and multiple results. So, I begin with a subset of \VC,
-        which I call \VMinus ("V minus"), with these elements removed. Removing
+        backtracking and multiple results. So, I~begin with a subset of \VC,
+        which I~call \VMinus ("V minus"), with these elements removed. Removing
         them strips much of the identity of \VC, but it leaves its
         \it{equations} to build on top of in an otherwise-typical programming
         context of single results and no backtracking at runtime. 
 
         Having stripped out the functional logic programming elements of \VC
         (backtracking and multiple results), only the decision-making bits are
-        left over. To wrap these, I add a classic decision-making construct:
+        left over. To wrap these, I~add a classic decision-making construct:
         guarded commands~\citep{dijkstra} The result is \VMinus. 
 
         \VMinus's concrete syntax is defined in Figure~\ref{fig:vmsyntax}.
@@ -398,13 +398,13 @@ val game_of_token = \t.
         % Both backtracking and multiple results often manifest within \VC's
         % choice operator, which tempt its removal altogether. 
         
-        % However, I am drawn
+        % However, I~am drawn
         % to harnessing the expressive potential of this operator, particularly
         % when paired with \VC's 'one' keyword. When employed with choice as a
         % condition, 'one' elegantly signifies 'proceed if any branch of the
         % choice succeeds. 
         
-        % To this end, I propose a new language, \VMinus, in which choice is
+        % To this end, I~propose a new language, \VMinus, in which choice is
         % permitted with several modifications:
 
         % \begin{enumerate}
@@ -416,13 +416,13 @@ val game_of_token = \t.
         % \item The existential $\exists$ may not appear under choice.
         % \end{enumerate}
 
-        % I introduce one more crucial modification to the \VC runtime: a name in
+        % I~introduce one more crucial modification to the \VC runtime: a name in
         % \VMinus is an \it{expression} rather than a \it{value}. This alteration,
         % coupled with my adjustments to choice, eradicates backtracking. Our
         % rationale behind this is straightforward: if an expression returns a
         % name, and subsequently, the program imposes a new constraint on that
         % name, it may necessitate the reevaluation of the earlier expression—- a
-        % scenario I strive to avoid. 
+        % scenario I~strive to avoid. 
         
         % An example in \VC illustrates this precise
         % scenario: 
@@ -454,7 +454,7 @@ val game_of_token = \t.
         
         % With these modifications in place, alongside a few additional
         % adjustments to the placement of existentials and the timing of choice
-        % evaluation (footnote: we discuss these later), I unveil a redefined
+        % evaluation (footnote: we discuss these later), I~unveil a redefined
         % decision-making core. To complete this transformation, we incorporate a
         % venerable decision-making construct: Guarded commands [cite: Dijkstra].
         % The result is \VMinus. 
@@ -618,7 +618,7 @@ val game_of_token = \t.
 
 \subsection{Formal Semantics of $\VMinus$:}
 
-In this section, I present a big-step operational semantics for \PPlus. The
+In this section, I~present a big-step operational semantics for \PPlus. The
 semantics describes how expressions in \PPlus are evaluated and how pattern
 matching works in the language. Instead of a rewrite semantics that desugars
 extensions into \it{case} expressions, \PPlus has a big-step semantics that
@@ -626,7 +626,7 @@ directly describes how they are handled by the runtime core.
 Figure~\ref{fig:ppsyntax} contains the concrete syntax of \PPlus,
 Figure~\ref{fig:ppmetavars} provides the metavariables used in the judgement
 forms and~rules of the semantics, and Section~\ref{ppsemantics} contains the
-forms and rules. Since pattern matching is the heart of \PPlus, I also
+forms and rules. Since pattern matching is the heart of \PPlus, I~also
 describe it in plain English.
 
 \begin{table}
@@ -745,11 +745,11 @@ in the size of the source code (from \it{case}). Run time remains linear, but
 code size may not be. 
 
 Decision trees are classically used as an intermediate representation for
-compiling \it{case} expressions. In this work, I will use them as a target for
-compiling \it{if-fi} in \VMinus. I do so to prove that equations, at least given
+compiling \it{case} expressions. In this work, I~will use them as a target for
+compiling \it{if-fi} in \VMinus. I~do so to prove that equations, at least given
 their restrictions in \VMinus, can be compiled to a decision tree. 
 
-\D is a generalization of the trees found in~\citet{maranget}. I discuss the
+\D is a generalization of the trees found in~\citet{maranget}. I~discuss the
 specifics of \D's decision trees in the following section. 
 
 \end{document}

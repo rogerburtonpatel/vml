@@ -22,9 +22,9 @@
 \begin{document}
 \section{Equations subsume pattern matching with popular extensions}
 \label{pplustovminus}
-    In my introduction I stated that \VMinus can be compiled to a decision tree,
+    In my introduction I~stated that \VMinus can be compiled to a decision tree,
     and that \VMinus subsumes pattern matching with popular extensions. Having
-    shown the former, I now show the latter. I do so by presenting an algorithm
+    shown the former, I~now show the latter. I~do so by presenting an algorithm
     \PtoVTran\ which translates \PPlus to \VMinus. 
     
     % , and proving that the
@@ -32,7 +32,7 @@
 
     \subsection{Domains}
 
-    I give the names and domains of the translation functions: 
+    I~give the names and domains of the translation functions: 
     
     \begin{align*}
         &\PtoVTran: \PPlus Exp\; \rightarrow\; \VMinus Exp \\
@@ -99,14 +99,14 @@
 
     \subsubsection{Significance of the translation}
 
-    In Section~\ref{extensions}, I showed how extensions to pattern matching
+    In Section~\ref{extensions}, I~showed how extensions to pattern matching
     uphold Nice Properties \ref{p1}~and~\ref{p2}, and how with them, programmers
     can write more concise code. \bf{The translation aims to show that if a
     programmer can code with desirable properties in \PPlus, they can write code
     with the same properties in \VMinus.} Proving this claim formally is a goal
     for future work. Informally, \PTran\ does not duplicate code except for
     introducing new names when translating a constructor-application pattern,
-    and I believe eliminating this redundancy is possible through a desugaring
+    and I~believe eliminating this redundancy is possible through a desugaring
     optimization based off of the laws presented in Section~\ref{ppweird}. 
 
     \PtoVTran\ is largely uninteresting, except for the translation from
@@ -115,19 +115,19 @@
     To compile \it{case} expressions to decision trees like Maranget does,
     translate \PPlus to \D using $(\DTran\; o\; \PtoVTran)$.
     
-    Finally, I claim that the translation from \it{case} expressions to decision
+    Finally, I~claim that the translation from \it{case} expressions to decision
     trees, $(\DTran\; o\; \PtoVTran)$, is consistent with Maranget and
     others~\citep{maranget,scottramsey}. Proving this claim is a good goal for
     future work; it is not the main focus of this paper. 
 
     \section{Implementations}
 
-    I have full implementations of \PPlus, \VMinus, and~\D at
+    I~have full implementations of \PPlus, \VMinus, and~\D at
     \url{https://github.com/rogerburtonpatel/vml}. The languages are complete,
     from parsers to evaluation to unparsers. In the same repository lives the
     \tt{dtran} program, which translates from \PPlus to \VMinus and \VMinus to
     \D. Translating \PPlus to \D is also possible by composing these two
-    translations. With the implementations, I have been able to gather
+    translations. With the implementations, I~have been able to gather
     satisfying empirical evidence of the functionality of the translations, and
     that they (empirically) preserve semantics. 
 
@@ -139,10 +139,10 @@
     Augustsson et al. give the formal rewrite semantics for the Verse Calculus;
     Maranget gives an elegant formalism of decision trees. The big-step
     semantics in this paper is based off of the rewrite semantics; proving their
-    equivalence is the subject of future work. I chose a big-step semantics
-    because it is the style of semantics I am most comfortable with; writing the
+    equivalence is the subject of future work. I~chose a big-step semantics
+    because it is the style of semantics I~am most comfortable with; writing the
     formalisms this way facilitated writing the code. Maranget's formalism was
-    the foundation off of which I built \D. 
+    the foundation off of which I~built \D. 
     
     Extensions to pattern matching, and how they appeal to language designers,
     find an excellent example in Erwig \& Peyton Jones~\citep{guardproposal}.
@@ -155,30 +155,30 @@
     gives a foundation in exactly what it says. Ramsey and Scott have a crisp
     example of a match-compilation algorithm (pattern matching to decision
     trees) in When Do Match-Compilation Heuristics Matter?~\citep{scottramsey}.
-    Scott and Ramsey's algorithm structurally inspired mine, and I was privy to
+    Scott and Ramsey's algorithm structurally inspired mine, and I~was privy to
     source code from the algorithm whose study aided my implementation. 
     
     
     \section{Conclusion}
 
-    I have introduced the languages \PPlus and \VMinus to demonstrate the
+    I~have introduced the languages \PPlus and \VMinus to demonstrate the
     viability of equations as an alternative to pattern matching, and \D,
     \PtoVTran, and \DTran\ to show how both languages can be compiled to
-    efficient code. I have shown with equivalent examples how programs written
+    efficient code. I~have shown with equivalent examples how programs written
     in \VMinus has the same desirable properties as equivalent programs written
-    in \PPlus, and I have also shown that translating from pattern matching to
-    equations preserves the desirable properties. Finally, I have shown how
+    in \PPlus, and I~have also shown that translating from pattern matching to
+    equations preserves the desirable properties. Finally, I~have shown how
     \VMinus, like pattern matching, can be compiled to efficient code. In doing
-    so, I have demonstrated that programming with equations is a promising
+    so, I~have demonstrated that programming with equations is a promising
     alternative to pattern matching. 
 
-    I have also fully implemented the languages. They exist for use and
+    I~have also fully implemented the languages. They exist for use and
     experimentation: they are syntactically simple and have conceptually
-    accessible operational semantics. I hope that programmers will explore and
+    accessible operational semantics. I~hope that programmers will explore and
     develop their own opinions of these languages, which are publically
     available at \url{https://github.com/rogerburtonpatel/vml}. 
 
-    Finally, and in particular with \VMinus, I hope to provide a stepping stone
+    Finally, and in particular with \VMinus, I~hope to provide a stepping stone
     between pattern matching and equations that a new programmer to Verse will
     find illuminating. 
     
@@ -186,7 +186,7 @@
     % segment of the path that the curious programmer or language enthusiast who
     % wishes to better understand Verse will take. Be they transitioning to
     % equations from pattern matching to equations or curious about how those
-    % equations might be compilable to decision trees, I hope they find the
+    % equations might be compilable to decision trees, I~hope they find the
     % languages, and this document, illuminating. 
     
     \section{Discussion and Future Work}        
@@ -207,7 +207,7 @@
         deterministic}, and \bf{proving the big-step semantics of \VMinus~is
         consistent with the published semantics of \VC.} As the authors of the
         Verse paper proved that the rewrite semantics of Verse is
-        skew-confluent, I must prove that big-step semantics of \VMinus is
+        skew-confluent, I~must prove that big-step semantics of \VMinus is
         deterministic, despite the nondeterminism of choosing a guard. Second,
         \VMinus~is designed to be Verse-like, and formalizing the relationship
         between the two strengthens \VMinus's viability as an intermediate
@@ -272,7 +272,7 @@
 
         % However, the language designer must take special care to ensure no
         % $\alpha$ finds its way into the decision-making itself, or the whole
-        % idea falls apart. I am developing an implementation that enforces this
+        % idea falls apart. I~am developing an implementation that enforces this
         % invariant, and may include it in a future publication. 
         
         % Other alpha material: 
@@ -306,14 +306,14 @@
         % \label{pplusindependently}
         % \PPlus has side conditions, guards, and or-patterns. No major
         % functional language has all three of these extensions. Back
-        % Section~\ref{extensions}'s examples, I had to switch from OCaml to
+        % Section~\ref{extensions}'s examples, I~had to switch from OCaml to
         % Haskell to use guards, and back to OCaml for or-patterns. The two
         % extensions are mutually exclusive in Haskell, OCaml, Scala,
         % Erlang/Elixir, Rust, F\#, Agda.~\citep{haskell, ocaml, scala, erlang,
         % elixir, rust, fsharp, agda}
 
-        % Why is this the case? In my research, I have yet to encounter a
-        % substantial justification for this. I have several theories: one,
+        % Why is this the case? In my research, I~have yet to encounter a
+        % substantial justification for this. I~have several theories: one,
         % reengineering the Haskell parser to integrate or-patterns into the
         % language may be considered too great an effort; two, the lesser
         % popularity of functional programming in comparison to other paradigms
@@ -329,7 +329,7 @@
         
         % At ICFP last year, Tim Sweeney said that he wanted Verse to be an
         % accessible programming language to write a scalable, collaborative
-        % metaverse~\citep{timtalk}. Can \VMinus be aid in this goal? I can imagine
+        % metaverse~\citep{timtalk}. Can \VMinus be aid in this goal? I~can imagine
         % two ways in which it might:
         
         % \begin{enumerate}
