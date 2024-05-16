@@ -12,7 +12,7 @@ all: full
 
 # $(shell sed -E 's#(\\[0-9](.*$$)|\\begin{outline}.*$$|\\end{outline}.*$$)##g' body.tex > full-paper.tex)
 
-full: full-paper.pdf
+full: fullpaper.pdf
 	@ : go 
 
 %.pdf : %.tex

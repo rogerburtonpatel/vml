@@ -8,17 +8,23 @@
 \bibitem[Antoy and Hanus(2010)]{antoy2010functional}
 Sergio Antoy and Michael Hanus.
 \newblock Functional logic programming.
-\newblock \emph{Communications of the ACM}, 53\penalty0 (4):\penalty0 74--85, 2010.
+\newblock \emph{Communications of the ACM}, 53\penalty0 (4):\penalty0 74--85,
+  2010.
 
 \bibitem[Hanus(2013)]{hanus2013functional}
 Michael Hanus.
 \newblock Functional logic programming: From theory to curry.
-\newblock \emph{Programming Logics: Essays in Memory of Harald Ganzinger}, pages 123--168, 2013.
+\newblock \emph{Programming Logics: Essays in Memory of Harald Ganzinger},
+  pages 123--168, 2013.
 
-\bibitem[Augustsson et~al.(2023)Augustsson, Breitner, Claessen, Jhala, Peyton~Jones, Shivers, Steele~Jr, and Sweeney]{verse}
-Lennart Augustsson, Joachim Breitner, Koen Claessen, Ranjit Jhala, Simon Peyton~Jones, Olin Shivers, Guy~L Steele~Jr, and Tim Sweeney.
-\newblock The verse calculus: a core calculus for deterministic functional logic programming.
-\newblock \emph{Proceedings of the ACM on Programming Languages}, 7\penalty0 (ICFP):\penalty0 417--447, 2023.
+\bibitem[Augustsson et~al.(2023)Augustsson, Breitner, Claessen, Jhala,
+  Peyton~Jones, Shivers, Steele~Jr, and Sweeney]{verse}
+Lennart Augustsson, Joachim Breitner, Koen Claessen, Ranjit Jhala, Simon
+  Peyton~Jones, Olin Shivers, Guy~L Steele~Jr, and Tim Sweeney.
+\newblock The verse calculus: a core calculus for deterministic functional
+  logic programming.
+\newblock \emph{Proceedings of the ACM on Programming Languages}, 7\penalty0
+  (ICFP):\penalty0 417--447, 2023.
 
 \bibitem[Peyton-Jones(2024)]{peyton-jones2024verification}
 Simon Peyton-Jones.
@@ -26,18 +32,22 @@ Simon Peyton-Jones.
 
 \bibitem[Wadler(1985)]{wadler1985replace}
 Philip Wadler.
-\newblock How to replace failure by a list of successes a method for exception handling, backtracking, and pattern matching in lazy functional languages.
-\newblock In \emph{Conference on Functional Programming Languages and Computer Architecture}, pages 113--128. Springer, 1985.
+\newblock How to replace failure by a list of successes a method for exception
+  handling, backtracking, and pattern matching in lazy functional languages.
+\newblock In \emph{Conference on Functional Programming Languages and Computer
+  Architecture}, pages 113--128. Springer, 1985.
 
 \bibitem[Clark(1982)]{clark1982introduction}
 KL~Clark.
 \newblock An introduction to logic programming.
-\newblock \emph{Introductory Readings in Expert Systems, ed. D. Michie}, pages 93--112, 1982.
+\newblock \emph{Introductory Readings in Expert Systems, ed. D. Michie}, pages
+  93--112, 1982.
 
 \bibitem[Maranget(2008)]{maranget}
 Luc Maranget.
 \newblock Compiling pattern matching to good decision trees.
-\newblock In \emph{Proceedings of the 2008 ACM SIGPLAN workshop on ML}, pages 35--46, 2008.
+\newblock In \emph{Proceedings of the 2008 ACM SIGPLAN workshop on ML}, pages
+  35--46, 2008.
 
 \bibitem[Ramsey(2022)]{bpc}
 Norman Ramsey.
