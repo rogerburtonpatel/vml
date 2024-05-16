@@ -110,9 +110,9 @@
     optimization based off of the laws presented in Section~\ref{ppweird}. 
 
     \PtoVTran\ is largely uninteresting, except for the translation from
-    \it{case} to \it{if-fi}.
+    \it{case} to \iffibf.
         
-    To compile \it{case} expressions to decision trees like Maranget does,
+    To compile \it{case} expressions to decision trees as Maranget does,
     translate \PPlus to \D using $(\DTran\; o\; \PtoVTran)$.
     
     Finally, I~claim that the translation from \it{case} expressions to decision
@@ -320,8 +320,8 @@
 
         Exhaustiveness analysis can help restore Nice Property 5: with it,
         the compiler can warn programmers of a missing or extraneous match
-        condition in a \it{case} expression, and potentially an \it{if-fi}.
-        Owing to its significantly more flexible structure, however, \it{if-fi}
+        condition in a \it{case} expression, and potentially an \iffibf.
+        Owing to its significantly more flexible structure, however, \iffibf
         may prove trickier to analyze for missing match conditions than
         \it{case}.
 
@@ -338,7 +338,7 @@
         % expressions that occur \it{after} all decision-making. Imagine an
         % abstract expression $\alpha$ that appears on the right-hand side of a
         % \it{case} branch, the right-hand side of a guarded expression, or in a
-        % \it{match} node. The abstract syntax of the new \it{case}, \it{if-fi},
+        % \it{match} node. The abstract syntax of the new \it{case}, \iffibf,
         % and decision tree might look like this: 
         % \begin{center}
         %     \begin{bnf}

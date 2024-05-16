@@ -23,6 +23,8 @@
 \RequirePackage{enumitem}
 \RequirePackage{tikz}
 \RequirePackage{extarrows}
+\RequirePackage{xcolor}
+\RequirePackage{stmaryrd}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[noEnd=true]{algpseudocodex}
 % TODO remove if unused 
@@ -76,7 +78,9 @@
 
 % Symbols 
 \newcommand\ybar[1][]{\ensuremath{{\overline{y}}_{#1}}}
+\newcommand\vbar[1][]{\ensuremath{{\overline{v}}_{#1}}}
 \newcommand\xbar[1][]{\ensuremath{{\overline{x}}_{#1}}}
+\newcommand\tbar[1][]{\ensuremath{{\overline{t}}_{#1}}}
 \newcommand\gbar[1][]{\ensuremath{\gs_{#1}}}
 
 \newcommand{\choice}{\,{\vrule width 1.5pt height 8pt}\,}
@@ -90,60 +94,51 @@
 
 %%%%%%%%%% D ABSTRACT SYNTAX %%%%%%%%%%
 
-\newcommand\decisiontreeabstract{\ensuremath{\mathit{test}\; x\; \bracketed{K_{i}/\ybar[i]\; \rightarrow\; \dt}}\; [x\; \rightarrow \dt]}
+\newcommand\treetestabstract{\ensuremath{\mathit{test}\; x\; \bracketed{K\_{i}/\ybar[i]\; \rightarrow\; \dt}}\; [else\; \dt]}
 % \newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt}}
 \newcommand\treetryletabstract{\ensuremath{\mathit{try}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt[; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt]}}
 \newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{\xlongequal{\;}}\; \expr\; \mathit{then}\; \dt\; \mathit{else}\;  \dt\; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt}}
 \newcommand\treeextractabstract{\ensuremath{\mathit{extract}\; x\; \bracketed{y}\; \expr\; \mathit{ in }\; \dt}}
 \newcommand\treefailabstract{\ensuremath{\bf{fail}}}
 
+\newcommand\red[1]{\textcolor{red}{#1}}
+\newcommand\blue[1]{\textcolor{blue}{#1}}
+
 \newcommand\utable {%
-\begin{table}[ht]
-  \centering
-  \small
-  \begin{tabular}{l l l}
-      \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
-      \hline
-      $P$ : Programs        & $\bracketed{d}$        & \\
-      $d$ : Definitions     & \valabstract           & \\
-      $\expr$ : Expressions & $\v$                   & \\
-                            & $x, y, z$             & \\
-                            & $K\bracketed{\expr}$  & \\
-                            & $\lambda x.\; \expr$  & \\
-                            & $\expr[1]\; \expr[2]$ & \\
-                            & \caseabstract         & \PPlus \\
-                            & \iffiabstract         & \VMinus \\
-                            & $\dt$                 & \D \\
-      \\
-      $\v$ : Values          & $K\bracketed{\v}$     & \\
-                            & $\lambda x.\; \expr$  & \\
-      \\
-      $p$ : Patterns         & $x$                  &  \\
-                            & $\_$                  &  \\
-                            & $K\; \bracketed{p}$   &  \\
-                            & $\whenexpr$           & {\smash{$\left . \vrule height 7ex depth 7ex width 0pt \right\}\; \PPlus$}} \\
-                            & $\pcommap$            & \\
-                            & $\parrowe$            & \\
-                            & $\porp$               & \\
-      \\
-      $\G$ : Guarded Expressions & \gexpabstract      & \\
-      $\g$ : \textsf{Guards}  & $x = \expr$           & \raisebox{-0.3em}{\smash{$\left . \vrule height 5ex depth 5ex width 0pt \right\}\; \VMinus$}} \\
-                            & $\expr$               & \\
-                            & \choiceabstract       & \\
-                            % need raisebox here 0.5\baselineskip from "one below middle"
-      \\                            
-      $\dt$ : Decision Trees & $\decisiontreeabstract$ & \\
-                             & $\expr$                    & \\
-                             & \treetryletabstract        & {\smash{$\left . \vrule height 8ex depth 6ex width 0pt \right\}\; \D$}} \\
-                             & \treeifabstract           &  \\
-                             % & \treeextractabstract       & \\
-                             & \treefailabstract          & \\
-      \\
-  \end{tabular}
-  \caption{Abstract Syntax of all languages, 
-           with delineations in column \bf{Unique To}}
-  \label{fig:unilang}
-\end{table}
+\centering
+\small
+\begin{tabular}{l l}
+    \textbf{Syntactic Forms} & \textbf{Cases} \\
+    \hline
+    $P$ : Programs        & $\bracketed{d}$       \\
+    $d$ : Definitions     & \valabstract          \\
+    \v : Values          & $K\bracketed{\v}$     \\
+                          & $\lambda x.\; \expr$  \\
+    \\
+    $\expr$ : Expressions & \v                  \\
+                          & $x, y, z$             \\
+                          & $K\bracketed{\expr}$  \\
+                          & $\lambda x.\; \expr$  \\
+                          & $\expr[1]\; \expr[2]$ \\
+                          % & \caseabstract         \\
+                          & \red{\iffiabstract}         \\
+                          & \blue{\dt}         \\
+    \\
+    \red{\G} : \red{Guarded Expressions} & \red{\gexpabstract}      \\
+    \red{\g} : \red{\textsf{Guards}}  & \red{$x = \expr$}           \\
+                          & \red{\expr}               \\
+                          & \red{\choiceabstract}       \\
+                          % need raisebox here 0.5\baselineskip from "one below middle"
+    \\                            
+    \blue{\dt} : \blue{Decision Trees} &   $\blue{\treetestabstract}$ \\
+                           & \blue{\expr}                    \\
+                           & \blue{\vexists{x} \dt}                    \\
+                           & \blue{\treetryletabstract}        \\
+                           & \blue{\treeifabstract}           \\
+                           % & \treeextractabstract       \\
+                           & \blue{\treefailabstract}          \\
+    \\
+\end{tabular}
 }
 
 \newcommand\ppcsyntax {% 
@@ -201,10 +196,10 @@
   | \ttbraced{$\expr$}
   ;;
   $\dt$ : Decision Trees ::= 
- {\ensuremath{\tt{test}\; x\; \tt{\bracketed{K/i}}\; \ttrightarrow\; \dt} [x\; \ttrightarrow \dt]} : test node 
-| {\ensuremath{\tt{try-let}\; x\; \tt{=}\; \expr\; \tt{in}\; \dt[; \tt{otherwise}\; \dt]}} : try-let node
-| {\ensuremath{\tt{cmp}\; x\; \tt{ = }\; \expr\; \ttrightarrow \; \dt,\; \dt,\; \dt}} : comparison node
-| {\ensuremath{\tt{extract}\; x\; \bracketed{y}\; \expr\; \tt{ in }\; \dt}} : extract node 
+  {\ensuremath{\tt{test}\; x\; {\bracketed{K\bracketed{y} \; \ttrightarrow\; \dt}} [\tt{else}\; \dt]}} : test node
+| {\ensuremath{\tt{let}\; x\; \tt{=}\; \expr\; \tt{in}\; \dt[\tt{ unless fail => } \; \dt]}} : try-unless node
+| {\ensuremath{\tt{if}\; x\; \tt{=}\; \expr\; \tt{then} \; \dt\; \tt {else}\; \dt\; \tt {unless fail => } \dt}} : comparison node
+| {\ensuremath{\tt{E}\; x\tt{.} \dt}} : exists node
 | {\ensuremath{\tt{fail}}} : fail node
 ;;
   $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
@@ -212,7 +207,7 @@
   ;;
   $K$ : \textsf{Value Constructors} ::=
   | $\tt{true}\; \vert\; \tt{false}$ : booleans
-  | $\tt{A-Z}x$ : name beginning with capital letter
+  | $\tt{A-Z}x$ : name beginning with capital
   % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
   \end{bnf}
 }
@@ -234,13 +229,17 @@
 \newcommand\guard[1][]{\ensuremath{g_{#1}}\xspace}
 \newcommand\g[1][]{\ensuremath{g_{#1}}\xspace}
 \newcommand\gs[1][]{\ensuremath{\overline{g_{#1}}}\xspace}
+\newcommand\gsp[1][]{\ensuremath{\gs_{#1}\,'}\xspace}
+\newcommand\Gsp[1][]{\ensuremath{\Gs_{#1}\,'}\xspace}
+
 \newcommand\G[1][]{\ensuremath{G_{#1}}\xspace}
 \newcommand\B[1][]{\ensuremath{B_{#1}}\xspace}
 \newcommand\Gs[1][]{\ensuremath{\overline{G_{#1}}}\xspace}
 \newcommand\name[1][]{\ensuremath{x_{#1}}\xspace}
 
 \newcommand\one{\bf{\tt{one}}\xspace}
-\newcommand\dbar{▯}
+\newcommand\dbar{\ensuremath{\square}}
+% \newcommand\dbar{▯}
 
 \renewcommand\v[1][]{\ensuremath{v_{#1}}\xspace}
 
@@ -290,11 +289,16 @@
       }
 
 % Wrapping forms 
-\newcommand\iffi[1]{\textsc{if} \; [\; #1 \; ] \; \textsc{fi}}
+\newcommand\iffi[1]{\bf{if} \;  #1  \; \bf{fi}}
 \newcommand\iffitt[1]{\tt{if} \; #1 \; \tt{fi}}
+\newcommand\iffibf{\bf{if-fi}\xspace}
 \newcommand\TeqT[1]{\context \cdot #1 \cdot \context'}
+\newcommand\gseqgs[1]{\gs \cdot #1 \cdot \gsp}
 \newcommand\eqTT[1]{#1 \cdot \context \cdot \context'}
 \newcommand\TT{\context \cdot \context'}
+\newcommand\gsgs{\gs \cdot \gsp}
+\newcommand\GsgsGs[1]{\Gs\; \dbar\; #1\; \dbar\; \Gsp}
+\newcommand\GsGs{\Gs\; \dbar\; \Gsp}
 
 % Shortcuts 
 
@@ -393,6 +397,19 @@
 \newcommand\itran[1]{\translation{\ITran}{#1}}
 \newcommand\compiletran[1]{\translation{\Compile}{#1}}
 
+\newcommand\subst[3]{#1\left[#2/#3\right]}
+
+\newcommand\known{\ensuremath{known}}
+\newcommand\unknown{\ensuremath{unknown}}
+
+\newcommand\ctx{\script{C}}
+
+\newcommand\hookdoubleheadrightarrow{%
+  \hookrightarrow\mathrel{\mspace{-15mu}}\rightarrow
+}
+
+\newcommand\compilesto{\hookdoubleheadrightarrow}
+
 \newcommand{\goesto}[1]{\xrightarrow{#1}} % {\stackrel{#1}{\longrightarrow}}
 
     % rough opsem-based stuff: to change
@@ -434,9 +451,9 @@
 \defcomponent{context}{\context}
 \defcomponent{newcontext}{\context'}
 % For translation where context and rho are analagous
-\defcomponent{ctx}{\rho}
+\defcomponent{ctx}{\ctx}
 \defcomponent{ctxext}{}
-\defcomponent{newctx}{\rho'}
+\defcomponent{newctx}{\ctx'}
 \defcomponent{term}{\galpha}
 \defcomponent{guard}{\g}
 \defcomponent{guards}{\gs}
@@ -446,6 +463,7 @@
 \defcomponent{pat}{\pat}
 \defcomponent{value}{\v}
 \defcomponent{result}{\result}
+\defcomponent{compiled}{\expr}
 \defcomponent{solution}{\solution}
 \defcomponent{envext}{}
 \defcomponent{tlp}{\tlp}
@@ -454,6 +472,10 @@
 \defcomponent{eq}{\eq}
 \defcomponent{name}{\name}
 \defcomponent{tree}{\dt}
+\defcomponent{eas}{}
+\defcomponent{iffi}{\bf{if}\; \c{gexps}\; \bf{fi}}
+\defcomponent{status}{\known}
+
 
 
 \newcommand\emptycontext{\varepsilon}
@@ -474,7 +496,7 @@
 \newcommand\vmgs[1][]{% do a list of guards
   {\setkeys{state}{#1}%
   \let\c=\component
-  \ensuremath{\c{env}\c{envext}; \c{context} \vdash \c{guards} \rightarrowtail \c{solution}}}}
+  \ensuremath{\c{env}\c{envext} \vdash \c{guards} \rightarrowtail \c{solution}}}}
 
 
 \newcommand\vmeval[1][]{%  eval a vminus expression
@@ -557,12 +579,25 @@
     {\setkeys{state}{#1}%
       \let\c=\component
       \ensuremath{\dtran{\c{exp}} \rightsquigarrow \c{result}}}}
-  
+
+\newcommand\knownj[1][]{%   compile an if-fi on a large level
+  {\setkeys{state}{#1}%
+    \let\c=\component
+    \ensuremath{\c{ctx}\c{ctxext} \vdash \c{exp}\; :\; \c{status}}}}
+
+
+\newcommand\compilebig[1][]{%   compile an if-fi on a large level
+  {\setkeys{state}{#1}%
+    \let\c=\component
+    \ensuremath{\c{ctx}\c{ctxext} \vdash \c{iffi} \compilesto \c{compiled}}}}
+
+      
 \newcommand\compile[1][]{%   compile an if-fi
   {\setkeys{state}{#1}%
     \let\c=\component
-    \ensuremath{\compiletran{\c{gexps}}\c{ctx}\c{ctxext} \rightsquigarrow \c{result}}}}
-
+    \ensuremath{\c{ctx}\c{ctxext} \vdash\; \c{eas}\; \bf{if}\; \Gs\; \dbar\; 
+                \gs;\; \c{guard} \rightarrow \c{exp}';\; \gsp\; 
+                \dbar\; \Gsp\; \bf{fi} \compilesto \c{compiled}}}}
 
 
 % Listings color 
@@ -699,64 +734,110 @@
 
 
 %%%%%%%%%%%%%%%%% SEMANTICS %%%%%%%%%%%%%%%%%
-\newcommand\vmsemantics{% 
+\newcommand\usemantics{%
+\subsubsection{Judgement forms for \U}
 
-\subsubsection{Judgement forms for \VMinus}
+In both \VMinus and \D, an expression evaluates to produce a single \it{result}. 
+A result is either a single value \v or \fail. 
 
 \showvjudgement{Eval}{\vmeval}
+
+\subsection{Evaluating general expressions in \U}
+
+Here, I show all the rules which are shared by \VMinus and \D under \U. 
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Vcon) }]
+    {\inferrule* {}
+    {
+    \vmeval[exp={\expr[i]}, result={v_{i}}]
+    \and 
+    1 \leq i \leq n
+    }}
+    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={K(v_{1}, 
+    \dots v_{i})}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Vcon-Fail) }]
+    {\inferrule* {}
+    {
+    \exists e_{i}.\; 1 \leq i \leq n : \vmeval[exp={\expr[i]}, result={\fail}]
+    }}
+    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={\fail}]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Name) }]
+    {x \in \dom \rho 
+    \\\\
+    \rho(x) = \v}
+    {\vmeval[exp={x}, result={\v}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-LambdaDecl-MkClosure)}]
+    {\ }
+    {\prun[exp={\lambda x.\expr}, value={\llparenthesis \lambda x.\expr, \rho \rrparenthesis}]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Funapp-WithClosure) }]
+    {\vmeval[exp={\expr[1]}, result={\llparenthesis \lambda x.\expr, \rho' \rrparenthesis}]
+    \\\\
+    \vmeval[exp={\expr[2]}, result={\v}]
+    \\\\
+    \vmeval[env= {(\rho + \rho')}, envext=\bracketed{x \mapsto \v}]}
+    {\vmeval[exp={\expr[1]\; \expr[2]}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Funapp-Fail) }]
+    {\vmeval[exp={\expr[1]}, result={\llparenthesis \lambda x.\expr, \rho' \rrparenthesis}]
+    \\\\
+    \vmeval[exp={\expr[2]}, result={\fail}]}
+    {\vmeval[exp={\expr[1]\; \expr[2]}, result=\fail]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Eval-Literal) }]
+    {\ }
+    {\vmeval[exp={\v}, result={\v}]}
+\]
+}
+
+\newcommand\vmsemantics{% 
+
+These judgement forms and rules are specific to \VMinus. 
+
+\subsubsection{Judgement forms for \VMinus}
 
 \showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
 \showvjudgement{Guard-reject}\gfail
 
-% \[
-% \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-%     {\vmrung[context=\emptyseq, guard=\expr]}
-%     {\vmrung[context=\emptyseq, guard=\rightarrow \expr, result=\v]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Eval-Exists) }]
-%     {\vmrung[env=\rho\{x \mapsto \bot \}]}
-%     {\vmrung[guard=\vexists{x}\; \g]}
-% \]
-
-
-\subsubsection{Shifting a guard to the context}
-\[
-\inferrule*[Left=\textsc{ (Move-Guard-To-Ctx) }]
-    {\inferrule*{\vmgs[context=\g \cdot \context, guards={\gs \cdot \gs'}]}
-    {}
-    }
-    {\vmgs[guards={\gs \cdot \g \cdot \gs'}]}
-\]
-
-\subsubsection{Choosing and processing a guard}
+\subsubsection{Choosing and solving a guard}
 
 \[
 \inferrule*[Left=\textsc{ (Solve-Guard-Refine) }]
     {\grefine[solution=\Rhoprime]
     \and
-    \vmgs[env=\Rhoprime,context=\;\TT]}
-    {\vmgs[context=\TeqT{\g}]}
+    \vmgs[env=\Rhoprime,guards=\;\gsgs]}
+    {\vmgs[guards=\gseqgs{\g}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Solve-Guard-Reject) }]
     {\gfail}
-    {\vmgs[context=\TeqT{\g},solution=\dagger]}
+    {\vmgs[guards=\gseqgs{\g},solution=\dagger]}
 \]
 \subsubsection{Properties of guards}
 
-% \[
-% \inferrule*[Left=\textsc{ (Single-Eq-Assoc) }]
-%     {\vmrung[context=\TeqT{\expr[2] = \expr[1]}]}
-%     {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
-% \]
-
 \[
 \inferrule*[Left=\textsc{ (Multi-Guard-Assoc) }]
-    {\vmgs[context=\TeqT{g_{1} \cdot g_{2}}]}
-    {\vmgs[context=\TeqT{g_{2} \cdot g_{1}}]}
+    {\vmgs[guards=\gseqgs{g_{1} \cdot g_{2}}]}
+    {\vmgs[guards=\gseqgs{g_{2} \cdot g_{1}}]}
 \]
 
 
@@ -766,17 +847,17 @@
 %     {\vmrung[context=\TeqT{\expr[1] = \expr[2] \cdot \expr[2] = \expr[1]}]}
 % \]
 
-% \subsubsection{Desugaring of Complex Equations}
-% \[
-% \inferrule*[Left=\textsc{ (Desugar-EqExps) }]
-%     {\inferrule* {}
-%     {
-%     x,\; \; \rm{are distinct and fresh}
-%     \\\\
-%     \vmrung[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-%           context=\eqTT{x = \expr[1] \cdot y = \expr[2] \cdot x = y}]}}
-%     {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
-% \]
+\subsubsection{Desugaring of Complex Equations}
+\[
+\inferrule*[Left=\textsc{ (Desugar-EqExps) }]
+    {\inferrule* {}
+    {
+    x \rm{ fresh}
+    \\\\
+    \vmrung[envext=\bracketed{x \mapsto \bot},
+          guards=\gseqgs{x = \expr[1] \cdot x = \expr[2]}]}}
+    {\vmgs[guards=\gseqgs{\expr[1] = \expr[2]}]}
+\]
 
 % \[
 % \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
@@ -831,51 +912,6 @@
     {\eqrefine[eq={x = \expr},newenv=\dagger]}
 \]
 
-% \[
-% \inferrule*[Left=\textsc{ (Guard-NameNotFound-Fail) }]
-%     {\inferrule* {}
-%     {
-%     x \not\in \dom \rho
-%     }}
-%     {\eqrefine[eq={x = \expr},newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-EqNames-Vals-Succ) }]
-%     {\inferrule* {}
-%     {
-%     x,\;  \in \dom \rho
-%     \\\\
-%     \rho(x) = \v,\; \rho(y) = \v
-%     }}
-%     {\eqrefine[eq={x = y},newenv=\rho]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-EqNames-Vals-Fail) }]
-%     {\inferrule* {}
-%     {
-%     x,\;  \in \dom \rho
-%     \\\\
-%     \rho(x) = \v,\; \rho(y) = \v'
-%     \\\\
-%     \v \neq \v'}}
-%     {\eqrefine[eq={x = y},newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-EqNames-Bots-Fail) }]
-%     {\inferrule* {}
-%     {
-%     x,\;  \in \dom \rho
-%     \\\\
-%     \rho(x) = \bot,\; \rho(y) = \bot
-%     \\\\
-%     x,\; \; \rm{do not appear in}\; \context,\; \context'}}
-%     {\vmrung[context=\TeqT{x = y}] 
-%     \rightsquigarrow \uppsidown}
-% \]
-
 \[
 \inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ) }]
     {\inferrule* {}
@@ -900,73 +936,39 @@
 
 % \rab{The vcon success rule is being edited with a change in the semantics.}
 
-% \[
-%   \inferrule*[Left=\textsc{ (Guard-Vcon-Succ) }]
-%       {\inferrule* {}
-%       {
-%       \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq m
-%       \\\\
-%       \solution = \solution{1} \uplus \dots \uplus \solution{m}
-%       }}
-%       {\pmatch[pat={K [p_{1} \dots 
-%               p_{m}]}, value={K [v_{1}' \dots v_{m}']},
-%               newenv=\solution]}
-%   \]
+\[
+  \inferrule*[Left=\textsc{ (Guard-Vcon-Succ) }]
+      {\inferrule* {}
+      {x \in \dom \rho 
+        \\\\
+        \rho(x) = K\; v_{1}, \dots v_{n}
+        \\\\
+        \eqrefine[eq={y_{1} = e_{1}; \cdot \dots \cdot y_{n} = e_{n}}, 
+              newenv=\solution], \text{ where}
+        \\\\
+        y_{i} \text{ fresh, } \rho(y_{i}) = v_{i} \and 1 \leq i \leq n
+      }}
+      {\eqrefine[eq={x = K\; e_{1} \dots e_{n}}, 
+              newenv=\solution]}
+  \]
   
   \[
   \inferrule*[Left=\textsc{ (Guard-Vcon-Fail) }]
       {x \in \dom \rho
       \\\\
-      \rho{x} = \v
+      \rho(x) = \v
       \\\\        
-      \v \rm{ does not have the form }  K [v_{1}', \dots v_{m}']}
-      {\eqrefine[eq={x = K\; e_{1}, \dots e_{m}}, 
+      \v \rm{ does not have the form }  K [v_{1}', \dots v_{n}']}
+      {\eqrefine[eq={x = K\; e_{1}, \dots e_{n}}, 
               newenv=\dagger]}
   \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Single-Succ) }]
-%     {x \in \dom \rho
-%     \\\\
-%     \rho{x} = K []
-%     \\\\
-%     K \neq K'}
-%     {\eqrefine[eq={x = K'}, newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Single-Fail) }]
-%     {x \in \dom \rho
-%     \\\\
-%     \rho{x} = K'
-%     \\\\
-%     K \neq K'}
-%     {\eqrefine[eq={x = K'}, newenv=\dagger]}
-% \]
-
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Multi-Fail) }]
-%     {K \neq K'}
-%     {\eqrefine[eq={K(\expr[1], \dots 
-%             \expr[n]) = K'(\expr[1]', \dots \expr[n]')},
-%             newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Multi-Arity-Fail) }]
-%     {n \neq m}
-%     {\eqrefine[eq={K(\expr[1], \dots 
-%             \expr[n]) = K(\expr[1]', \dots \expr[m]')},
-%             newenv=\dagger]}
-% \]
 
 \[
 \inferrule*[Left=\textsc{ (Guard-Expseq-Succ) }]
     {\inferrule* {}
     {
     \vmeval[result=\v]}}
-    {\grefine[guard=\expr, solution=\bracketed{}]}
+    {\grefine[guard=\expr, solution=\rho]}
 \]
 
 \[
@@ -989,7 +991,7 @@
     {\grefine[guard={\choiceg{\gs}{\gs'}}]}
 \]
 
-\subsubsection{Evaluating General Expressions}
+\subsubsection{Evaluating \bf{if-fi}}
 
 \[
 \inferrule*[Left=\textsc{ (Eval-IfFi-Fail) }]
@@ -1005,7 +1007,7 @@
     {\vmgs[env=\rho', context=\emptyseq, solution=\rho'']}
     \\\\ 
     {\vmeval[env={\rho''}]}}
-    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
+    {\vmeval[exp={\iffi{\vexists{x_{1} \cdot \Gs x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
 \]
 
 \[
@@ -1015,89 +1017,15 @@
     \\\\
     {\vmgs[env=\rho', context=\emptyseq, solution=\dagger]}
     \\\\
-    \vmeval[exp={\iffi{\dots}}]}
-    {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
+    \vmeval[exp={\iffi{\Gs}}]}
+    {\vmeval[exp={\iffi{\vexists{x_{1} \cdot \Gs x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
 \]
-
-
-\[
-\inferrule*[Left=\textsc{ (Eval-VconEmpty) }]
-    {\ }
-    {\vmeval[exp={K}, result={K}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-VconMulti) }]
-    {\inferrule* {}
-    {
-    \vmeval[exp={\expr[i]}, result={v_{i}}]
-    \and 
-    1 \leq i \leq n
-    }}
-    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={K(v_{1}, 
-    \dots v_{i})}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-VconMulti-Fail) }]
-    {\inferrule* {}
-    {
-    \exists e_{i}.\; 1 \leq i \leq n : \vmeval[exp={\expr[i]}, result={\fail}]
-    }}
-    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={\fail}]}
-\]
-
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Name) }]
-    {x \in \dom \rho 
-    \\\\
-    \rho(x) = \v}
-    {\vmeval[exp={x}, result={\v}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Name-Fail) }]
-    {x \notin \dom \rho}
-    {\vmeval[exp={x}, result={\fail}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-LambdaDecl) }]
-    {\ }
-    {\prun[exp={\lambda x.\expr}, value={\lambda x.\expr}]}
-\]
-
-% \[
-% \inferrule*[Left=\textsc{ (Eval-Funapp-Fail) }]
-%     {\vmeval[exp={\expr[1]}]
-%     \\\\
-%     r \rm{ does not have the form } {\lambda x.\expr}}
-%     {\vmeval[exp={\expr[1]\; \expr[2]}, result=\fail]}
-% \]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Funapp) }]
-    {\vmeval[exp={\expr[1]}, result={\lambda x.\expr}]
-    \\\\
-    \vmeval[exp={\expr[2]}, result={\v'}]
-    \\\\
-    \vmeval[envext=\bracketed{x \mapsto \v'}]}
-    {\vmeval[exp={\expr[1]\; \expr[2]}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Literal) }]
-    {\ }
-    {\vmeval[exp={\v}, result={\v}]}
-\]
-
 }
 
 
 \newcommand\ppsemantics {      
 
-      \subsubsection{Judgement forms for \VMinus}
+      \subsubsection{Judgement forms for \PPlus}
 
       \showvjudgement{Eval}{\ppeval}
       \showvjudgement{Match-Success}{\pmatch}
@@ -1204,19 +1132,19 @@
       \inferrule*[Left=\textsc{ (Pat-MatchVcon) }]
           {\inferrule* {}
           {
-          \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq m
+          \pmatch[pat=p_{i}, value=v_{i}, newenv=\solution{i}], \and 1 \leq i \leq n
           \\\\
-          \solution = \solution{1} \uplus \dots \uplus \solution{m}
+          \solution = \solution{1} \uplus \dots \uplus \solution{n}
           }}
           {\pmatch[pat={K [p_{1} \dots 
-                  p_{m}]}, value={K [v_{1}' \dots v_{m}']},
+                  p_{n}]}, value={K [v_{1}' \dots v_{n}']},
                   newenv=\solution]}
       \]
       
       \[
       \inferrule*[Left=\textsc{ (Pat-FailVcon) }]
-          {\v \rm{ does not have the form }  K [v_{1}', \dots v_{m}']}
-          {\pmatch[pat={K\; p_{1}, \dots p_{m}}, 
+          {\v \rm{ does not have the form }  K [v_{1}', \dots v_{n}']}
+          {\pmatch[pat={K\; p_{1}, \dots p_{n}}, 
                   newenv=\dagger]}
       \]
       
@@ -1310,262 +1238,8 @@
 \label{dsemantics}
 
 \subsection{Rules (Big-step Operational Semantics) for ${\D}$:}
-    
-% \subsubsection{Processing guards}
 
-% \[
-% \inferrule*[Left=\textsc{ (Eval-ArrowExpr) }]
-%     {\vmrung[context=\emptyseq, guard=\expr]}
-%     {\vmrung[context=\emptyseq, guard=\rightarrow \expr, result=\v]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Eval-Exists) }]
-%     {\vmrung[env=\rho\{x \mapsto \bot \}]}
-%     {\vmrung[guard=\vexists{x}\; \g]}
-% \]
-
-
-% \subsubsection{Shifting a guard to the context}
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Move-To-Ctx) }]
-%     {\inferrule*{\vmgs[context=\g \cdot \context]}
-%     {}
-%     }
-%     {\vmgs[guards={\gs \cdot \g \cdot \gs'}]}
-% \]
-
-% \subsubsection{Choosing and processing a guard}
-
-% \[
-% \inferrule*[Left=\textsc{ (Solve-Guard-Refine) }]
-%     {\grefine[result=\Rhoprime]
-%     \and
-%     \vmgs[env=\Rhoprime,context=\;\TT]}
-%     {\vmgs[context=\TeqT{\g}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Solve-Guard-Reject) }]
-%     {\gfail}
-%     {\vmgs[context=\TeqT{\g},solution=\dagger]}
-% \]
-% \subsubsection{Properties of guards}
-
-% \[
-% \inferrule*[Left=\textsc{ (Single-Eq-Assoc) }]
-%     {\vmrung[context=\TeqT{\expr[2] = \expr[1]}]}
-%     {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Multi-Guard-Assoc) }]
-%     {\vmgs[context=\TeqT{g_{1} \cdot g_{2}}]}
-%     {\vmgs[context=\TeqT{g_{2} \cdot g_{1}}]}
-% \]
-
-
-% \[
-% \inferrule*[Left=\textsc{ (Multi-Eq-Assoc) }]
-%     {\vmrung[context=\TeqT{\expr[2] = \expr[1] \cdot \expr[1] = \expr[2]}]}
-%     {\vmrung[context=\TeqT{\expr[1] = \expr[2] \cdot \expr[2] = \expr[1]}]}
-% \]
-
-% \subsubsection{Desugaring of Complex Equations}
-% \[
-% \inferrule*[Left=\textsc{ (Desugar-EqExps) }]
-%     {\inferrule* {}
-%     {
-%     x,\; \; \rm{are distinct and fresh}
-%     \\\\
-%     \vmrung[envext=\bracketed{x \mapsto \bot,\; y \mapsto \bot},
-%           context=\eqTT{x = \expr[1] \cdot y = \expr[2] \cdot x = y}]}}
-%     {\vmrung[context=\TeqT{\expr[1] = \expr[2]}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Desugar-Vcon-Multi) }]
-%     {
-%     \vmrung[context=\TeqT{\lbrack \expr[i]=\expr[i]'\; 
-%            \vert\; 1 \leq i \leq n \rbrack}]}
-%     {\vmrung[context=\TeqT{K(\expr[1], \dots 
-%             \expr[n]) = K(\expr[1]', \dots \expr[n]')}]}
-% \]
-
-% \subsubsection{Refinement with different types of guards}
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-NameExp-Bot) }]
-%     {\inferrule* {}
-%     {
-%     x \in \dom \rho
-%     \\\\
-%     \vmeval[result=\v]
-%     \\\\
-%     \rho(x) = \bot
-%     }}
-%     {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
-% \]
-
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-NameExp-Bot) }]
-%     {\inferrule* {}
-%     {
-%     x \in \dom \rho
-%     \\\\
-%     \vmeval[result=\v]
-%     \\\\
-%     \rho(x) = \bot
-%     }}
-%     {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-NameExp-Eq) }]
-%     {\inferrule* {}
-%     {
-%     x \in \dom \rho
-%     \\\\
-%     \vmeval[result=\v]
-%     \\\\
-%     \rho(x) = \v
-%     }}
-%     {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-NameExp-Fail) }]
-%     {\inferrule* {}
-%     {
-%     x \in \dom \rho
-%     \\\\
-%     \vmeval[result=\v]
-%     \\\\ 
-%     \rho(x) = \v'
-%     \\\\
-%     \v \neq \v'
-%     }}
-%     {\eqrefine[eq={x = \expr},newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-NameNotFound-Fail) }]
-%     {\inferrule* {}
-%     {
-%     x \not\in \dom \rho
-%     }}
-%     {\eqrefine[eq={x = \expr},newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-EqNames-Vals-Succ) }]
-%     {\inferrule* {}
-%     {
-%     x,\;  \in \dom \rho
-%     \\\\
-%     \rho(x) = \v,\; \rho(y) = \v
-%     }}
-%     {\eqrefine[eq={x = y},newenv=\rho]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-EqNames-Vals-Fail) }]
-%     {\inferrule* {}
-%     {
-%     x,\;  \in \dom \rho
-%     \\\\
-%     \rho(x) = \v,\; \rho(y) = \v'
-%     \\\\
-%     \v \neq \v'}}
-%     {\eqrefine[eq={x = y},newenv=\dagger]}
-% \]
-
-% % \[
-% % \inferrule*[Left=\textsc{ (Guard-EqNames-Bots-Fail) }]
-% %     {\inferrule* {}
-% %     {
-% %     x,\;  \in \dom \rho
-% %     \\\\
-% %     \rho(x) = \bot,\; \rho(y) = \bot
-% %     \\\\
-% %     x,\; \; \rm{do not appear in}\; \context,\; \context'}}
-% %     {\vmrung[context=\TeqT{x = y}] 
-% %     \rightsquigarrow \uppsidown}
-% % \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-EqNames-BotVal-Succ) }]
-%     {\inferrule* {}
-%     {
-%     x,\;  \in \dom \rho
-%     \\\\
-%     \rho(x) = \bot,\; \rho(y) = \v
-%     }}
-%     {\eqrefine[eq={x = y},newenv={\Rho[x \mapsto \v]}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Single-Fail) }]
-%     {K \neq K'}
-%     {\eqrefine[eq={K = K'}, newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Single-Succ) }]
-%     {\ }
-%     {\eqrefine[eq={K = K}, newenv=\bracketed{}]}
-% \]
-
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Multi-Fail) }]
-%     {K \neq K'}
-%     {\eqrefine[eq={K(\expr[1], \dots 
-%             \expr[n]) = K'(\expr[1]', \dots \expr[n]')},
-%             newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Vcon-Multi-Arity-Fail) }]
-%     {n \neq m}
-%     {\eqrefine[eq={K(\expr[1], \dots 
-%             \expr[n]) = K(\expr[1]', \dots \expr[m]')},
-%             newenv=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Expseq-Succ) }]
-%     {\inferrule* {}
-%     {
-%     \vmeval[result=\v]}}
-%     {\grefine[guard=\expr, solution=\bracketed{}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Expseq-Fail) }]
-%     {\vmeval[result={\fail}]}
-%     {\grefine[guard=\expr, solution=\dagger]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Choice-First) }]
-%     {\vmgs[context=\emptyseq, solution=\rho']}
-%     {\grefine[guard={\choiceg{\gs}{\gs'}}, solution=\rho']}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (Guard-Choice-Second) }]
-%     {\vmgs[context=\emptyseq, solution=\dagger] 
-%     \and 
-%     \vmgs[context=\emptyseq, guards=\gs']}
-%     {\grefine[guard={\choiceg{\gs}{\gs'}}]}
-% \]
-
-
-
-\subsubsection{Evaluating General Expressions}
-
+\subsubsection{Evaluating Decision Trees}
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Test-Fail) }]
@@ -1575,144 +1249,162 @@
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Test-Succeed) }]
-    {\rho(x) = K vs
-    \and len vs = i
+    {\rho(x) = K\; \vbar
+    \and len\; \vbar = i
     \\\\ 
     {\treeval[tree={t}, result={\result}]}
     }
-    {\treeval[tree={test({x, (K/i, t) \cdot ts})}, result={\result}]}
+    {\treeval[tree={test({x, (K\; \ybar, t) \cdot ts})}, result={\result}]}
 \]
 
 \[
 \inferrule*[Left=\textsc{ (Eval-Test-Recurse) }]
     {\rho(x) = \v
-    \v \rm{ does not have the form } K [v_{1} \dots v_{n}] \rm{ s.t. } n = i
+    \\\\
+    \v \rm{ does not have the form } K\; \vbar \rm{ s.t. } len\; \vbar  = len\; \ybar
     \\\\ 
     {\treeval[tree={test({x, ts}), result={\result}}]}
     }
-    {\treeval[tree={test({x, (K/i, t) \cdot ts})}, result={\result}]}
+    {\treeval[tree={test({x, (K\; \ybar, t) \cdot ts})}, result={\result}]}
 \]
 
-% \[
-% \inferrule*[Left=\textsc{ (If-First) }]
-%     {\rho(x) = K vs
-%     \and len vs = i
-%     \\\\ 
-%     {\treeval[tree={t}, result={\result}]}
-%     }
-%     {\treeval[tree={ifx, (K/i, t) \cdot ts}}, result={\result}]}
-% \]
+\[
+\inferrule*[Left=\textsc{ (If-First) }]
+    {\treeval[tree=e, result=\v]
+    \\\\ 
+    \rho(x) = \v
+    \\\\
+    {\treeval[tree={\dt_{1}}, result={\result}]}
+    }
+    {\treeval[tree={if\; x = e\; then\; \dt_{1}\; else \dt_{2}\; unless\; \fail \Rightarrow \dt_{3}}, result={\result}]}
+\]
 
-% \[
-% \inferrule*[Left=\textsc{ (If-Second) }]
-%     {\rho(x) = \v
-%     \v \rm{ does not have the form } K [v_{1} \dots v_{n}] \rm{ s.t. } n = i
-%     \\\\ 
-%     {\treeval[tree={test{x, ts}, result={\result}]}
-%     }
-%     {\treeval[tree={test{x, (K/i, t) \cdot ts}}, result={\result}]}
-% \]
+\[
+\inferrule*[Left=\textsc{ (If-Second) }]
+    {\treeval[tree=e, result=\v]
+    \\\\ 
+    \rho(x) \neq \v
+    \\\\
+    {\treeval[tree={\dt_{2}}, result={\result}]}
+    }
+    {\treeval[tree={if\; x = e\; then\; \dt_{1}\; else \dt_{2}\; unless\; \fail \Rightarrow \dt_{3}}, result={\result}]}
+\]
 
+\[
+\inferrule*[Left=\textsc{ (If-Unless) }]
+    {\treeval[tree=e, result=\fail]
+    \\\\ 
+    {\treeval[tree={\dt_{3}}, result={\result}]}
+    }
+    {\treeval[tree={if\; x = e\; then\; \dt_{1}\; else \dt_{2}\; unless\; \fail \Rightarrow \dt_{3}}, result={\result}]}
+\]
 
-% \[
-% \inferrule*[Left=\textsc{ (If-Fi-Fail) }]
-%     {\ }
-%     {\vmeval[exp={\iffi{\ }}, result={\fail}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (If-Fi-Success) }]
-% {\inferrule* {}
-%     {\rho' = \Rho[x_{1} \mapsto \bot \dots x_{n} \mapsto \bot]}
-%     \\\\
-%     {\vmgs[env=\rho', context=\emptyseq, solution=\rho'']}
-%     \\\\ 
-%     {\vmeval[env={\rho''}]}}
-%     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
-% \]
-
-% \[
-% \inferrule*[Left=\textsc{ (If-Fi-Reject) }]
-% {\inferrule* {}
-%     {\rho' = \Rho[x_{1} \mapsto \bot \dots x_{n} \mapsto \bot]}
-%     \\\\
-%     {\vmgs[env=\rho', context=\emptyseq, solution=\dagger]}
-%     \\\\
-%     \vmeval[exp={\iffi{\dots}}]}
-%     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \square\; \dots}}]}
-% \]
+\[
+\inferrule*[Left=\textsc{ (Let-Succeed) }]
+    {\treeval[tree=e, result=\v]
+    \\\\ 
+    {\treeval[envext={\bracketed{x \mapsto \v}}, tree={\dt_{1}}, result={\result}]}
+    }
+    {\treeval[tree={try\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
+\]
 
 
 \[
-\inferrule*[Left=\textsc{ (Eval-VconEmpty) }]
+\inferrule*[Left=\textsc{ (Let-Unless) }]
+    {\treeval[tree=e, result=\fail]
+    \\\\ 
+    {\treeval[tree={\dt_{2}}, result={\result}]}
+    }
+    {\treeval[tree={try\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Fail) }]
     {\ }
-    {\vmeval[exp={K}, result={K}]}
+    {\treeval[tree={\fail}, result={\fail}]}
 \]
 
 \[
-\inferrule*[Left=\textsc{ (Eval-VconMulti) }]
-    {\inferrule* {}
+\inferrule*[Left=\textsc{ (Exists) }]
+    {\treeval[envext={\bracketed{x \mapsto \bot}}, tree={\dt}, result={\result}]
+    }
+    {\treeval[tree={\vexists{x}\; \dt}, result={\result}]}
+\]
+
+
+}
+
+\newcommand\compiler{%
+\label{compiler}
+
+The judgement form for the compiler is: 
+
+\showvjudgement{Compile}{\compilebig}
+
+\subsection{Rules (Big-step Translation) for compiling \iffibf}
+
+\[
+\inferrule*[Left=\textsc{ (Exists) }]
+    {\compilebig[ctxext={\bracketed{x_1 \mapsto unknown}}, gexps={\GsgsGs{\vexists{\dots x_{n}}\; \gs \rightarrow \expr'}}]}
+    {\compilebig[gexps={\GsgsGs{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr'}}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Fail) }]
+    {\compilebig[gexps=\GsGs]}
+    {\compile[guard={\fail}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Match) }]
+    {\ }
+    {\compile[guard={}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Test) }]
+    {\rho(x) = known
+    \\\\
+    \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
+             iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
+    \\\\
+    \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \expr[i]
+    \\\\
+    \expr[0] = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
+    }
+    {\compile[eas={\expr \text{ as }}, guard={x = K\; \expr[1] \dots \expr[n]},
+    compiled={test(x, \tbar, \expr[0])}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Elim-Vcon) }]
     {
-    \vmeval[exp={\expr[i]}, result={v_{i}}]
-    \and 
-    1 \leq i \leq n
-    }}
-    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={K(v_{1}, 
-    \dots v_{i})}]}
+    \compilebig[gexps=\GsGs]
+    \\\\
+    v \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+    }
+    {\compile[guard={v = K\; \expr[1] \dots \expr[n]}]}
 \]
 
 \[
-\inferrule*[Left=\textsc{ (Eval-VconMulti-Fail) }]
-    {\inferrule* {}
+\inferrule*[Right=\textsc{ (Expand-Vcon) }]
     {
-    \exists e_{i}.\; 1 \leq i \leq n : \vmeval[exp={\expr[i]}, result={\fail}]
-    }}
-    {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={\fail}]}
+    \compile[guard={{\expr[1]}' = \expr[1];\; \dots;\; {\expr[n]}' = \expr[n]}]
+    }
+    {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
 \]
 
-
 \[
-\inferrule*[Left=\textsc{ (Eval-Name) }]
-    {x \in \dom \rho 
+\inferrule*[Right=\textsc{ (Let-Unless) }]
+    {\rho(x) = unknown \and \knownj[exp=\expr']
     \\\\
-    \rho(x) = \v}
-    {\vmeval[exp={x}, result={\v}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Name-Fail) }]
-    {x \notin \dom \rho}
-    {\vmeval[exp={x}, result={\fail}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-LambdaDecl) }]
-    {\ }
-    {\prun[exp={\lambda x.\expr}, value={\lambda x.\expr}]}
-\]
-
-% \[
-% \inferrule*[Left=\textsc{ (Eval-Funapp-Fail) }]
-%     {\vmeval[exp={\expr[1]}]
-%     \\\\
-%     r \rm{ does not have the form } {\lambda x.\expr}}
-%     {\vmeval[exp={\expr[1]\; \expr[2]}, result=\fail]}
-% \]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Funapp) }]
-    {\vmeval[exp={\expr[1]}, result={\lambda x.\expr}]
+    \dt_{1} = \subst{\expr}{x}{\expr'}
     \\\\
-    \vmeval[exp={\expr[2]}, result={\v'}]
-    \\\\
-    \vmeval[envext=\bracketed{x \mapsto \v'}]}
-    {\vmeval[exp={\expr[1]\; \expr[2]}]}
+    \dt_{2} = \subst{\expr}{\fail}{\expr'}
+    }
+    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
+              compiled={try\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
 \]
 
-\[
-\inferrule*[Left=\textsc{ (Eval-Literal) }]
-    {\ }
-    {\vmeval[exp={\v}, result={\v}]}
-\]
 
 }

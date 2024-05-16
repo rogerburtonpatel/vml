@@ -56,7 +56,7 @@ programming languages with music. Ultimately, we decided that I~should pursue
 this project instead, and I~am grateful to him for his mentorship in that moment
 and onwards. 
 
-My family--- my mother, Jennifer Burton, my father, Aniruddh Patel, and my
+My family---my mother, Jennifer Burton, my father, Aniruddh Patel, and my
 sister, Lilia Burtonpatel, have all given me support, encouragement, and
 (arguably most importantly) food. My gratitude for them is immeasurable. 
 
@@ -103,60 +103,19 @@ Thank you all.
 
 \section{Is \VMinus\ a true subset of \VC?}
 \VMinus\ certainly appears to relate to \VC\ semantically. Translating
-\it{if-fi} and choice in \VMinus to \bf{one} and choice in \VC\ is likely a
+\iffibf and choice in \VMinus to \bf{one} and choice in \VC\ is likely a
 sufficient embedding. Formalizing this translation and, more importantly,
 proving that our semantics of \VMinus are consistent with Augutsson et al.'s
 \VC\ is an excellent goal for future work. 
 
-\newcommand\dbar{▯}
 \section{Formal Definitions of all languages}
 \label{languagedefs}
 
 \begin{table}[ht]
-  \centering
-  \small
-  \begin{tabular}{l l l}
-      \textbf{Syntactic Forms} & \textbf{Cases} & \textbf{Unique to} \\
-      \hline
-      $P$ : Programs        & $\bracketed{d}$        & \\
-      $d$ : Definitions     & \valabstract           & \\
-      $\expr$ : Expressions & $\v$                   & \\
-                            & $x, y, z$             & \\
-                            & $K\bracketed{\expr}$  & \\
-                            & $\lambda x.\; \expr$  & \\
-                            & $\expr[1]\; \expr[2]$ & \\
-                            & \caseabstract         & \PPlus \\
-                            & \iffiabstract         & \VMinus \\
-                            & $\dt$                 & \D \\
-      \\
-      $\v$ : Values          & $K\bracketed{\v}$     & \\
-                            & $\lambda x.\; \expr$  & \\
-      \\
-      $p$ : Patterns         & $x$                  &  \\
-                            & $\_$                  &  \\
-                            & $K\; \bracketed{p}$   &  \\
-                            & $\whenexpr$           & {\smash{$\left . \vrule height 7ex depth 7ex width 0pt \right\}\; \PPlus$}} \\
-                            & $\pcommap$            & \\
-                            & $\parrowe$            & \\
-                            & $\porp$               & \\
-      \\
-      $\G$ : Guarded Expressions & \gexpabstract      & \\
-      $\g$ : \textsf{Guards}  & $x = \expr$           & \raisebox{-0.3em}{\smash{$\left . \vrule height 5ex depth 5ex width 0pt \right\}\; \VMinus$}} \\
-                            & $\expr$               & \\
-                            & \choiceabstract       & \\
-                            % need raisebox here 0.5\baselineskip from "one below middle"
-      \\                            
-      $\dt$ : Decision Trees & $\decisiontreeabstract$ & \\
-                             & $\expr$                    & \\
-                             & \treetryletabstract        & {\smash{$\left . \vrule height 8ex depth 6ex width 0pt \right\}\; \D$}} \\
-                             & \treeifabstract           &  \\
-                             % & \treeextractabstract       & \\
-                             & \treefailabstract          & \\
-      \\
-  \end{tabular}
+  \utable
   \caption{Abstract Syntax of all languages, 
            with delineations in column \bf{Unique To}}
-  \label{fig:unilang}
+  \label{fig:unilang2}
 \end{table}
 \ppsemantics
 \vmsemantics

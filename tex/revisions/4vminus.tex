@@ -30,11 +30,14 @@
     
     \VMinus has equations and choice, like \VC, but without multiple results or
     backtracking. To eliminate multiple results, expressions in \VMinus evaluate
-    to at most one result, and choice is not a valid form of expression in the
-    language. To eliminate backtracking, the compiler rejects a \VMinus program
-    that would need to backtrack at runtime. To provide an efficient and
-    backtracking-free cost model to which \VMinus can be compiled, I later
-    introduce a core language of decision trees, \D (Section~\ref{d}).
+    to at most one result, and choice only \it{guards} computation; is not a
+    valid form of expression in the language. To eliminate backtracking, the
+    compiler rejects a \VMinus program that would need to backtrack at runtime.
+    To provide an efficient and backtracking-free cost model to which \VMinus
+    can be compiled, I later introduce a core language of decision trees, \D
+    (Section~\ref{d}). 
+
+    \subsection{Two languages of a kind}
     
     % TODO: dsemantics 
     In this section, I~present \VMinus. Its semantics appears in Section
@@ -42,38 +45,52 @@
     design, I~took inspiration from Verse: \VMinus has a conventional
     sub-language that is the lambda calculus extended with named value
     constructors \it{K} applied to zero or more values. I~chose named value
-    constructors over \VC's tuples because they look more like patterns. 
+    constructors over \VC's tuples because they look more like patterns. \D, the
+    language of decision trees and target of translation from \VMinus, has the
+    same lambda-calculus-plus-value-constructors core, with decision trees
+    substituted for \VMinus's \iffibf. Because they share a core, and to
+    facilitate comparisons and proofs, I present \VMinus and \D as two subsets
+    of a single unifying language \U, whose abstract syntax appears in
+    Table~\ref{fig:unilang1}. Forms in black are present in both languages,
+    forms in \red{red} are specific to \VMinus, and forms in \blue{blue} are
+    specific to \D. 
+
+    \begin{table}[ht]
+      \utable
+      \caption{Abstract Syntax of \VMinus and \D. Forms in black are present in
+              both languages, forms in \red{red} are specific to \VMinus, and
+              forms in \blue{blue} are specific to \D.}
+      \label{fig:unilang1}
+    \end{table}
+
+    As in \VC, every lambda-calculus term is valid in \VMinus and \D has the
+    same semantics. Also like the lambda calculus and \VC, \VMinus and \D are
+    \it{strict}, meaning every expression is evaluated when it is bound to a
+    variable. \VMinus and \D are also untyped. 
     
-    Because they share a core, and to facilitate comparisons and proofs, I
-    present \VMinus and \D as two subsets of a single unifying language \U,
-    whose abstract syntax is given in Table~\ref{fig:unilang}. Column “Unique
-    To” indicates which components of \U\ belong to the sub-languages. 
-    
-    As in \VC, every lambda-calculus term is valid in \VMinus and has the same
-    semantics. Also like the lambda calculus and \VC, \VMinus is \it{strict},
-    meaning every expression is evaluated when it is bound to a variable.
-    \VMinus is also untyped. 
-    
-    The only form of constructed data in \VMinus is value-constructor
-    application. In full languages, other forms of data like numbers and strings
-    have a similar status to value constructors, but their presence would
-    complicate the development of semantics and code. 
+    The only form of constructed data in \VMinus and \D is value-constructor
+    application, represented by the metavariable \it{K}. In full languages,
+    other forms of data like numbers and strings have a similar status to value
+    constructors, but their presence would complicate the development of
+    semantics and code. 
     
     Using just value constructors, though, a programmer can simulate more
     primitive data like strings. For example, \tt{Wow! That's A Tall Square} is
-    a valid expression in \VMinus, because it is an application of constructor
-    \tt{Wow!} to the arguments \tt{That's}, \tt{A}, \tt{Tall}, and \tt{Square},
-    all of which are value constructors themselves. Each name in this “sentence”
-    is considered a value constructor because it begins with a capital letter.
-    To simulate integers, a programmer can use Peano numbers, they can use value
-    constructors to implement binary numbers, or they can cheat with singletons:
-    \tt{One}, \tt{Two}, etc. Because the languages all also have lambda, Church
-    Numerals~\citep{church1985calculi} are another option. 
+    a valid expression in \VMinus and \D, because it is an application of
+    constructor \tt{Wow!} to the arguments \tt{That's}, \tt{A}, \tt{Tall}, and
+    \tt{Square}, all of which are value constructors themselves. Each name in
+    this “sentence” is considered a value constructor because it begins with a
+    capital letter. To simulate integers, a programmer can use Peano numbers,
+    they can use value constructors to implement binary numbers, or they can
+    cheat with singletons: \tt{One}, \tt{Two}, etc. Because the languages all
+    also have lambda, Church Numerals~\citep{church1985calculi} are another
+    option. 
 
-    In the subsections below, I~discuss each language in more detail.
-    Section~\ref{futurework} discusses how \VMinus relates to \VC. 
+    In the subsection below, I~discuss \VMinus in more detail. I discuss \D in
+    more detail in Section~\ref{d}. In Section~\ref{futurework}, I discuss how
+    \VMinus relates to \VC. 
 
-\subsection{Introducing \VMinus }
+\subsection{Introducing \VMinus}
 \label{vminus}
 
         To fuel the pursuit of smarter decision-making, I~now draw inspiration
@@ -93,51 +110,50 @@
         guarded commands~\citep{dijkstra} The result is \VMinus. 
 
         \VMinus's concrete syntax is defined in Figure~\ref{fig:vmsyntax}.
-        \VMinus takes several key concepts from \VC, with several key
-        differences, illustrated in Table~\ref{tab:vmvsvc}. 
+        % , illustrated in Table~\ref{tab:vmvsvc}. 
 
 
-        \begin{table}[htbp]
-          \centering
-          \begin{tabular}{|p{0.5\linewidth}|p{0.48\linewidth}|}
-              \hline
-              \bfseries Like \VC & \bfseries Unlike \VC \\
-              \hline
-              \VMinus uses equations to guard computation.  & \VMinus solves an equation at most once at runtime and never backtracks. \\
-              \hline
-              \VMinus uses choice. & \VMinus's choice can only guard computation and its result is never returned. \\
-              \hline
-              \VMinus uses \textit{success} and \textit{failure} to make decisions. & An expression in \VMinus returns at most one value. \\
-              \hline
-          \end{tabular}
-          \caption{Key similarities and differences between \VMinus and \VC}
-          \label{tab:vmvsvc}
-      \end{table}
+      %   \begin{table}[htbp]
+      %     \centering
+      %     \begin{tabular}{|p{0.5\linewidth}|p{0.48\linewidth}|}
+      %         \hline
+      %         \bfseries Like \VC & \bfseries Unlike \VC \\
+      %         \hline
+      %         \VMinus uses equations to guard computation.  & \VMinus solves an equation at most once at runtime and never backtracks. \\
+      %         \hline
+      %         \VMinus uses choice. & \VMinus's choice can only guard computation and its result is never returned. \\
+      %         \hline
+      %         \VMinus uses \textit{success} and \textit{failure} to make decisions. & An expression in \VMinus returns at most one value. \\
+      %         \hline
+      %     \end{tabular}
+      %     \caption{Key similarities and differences between \VMinus and \VC}
+      %     \label{tab:vmvsvc}
+      % \end{table}
 
-      \begin{lemma}
-        An expression in \VMinus can return at most one result. 
-      \end{lemma}
+      % \begin{lemma}
+      %   An expression in \VMinus can return at most one result. 
+      % \end{lemma}
 
-      \newcommand\ev{\ensuremath{e_{v}}\xspace}
-      \begin{proof}
-        The syntax of \VMinus (Figure~\ref{fig:vmsyntax}) forbids any expression
-        to return the result of evaluating choice. Let \ev be a \VMinus
-        expression. If choice appears in \ev, it may only appear in a guard.
-        Guards may only precede expressions and are never returned. Therefore,
-        \ev\ may never return the result of evaluating choice, and there is no
-        other syntactic form in \VMinus that allows for multiple results. 
+      % \newcommand\ev{\ensuremath{e_{v}}\xspace}
+      % \begin{proof}
+      %   The syntax of \VMinus (Figure~\ref{fig:vmsyntax}) forbids any expression
+      %   to return the result of evaluating choice. Let \ev be a \VMinus
+      %   expression. If choice appears in \ev, it may only appear in a guard.
+      %   Guards may only precede expressions and are never returned. Therefore,
+      %   \ev\ may never return the result of evaluating choice, and there is no
+      %   other syntactic form in \VMinus that allows for multiple results. 
 
-        % The only values in \VMinus are value constructor application and lambda,
-        % each of which is itself a single result. 
-      \end{proof}
+      %   % The only values in \VMinus are value constructor application and lambda,
+      %   % each of which is itself a single result. 
+      % \end{proof}
 
-      \begin{lemma}
-        An expression in \VMinus can never backtrack at runtime. 
-      \end{lemma}
-      % \newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
-      \begin{proof}
-        In progress. 
-      \end{proof}
+      % \begin{lemma}
+      %   An expression in \VMinus can never backtrack at runtime. 
+      % \end{lemma}
+      % % \newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
+      % \begin{proof}
+      %   In progress. 
+      % \end{proof}
 
         % Both backtracking and multiple results often manifest within \VC's
         % choice operator, which tempt its removal altogether. 
@@ -214,27 +230,36 @@
               $\expr$ : \textsf{Expressions} ::=
               | $v$ : literal values 
               | $x, y, z$ : names
-              | $\tt{if}\; [\; B\; \bracketed{\tt{[]}\; B}\;]\; \tt{fi}$ : if-fi 
+              | $\tt{if}\; [\; \G\; \bracketed{\tt{[]}\; \G}\;]\; \tt{fi}$ : if-fi 
               | $K \bracketed{\expr}$ : value constructor application 
               | $\expr[1]\; \expr[2]$ : function application 
               | $\ttbackslash x\tt{.}\; \expr$ : lambda declaration 
               ;;
-              $B$ : \textsf{Branches} ::=  
+              $\G$ : \textsf{Guarded Expressions} ::=  
               $[\tt{E }{\bracketed{x}}{\tt{.}}] \bracketed{g} \;\ttrightarrow\; \expr$ : names, guards, and body
               ;;
               $g$ : \textsf{Guards} ::=  
               | $\expr$ : intermediate expression 
-              | $x \;\tt{=}\; \expr$ : equation 
+              | $\expr[1] \;\tt{=}\; \expr[2]$ : $\text{equation}^{*}$
               | $ g \bracketed{\tt{;} g} \; \pbar \; g \bracketed{\tt{;} g}$ : choice 
               ;;
               $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
               | $\ttbackslash x\tt{.}\; \expr$ : lambda value
               \end{bnf}
+
+              * Desugars to \tt{x = e\_{1}; x = e\_{2}}, where \tt{x} is fresh. 
           \end{center}
           \Description{The concrete syntax of VMinus.}
               \caption{\VMinus: Concrete syntax}
               \label{fig:vmsyntax}
               \end{figure}      
+
+        \VMinus takes several key concepts from {\VC}---namely, equations and
+        choice---with several key modifications. Like \VC, \VMinus has
+        equations and choice, but unlike in \VC, choice only guards computations, 
+        there are no multiple results, and all decision-making appears in the 
+        \iffibf construct, inspired by Dijkstra~\citep{dijkstra}. 
+      
 
     \subsection{Programming in \VMinus}
 
@@ -372,6 +397,7 @@ val game_of_token = \t.
     contains the forms and rules. Since solving guards is the heart of \VMinus,
     I~also describe it in plain English.
 
+
 \begin{table}
 \begin{tabular}{ll}
 \toprule
@@ -412,13 +438,32 @@ val game_of_token = \t.
     An expression in \VC evaluates to produce possibly-empty sequence of values,
     where an empty sequence of values is identical to the syntactic form \fail.
     In \VMinus, an expression never returns multiple values, but it can \fail.
-    ically, in \VMinus, an expression evaluates to produce a single \it{result}.
+    Specifically, in \VMinus, an expression evaluates to produce a single \it{result}.
     A result is either a single value $\v$ or \fail. 
     
     \[\result\; \rm{::=}\; \v\; \vert \; \fail \]
     
     \showvjudgement{Eval}{\vmeval}
+
+    \subsubsection{Names and refinement of environments}
+
+    In \VMinus, like in \VC, names can be introduced with the existential
+    {$\exists$} before they are given a binding. Bindings are given by equations
+    in guards~(\ref{guards}). When a name is introduced with {$\exists$}, it is
+    bound in the environment \Rho to $\bot$ (pronounced “bottom”). Success of a
+    guard only \it{refines} the environment; that~is, when
+    $\grefine[solution=\Rhoprime]$, we~expect $\rho \subseteq \Rhoprime$. The
+    definition of $\subseteq$ on environments is given below. 
+    
+    \begin{align*}
+    \rho \subseteq \Rhoprime \text{ when }&\dom\rho  \subseteq \dom \Rhoprime\\
+    \text{ and } &\forall x \in \dom \rho: \rho(x) \subseteq \Rhoprime(x)
+    \end{align*}
+    
+    \medskip
+        
     \subsubsection{Guards}
+    \label{guards}
 
     For example, the \VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
     succeeds and returns the value \tt{K}. The \VMinus expression \tt{if  fi},
@@ -455,47 +500,13 @@ list of guards to also produce $\dagger$.
   $\bracketed{x \mapsto \tt{K}}$. The guard \tt{x = K2} attempts to unify \tt{K}
   with \tt{K2} and fails with $\dagger$. 
 
-    \subsubsection{Refinement ordering on environments}
-
-    \begin{align*}
-    \rho \subseteq \Rhoprime \text{ when }&\dom\rho  \subseteq \dom \Rhoprime\\
-    \text{ and } &\forall x \in \dom \rho: \rho(x) \subseteq \Rhoprime(x)
-    \end{align*}
-    
-    \medskip
-        
-    Success only refines the environment; that~is, when ${\vtuple{\rho, \expr}}
-    \rightarrowtail{} {\Rhoprime}$, we~expect $\rho \subseteq \Rhoprime$.
     
     \vfilbreak
     
-    \subsection{Rules (Big-step Operational Semantics) for $\VMinus$:}
+    \subsection{Rules (Big-step Operational Semantics) for \U, shared by \VMinus and \D}
+    \label{usemantics1}
+    \usemantics 
+    \subsection{Rules (Big-step Operational Semantics) specific to \VMinus}
     \label{vmsemantics}
     \vmsemantics
-
-\subsection{Introducing \D}
-\label{d}
-
-While \PPlus and \VMinus exist for writing programs, \D exists as the target
-of translation. 
-
-This is because the decision-making construct in \D, the \it{decision tree}, has
-a deterministic and efficient cost model. Specifically, a decision tree is an
-automaton that implements pattern matching with the key property that no part of
-the scrutinee of a \it{case} expression is examined more than once at runtime.
-This means that the worst-case cost of evaluating a decision tree is linear in
-its depth. This desirable property of decision trees is half of a space-time
-tradeoff. When a decision tree is produced by compiling a \it{case} expression,
-there are pathological cases in which the total size of the tree is exponential
-in the size of the source code (from \it{case}). Run time remains linear, but
-code size may not be. 
-
-Decision trees are classically used as an intermediate representation for
-compiling \it{case} expressions. In this work, I~will use them as a target for
-compiling \it{if-fi} in \VMinus. I~do so to prove that equations, at least given
-their restrictions in \VMinus, can be compiled to a decision tree. 
-
-\D is a generalization of the trees found in~\citet{maranget}. I~discuss the
-specifics of \D's decision trees in the following section. 
-
 \end{document}
