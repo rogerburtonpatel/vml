@@ -39,15 +39,15 @@
 
     \subsection{Two languages of a kind}
     
-    % TODO: dsemantics 
     In this section, I~present~\VMinus. Its semantics appears in Section
-    \ref{vmsemantics}, and for reference in Appendix~\ref{languagedefs}. In my
-    design, I~took inspiration from Verse:~\VMinus has a conventional
-    sub-language that is the lambda calculus extended with named value
-    constructors~\it{K} applied to zero or more values. I~chose named value
-    constructors over~\VC's tuples because they look more like patterns.~\D, the
-    language of decision trees and target of translation from~\VMinus, has the
-    same lambda-calculus-plus-value-constructors core, with decision trees
+    \ref{vmsemantics}, and for reference in Section~\ref{languagedefs1} and
+    Appendix~\ref{languagedefs}. In my design, I~took inspiration from
+    Verse:~\VMinus has a conventional sub-language that is the lambda calculus
+    extended with named value constructors~\it{K} applied to zero or more
+    values. I~chose named value constructors over~\VC's tuples because they look
+    more like patterns.~\D, the language of decision trees and target of
+    translation from~\VMinus, has the same
+    lambda-calculus-plus-value-constructors core, with decision trees
     substituted for~\VMinus's~\iffibf. Because they share a core, and to
     facilitate comparisons and proofs, I present~\VMinus and~\D as two subsets
     of a single unifying language~\U, whose abstract syntax appears in
@@ -75,7 +75,7 @@
     semantics and code. 
     
     Using just value constructors, though, a programmer can simulate more
-    primitive data like strings. For example,~\tt{Wow! That's A Tall Square} is
+    primitive data like strings. For example,~\tt{Wow! That's A Sizeable Square} is
     a valid expression in~\VMinus and~\D, because it is an application of
     constructor~\tt{Wow!} to the arguments~\tt{That's},~\tt{A},~\tt{Tall}, and
     \tt{Square}, all of which are value constructors themselves. Each name in
@@ -286,7 +286,7 @@
           frame=single]
 val exclaimTall =~\sh.
   if E s. sh = Square s; (> s) 100 -> 
-            Wow! That's A Tall Square!  
+            Wow! That's A Sizeable Square!  
     [] E w h. sh = Triangle w h; (> h) 100 ->
             Goodness! Towering Triangle!
     [] E b1 b2 h. sh = Trapezoid b1 b2 h; 
@@ -342,10 +342,10 @@ val game_of_token =~\t.
   \label{fig:vminusfuncs}
     \end{figure}   
 
-    \VMinus looks satisfyingly similar to both~\PPlus and~\VC. The~\VMinus
-    examples in Figure~\ref{fig:vminusfuncs} have the same number of cases as
-    the~\PPlus examples in Figure~\ref{fig:ppfuncs}, and share the existential
-    and equations with the~\VC examples in Figure~\ref{fig:verseextfuncs}. 
+    \VMinus looks satisfyingly similar to pattern matching and to~\VC.
+    The~\VMinus examples in Figure~\ref{fig:vminusfuncs} have the same number of
+    cases as the pattern-matching examples, and share the existential and
+    equations with the~\VC examples in Figure~\ref{fig:verseextfuncs}. 
    
 \subsection{Syntax of~\VMinus}
 
@@ -445,33 +445,79 @@ val game_of_token =~\t.
     similarly to how equations are solved in Verse: the program nondeterministically
     picks one out of a context (\context), attempts to solve it, and moves on. 
 
-In our semantics, this process occurs over a~\it{list} of guards~\gs in a
-context~\context: the program picks a guard from~\context, attempts to solve it
-to refine the environment or fail, and repeats.~\VMinus can only pick a guard
-out of the context~\context\ that it "knows" it can solve. "Knowing" a guard can
-be solved can be determined in~\VMinus at compile time. If~\VMinus can't pick a
-guard and there are guards left over, the semantics gets stuck at compile time. 
+In my semantics, this process occurs over a~\it{list} of guards~\gs in a guarded
+expression \G: the program picks a guard from~\G, attempts to solve it to refine
+the environment or fail, and repeats.~\VMinus can only pick a guard out of \G\
+that it “knows” it can solve. “Knowing” a guard can be solved can be determined
+in~\VMinus before code is executed. If~\VMinus can't pick a guard and there are
+guards left over, the semantics gets stuck before code is executed. 
 
 \showvjudgement{Solve-Guards}{\vmgs}
 
 
-The environment $\rho$ maps from a name to a value {\v}s or $\bot$. $\bot$ means
+The environment $\rho$ maps from a name to a value {\v} or $\bot$. $\bot$ means
 a name has been introduced with the existential, $\exists$, but is not yet bound
-to a value. Given any such $\rho$, a guard~\g\ will either refine $\rho$
-($\Rhoprime$) or be~\bf{rejected}. We use the metavariable $\dagger$ to
-represent rejection, and a guard producing $\dagger$ will cause the top-level
-list of guards to also produce $\dagger$. 
+to a value. Given any such $\rho$, a guard~\g\ eithers refine $\rho$
+($\Rhoprime$) or is~\bf{rejected}. We use the metavariable $\dagger$ to
+represent rejection, and if any guard in a list is rejected, the entire list of
+guards is rejected.
 
     \showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
     \showvjudgement{Guard-reject}\gfail
 
   For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
-  existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho bound to
+  existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho\ bound to
   $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. The guard
   \tt{x = K} successfully unifies~\tt{x} with~\tt{K}, producing the environment
   $\bracketed{x~\mapsto~\tt{K}}$. The guard~\tt{x = K2} attempts to unify~\tt{K}
-  with~\tt{K2} and fails with $\dagger$. 
+  with~\tt{K2} and is rejected with $\dagger$. 
 
+  \subsection{Notable rules in the \VMinus semantics}
+
+  Worth discussing in the~\VMinus semantics are those in which a name in \Rho\
+  is bound to a value or to $\bot$. Notable among these include
+  \textsc{Guard-Name-Exp-Bot}, \textsc{Guard-Name-Exp-Eq},
+  \textsc{Guard-Name-Exp-Fail}, \textsc{Guard-Names-Bot-Succ},
+  and~\textsc{Guard-Names-Bot-Succ-Rev}. This section discusses each of these
+  rules in short detail. The full set of rules for \VMinus is in
+  Section~\ref{vmsemantics}. 
+
+  In this section, I use the terms~\it{known} and~\it{unknown} to denote a
+  name's status in \Rho. If a name $x$ is bound to a value \v in \Rho, then $x$
+  is \it{known}. If $x$ is bound to $\bot$ in \Rho, then $x$ is \it{unknown}. I
+  use this terminology again when compiling~\VMinus to \D, since it describes
+  the same status in both evaluation in compilation. 
+
+  \bigskip 
+
+\guardnameexpbot
+
+When $\rho(x) = \bot$ ($x$ is \it{unknown}) and $\vmeval$, the program refines
+\Rho by making a binding of $x$ to \v. Here,~\it{=} is treated like a
+let-binding in ML-like languages. 
+
+\guardnameexpeq
+
+When $\rho(x) = \v$ ($x$ is \it{known}) and $\vmeval$, the program proceeds
+without refining the environment, since no new information is gained.
+Here,~\it{=} is treated like a \tt{==} in C-like languages. 
+
+\guardnameexpfail
+
+When $\rho(x) = \v'$ ($x$ is \it{known}) and $\vmeval$ and $\v \neq \v'$,
+unification fails, so the guarded expression fails. Here,~\it{=} is treated like
+a \tt{==} in C-like languages. 
+
+\guardnamesbotsucc
+
+When $\rho(x) = \v$ ($x$ is \it{known}) and $rho(y) = \bot$ ($y$ is
+\it{unknown}), the program can always bind $y$ to \v. Here,~\it{=} is treated
+like a let-binding in ML-like languages. 
+
+
+\guardnamesbotsuccrev
+
+This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse. 
     
     \vfilbreak
     

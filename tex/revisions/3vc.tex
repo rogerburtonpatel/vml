@@ -51,12 +51,12 @@
     \it{e} is an expression\footnote{To make programmers happy, full Verse
     allows an equation to take the form $e_{1} = e_{2}$, which desugars to
     $\vexists{x} x = e_{1};\; x = e_{2}$, with $x$ fresh.}. During runtime,~\VC
-    relies on a process called~\it{unification} to attempt to bind~\it{x} and
-    any unbound names in~\it{e} to values. Unification is the process of finding
-    a substitution that makes two different logical atomic expressions
-    identical. Much like pattern matching, unification can fail if the runtime
-    attempts to bind incompatible values or structures (i.e., finds no
-    substitution). 
+    relies on a process called~\it{unification}~\citep{robinson} to attempt to
+    bind~\it{x} and any unbound names in~\it{e} to values. Unification is the
+    process of finding a substitution that makes two different logical atomic
+    expressions identical. Much like pattern matching, unification can fail if
+    the runtime attempts to bind incompatible values or structures (i.e., finds
+    no substitution). 
 
     An equation offers a form of binding that looks like a single pattern match.
     What about a list of many patterns and right-hand sides, as in a case

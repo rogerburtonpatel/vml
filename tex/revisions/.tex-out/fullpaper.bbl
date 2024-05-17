@@ -1,4 +1,4 @@
-\begin{thebibliography}{26}
+\begin{thebibliography}{27}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -8,19 +8,23 @@
 \bibitem[Wadler(1987)]{wadler1987views}
 Philip Wadler.
 \newblock Views: A way for pattern matching to cohabit with data abstraction.
-\newblock In \emph{Proceedings of the 14th ACM SIGACT-SIGPLAN symposium on Principles of programming languages}, pages 307--313, 1987.
+\newblock In \emph{Proceedings of the 14th ACM SIGACT-SIGPLAN symposium on
+  Principles of programming languages}, pages 307--313, 1987.
 
 \bibitem[Baudinet and MacQueen(1986)]{macqueen1985tree}
 Marianne Baudinet and David MacQueen.
 \newblock Tree pattern matching for {ML}.
-\newblock Available from David MacQueen, AT\&T Bell Laboratories, 600 Mountain Avenue, Murray, Hill, NJ 07974, 1986.
+\newblock Available from David MacQueen, AT\&T Bell Laboratories, 600 Mountain
+  Avenue, Murray, Hill, NJ 07974, 1986.
 
 \bibitem[Burton and Cameron(1993)]{burton1993pattern}
 F~Warren Burton and Robert~D Cameron.
 \newblock Pattern matching with abstract data types1.
-\newblock \emph{Journal of Functional Programming}, 3\penalty0 (2):\penalty0 171--190, 1993.
+\newblock \emph{Journal of Functional Programming}, 3\penalty0 (2):\penalty0
+  171--190, 1993.
 
-\bibitem[Palao~Gostanza et~al.(1996)Palao~Gostanza, Pena, and N{\'u}nez]{palao1996new}
+\bibitem[Palao~Gostanza et~al.(1996)Palao~Gostanza, Pena, and
+  N{\'u}nez]{palao1996new}
 Pedro Palao~Gostanza, Ricardo Pena, and Manuel N{\'u}nez.
 \newblock A new look at pattern matching in abstract data types.
 \newblock \emph{ACM SIGPLAN Notices}, 31\penalty0 (6):\penalty0 110--121, 1996.
@@ -28,17 +32,22 @@ Pedro Palao~Gostanza, Ricardo Pena, and Manuel N{\'u}nez.
 \bibitem[Maranget(2008)]{maranget}
 Luc Maranget.
 \newblock Compiling pattern matching to good decision trees.
-\newblock In \emph{Proceedings of the 2008 ACM SIGPLAN workshop on ML}, pages 35--46, 2008.
+\newblock In \emph{Proceedings of the 2008 ACM SIGPLAN workshop on ML}, pages
+  35--46, 2008.
 
 \bibitem[Ramsey(2022)]{bpc}
 Norman Ramsey.
 \newblock \emph{Programming Languages: Build, Prove, and Compare}.
 \newblock Cambridge University Press, 2022.
 
-\bibitem[Augustsson et~al.(2023)Augustsson, Breitner, Claessen, Jhala, Peyton~Jones, Shivers, Steele~Jr, and Sweeney]{verse}
-Lennart Augustsson, Joachim Breitner, Koen Claessen, Ranjit Jhala, Simon Peyton~Jones, Olin Shivers, Guy~L Steele~Jr, and Tim Sweeney.
-\newblock The verse calculus: A core calculus for deterministic functional logic programming.
-\newblock \emph{Proceedings of the ACM on Programming Languages}, 7\penalty0 (ICFP):\penalty0 417--447, 2023.
+\bibitem[Augustsson et~al.(2023)Augustsson, Breitner, Claessen, Jhala,
+  Peyton~Jones, Shivers, Steele~Jr, and Sweeney]{verse}
+Lennart Augustsson, Joachim Breitner, Koen Claessen, Ranjit Jhala, Simon
+  Peyton~Jones, Olin Shivers, Guy~L Steele~Jr, and Tim Sweeney.
+\newblock The verse calculus: A core calculus for deterministic functional
+  logic programming.
+\newblock \emph{Proceedings of the ACM on Programming Languages}, 7\penalty0
+  (ICFP):\penalty0 417--447, 2023.
 
 \bibitem[Liskov and Guttag(1986)]{liskov:abstraction}
 Barbara Liskov and John Guttag.
@@ -48,7 +57,8 @@ Barbara Liskov and John Guttag.
 \bibitem[Erwig and Jones(2001)]{guardproposal}
 Martin Erwig and Simon~Peyton Jones.
 \newblock Pattern guards and transformational patterns.
-\newblock \emph{Electronic Notes in Theoretical Computer Science}, 41\penalty0 (1):\penalty0 3, 2001.
+\newblock \emph{Electronic Notes in Theoretical Computer Science}, 41\penalty0
+  (1):\penalty0 3, 2001.
 
 \bibitem[Marlow et~al.(2010)]{haskell}
 Simon Marlow et~al.
@@ -56,8 +66,10 @@ Simon Marlow et~al.
 \newblock 2010.
 \newblock URL \url{https://www.haskell.org/onlinereport/haskell2010/}.
 
-\bibitem[Leroy et~al.(2023)Leroy, Doligez, Frisch, Garrigue, R{\'e}my, Sivaramakrishnan, and Vouillon]{ocaml}
-Xavier Leroy, Damien Doligez, Alain Frisch, Jacques Garrigue, Didier R{\'e}my, KC~Sivaramakrishnan, and J{\'e}r{\^o}me Vouillon.
+\bibitem[Leroy et~al.(2023)Leroy, Doligez, Frisch, Garrigue, R{\'e}my,
+  Sivaramakrishnan, and Vouillon]{ocaml}
+Xavier Leroy, Damien Doligez, Alain Frisch, Jacques Garrigue, Didier R{\'e}my,
+  KC~Sivaramakrishnan, and J{\'e}r{\^o}me Vouillon.
 \newblock The ocaml system release 5.1: Documentation and user's manual, 2023.
 
 \bibitem[developers()]{scala}
@@ -80,8 +92,10 @@ Steve Klabnik and Carol Nichols.
 \newblock \emph{The Rust programming language}.
 \newblock No Starch Press, 2023.
 
-\bibitem[Syme et~al.(2010)Syme, Hoban, Liu, Lomov, Margetson, McNamara, Pamer, Orwick, Quirk, Smith, et~al.]{fsharp}
-Don Syme, Luke Hoban, Tao Liu, Dmitry Lomov, James Margetson, Brian McNamara, Joe Pamer, Penny Orwick, Daniel Quirk, Chris Smith, et~al.
+\bibitem[Syme et~al.(2010)Syme, Hoban, Liu, Lomov, Margetson, McNamara, Pamer,
+  Orwick, Quirk, Smith, et~al.]{fsharp}
+Don Syme, Luke Hoban, Tao Liu, Dmitry Lomov, James Margetson, Brian McNamara,
+  Joe Pamer, Penny Orwick, Daniel Quirk, Chris Smith, et~al.
 \newblock The f\# 2.0 language specification.
 \newblock \emph{Microsoft, August}, 2010.
 
@@ -93,12 +107,22 @@ Wen Kokke, Jeremy~G Siek, and Philip Wadler.
 \bibitem[Antoy and Hanus(2010)]{antoy2010functional}
 Sergio Antoy and Michael Hanus.
 \newblock Functional logic programming.
-\newblock \emph{Communications of the ACM}, 53\penalty0 (4):\penalty0 74--85, 2010.
+\newblock \emph{Communications of the ACM}, 53\penalty0 (4):\penalty0 74--85,
+  2010.
 
 \bibitem[Hanus(2013)]{hanus2013functional}
 Michael Hanus.
 \newblock Functional logic programming: From theory to curry.
-\newblock \emph{Programming Logics: Essays in Memory of Harald Ganzinger}, pages 123--168, 2013.
+\newblock \emph{Programming Logics: Essays in Memory of Harald Ganzinger},
+  pages 123--168, 2013.
+
+\bibitem[Robinson(1965)]{robinson}
+J.~A. Robinson.
+\newblock A machine-oriented logic based on the resolution principle.
+\newblock \emph{J. ACM}, 12\penalty0 (1):\penalty0 23–41, jan 1965.
+\newblock ISSN 0004-5411.
+\newblock \doi{10.1145/321250.321253}.
+\newblock URL \url{https://doi.org/10.1145/321250.321253}.
 
 \bibitem[Peyton-Jones(2024)]{peyton-jones2024verification}
 Simon Peyton-Jones.
@@ -106,13 +130,16 @@ Simon Peyton-Jones.
 
 \bibitem[Wadler(1985)]{wadler1985replace}
 Philip Wadler.
-\newblock How to replace failure by a list of successes a method for exception handling, backtracking, and pattern matching in lazy functional languages.
-\newblock In \emph{Conference on Functional Programming Languages and Computer Architecture}, pages 113--128. Springer, 1985.
+\newblock How to replace failure by a list of successes a method for exception
+  handling, backtracking, and pattern matching in lazy functional languages.
+\newblock In \emph{Conference on Functional Programming Languages and Computer
+  Architecture}, pages 113--128. Springer, 1985.
 
 \bibitem[Clark(1982)]{clark1982introduction}
 KL~Clark.
 \newblock An introduction to logic programming.
-\newblock \emph{Introductory Readings in Expert Systems, ed. D. Michie}, pages 93--112, 1982.
+\newblock \emph{Introductory Readings in Expert Systems, ed. D. Michie}, pages
+  93--112, 1982.
 
 \bibitem[Church(1985)]{church1985calculi}
 Alonzo Church.
@@ -127,11 +154,13 @@ Edsger~W. Dijkstra.
 \bibitem[Augustsson(1985)]{augustsson1985compiling}
 Lennart Augustsson.
 \newblock Compiling pattern matching.
-\newblock In \emph{Conference on Functional Programming Languages and Computer Architecture}, pages 368--381. Springer, 1985.
+\newblock In \emph{Conference on Functional Programming Languages and Computer
+  Architecture}, pages 368--381. Springer, 1985.
 
 \bibitem[Scott and Ramsey(2000)]{scottramsey}
 Kevin Scott and Norman Ramsey.
 \newblock When do match-compilation heuristics matter?
-\newblock Technical Report CS-2000-13, Department of Computer Science, University of Virginia, May 2000.
+\newblock Technical Report CS-2000-13, Department of Computer Science,
+  University of Virginia, May 2000.
 
 \end{thebibliography}

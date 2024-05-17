@@ -805,6 +805,80 @@ Here, I show all the rules which are shared by \VMinus and \D under \U.
 \]
 }
 
+\newcommand\guardnameexpbot{%
+\[
+\inferrule*[Left=\textsc{ (Guard-NameExp-Bot) }]
+    {\inferrule* {}
+    {
+    x \in \dom \rho
+    \\\\
+    \vmeval[result=\v]
+    \\\\
+    \rho(x) = \bot
+    }}
+    {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
+\]
+}
+
+\newcommand\guardnameexpeq{%
+\[
+\inferrule*[Left=\textsc{ (Guard-NameExp-Eq) }]
+    {\inferrule* {}
+    {
+    x \in \dom \rho
+    \\\\
+    \vmeval[result=\v]
+    \\\\
+    \rho(x) = \v
+    }}
+    {\eqrefine[eq={x = \expr},newenv={\Rho}]}
+\]
+}
+
+\newcommand\guardnameexpfail{%
+\[
+\inferrule*[Left=\textsc{ (Guard-NameExp-Fail) }]
+    {\inferrule* {}
+    {
+    x \in \dom \rho
+    \\\\
+    \vmeval[result=\v]
+    \\\\ 
+    \rho(x) = \v'
+    \\\\
+    \v \neq \v'
+    }}
+    {\eqrefine[eq={x = \expr},newenv=\dagger]}
+\]
+}
+
+\newcommand\guardnamesbotsucc{%
+\[
+\inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ) }]
+    {\inferrule* {}
+    {
+    x, \;y  \in \dom \rho
+    \\\\
+    \rho(x) = \v,\; \rho(y) = \bot
+    }}
+    {\eqrefine[eq={x = y},newenv={\Rho[y \mapsto \v]}]}
+\]
+}
+
+
+\newcommand\guardnamesbotsuccrev{%
+\[
+\inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ-Rev) }]
+    {\inferrule* {}
+    {
+    x, \;y  \in \dom \rho
+    \\\\
+    \rho(x) = \bot,\; \rho(y) = \v
+    }}
+    {\eqrefine[eq={x = y},newenv={\Rho[x \mapsto \v]}]}
+\]
+}
+
 \newcommand\vmsemantics{% 
 
 These judgement forms and rules are specific to \VMinus. 
@@ -832,7 +906,7 @@ These judgement forms and rules are specific to \VMinus.
 \subsubsection{Properties of guards}
 
 \[
-\inferrule*[Left=\textsc{ (Multi-Guard-Assoc) }]
+\inferrule*[Left=\textsc{ (Multi-Guard-Commut) }]
     {\vmgs[guards=\gseqgs{g_{1} \cdot g_{2}}]}
     {\vmgs[guards=\gseqgs{g_{2} \cdot g_{1}}]}
 \]
@@ -867,69 +941,16 @@ These judgement forms and rules are specific to \VMinus.
 
 \subsubsection{Refinement with different types of guards}
 
+\guardnameexpbot
 
-\[
-\inferrule*[Left=\textsc{ (Guard-NameExp-Bot) }]
-    {\inferrule* {}
-    {
-    x \in \dom \rho
-    \\\\
-    \vmeval[result=\v]
-    \\\\
-    \rho(x) = \bot
-    }}
-    {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
-\]
+\guardnameexpeq
 
-\[
-\inferrule*[Left=\textsc{ (Guard-NameExp-Eq) }]
-    {\inferrule* {}
-    {
-    x \in \dom \rho
-    \\\\
-    \vmeval[result=\v]
-    \\\\
-    \rho(x) = \v
-    }}
-    {\eqrefine[eq={x = \expr},newenv={\Rho}]}
-\]
+\guardnameexpfail
 
-\[
-\inferrule*[Left=\textsc{ (Guard-NameExp-Fail) }]
-    {\inferrule* {}
-    {
-    x \in \dom \rho
-    \\\\
-    \vmeval[result=\v]
-    \\\\ 
-    \rho(x) = \v'
-    \\\\
-    \v \neq \v'
-    }}
-    {\eqrefine[eq={x = \expr},newenv=\dagger]}
-\]
+\guardnamesbotsucc
 
-\[
-\inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ) }]
-    {\inferrule* {}
-    {
-    x, \;y  \in \dom \rho
-    \\\\
-    \rho(x) = \bot,\; \rho(y) = \v
-    }}
-    {\eqrefine[eq={x = y},newenv={\Rho[x \mapsto \v]}]}
-\]
+\guardnamesbotsuccrev
 
-\[
-\inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ-Rev) }]
-    {\inferrule* {}
-    {
-    x, \;y  \in \dom \rho
-    \\\\
-    \rho(x) = \v,\; \rho(y) = \bot
-    }}
-    {\eqrefine[eq={x = y},newenv={\Rho[y \mapsto \v]}]}
-\]
 
 % \rab{The vcon success rule is being edited with a change in the semantics.}
 

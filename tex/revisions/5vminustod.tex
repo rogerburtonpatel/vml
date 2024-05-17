@@ -28,7 +28,7 @@
 \subsection{Introducing~\D}
 \label{d}
 
-While~\PPlus and~\VMinus exist for writing programs,~\D exists as the target of
+While \VMinus exists for writing programs,~\D exists as the target of
 translation and provides a means by which to demonstrate~\VMinus's efficient
 cost model. This is because the decision-making construct itself in~\D, the
 \it{decision tree}, has an efficient cost model. A decision tree can implement
@@ -58,8 +58,13 @@ engineered to look like Maranget's trees.
   \textsc{Switch}). 
 
   Let's look at an example from~\citet{maranget} which shows the structure of a
-  simple pattern-matching function and its corresponding decision tree. The
-  example beings with the function,~\tt{merge}, which merges two lists: 
+  simple pattern-matching function and its corresponding decision tree. I show
+  Maranget's example for two reasons: First, the example serves to bolster your
+  understanding of decision trees with a classic, well-established model.
+  Second, since I currently have no visualization generator for~\D (\D~can
+  currently only be visualized as plain text), I use Maranget's example to have
+  a reasonable visual representation of decision trees. The example beings with
+  the function,~\tt{merge}, which merges two lists: 
 
   \begin{figure}[H]
       \includegraphics[scale=0.7]{../images/merge.png}
@@ -97,16 +102,17 @@ engineered to look like Maranget's trees.
       \caption{The final compiled decision tree for~\tt{merge}, right-to-left}
   \end{figure}
 
-  When presented with the values~\tt{xs} and~\tt{ys}, the tree first tests
- ~\tt{xs} against its two known possible forms: the nullary list constructor
- ~\tt{[]}, and an application of the~\it{cons} constructor~\tt{::}. If ~\tt{xs}
- is equal to~\tt{[]}, the tree immediately returns~\tt{ys}. If ~\tt{xs} is an
- application of~\tt{::}, the tree then tests~\tt{ys} against~\tt{[]}
- and~\tt{::}, and it returns a value according to the result of the match. Each
- time the tree goes down a~\tt{::} branch, it extracts the arguments of
- the~\tt{::} for later use: these are~\tt{x}, ~\tt{y},~\tt{xr}, and~\tt{yr},
- which are used in the~\tt{...} branch. This process of extracting arguments
- generalizes to all value constructors with one or more arguments. 
+ The decision tree for~\tt{merge}, like the original function, tests values and
+ makes decisions. When presented with the values~\tt{xs} and~\tt{ys}, the tree
+ first tests ~\tt{xs} against its two known possible forms: the nullary list
+ constructor ~\tt{[]}, and an application of the~\it{cons} constructor~\tt{::}.
+ If ~\tt{xs} is equal to~\tt{[]}, the tree immediately returns~\tt{ys}. If
+ ~\tt{xs} is an application of~\tt{::}, the tree then tests~\tt{ys}
+ against~\tt{[]} and~\tt{::}, and it returns a value according to the result of
+ the match. Each time the tree goes down a~\tt{::} branch, it extracts the
+ arguments of the~\tt{::} for later use: these are~\tt{x}, ~\tt{y},~\tt{xr},
+ and~\tt{yr}, which are used in the~\tt{...} branch. This process of extracting
+ arguments generalizes to all value constructors with one or more arguments. 
 
   \begin{figure}
     \begin{center}
@@ -143,13 +149,13 @@ engineered to look like Maranget's trees.
 
     \subsection{The~\DTran\ algorithm:~\VMinus $\rightarrow$~\D}
 
-    To demonstrate that~\VMinus has a similar cost model to pattern matching,
-    I~present an algorithm for compiling~\VMinus to a decision tree. I choose
-    the decision tree as a target for compilation for the simple reason of its
-    appealing cost model. A decision tree can be exponential in size but never
-    examines any word of the~\it{scrutinee}--- the value being tested--- more
-    than once. This property is established by the compilation from~\VMinus to
-    \D, which ensuring that no~\it{test} node~\it{T} has any proper ancestor
+    To demonstrate that~\VMinus has a similarly-desirable cost model to pattern
+    matching, I~present an algorithm for compiling~\VMinus to a decision tree. I
+    choose the decision tree as a target for compilation for the simple reason
+    of its appealing cost model. A decision tree can be exponential in size but
+    never examines any word of the~\it{scrutinee}--- the value being tested---
+    more than once. This property is established by the compilation from~\VMinus
+    to \D, which ensuring that no~\it{test} node~\it{T} has any proper ancestor
     \it{T'} such that~\it{T} and~\it{T'} both test the same location in memory.   
 
     There are a few minor differences in the algorithm I~use and Maranget's: his
@@ -162,12 +168,6 @@ engineered to look like Maranget's trees.
     ultimately leading to smaller trees. Because the trees produced by my
     algorithm still have the linear-in-code-size property, I find them
     acceptable for the current work. 
-
-    This compilation algorithm serves to demonstrate that~\VMinus is a viable
-    alternative to pattern matching on the grounds that they have equivalent
-    cost models: pattern matching can be compiled to a decision tree,
-    which~\citet{macqueen1985tree} built the foundation for and~\citet{maranget}
-    expanded on. 
 
     The algorithm runs during~\DTran, the transformation from~\VMinus to~\D. Its
     domain, instead of a~\it{case} expression, is~\VMinus's~\iffibf.
@@ -241,6 +241,96 @@ engineered to look like Maranget's trees.
       $\exists$ is~\it{unknown} in a context~\ctx. Since all names in the
       program are unique at this stage, there are no clashes. 
 
+      \subsection{Full Big-step rules for \Compile, with no descriptions}
+
+
+\showvjudgement{Compile}{\compilebig}
+
+\subsection{Rules (Big-step Translation) for compiling \iffibf}
+
+These rules in a nondeterministic order by the compiler. 
+
+\[
+\inferrule*[Left=\textsc{ (Exists) }]
+    {\compilebig[ctxext={\bracketed{x_1 \mapsto unknown}}, gexps={\GsgsGs{\vexists{\dots x_{n}}\; \gs \rightarrow \expr'}}]}
+    {\compilebig[gexps={\GsgsGs{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr'}}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Fail) }]
+    {\compilebig[gexps=\GsGs]}
+    {\compile[guard={\fail}]}
+\]
+
+
+\[
+\inferrule*[Left=\textsc{ (Match) }]
+    {\ }
+    {\compilebig[gexps={\GsgsGs{}}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Test) }]
+    {\rho(x) = known
+    \\\\
+    \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
+             iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
+    \\\\
+    \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \expr[i]
+    \\\\
+    \expr[0] = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
+    }
+    {\compile[eas={\expr \text{ as }}, guard={x = K\; \expr[1] \dots \expr[n]},
+    compiled={test(x, \tbar, \expr[0])}]}
+\]
+
+\[
+\inferrule*[Left=\textsc{ (Elim-Vcon) }]
+    {
+    \compilebig[gexps=\GsGs]
+    \\\\
+    \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+    }
+    {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
+\]
+
+\[
+\inferrule*[Right=\textsc{ (Expand-Vcon) }]
+    {
+    \compile[guard={{\expr[1]}' = \expr[1];\; \dots;\; {\expr[n]}' = \expr[n]}]
+    }
+    {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
+\]
+
+\[
+\inferrule*[Right=\textsc{ (Let-Unless) }]
+    {\rho(x) = unknown \and \knownj[exp=\expr']
+    \\\\
+    \compilebig[ctxext={\bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
+    \\\\
+    \dt_{2} = \subst{\expr}{\fail}{\expr'}
+    }
+    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
+              compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
+\]
+
+
+\[
+\inferrule*[Right=\textsc{ (Let-If) }]
+    {\rho(x) = known \and \knownj[exp=\expr'] 
+    \\\\
+    \dt_{1} = \subst{\expr}{x}{\expr'}
+    \\\\
+    \compilebig[ctxext={\bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
+    \\\\
+    \dt_{3} = \subst{\expr}{\fail}{\expr'}
+    \\\\
+    \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
+    }
+    {\compile[eas={\expr \text{ as }}, guard={y = e}, 
+              compiled={let\; x = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
+\]
+
     \subsection{Translation from~\VMinus to~\D preserves semantics}
     
     Translating~\iffibf to a decision tree should preserve semantics. The
@@ -254,5 +344,117 @@ engineered to look like Maranget's trees.
     \end{theorem}
 
     Proving this theorem is the subject of future work. 
+
+    \section{Formal Definitions of all languages}
+    \label{languagedefs1}
+    
+    \begin{table}[H]
+      \utable
+      \caption{Abstract Syntax of~\VMinus and~\D. Forms in black are present in both
+                  languages, forms in~\red{red} are specific to~\VMinus, and forms
+                  in~\blue{blue} are specific to~\D.}
+      \label{fig:unilang2}
+    \end{table}
+    
+    \subsection{Rules (Big-step Operational Semantics) for~\U, shared by~\VMinus and~\D}
+    \label{usemantics1}
+    \usemantics 
+    \subsection{Rules (Big-step Operational Semantics) specific to~\VMinus}
+    \label{vmsemantics2}
+    \vmsemantics
+    \label{dsemantics2}
+    \dsemantics
+    
+    \subsection{Full Big-step rules for \Compile, with no descriptions}
+    
+    
+    \showvjudgement{Compile}{\compilebig}
+    
+    \subsection{Rules (Big-step Translation) for compiling \iffibf}
+    
+    These rules in a nondeterministic order by the compiler. 
+    
+    \[
+    \inferrule*[Left=\textsc{ (Exists) }]
+        {\compilebig[ctxext={\bracketed{x_1 \mapsto unknown}}, gexps={\GsgsGs{\vexists{\dots x_{n}}\; \gs \rightarrow \expr'}}]}
+        {\compilebig[gexps={\GsgsGs{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr'}}]}
+    \]
+    
+    \[
+    \inferrule*[Left=\textsc{ (Fail) }]
+        {\compilebig[gexps=\GsGs]}
+        {\compile[guard={\fail}]}
+    \]
+    
+    
+    \[
+    \inferrule*[Left=\textsc{ (Match) }]
+        {\ }
+        {\compilebig[gexps={\GsgsGs{}}]}
+    \]
+    
+    \[
+    \inferrule*[Left=\textsc{ (Test) }]
+        {\rho(x) = known
+        \\\\
+        \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
+                 iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
+        \\\\
+        \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \expr[i]
+        \\\\
+        \expr[0] = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
+        }
+        {\compile[eas={\expr \text{ as }}, guard={x = K\; \expr[1] \dots \expr[n]},
+        compiled={test(x, \tbar, \expr[0])}]}
+    \]
+    
+    \[
+    \inferrule*[Left=\textsc{ (Elim-Vcon) }]
+        {
+        \compilebig[gexps=\GsGs]
+        \\\\
+        \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+        }
+        {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
+    \]
+    
+    \[
+    \inferrule*[Right=\textsc{ (Expand-Vcon) }]
+        {
+        \compile[guard={{\expr[1]}' = \expr[1];\; \dots;\; {\expr[n]}' = \expr[n]}]
+        }
+        {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
+    \]
+    
+    \[
+    \inferrule*[Right=\textsc{ (Let-Unless) }]
+        {\rho(x) = unknown \and \knownj[exp=\expr']
+        \\\\
+        \compilebig[ctxext={\bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
+        \\\\
+        \dt_{2} = \subst{\expr}{\fail}{\expr'}
+        }
+        {\compile[eas={\expr \text{ as }}, guard={x = e}, 
+                  compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
+    \]
+    
+    
+    \[
+    \inferrule*[Right=\textsc{ (Let-If) }]
+        {\rho(x) = known \and \knownj[exp=\expr'] 
+        \\\\
+        \dt_{1} = \subst{\expr}{x}{\expr'}
+        \\\\
+        \compilebig[ctxext={\bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
+        \\\\
+        \dt_{3} = \subst{\expr}{\fail}{\expr'}
+        \\\\
+        \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
+        }
+        {\compile[eas={\expr \text{ as }}, guard={y = e}, 
+                  compiled={let\; x = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
+    \]
+    
+    
 
 \end{document}

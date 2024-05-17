@@ -2,7 +2,7 @@ TOP := ../..
 TEXUTIL := $(TOP)/tex-util
 TEXINPUTS := .:$(TEXUTIL):
 
-compile := env TEXINPUTS=$(TEXINPUTS) xelatex -pdf -output-directory=. -aux-directory=.tex-out --halt-on-error -file-line-error -shell-escape
+compile := env TEXINPUTS=$(TEXINPUTS) latexmk -pdf -xelatex -output-directory=. -aux-directory=.tex-out --halt-on-error -file-line-error -shell-escape
 
 .PHONY: all
 
