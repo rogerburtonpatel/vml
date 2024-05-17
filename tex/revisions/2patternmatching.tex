@@ -36,14 +36,14 @@ Pattern matching lets programmers examine and deconstruct data by matching them
 against patterns. When a pattern $p$ matches with a value $v$, it can produce
 bindings for sub-values of $v$. For example, pattern $x::xs$ matches any 
 application of the value constructor~\it{cons} (\it{::}), and it binds the first 
-element of the cons cell to $x$ and the second to $xs$. 
+element of the cons cell to $x$ and the second to~$xs$. 
 
 Why use pattern matching? What could programmers use instead? Before pattern
 matching was invented, a programmer had to deconstruct data using~\it{observers}
 \citep{liskov:abstraction}: functions that explicitly examine a piece of data
 and extract its components. Examples of observers in functional programming
-languages include Scheme's~\tt{null?},~\tt{car}, and~\tt{cdr}, and ML's
-\tt{null},~\tt{hd}, and~\tt{tl}. Given the option of pattern matching, however,
+languages include Scheme's \tt{null?}, \tt{car}, and~\tt{cdr}, and ML's
+\tt{null}, \tt{hd}, and~\tt{tl}. Given the option of pattern matching, however,
 many functional programmers favor it over observers. I~demonstrate with an
 example and a claim. 
 
@@ -129,7 +129,7 @@ fun pm_area sh =
         \item  \it{Lawlike.} With pattern matching, code more closely
         resembles algebraic laws. 
         \label{p1}
-        \item~\it{Single copy} With pattern matching, it's easier to avoid
+        \item~\it{Single copy.} With pattern matching, it's easier to avoid
         duplicating code.
         \label{p2}
         \item~\it{Exhaustiveness.} With pattern matching, a programmer can
@@ -150,13 +150,13 @@ fun pm_area sh =
     \end{enumerate}
   \end{enumerate}
 
-    I~refer to these as Nice~Properties for the rest of the paper. They are broken
+    For the rest of the paper. I~refer to these as Nice~Properties. They are broken
     into two groups: Group~A, which contains properties of pattern matching that
     programmers enjoy in general, and Group~B,  which contains properties strictly
     to do with pattern matching's specific strengths over observers. 
 
-    \hyperref[p1]{Lawlike}~and~\hyperref[p2]{Single copy} are the most important
-    of the Nice~Properties: they allow programmers to write code that looks like
+    The most important of the Nice~Properties are
+    \hyperref[p1]{Lawlike}~and~\hyperref[p2]{Single copy}: they allow programmers to write code that looks like
     what they write at the whiteboard, with flexible laws and minimal
     duplication. Upholding these two properties is the primary responsibility of
     \it{extensions} to pattern matching (Section~\ref{extensions}). 
@@ -169,13 +169,13 @@ fun pm_area sh =
         \item~\hyperref[p1]{\it{Lawlike.}}
         \hyperref[fig:pmarea]{\tt{pm\_area}} more closely resembles the
         algebraic laws for~\tt{area}. 
-        \item~\hyperref[p2]{\it{Single copy.}}
+        \item\hyperref[p2]{\it{Single copy.}}
         \hyperref[fig:observersarea]{\tt{observers\_area}} had to call observers
-        like~\tt{squareSide} multiple times, and each observer needs~\tt{sh} as
+        like\tt{squareSide} multiple times, and each observer needs~\tt{sh} as
         an argument.~\hyperref[fig:pmarea]{\tt{pm\_area}} was able to extract
         the~\tt{standard\_shape}s' internal values with a single pattern, and
         the name~\tt{sh} is not duplicated anywhere in its body. 
-        \item~\hyperref[p5]{\it{Exhaustiveness.}} 
+        \item\hyperref[p5]{\it{Exhaustiveness.}} 
         If the user adds another value
         constructor to~\tt{standard\_shape}---say,~\tt{CIRCLE}, the compiler
         will warn the user of the possibility of a~\tt{Match} exception in
@@ -188,7 +188,7 @@ fun pm_area sh =
       
     \item [\textbf{B.}]
       \begin{enumerate}[start=4, label=\arabic*]
-        \item~\hyperref[p3]{\it{Call-free.}} Where did~\tt{isSquare},
+        \item\hyperref[p3]{\it{Call-free.}} Where did~\tt{isSquare},
         \tt{sqSide}, and all the other observers come from? To even
         \it{implement}~\hyperref[fig:observersarea]{\tt{observers\_area}}, a
         programmer has to define a whole new set of observers for
@@ -198,7 +198,7 @@ fun pm_area sh =
         algebraic datatypes in ML, it does not.} Most programmers find this
         tiresome indeed.~\hyperref[fig:pmarea]{\tt{pm\_area}} did not have to do
         any of this.
-        \item~\hyperref[p4]{\it{Signposting.}} 
+        \item\hyperref[p4]{\it{Signposting.}} 
         To extract the internal values,
         \hyperref[fig:pmarea]{\tt{pm\_area}} had to name them, and their names
         serve as documentation. 
@@ -240,9 +240,9 @@ fun pm_area sh =
     or-patterns. 
     
     To denote pattern matching~\it{without} extensions, I~coin the term~\it{bare
-    pattern matching}. In bare pattern matching, pattern have only two syntactic
-    forms: a name or an application of a value constructors to zero or more
-    patterns. 
+    pattern matching}. In bare pattern matching, a pattern has one of two syntactic
+    forms: a name or an application (of a value constructor to zero or more
+    patterns). 
 
 
 % Subject: Extensions to pattern matching. 
@@ -267,8 +267,8 @@ fun pm_area sh =
         \begin{verbatim}
 
 type standard_shape = Square of float 
-           | Triangle of float * float
-           | Trapezoid of float * float * float
+                    | Triangle of float * float
+                    | Trapezoid of float * float * float
 
 exclaimTall : standard_shape -> string 
 
@@ -613,8 +613,10 @@ let game_of_token token = match token with
     truth, restoring the~\hyperref[p1]{Lawlike} and~\hyperref[p2]{Single copy}
     properties. 
     
-    And by eliminating helper functions, like the ones in
-    Figure~\ref{fig:helpergot}, or-patterns actually boost performance.
+    %%  And by eliminating helper functions, like the ones in
+    %%  Figure~\ref{fig:helpergot}, or-patterns actually boost performance.
+    %%
+    %%  Not with any self-respecting compiler.  ---NR
       
     \subsubsection{Wrapping up pattern matching and extensions}
     

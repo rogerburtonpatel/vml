@@ -26,16 +26,16 @@
     
     To bridge the gap between pattern matching, equations, and decision trees, I
     have created and implemented a semantics for a new core language:~\VMinus
-    ("V-minus"). 
+     (``V-minus''). 
     
-    \VMinus has equations and choice, like~\VC, but without multiple results or
+    \VMinus has equations and choice, like~\VC, but it does not have multiple results or
     backtracking. To eliminate multiple results, expressions in~\VMinus evaluate
-    to at most one result, and choice only~\it{guards} computation; is not a
-    valid form of expression in the language. To eliminate backtracking, the
+    to at most one result, and choice only~\it{guards} computation; it~is not a
+    valid form of expression. To~eliminate backtracking, the
     compiler rejects a~\VMinus program that would need to backtrack at runtime.
     To provide an efficient and backtracking-free cost model to which~\VMinus
-    can be compiled, I later introduce a core language of decision trees,~\D
-    (Section~\ref{d}). 
+    can be compiled, I~introduce a core language of decision trees,~\D,
+    in Section~\ref{d}. 
 
     \subsection{Two languages of a kind}
     
@@ -347,7 +347,7 @@ val game_of_token =~\t.
     cases as the pattern-matching examples, and share the existential and
     equations with the~\VC examples in Figure~\ref{fig:verseextfuncs}. 
    
-\subsection{Syntax of~\VMinus}
+% \subsection{Syntax of~\VMinus}
 
 % \bigskip
 
@@ -389,7 +389,7 @@ val game_of_token =~\t.
     $eq$& An equation~\\ 
     % $\tempstuck$& a temporarily-stuck equation~\\
     $\dagger$& when solving guards is rejected~\\
-    $\result$& $\rhohat~\mid~\dagger$ : guards produce~\it{solutions}: a
+    $s$& $\rhohat~\mid~\dagger$ : guards produce~\it{solutions}: a
     refined environment~\rhohat\; or rejection\\
     $\mathcal{T}$& A context of all temporarily stuck guards (a sequence)~\\ 
     % $G$& A guarded expression~\\

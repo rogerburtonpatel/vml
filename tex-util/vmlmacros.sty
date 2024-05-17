@@ -332,7 +332,7 @@
 %%%%%%%%%% TRANSLATION %%%%%%%%%%
       
       % Translation rules with oxford brackets
-\newcommand{\oxs}[1]{[\![#1]\!]}
+\newcommand{\oxs}[1]{[\mskip-4.5mu[#1]\mskip-4mu]} % they are different on purpose
 \newcommand{\translate}[1]{ \mathcal{T} \oxs{#1}}
 \newcommand{\desugar}[1]{ \mathcal{D} \oxs{#1}}
 
@@ -1361,7 +1361,10 @@ The judgement form for the compiler is:
 
 \subsection{Rules (Big-step Translation) for compiling \iffibf}
 
-These rules in a nondeterministic order by the compiler. 
+The rules are nondeterministic: the structure of the final
+result~\expr\ 
+depends on the order in which rules
+are applied by the compiler.  
 
 \[
 \inferrule*[Left=\textsc{ (Exists) }]

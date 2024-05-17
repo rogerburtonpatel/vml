@@ -153,7 +153,7 @@ engineered to look like Maranget's trees.
     matching, I~present an algorithm for compiling~\VMinus to a decision tree. I
     choose the decision tree as a target for compilation for the simple reason
     of its appealing cost model. A decision tree can be exponential in size but
-    never examines any word of the~\it{scrutinee}--- the value being tested---
+    never examines any word of the~\it{scrutinee}---the value being tested---%
     more than once. This property is established by the compilation from~\VMinus
     to \D, which ensuring that no~\it{test} node~\it{T} has any proper ancestor
     \it{T'} such that~\it{T} and~\it{T'} both test the same location in memory.   
@@ -171,9 +171,9 @@ engineered to look like Maranget's trees.
 
     The algorithm runs during~\DTran, the transformation from~\VMinus to~\D. Its
     domain, instead of a~\it{case} expression, is~\VMinus's~\iffibf.
-    \DTran~propegates a context~\ctx\; which maps names to~\it{known} or
-    \it{unknown}. The context is used when determining the form of a guard in
-    the compilation rules. 
+    \DTran~propagates a context~\ctx\ which maps each defined name to~\it{known} or
+    \it{unknown}. The context is used when determining the form of a guard.
+    % in the compilation rules. 
        
 
     %~\algrenewcommand\algorithmicwhile{\bf{let }}
@@ -191,18 +191,18 @@ engineered to look like Maranget's trees.
     \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
     branches with a desugaring function~\ITran: 
     
-    \itran{if\;~\dots~\square\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\square~\dots~\;fi}
+    \itran{if\;~\dots~\dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
     
     ==
     
-    ${if\;~\dots~\square\; gs_{1};\; gs_{2}~\rightarrow e~\;\square\; gs_{3};\; gs_{4}~\rightarrow e~\;\square~\dots~\;fi}$
+    ${if\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;fi}$
 
     With the desugared~\iffibf,~\Compile\ then repeatedly chooses a guarded
     expression $G$ and applies one of the compilation rules below. The rules are
     applied in a nondeterministic order. 
 
-    The algorithm terminates when inserts a final~\it{match} node (with rule
-    \textsc{Match}) for a right-hand side expression~\expr when the list of
+    The algorithm terminates when it inserts a final~\it{match} node (with rule
+    \textsc{Match}).  A~\it{match} node is inserted for a right-hand side expression~\expr when the list of
     guards preceding~\expr is empty or a list of assignments from names to
     unbound names. Termination of~\DTran\~is guaranteed because each recursive
     call passes a list of guarded expressions in which the number of guards is
@@ -210,12 +210,12 @@ engineered to look like Maranget's trees.
     first unmatched branch is all trivially-satisfied guards.
 
 
-    Not show in the algorithm is the case where~\Compile\ cannot choose a $g$ of
-    one of the valid forms; in this case,~\Compile\ halts with an error. This
+    If~\Compile\ cannot choose a $g$ of
+    one of the valid forms, it halts with an error. This
     can happen when no $g$ is currently solvable in the context, as determined
     by the same algorithm that~\VMinus uses to pick a guard to solve, or when
     the program would be forced to unify incompatible values, such as any value
-    with a lambda. 
+    with a closure. 
 
       \subsection{Big-step rules for \Compile}
         \compiler
@@ -223,14 +223,17 @@ engineered to look like Maranget's trees.
       \subsection{Reduction Strategies}
 
       In my implementation, I apply the~\textsc{Test} rule before other rules,
-      having found in my experiments that this leads to the smallest trees. A
+      having found in my experiments that this heuristic leads to the smallest trees. A~%
       risk of inserting a \it{test} node before a \it{let-unless} node is that
-      if there are many shared names across branches, a \it{test} node will have
-      all of them introduced with a list of \it{let-unless} nodes in each
-      subtree, while inserting \it{let-unless} nodes before \it{test} means this
-      list of bindings will appear only once. A risk of this strategy, however,
+      if there are many shared names across branches, a \it{test} node
+      will introduce those names in \it{let-unless} nodes in each
+      subtree.
+      It is possible to insert \it{let-unless} nodes before \it{test}
+      nodes, in which case those names will be bound
+      only once.  The risk of the \it{let}-first strategy
       is that if there are many names used in only one subtree of a \it{test},
-      these names will be introduced to \it{all} branches, potentially harming
+      these names will be introduced to \it{all} branches.  The extra
+      bindings may harm
       performance by bloating an environment in an interpreter or thrashing the
       icache if the tree further is compiled to machine code. 
 
@@ -248,7 +251,10 @@ engineered to look like Maranget's trees.
 
 \subsection{Rules (Big-step Translation) for compiling \iffibf}
 
-These rules in a nondeterministic order by the compiler. 
+The rules are nondeterministic: the structure of the final
+result~\expr\ 
+depends on the order in which rules
+are applied by the compiler.  
 
 \[
 \inferrule*[Left=\textsc{ (Exists) }]
@@ -333,128 +339,13 @@ These rules in a nondeterministic order by the compiler.
 
     \subsection{Translation from~\VMinus to~\D preserves semantics}
     
-    Translating~\iffibf to a decision tree should preserve semantics. The
-    following theorem formalizes this claim: 
-
-    \begin{theorem}
+    Translating~\iffibf to a decision tree should preserve semantics:
+    \begin{conjecture}
       \text{Given a specific but arbitrarily chosen environment~\Rho\; and context~\ctx, when}
       \vmeval[result={\result[1]}]\;and\;\compilebig[iffi=\expr,
       compiled=\expr']\;and\;\vmeval[exp=\expr', result={\result[2]}], then
       {\result[1]} = {\result[2]}. 
-    \end{theorem}
-
-    Proving this theorem is the subject of future work. 
-
-    \section{Formal Definitions of all languages}
-    \label{languagedefs1}
-    
-    \begin{table}[H]
-      \utable
-      \caption{Abstract Syntax of~\VMinus and~\D. Forms in black are present in both
-                  languages, forms in~\red{red} are specific to~\VMinus, and forms
-                  in~\blue{blue} are specific to~\D.}
-      \label{fig:unilang2}
-    \end{table}
-    
-    \subsection{Rules (Big-step Operational Semantics) for~\U, shared by~\VMinus and~\D}
-    \label{usemantics1}
-    \usemantics 
-    \subsection{Rules (Big-step Operational Semantics) specific to~\VMinus}
-    \label{vmsemantics2}
-    \vmsemantics
-    \label{dsemantics2}
-    \dsemantics
-    
-    \subsection{Full Big-step rules for \Compile, with no descriptions}
-    
-    
-    \showvjudgement{Compile}{\compilebig}
-    
-    \subsection{Rules (Big-step Translation) for compiling \iffibf}
-    
-    These rules in a nondeterministic order by the compiler. 
-    
-    \[
-    \inferrule*[Left=\textsc{ (Exists) }]
-        {\compilebig[ctxext={\bracketed{x_1 \mapsto unknown}}, gexps={\GsgsGs{\vexists{\dots x_{n}}\; \gs \rightarrow \expr'}}]}
-        {\compilebig[gexps={\GsgsGs{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr'}}]}
-    \]
-    
-    \[
-    \inferrule*[Left=\textsc{ (Fail) }]
-        {\compilebig[gexps=\GsGs]}
-        {\compile[guard={\fail}]}
-    \]
-    
-    
-    \[
-    \inferrule*[Left=\textsc{ (Match) }]
-        {\ }
-        {\compilebig[gexps={\GsgsGs{}}]}
-    \]
-    
-    \[
-    \inferrule*[Left=\textsc{ (Test) }]
-        {\rho(x) = known
-        \\\\
-        \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
-                 iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
-        \\\\
-        \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \expr[i]
-        \\\\
-        \expr[0] = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
-        }
-        {\compile[eas={\expr \text{ as }}, guard={x = K\; \expr[1] \dots \expr[n]},
-        compiled={test(x, \tbar, \expr[0])}]}
-    \]
-    
-    \[
-    \inferrule*[Left=\textsc{ (Elim-Vcon) }]
-        {
-        \compilebig[gexps=\GsGs]
-        \\\\
-        \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
-        }
-        {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
-    \]
-    
-    \[
-    \inferrule*[Right=\textsc{ (Expand-Vcon) }]
-        {
-        \compile[guard={{\expr[1]}' = \expr[1];\; \dots;\; {\expr[n]}' = \expr[n]}]
-        }
-        {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
-    \]
-    
-    \[
-    \inferrule*[Right=\textsc{ (Let-Unless) }]
-        {\rho(x) = unknown \and \knownj[exp=\expr']
-        \\\\
-        \compilebig[ctxext={\bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
-        \\\\
-        \dt_{2} = \subst{\expr}{\fail}{\expr'}
-        }
-        {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-                  compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
-    \]
-    
-    
-    \[
-    \inferrule*[Right=\textsc{ (Let-If) }]
-        {\rho(x) = known \and \knownj[exp=\expr'] 
-        \\\\
-        \dt_{1} = \subst{\expr}{x}{\expr'}
-        \\\\
-        \compilebig[ctxext={\bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
-        \\\\
-        \dt_{3} = \subst{\expr}{\fail}{\expr'}
-        \\\\
-        \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
-        }
-        {\compile[eas={\expr \text{ as }}, guard={y = e}, 
-                  compiled={let\; x = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
-    \]
-    
-    
+    \end{conjecture}
+    Proving this conjecture is the subject of future work. 
 
 \end{document}

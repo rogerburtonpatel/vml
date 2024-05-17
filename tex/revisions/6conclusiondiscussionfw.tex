@@ -69,7 +69,7 @@
 %             &\hspace{2em}~\tt{if } {\vexists{x}\; x~\tt{ = }~\ptovtran{\expr};}\;~\\
 %             &\hspace{2em}~\rm{ let } (\mathit{ns}_{1},~\mathit{gs}_{1}) {\dots} (\mathit{ns}_{i},~\mathit{gs}_{i}) =~\ptran{p_{1}}x\;~\cdot\; {\dots}~\cdot\;~\ptran{p_{i}}x~\rm { in }~\\
 %             &\hspace{2em}~\iffitt{\vexists{\mathit{ns}_{1}}\; {\mathit{gs}_{1}}~\rightarrow~\ptovtran{\expr[1]};\;
-%                        \square\; {\dots}~\square\;~\vexists {\mathit{ns}_{i}}\; {\mathit{gs}_{i}}~\rightarrow~\ptovtran{\expr[i]}}~\\
+%                        \dbar\; {\dots}~\dbar\;~\vexists {\mathit{ns}_{i}}\; {\mathit{gs}_{i}}~\rightarrow~\ptovtran{\expr[i]}}~\\
 %             &\hspace{2em}~\tt{fi}~\\
 %             &\hspace{2em}~\rm{, $x$ fresh }
 %         \end{align*}
@@ -126,10 +126,10 @@
     \url{https://github.com/rogerburtonpatel/vml}. The implementations are
     complete, from parsers to evaluation to unparsers. In the same repository
     lives the~\tt{dtran} program, which translates from~\VMinus to~\D. With the
-    implementations, I~have run testcases to empirically determine the
-    correctness of my algorithms, including evaluation of~\VMinus, evaluation
-    of~\D, and the translation between the two. I~have determined that the
-    translation (empirically) preserves semantics. 
+    implementations, I~include test cases for
+    evaluation of~\VMinus, evaluation
+    of~\D, and the translation between the two. 
+    In~each of these test cases, the translation preserves semantics. 
 
 
     \section{Related and Future Work}
@@ -161,69 +161,34 @@
     structurally inspired mine, and studying the source code from the paper
     aided my implementation. 
 
-    \subsubsection{Desirable theorems about translations}
-    First and foremost, to flesh out the proofs of semantics preservation of
-    \PTran\ and~\DTran\ is my top priority. Solid proofs~will strengthen my
-    argument that~\VMinus is not only a viable alternative to pattern
-    matching syntactically; it is also formally equivalent. 
-
-    \subsubsection{Desirable theorems about~\VMinus}
-    Two theorems would strengthen the viability of~\VMinus, and are
-    essential targets for future work:~\bf{Proving~\VMinus~is
-    deterministic}, and~\bf{proving the big-step semantics of~\VMinus~is
+    %\subsubsection{Desirable theorems about translations}
+    For future work, my top priority is to prove that
+    \textbf{\DTran\ preserves semantics}.
+    %Solid proofs~will strengthen my
+    %argument that~\VMinus is not only a viable alternative to pattern
+    %matching syntactically; it is also formally equivalent. 
+    Next, I~plan to prove that
+    %Two theorems would strengthen the viability of~\VMinus, and are
+    %essential targets for future work:~\bf{Proving~
+    \textbf{\VMinus~is
+    deterministic}, and that \bf{the big-step semantics of~\VMinus~is
     consistent with the published semantics of~\VC.} As the authors of the
     Verse paper proved that the rewrite semantics of Verse is
-    skew-confluent, I~must prove that big-step semantics of~\VMinus is
+    skew-confluent, I~plan to prove that big-step semantics of~\VMinus is
     deterministic, despite the nondeterminism of choosing a guard. Second,
     \VMinus~is designed to be Verse-like, and formalizing the relationship
-    between the two strengthens~\VMinus's viability as an intermediate
-    language between pattern matching and equations. 
+    between the two would strengthen \VMinus's~viability as a
+    language that compromises between pattern matching and equations. 
 
-
-    \subsubsection{Exhaustiveness analysis of~\VMinus}
-    \label{typingppandvm}
-
-    Exhaustiveness analysis can help restore Nice Property 5: with it, the
-    compiler can warn programmers of a missing or extraneous match condition
-    in an~\iffibf. Owing to its significantly more flexible structure,
-    however,~\iffibf may prove trickier to analyze for missing match
-    conditions than \it{case}.
+    Finally, I~would like to explore
+    exhaustiveness analysis of~\VMinus.
+    Exhaustiveness analysis
+    can warn programmers of a missing or extraneous alternative in a~\it{case} expression.
+    Owing to its significantly more flexible structure,
+    however,~\iffibf may prove trickier to analyze.
     
     
-    \section{Conclusion}
-
-    I~have introduced \VMinus and compared it with pattern matching to
-    demonstrate the viability of equations as an alternative, and I have
-    introduced~\D and~\DTran\ to show it can be compiled to efficient code.
-    I~have shown with equivalent examples how programs written in~\VMinus has
-    the same desirable properties as equivalent programs written using pattern
-    matching. Finally, I~have shown how~\VMinus, like pattern matching, can be
-    compiled to efficient code. In doing so, I~have demonstrated that
-    programming with equations is a promising alternative to pattern matching.
-    \D~and~\DTran~serve to demonstrate that~\VMinus is a viable alternative to
-    pattern matching on the grounds that they have equivalent cost models:
-    pattern matching can be compiled to a decision tree,
-    which~\citet{macqueen1985tree} built the foundation for and~\citet{maranget}
-    expanded on.
-
-    I~have also fully implemented the languages. They exist for use and
-    experimentation: they are syntactically simple and have conceptually
-    accessible operational semantics. I~hope that programmers will explore and
-    develop their own opinions of these languages, which are publically
-    available at~\url{https://github.com/rogerburtonpatel/vml}. 
-
-    % Finally, and in particular with~\VMinus, I~hope to provide a stepping
-    % stone between pattern matching and equations that a new programmer to
-    % Verse will find illuminating. 
-    
-    % hope to have paved a small
-    % segment of the path that the curious programmer or language enthusiast who
-    % wishes to better understand Verse will take. Be they transitioning to
-    % equations from pattern matching to equations or curious about how those
-    % equations might be compilable to decision trees, I~hope they find the
-    % languages, and this document, illuminating. 
-    
-    \section{Discussion}        
+    \section{Discussion: The design of \VMinus}        
     \label{futurework}
     
     %~\subsubsection{\VMinus and~\PPlus, side by side}
@@ -301,38 +266,38 @@
     %     effect on semantics.         
     
 
-    \subsection{The design of~\VMinus}
+%    \subsection{The design of~\VMinus}
 
     This section is aimed at audience familiar with \VC; in particular, with the
     concept of \it{names as values}.
     
-    \subsubsection{Forms in \VC and \VMinus}
+    \subsection{Forms in \VC and \VMinus}
     
     When designing~\VMinus, I~wanted the language to capture the expressiveness
     of~\VC's equations while retaining a similar decision-making construct to
-    pattern matching. In all of pattern matching, the only decision-making
-    construct is~\it{case}; all other forms of decision-making like~\it{if}
+    pattern matching. In~pattern matching, the only decision-making
+    construct is~\it{case}; other forms of decision-making like~\it{if}
     desugar to it. In~\VMinus, the only decision-making construct is~\iffibf.
-    This differs from~\VC, which features numerous ways to make decisions by
+    This design differs from~\VC, which features numerous ways to make decisions by
     combining~\bf{one}, \bf{all}, equations, intermediate expressions,
     and~choice. I~did not want multiple results in~\VMinus, so I~eliminated
     anything that looked like~\bf{all}, and I~combined all of the above
     constructs into the singular form~\iffibf. Like~\it{case}, there is only one
     way to use~\iffibf- unlike \bf{one}, equations, intermediate expressions,
     and~choice in~\VC. By restricting all decision-making to \iffibf,
-    programmers cannot 'misuse' any of the forms in ways that might lead to
+    programmers cannot ``misuse'' any of the forms in ways that might lead to
     problematic computations, such as multiple results by returning choice as an
-    expression. Furthermore, the way in which programmers use~\iffibf mirrors
-    the way they use~\it{case}, as I've shown in the examples. 
+    expression. Furthermore, as I've shown in the examples, the way in which programmers use~\iffibf mirrors
+    the way they use~\it{case}. 
     
-    \subsubsection{Choice in \VMinus vs. \VC}
+    \subsection{Choice in \VMinus vs. \VC}
 
-    In particular, \VC's choice operator is often the culprit behind both
+    \VC's choice operator is often the culprit behind both
     backtracking and multiple results, which tempted me to remove choice
     from~\VMinus altogether. However, I~want to harness the expressive potential
     of choice, particularly when paired with~\VC's~\bf{one} keyword. When
-    combined with choice, \bf{one} elegantly signifies 'proceed if any branch of
-    the choice succeeds.' 
+    combined with choice, \bf{one} elegantly signifies ``proceed if any branch of
+    the choice succeeds.'' 
     
     To this end, in~\VMinus, choice is permitted with several modifications:
     
@@ -345,13 +310,12 @@
         \item The existential $\exists$ may not appear under choice.
         \end{enumerate}
         
-        I~introduce one more crucial modification to the~\VC runtime: a name in
-        \VMinus is an~\it{expression} rather than a~\it{value}. This alteration,
-        coupled with my adjustments to choice, eradicates backtracking. My
-        rationale behind this is straightforward: if an expression returns a
-        name, and subsequently, the program imposes a new constraint on that
-        name, it may necessitate the reevaluation of the earlier expression—- a
-        scenario I~strive to avoid. 
+        I~introduce one more crucial modification to~\VC: a name in
+        \VMinus is an~\it{expression}, not a~\it{value}. This modification,
+        coupled with my adjustments to choice, eradicates backtracking. My~rationale is straightforward: if~an expression returns a
+        name, and if the program later imposes a new constraint on that
+        name, it may necessitate the reevaluation of the earlier expression---a
+        scenario I~insist on avoiding. 
 
 
 
@@ -490,5 +454,38 @@
         % any discovery that allows them to increase the efficiency of full-Verse
         % programs. 
 
+    \section{Conclusion}
+
+    I~have introduced \VMinus, a~language that makes decisions using equations.
+    By~example, I have shown that
+    programs written in~\VMinus can have the same desirable properties
+    as equivalent programs written using pattern matching.
+    And~to~show that equations can be compiled to efficient decision trees, I have
+    introduced~\D and~\DTran.
+    In doing so, I~have demonstrated that
+    programming with equations is a promising alternative to pattern matching.
+    %%  \D~and~\DTran~serve to demonstrate that~\VMinus is a viable alternative to
+    %%  pattern matching on the grounds that they have equivalent cost models:
+    %%  pattern matching can be compiled to a decision tree,
+    %%  which~\citet{macqueen1985tree} built the foundation for and~\citet{maranget}
+    %%  expanded on.
+
+    I~have also fully implemented the languages. They exist for use and
+    experimentation: they are syntactically simple and have conceptually
+    accessible operational semantics. I~hope that programmers will explore and
+    develop their own opinions of these languages, which are publically
+    available at~\url{https://github.com/rogerburtonpatel/vml}. 
+
+    % Finally, and in particular with~\VMinus, I~hope to provide a stepping
+    % stone between pattern matching and equations that a new programmer to
+    % Verse will find illuminating. 
+    
+    % hope to have paved a small
+    % segment of the path that the curious programmer or language enthusiast who
+    % wishes to better understand Verse will take. Be they transitioning to
+    % equations from pattern matching to equations or curious about how those
+    % equations might be compilable to decision trees, I~hope they find the
+    % languages, and this document, illuminating. 
+    
 
 \end{document}
