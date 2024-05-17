@@ -1,5 +1,5 @@
 %%
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{standalone}
 \usepackage{vmlmacros}
@@ -7,7 +7,7 @@
   \providecommand\BibTeX{{%
     \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 \usepackage{outlines}
-% \usepackage{natbib}
+%~\usepackage{natbib}
 \setlength{\headheight}{14.0pt}
 \setlength{\footskip}{13.3pt}
 \citestyle{acmauthoryear}
@@ -24,44 +24,45 @@
   \postcode{02155}
 }
 \bibliographystyle{unsrtnat}
-% \setcitestyle{sort&compress}
+% \renewcommand\refname{}
+% ~\setcitestyle{sort&compress}
 
 
-% \author{Norman Ramsey}
-% \email{nr@cs.tufts.edu}
-% \affiliation{%
-% \institution{Tufts University}
-% \streetaddress{177 College Ave}
-% \city{Medford}
-% \state{Massachusetts}
-% \country{USA}
-% \postcode{02155}
+%~\author{Norman Ramsey}
+%~\email{nr@cs.tufts.edu}
+%~\affiliation{%
+%~\institution{Tufts University}
+%~\streetaddress{177 College Ave}
+%~\city{Medford}
+%~\state{Massachusetts}
+%~\country{USA}
+%~\postcode{02155}
 % }
 
-% \author{Milod Kazerounian}
-% \email{milod.mazerouniantufts.edu}
-% \affiliation{%
-% \institution{Tufts University}
-% \streetaddress{177 College Ave}
-% \city{Medford}
-% \state{Massachusetts}
-% \country{USA}
-% \postcode{02155}
+%~\author{Milod Kazerounian}
+%~\email{milod.mazerouniantufts.edu}
+%~\affiliation{%
+%~\institution{Tufts University}
+%~\streetaddress{177 College Ave}
+%~\city{Medford}
+%~\state{Massachusetts}
+%~\country{USA}
+%~\postcode{02155}
 % }
 
 \renewcommand{\shortauthors}{Burtonpatel}
 
-% \input{0abstract.tex}
-% \input{1introduction.tex}
-% \pagebreak
-% \tableofcontents
-% \pagebreak
-% \input{2patternmatching.tex}
-% \input{3vc.tex}
+\input{0abstract.tex}
+\input{1introduction.tex}
+\pagebreak
+\tableofcontents
+\pagebreak
+\input{2patternmatching.tex}
+\input{3vc.tex}
 \input{4vminus.tex}
-% \input{5vminustod.tex}
-% \input{6conclusiondiscussionfw.tex}
-% \input{7acknowledgementsdiscussionappendix.tex}
+\input{5vminustod.tex}
+\input{6conclusiondiscussionfw.tex}
+\input{7acknowledgementsdiscussionappendix.tex}
 
 \end{document}
 \endinput

@@ -1,4 +1,4 @@
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{vmlmacros}
 \AtBeginDocument{%
@@ -20,167 +20,169 @@
   \postcode{02155}
   }
 \begin{document}
-\section{Equations subsume pattern matching with popular extensions}
-\label{pplustovminus}
-    In my introduction I~stated that \VMinus can be compiled to a decision tree,
-    and that \VMinus subsumes pattern matching with popular extensions. Having
-    shown the former, I~now show the latter. I~do so by presenting an algorithm
-    \PtoVTran\ which translates \PPlus to \VMinus. 
+%~\section{Equations subsume pattern matching with popular extensions}
+%~\label{pplustovminus}
+%     In my introduction I~stated that~\VMinus can be compiled to a decision tree,
+%     and that~\VMinus subsumes pattern matching with popular extensions. Having
+%     shown the former, I~now show the latter. I~do so by presenting an algorithm
+%     \PtoVTran\ which translates~\PPlus to~\VMinus. 
     
-    % , and proving that the
-    % translation preserves semantics. 
+%     % , and proving that the
+%     % translation preserves semantics. 
 
-    \subsection{Domains}
+%     \subsection{Domains}
 
-    I~give the names and domains of the translation functions: 
+%     I~give the names and domains of the translation functions: 
     
-    \begin{align*}
-        &\PtoVTran: \PPlus Exp\; \rightarrow\; \VMinus Exp \\
-        &\PTran: Pattern\; \rightarrow\; Name\; \rightarrow\; Name\ list\ *\ Guard\ list \\
-        % &\mathcal{B}: Pattern\; ->\; Name\; Set \\
-    \end{align*}
+%     \begin{align*}
+%         &\PtoVTran:~\PPlus Exp\;~\rightarrow\;~\VMinus Exp~\\
+%         &\PTran: Pattern\;~\rightarrow\; Name\;~\rightarrow\; Name\ list\ *\ Guard\ list~\\
+%         % &\mathcal{B}: Pattern\; ->\; Name\; Set~\\
+%     \end{align*}
     
-    The translation functions \PtoVTran\ and \PTran\ are defined case by case: 
+%     The translation functions~\PtoVTran\ and~\PTran\ are defined case by case: 
     
-    % \subsection{Binding names}
+%     %~\subsection{Binding names}
     
-    % \begin{align*}
-        %     &\Bindings{x} = \bracketed{x} \\ 
-        %     &\Bindings{K} = \bracketed{} \\
-        %     &\Bindings{K\; p_{1} {\dots} p_{n}} = \Bindings{p} \cup {\dots} \cup \Bindings{p_{n}} \\
-        %     &\Bindings{\porp} = \Bindings{p_{1}} \cap \Bindings{p_{2}} \\
-        %     &\Bindings{\pcommap} = \Bindings{p} \cup \Bindings{p'} \\
-        %     &\Bindings{\parrowe} = \Bindings{p} \\
-        %     &\Bindings{\whenexpr} = \bracketed{}
-        % \end{align*}
+%     %~\begin{align*}
+%         %     &\Bindings{x} =~\bracketed{x}~\\ 
+%         %     &\Bindings{K} =~\bracketed{}~\\
+%         %     &\Bindings{K\; p_{1} {\dots} p_{n}} =~\Bindings{p}~\cup {\dots}~\cup~\Bindings{p_{n}}~\\
+%         %     &\Bindings{\porp} =~\Bindings{p_{1}}~\cap~\Bindings{p_{2}}~\\
+%         %     &\Bindings{\pcommap} =~\Bindings{p}~\cup~\Bindings{p'}~\\
+%         %     &\Bindings{\parrowe} =~\Bindings{p}~\\
+%         %     &\Bindings{\whenexpr} =~\bracketed{}
+%         %~\end{align*}
         
-        \subsection{Translating Expressions}
+%         \subsection{Translating Expressions}
         
-        \newcommand\btran[1]{\mathcal{B}[\![#1]\!]}
+%         \newcommand\btran[1]{\mathcal{B}[\![#1]\!]}
         
-        \begin{align*}
-            &\ptov[exp=x, result=x] \\
-            &\ptov[exp={K\; \expr[1] {\dots} \expr[n]}, result={K\; \ptovtran{\expr[1]} {\dots} \ptovtran{\expr[n]}}] \\
-            &\ptov[exp={\lambda x.\; \expr}, result={\lambda x.\; \ptovtran{\expr}}] \\
-            &\ptov[exp={\expr[1]\; \expr[2]}, result={\ptovtran{\expr[1]}\; \ptovtran{\expr[2]}}] \\
-            % &\ptov[exp={\tt{case}\; \expr\;  \emptyseq}, result={{\iffitt{\vexists{x}\; x = \ptovtran{\expr};\; \iffitt{}}}}]\; \rm{, $x$ fresh }   \\
-            &\ptovtran{\tt{case}\; \expr\;  p_{1}\; \expr[1] \vert {\dots} \vert p_{n}\; \expr[n]} \rightsquigarrow \\
-            &\hspace{2em} \rm{$\forall i.\; 1 \leq i \leq n:$} \\
-            &\hspace{2em} \tt{if } {\vexists{x}\; x \tt{ = } \ptovtran{\expr};}\; \\
-            &\hspace{2em} \rm{ let } (\mathit{ns}_{1}, \mathit{gs}_{1}) {\dots} (\mathit{ns}_{i}, \mathit{gs}_{i}) = \ptran{p_{1}}x\; \cdot\; {\dots} \cdot\; \ptran{p_{i}}x \rm { in } \\
-            &\hspace{2em} \iffitt{\vexists{\mathit{ns}_{1}}\; {\mathit{gs}_{1}} \rightarrow \ptovtran{\expr[1]};\;
-                       \square\; {\dots} \square\; \vexists {\mathit{ns}_{i}}\; {\mathit{gs}_{i}} \rightarrow \ptovtran{\expr[i]}} \\
-            &\hspace{2em} \tt{fi} \\
-            &\hspace{2em} \rm{, $x$ fresh }
-        \end{align*}
+%         \begin{align*}
+%             &\ptov[exp=x, result=x]~\\
+%             &\ptov[exp={K\;~\expr[1] {\dots}~\expr[n]}, result={K\;~\ptovtran{\expr[1]} {\dots}~\ptovtran{\expr[n]}}]~\\
+%             &\ptov[exp={\lambda x.\;~\expr}, result={\lambda x.\;~\ptovtran{\expr}}]~\\
+%             &\ptov[exp={\expr[1]\;~\expr[2]}, result={\ptovtran{\expr[1]}\;~\ptovtran{\expr[2]}}]~\\
+%             % &\ptov[exp={\tt{case}\;~\expr\;  \emptyseq}, result={{\iffitt{\vexists{x}\; x =~\ptovtran{\expr};\;~\iffitt{}}}}]\;~\rm{, $x$ fresh }   \\
+%             &\ptovtran{\tt{case}\;~\expr\;  p_{1}\;~\expr[1]~\vert {\dots}~\vert p_{n}\;~\expr[n]}~\rightsquigarrow~\\
+%             &\hspace{2em}~\rm{$\forall i.\; 1~\leq i~\leq n:$}~\\
+%             &\hspace{2em}~\tt{if } {\vexists{x}\; x~\tt{ = }~\ptovtran{\expr};}\;~\\
+%             &\hspace{2em}~\rm{ let } (\mathit{ns}_{1},~\mathit{gs}_{1}) {\dots} (\mathit{ns}_{i},~\mathit{gs}_{i}) =~\ptran{p_{1}}x\;~\cdot\; {\dots}~\cdot\;~\ptran{p_{i}}x~\rm { in }~\\
+%             &\hspace{2em}~\iffitt{\vexists{\mathit{ns}_{1}}\; {\mathit{gs}_{1}}~\rightarrow~\ptovtran{\expr[1]};\;
+%                        \square\; {\dots}~\square\;~\vexists {\mathit{ns}_{i}}\; {\mathit{gs}_{i}}~\rightarrow~\ptovtran{\expr[i]}}~\\
+%             &\hspace{2em}~\tt{fi}~\\
+%             &\hspace{2em}~\rm{, $x$ fresh }
+%         \end{align*}
         
-        \subsection{Translating Patterns}
+%         \subsection{Translating Patterns}
         
-        \begin{align*}
-            &\pattov[pat=y, result={(y, [x = y])}] \\
-            &\pattov[pat=K, result={([], [x = K])}] \\
-            &\ptran{K\; p_{1}\; {\dots}\; p_{n}}x \rightsquigarrow \\
-            &\hspace{2em} \rm{$\forall i.\; 1 \leq i \leq n:$} \\
-            &\hspace{2em} \rm{ let } y_{i} \rm{ be a fresh name, }  \\
-            &\hspace{2em} (\mathit{ns}_{1}, \mathit{gs}_{1}) {\dots} (\mathit{ns}_{i}, \mathit{gs}_{i}) = \ptran{p_{1}}y_{1} \cdot {\dots} \cdot \ptran{p_{i}}y_{i} \\
-            &\hspace{2em} \rm{ in } \\
-            &\hspace{2em} ({\mathit{ns}_{1} \cdot {\dots} \cdot \mathit{ns}_{i}} \cdot {y_{1} {\dots} y_{i}}, x = K\; y_{1}\; {\dots}\; y_{i} \cdot \; \mathit{gs}_{1} \cdot {\dots} \cdot \mathit{gs}_{i}) \\
-            &\pattov[pat=\mathit{when}\; e, result={([], [\ptovtran{e}])}] \\
-            &\pattov[pat=\pcommap, 
-            result={\rm{let } 
-            {(\mathit{ns}_{1}, \mathit{gs}_{1}) = \ptran{p}x}\; , 
-            {(\mathit{ns}_{2}, \mathit{gs}_{2}) = \ptran{p'}x} \rm{ in }
-            (\mathit{ns}_{1} \cdot \mathit{ns}_{2}, \mathit{gs}_{1} \cdot \mathit{gs}_{2})}] \\
-            &\pattov[pat=\porp, 
-            result={\rm{let } (\mathit{ns}_{1}, \mathit{gs}_{1}) = \ptran{p}x\; ,
-            (\mathit{ns}_{2}, \mathit{gs}_{2}) = \ptran{p'}x \rm{ in }
-            (\mathit{ns}_{1} \cdot \mathit{ns}_{2}, [\mathit{gs}_{1} \choice \mathit{gs}_{2}])}]
-        \end{align*}
+%         \begin{align*}
+%             &\pattov[pat=y, result={(y, [x = y])}]~\\
+%             &\pattov[pat=K, result={([], [x = K])}]~\\
+%             &\ptran{K\; p_{1}\; {\dots}\; p_{n}}x~\rightsquigarrow~\\
+%             &\hspace{2em}~\rm{$\forall i.\; 1~\leq i~\leq n:$}~\\
+%             &\hspace{2em}~\rm{ let } y_{i}~\rm{ be a fresh name, }  \\
+%             &\hspace{2em} (\mathit{ns}_{1},~\mathit{gs}_{1}) {\dots} (\mathit{ns}_{i},~\mathit{gs}_{i}) =~\ptran{p_{1}}y_{1}~\cdot {\dots}~\cdot~\ptran{p_{i}}y_{i}~\\
+%             &\hspace{2em}~\rm{ in }~\\
+%             &\hspace{2em} ({\mathit{ns}_{1}~\cdot {\dots}~\cdot~\mathit{ns}_{i}}~\cdot {y_{1} {\dots} y_{i}}, x = K\; y_{1}\; {\dots}\; y_{i}~\cdot~\;~\mathit{gs}_{1}~\cdot {\dots}~\cdot~\mathit{gs}_{i})~\\
+%             &\pattov[pat=\mathit{when}\; e, result={([], [\ptovtran{e}])}]~\\
+%             &\pattov[pat=\pcommap, 
+%             result={\rm{let } 
+%             {(\mathit{ns}_{1},~\mathit{gs}_{1}) =~\ptran{p}x}\; , 
+%             {(\mathit{ns}_{2},~\mathit{gs}_{2}) =~\ptran{p'}x}~\rm{ in }
+%             (\mathit{ns}_{1}~\cdot~\mathit{ns}_{2},~\mathit{gs}_{1}~\cdot~\mathit{gs}_{2})}]~\\
+%             &\pattov[pat=\porp, 
+%             result={\rm{let } (\mathit{ns}_{1},~\mathit{gs}_{1}) =~\ptran{p}x\; ,
+%             (\mathit{ns}_{2},~\mathit{gs}_{2}) =~\ptran{p'}x~\rm{ in }
+%             (\mathit{ns}_{1}~\cdot~\mathit{ns}_{2}, [\mathit{gs}_{1}~\choice~\mathit{gs}_{2}])}]
+%         \end{align*}
 
-    \subsubsection{Significance of the translation}
+%     \subsubsection{Significance of the translation}
 
-    In Section~\ref{extensions}, I~showed how extensions to pattern matching
-    uphold Nice Properties \ref{p1}~and~\ref{p2}, and how with them, programmers
-    can write more concise code. \bf{The translation aims to show that if a
-    programmer can code with desirable properties in \PPlus, they can write code
-    with the same properties in \VMinus.} Proving this claim formally is a goal
-    for future work. Informally, \PTran\ does not duplicate code except for
-    introducing new names when translating a constructor-application pattern,
-    and I~believe eliminating this redundancy is possible through a desugaring
-    optimization based off of the laws presented in Section~\ref{ppweird}. 
+%     In Section~\ref{extensions}, I~showed how extensions to pattern matching
+%     uphold Nice Properties~\ref{p1}~and~\ref{p2}, and how with them, programmers
+%     can write more concise code.~\bf{The translation aims to show that if a
+%     programmer can code with desirable properties in~\PPlus, they can write code
+%     with the same properties in~\VMinus.} Proving this claim formally is a goal
+%     for future work. Informally,~\PTran\ does not duplicate code except for
+%     introducing new names when translating a constructor-application pattern,
+%     and I~believe eliminating this redundancy is possible through a desugaring
+%     optimization based off of the laws presented in Section~\ref{ppweird}. 
 
-    \PtoVTran\ is largely uninteresting, except for the translation from
-    \it{case} to \iffibf.
+%     \PtoVTran\ is largely uninteresting, except for the translation from
+%     \it{case} to~\iffibf.
         
-    To compile \it{case} expressions to decision trees as Maranget does,
-    translate \PPlus to \D using $(\DTran\; o\; \PtoVTran)$.
+%     To compile~\it{case} expressions to decision trees as Maranget does,
+%     translate~\PPlus to~\D using $(\DTran\; o\;~\PtoVTran)$.
     
-    Finally, I~claim that the translation from \it{case} expressions to decision
-    trees, $(\DTran\; o\; \PtoVTran)$, is consistent with Maranget and
-    others~\citep{maranget,scottramsey}. Proving this claim is a good goal for
-    future work; it is not the main focus of this paper. 
+%     Finally, I~claim that the translation from~\it{case} expressions to decision
+%     trees, $(\DTran\; o\;~\PtoVTran)$, is consistent with Maranget and
+%     others~\citep{maranget,scottramsey}. Proving this claim is a good goal for
+%     future work; it is not the main focus of this paper. 
 
     \section{Implementations}
 
-    I~have full implementations of \PPlus, \VMinus, and~\D at
-    \url{https://github.com/rogerburtonpatel/vml}. The languages are complete,
-    from parsers to evaluation to unparsers. In the same repository lives the
-    \tt{dtran} program, which translates from \PPlus to \VMinus and \VMinus to
-    \D. Translating \PPlus to \D is also possible by composing these two
-    translations. With the implementations, I~have been able to gather
-    satisfying empirical evidence of the functionality of the translations, and
-    that they (empirically) preserve semantics. 
+    I~have placed implementations of~\VMinus and~\D at
+    \url{https://github.com/rogerburtonpatel/vml}. The implementations are
+    complete, from parsers to evaluation to unparsers. In the same repository
+    lives the~\tt{dtran} program, which translates from~\VMinus to~\D. With the
+    implementations, I~have run testcases to empirically determine the
+    correctness of my algorithms, including evaluation of~\VMinus, evaluation
+    of~\D, and the translation between the two. I~have determined that the
+    translation (empirically) preserves semantics. 
 
 
     \section{Related Work}
 
-    The dual foundations of this paper are Augustsson et al.'s Verse
-    Calculus~\citep{verse} and Maranget's decision trees~\citep{maranget}.
-    Augustsson et al. give the formal rewrite semantics for the Verse Calculus;
-    Maranget gives an elegant formalism of decision trees. The big-step
-    semantics in this paper is based off of the rewrite semantics; proving their
-    equivalence is the subject of future work. I~chose a big-step semantics
-    because it is the style of semantics I~am most comfortable with; writing the
-    formalisms this way facilitated writing the code. Maranget's formalism was
-    the foundation off of which I~built \D. 
+    This paper builds on Augustsson et al.'s Verse Calculus~\citep{verse} and
+    decision trees~\citep{maranget}. Augustsson et al. give the formal rewrite
+    semantics for the Verse Calculus; Maranget gives an elegant formalism of
+    decision trees and a translation algorithm from patterns to decision trees.
+    I~attempted to imitate the behavior of the rewrite semantics of~\VC in the
+    big-step semantics of~\VMinus by manually rewriting terms in~\VC and
+    creating rules that would imitate the ultimate result of term-rewriting.
+    Proving the equivalence between the two semantics is the subject of future
+    work. I~chose a big-step semantics because it is the style of semantics I~am
+    most comfortable with; writing the formalisms this way helped me write the
+    code. Using a rewrite semantics instead would more closely relate~\VMinus
+    and~\VC, and is a likely future project. Maranget's formalism was the
+    foundation off of which I~built~\D. 
     
     Extensions to pattern matching, and how they appeal to language designers,
-    find an excellent example in Erwig \& Peyton Jones~\citep{guardproposal}.
-    The authors describe pattern guards and transformational patterns, both of
-    which allow a Haskell programmer to write more concise code using pattern
-    matching. Or-patterns are documented in the OCaml Language Reference
-    Manual~\citep{ocaml}.
+    find an excellent example in~\citet{guardproposal}. The authors describe
+    pattern guards and transformational patterns (another extension to pattern
+    matching), both of which allow a Haskell programmer to write more concise
+    code using pattern matching. Or-patterns are documented in the OCaml
+    Language Reference Manual~\citep{ocaml}.
     
-    Compiling Pattern Matching~\citep{augustsson1985compiling} by Augustsson
-    gives a foundation in exactly what it says. Ramsey and Scott have a crisp
-    example of a match-compilation algorithm (pattern matching to decision
-    trees) in When Do Match-Compilation Heuristics Matter?~\citep{scottramsey}.
-    Scott and Ramsey's algorithm structurally inspired mine, and I~was privy to
-    source code from the algorithm whose study aided my implementation. 
+    \citet{augustsson1985compiling}~ gives a foundation in compiling pattern
+    matching. \citet{scottramsey} have a crisp example of a match-compilation
+    algorithm (pattern matching to decision trees). Scott and Ramsey's algorithm
+    structurally inspired mine, and studying the source code from the paper
+    aided my implementation. 
     
     
     \section{Conclusion}
 
-    I~have introduced the languages \PPlus and \VMinus to demonstrate the
-    viability of equations as an alternative to pattern matching, and \D,
-    \PtoVTran, and \DTran\ to show how both languages can be compiled to
-    efficient code. I~have shown with equivalent examples how programs written
-    in \VMinus has the same desirable properties as equivalent programs written
-    in \PPlus, and I~have also shown that translating from pattern matching to
-    equations preserves the desirable properties. Finally, I~have shown how
-    \VMinus, like pattern matching, can be compiled to efficient code. In doing
-    so, I~have demonstrated that programming with equations is a promising
-    alternative to pattern matching. 
+    I~have introduced \VMinus to demonstrate the viability of equations as an
+    alternative to pattern matching, and~\D and~\DTran\ to show how both
+    languages can be compiled to efficient code. I~have shown with equivalent
+    examples how programs written in~\VMinus has the same desirable properties
+    as equivalent programs written in~\PPlus, and I~have also shown that
+    translating from pattern matching to equations preserves the desirable
+    properties. Finally, I~have shown how~\VMinus, like pattern matching, can be
+    compiled to efficient code. In doing so, I~have demonstrated that
+    programming with equations is a promising alternative to pattern matching. 
 
     I~have also fully implemented the languages. They exist for use and
     experimentation: they are syntactically simple and have conceptually
     accessible operational semantics. I~hope that programmers will explore and
     develop their own opinions of these languages, which are publically
-    available at \url{https://github.com/rogerburtonpatel/vml}. 
+    available at~\url{https://github.com/rogerburtonpatel/vml}. 
 
-    Finally, and in particular with \VMinus, I~hope to provide a stepping stone
-    between pattern matching and equations that a new programmer to Verse will
-    find illuminating. 
+    % Finally, and in particular with~\VMinus, I~hope to provide a stepping
+    % stone between pattern matching and equations that a new programmer to
+    % Verse will find illuminating. 
     
     % hope to have paved a small
     % segment of the path that the curious programmer or language enthusiast who
@@ -192,40 +194,40 @@
     \section{Discussion and Future Work}        
     \label{futurework}
     
-    % \subsubsection{\VMinus and \PPlus, side by side}
-    % I~compare \VMinus with \PPlus as an exercise in comparing equations with
-    % pattern matching. They certainly look similar, which hints that \VMinus
+    %~\subsubsection{\VMinus and~\PPlus, side by side}
+    % I~compare~\VMinus with~\PPlus as an exercise in comparing equations with
+    % pattern matching. They certainly look similar, which hints that~\VMinus
     % might be as expressive as pattern matching with the three extensions. 
     % Proving this claim is the topic of Section~\ref{pplustovminus}. 
     
-    % When might a programmer prefer \VMinus over \PPlus, or vice versa? After
+    % When might a programmer prefer~\VMinus over~\PPlus, or vice versa? After
     % programming in both, I~have come up with three empirical observations: 
     
-    % \begin{enumerate}
-    %   \item \it{The scrutinee:} When there is no obvious single scrutinee, \VMinus is more succinct.
-    %   When there is a scrutinee, \PPlus is more succinct. 
-    %   \item \it{Binding and decision-making:} Binding and decision-making are
-    %   joined in a single construct in \VMinus: \tt{=}. \PPlus needs different
-    %   kinds of syntax, like \tt{<-}, to express different kinds of binding. And
-    %   a programmer wanting for \tt{let} in \PPlus will never feel this need in
-    %   \VMinus: \tt{=} subsumes that, too. 
-    %   \item \it{Names:} In \VMinus, names are explicitly introduced. In
+    %~\begin{enumerate}
+    %   \item~\it{The scrutinee:} When there is no obvious single scrutinee,~\VMinus is more succinct.
+    %   When there is a scrutinee,~\PPlus is more succinct. 
+    %   \item~\it{Binding and decision-making:} Binding and decision-making are
+    %   joined in a single construct in~\VMinus:~\tt{=}.~\PPlus needs different
+    %   kinds of syntax, like~\tt{<-}, to express different kinds of binding. And
+    %   a programmer wanting for~\tt{let} in~\PPlus will never feel this need in
+    %   \VMinus:~\tt{=} subsumes that, too. 
+    %   \item~\it{Names:} In~\VMinus, names are explicitly introduced. In
     %   practice, this helps prevent a common mistake in pattern matching in which
     %   a programmer attempts to match a value $v$ on an in-scope name $x$,
     %   expecting the match to succeed iff $x$ evaluates to $v$ at runtime, only
     %   to see the match always succeed. 
-    % \end{enumerate}     
+    %~\end{enumerate}     
     
-    % \rab{How do you feel about examples for each of these points here? This
+    %~\rab{How do you feel about examples for each of these points here? This
     % section is very long, but they help drive these points home.}
     
     
-    % An example in \VC illustrates this precise
+    % An example in~\VC illustrates this precise
     % scenario: 
     
     % FIRST PAPER EXAMPLE 
     
-    % IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
+    % IMPORTANTLY,~\VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
     
     %  Doesn't backtrack
     
@@ -245,36 +247,59 @@
     % juxtapose them with pattern matching.    
     
     
-    % \section{Addressing how \PPlus handles unusual pattern combinations}
-    % \label{ppweird}
-    %     \PPlus admits of strange-looking patterns: consider \tt{Cons (when true)
+    %~\section{Addressing how~\PPlus handles unusual pattern combinations}
+    %~\label{ppweird}
+    %     \PPlus admits of strange-looking patterns: consider~\tt{Cons (when true)
     %     zs}. But these should not be alarming, because such syntactic forms reduce
     %     to normal forms by (direct) application of algebraic laws: 
     
     %     \begin{align}
-    %       K (\whenexpr) \;p2\; \dots &=== K \;\_ \;p2\; \dots, \whenexpr \\
-    %       K (\whenexpr, \;p2\;) \;p3\; \dots  &=== K \;p2\; \;p3\; \dots, \whenexpr \\
-    %       K (p1\;, \whenexpr) \;p3\; \dots  &=== K \;p1\; \;p3\; \dots, \whenexpr \\
-    %       K (\whenexpr \pbar p2\;) \;p3\; \dots &=== (K \;\_ \;p3\; \dots, \whenexpr) \pbar (K \;p2\; \;p3\; \dots) \\
-    %       K (p1 \pbar \whenexpr) \;p3\; \dots &=== (K \;p2\; \;p3\; \dots) \pbar (K \;\_ \;p3\; \dots, \whenexpr)  \\
-    %       \whenexpr \leftarrow e &=== \;\_ <- e, \whenexpr
+    %       K (\whenexpr)~\;p2\;~\dots &=== K~\;\_~\;p2\;~\dots,~\whenexpr~\\
+    %       K (\whenexpr,~\;p2\;)~\;p3\;~\dots  &=== K~\;p2\;~\;p3\;~\dots,~\whenexpr~\\
+    %       K (p1\;,~\whenexpr)~\;p3\;~\dots  &=== K~\;p1\;~\;p3\;~\dots,~\whenexpr~\\
+    %       K (\whenexpr~\pbar p2\;)~\;p3\;~\dots &=== (K~\;\_~\;p3\;~\dots,~\whenexpr)~\pbar (K~\;p2\;~\;p3\;~\dots)~\\
+    %       K (p1~\pbar~\whenexpr)~\;p3\;~\dots &=== (K~\;p2\;~\;p3\;~\dots)~\pbar (K~\;\_~\;p3\;~\dots,~\whenexpr)  \\
+    %       \whenexpr~\leftarrow e &===~\;\_ <- e,~\whenexpr
     %     \end{align}   
         
     %     Repeatedly applying these laws until the program reaches a fixed point
-    %     normalizes placements of \it{when}. Laws (2) and (3) work because \PPlus
+    %     normalizes placements of~\it{when}. Laws (2) and (3) work because~\PPlus
     %     has no side effects and the laws assume all names are unique (the compiler
     %     takes care of this), so changing the order in which patterns match has no
     %     effect on semantics.         
     
 
-    \subsection{Choice in \VMinus}
-    Both backtracking and multiple results often manifest within \VC's choice
-    operator, which tempt its removal from \VMinus altogether. However, I~am drawn
-    to harnessing the expressive potential of this operator, particularly when
-    paired with \VC's 'one' keyword. When employed with choice as a condition, 'one'
-    elegantly signifies 'proceed if any branch of the choice succeeds. 
+    \subsection{The design of~\VMinus}
     
-    To this end, in \VMinus, choice is permitted with several modifications:
+    \subsubsection{Forms in \VC and \VMinus}
+    
+    When designing~\VMinus, I~wanted the language to capture the expressiveness
+    of~\VC's equations while retaining a similar decision-making construct to
+    pattern matching. In all of pattern matching, the only decision-making
+    construct is~\it{case}; all other forms of decision-making like~\it{if}
+    desugar to it. In~\VMinus, the only decision-making construct is~\iffibf.
+    This differs from~\VC, which features numerous ways to make decisions by
+    combining~\bf{one}, \bf{all}, equations, intermediate expressions,
+    and~choice. I~did not want multiple results in~\VMinus, so I~eliminated
+    anything that looked like~\bf{all}, and I~combined all of the above
+    constructs into the singular form~\iffibf. Like~\it{case}, there is only one
+    way to use~\iffibf- unlike \bf{one}, equations, intermediate expressions,
+    and~choice in~\VC. By restricting all decision-making to \iffibf,
+    programmers cannot 'misuse' any of the forms in ways that might lead to
+    problematic computations, such as multiple results by returning choice as an
+    expression. Furthermore, the way in which programmers use~\iffibf mirrors
+    the way they use~\it{case}, as I've shown in the examples. 
+    
+    \subsubsection{Choice in \VMinus vs. \VC}
+
+    In particular, \VC's choice operator is often the culprit behind both
+    backtracking and multiple results, which tempted me to remove choice
+    from~\VMinus altogether. However, I~want to harness the expressive potential
+    of choice, particularly when paired with~\VC's~\bf{one} keyword. When
+    combined with choice, \bf{one} elegantly signifies 'proceed if any branch of
+    the choice succeeds.' 
+    
+    To this end, in~\VMinus, choice is permitted with several modifications:
     
         \begin{enumerate}
         \item Choice may only appear as a condition or 'guard', not as a result
@@ -285,89 +310,85 @@
         \item The existential $\exists$ may not appear under choice.
         \end{enumerate}
         
-        I~introduce one more crucial modification to the \VC runtime: a name in
-        \VMinus is an \it{expression} rather than a \it{value}. This alteration,
+        I~introduce one more crucial modification to the~\VC runtime: a name in
+        \VMinus is an~\it{expression} rather than a~\it{value}. This alteration,
         coupled with my adjustments to choice, eradicates backtracking. Our
         rationale behind this is straightforward: if an expression returns a
         name, and subsequently, the program imposes a new constraint on that
         name, it may necessitate the reevaluation of the earlier expression—- a
         scenario I~strive to avoid. 
 
-        TODO: What to discuss about V- syntax not closed under subst? 
+        \subsubsection{Desirable theorems about translations}
+        First and foremost, to flesh out the proofs of semantics preservation of
+        \PTran\ and~\DTran\ is my top priority. Solid proofs~will strengthen my
+        argument that~\VMinus is not only a viable alternative to~\PPlus
+        syntactically; it is also formally equivalent. 
 
-        \subsubsection{Desirable formalisms about translations}
-        First and foremost, to flush out the proofs of semantics preservation of
-        \PTran\ and \DTran\ is my top priority. Making these as airtight as
-        possible will greatly strengthen the argument that \VMinus is not only a
-        viable alternative to \PPlus syntactically; it is also formally
-        equivalent. 
-
-        \subsubsection{Desirable formalisms about \VMinus}
-        Two formalisms would strengthen the viability of \VMinus, and are
-        essential targets for future work: \bf{Proving \VMinus~is
-        deterministic}, and \bf{proving the big-step semantics of \VMinus~is
-        consistent with the published semantics of \VC.} As the authors of the
+        \subsubsection{Desirable theorems about~\VMinus}
+        Two theorems would strengthen the viability of~\VMinus, and are
+        essential targets for future work:~\bf{Proving~\VMinus~is
+        deterministic}, and~\bf{proving the big-step semantics of~\VMinus~is
+        consistent with the published semantics of~\VC.} As the authors of the
         Verse paper proved that the rewrite semantics of Verse is
-        skew-confluent, I~must prove that big-step semantics of \VMinus is
+        skew-confluent, I~must prove that big-step semantics of~\VMinus is
         deterministic, despite the nondeterminism of choosing a guard. Second,
         \VMinus~is designed to be Verse-like, and formalizing the relationship
-        between the two strengthens \VMinus's viability as an intermediate
+        between the two strengthens~\VMinus's viability as an intermediate
         language between pattern matching and equations. 
 
 
-        \subsubsection{Exhaustiveness analysis \PPlus and \VMinus}
+        \subsubsection{Exhaustiveness analysis of~\VMinus}
         \label{typingppandvm}
 
-        Exhaustiveness analysis can help restore Nice Property 5: with it,
-        the compiler can warn programmers of a missing or extraneous match
-        condition in a \it{case} expression, and potentially an \iffibf.
-        Owing to its significantly more flexible structure, however, \iffibf
-        may prove trickier to analyze for missing match conditions than
-        \it{case}.
+        Exhaustiveness analysis can help restore Nice Property 5: with it, the
+        compiler can warn programmers of a missing or extraneous match condition
+        in an~\iffibf. Owing to its significantly more flexible structure,
+        however,~\iffibf may prove trickier to analyze for missing match
+        conditions than \it{case}.
 
-        % \subsubsection{Type-agnostic decision-making: the $\alpha$}
-        % \label{alphas}
+        %~\subsubsection{Type-agnostic decision-making: the $\alpha$}
+        %~\label{alphas}
 
         % The three languages look similar: they each have value constructors and
-        % a 'decision-making construct' to deal with constructed data. In \PPlus, the
-        % construct is pattern-matching; in \VMinus, it is the guarded expression; in \D,
+        % a 'decision-making construct' to deal with constructed data. In~\PPlus, the
+        % construct is pattern-matching; in~\VMinus, it is the guarded expression; in~\D,
         % it is the decision tree. 
 
         % Because of this, it might be possible to make all three languages
-        % \it{higher order} in right-hand sides; that is, to parameterize the
-        % expressions that occur \it{after} all decision-making. Imagine an
+        %~\it{higher order} in right-hand sides; that is, to parameterize the
+        % expressions that occur~\it{after} all decision-making. Imagine an
         % abstract expression $\alpha$ that appears on the right-hand side of a
-        % \it{case} branch, the right-hand side of a guarded expression, or in a
-        % \it{match} node. The abstract syntax of the new \it{case}, \iffibf,
+        %~\it{case} branch, the right-hand side of a guarded expression, or in a
+        %~\it{match} node. The abstract syntax of the new~\it{case},~\iffibf,
         % and decision tree might look like this: 
-        % \begin{center}
+        %~\begin{center}
         %     \begin{bnf}
-        %         $\VMinus_{\alpha}$ : \VMinus with $\alpha$ ::=
-        %         $\mathit{if}\; \mathit{[}\; g\; \bracketed{[] g}\; \mathit{]}\; \mathit{fi}$ : if-fi with $\alpha$
+        %         $\VMinus_{\alpha}$ :~\VMinus with $\alpha$ ::=
+        %         $\mathit{if}\;~\mathit{[}\; g\;~\bracketed{[] g}\;~\mathit{]}\;~\mathit{fi}$ : if-fI~with $\alpha$
         %         ;;
         %         $G_{\alpha}$ : Guarded Expressions with $\alpha$ ::=
-        %         $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\alpha$ : 
+        %         $[\vexists{\bracketed{x}}]~\bracketed{g}~\boldsymbol{\rightarrow}\alpha$ : 
         %         ;;
-        %         $\PPlus_{\alpha}$ : \PPlus with $\alpha$::=
-        %         $\tt{case}\; \expr\; \bracketed{p\; \ttrightarrow\; \alpha}$ : \it{case} expression with $\alpha$ 
+        %         $\PPlus_{\alpha}$ :~\PPlus with $\alpha$::=
+        %         $\tt{case}\;~\expr\;~\bracketed{p\;~\ttrightarrow\;~\alpha}$ :~\it{case} expression with $\alpha$ 
         %         ;;
         %         $t_{\alpha}$ : Decision Trees with $\alpha$ ::= 
-        %         | \dots : other forms of tree 
+        %         |~\dots : other forms of tree 
         %         | $\alpha$ : match node 
         %     \end{bnf}
-        % \end{center}
+        %~\end{center}
 
-        % Why would one want to do this? Well, recall that \VMinus had to be
-        % stripped of multiple results and other \VC-like constructs in order to
-        % retain its desirable efficiency properties. $\alpha$ lets \VMinus and
+        % Why would one want to do this? Well, recall that~\VMinus had to be
+        % stripped of multiple results and other~\VC-like constructs in order to
+        % retain its desirable efficiency properties. $\alpha$ lets~\VMinus and
         % the other languages do efficient decision-making without worrying about
         % the form of the result. If the result is a complex multi-value or a
         % computation that involves backtracking, it will be agnostic of the
         % decision-making. $\alpha$ makes right-hand sides polymorphic and
-        % abstract, so a programmer could potentially insert expressions from \VC
+        % abstract, so a programmer could potentially insert expressions from~\VC
         % in their place and know that the decision-making before the $\alpha$
         % will still be efficient. This would allow for fuller interoperability
-        % between \VC and \VMinus. Section~\ref{vminusandvc} further describes
+        % between~\VC and~\VMinus. Section~\ref{vminusandvc} further describes
         % why bridging the gap between the two languages might be a worthwhile
         % exercise. 
 
@@ -379,33 +400,33 @@
         % Other alpha material: 
 % The decision-making construct that gets us there. Whether
 % it's a single value (ML-style) a sequence of values (Verse-style), or
-% even something else, the $\alpha$ represents \it{any} ultimate result of
+% even something else, the $\alpha$ represents~\it{any} ultimate result of
 % "making a decision," and it's the ways in which we make decisions that
 % we truly care about examining. By making the return result both
 % polymorphic and abstract, we eschew the need to worry about its type and
 % compatibility with other results of otherwise-equivalent trees. 
 
 % An expression in core Verse evaluates to produce possibly-empty sequence of
-% values. In \VMinus, values depend on the form of abstract expression $\alpha.$
-% If $\alpha$ is a Verse-like expression, \valpha\ will be a value sequence. If it
+% values. In~\VMinus, values depend on the form of abstract expression $\alpha.$
+% If $\alpha$ is a Verse-like expression,~\valpha\ will be a value sequence. If it
 % is an ML-like expression, it will be a single value. 
             
-%         A guarded expression evaluates to produce a \bf{result}. A result is either
-%         a metavalue \valpha\ or reject. 
+%         A guarded expression evaluates to produce a~\bf{result}. A result is either
+%         a metavalue~\valpha\ or reject. 
             
-%         \[\it{r}\; \rm{::=}\; \vartheta\; \vbar \; \reject \]
+%         \[\it{r}\;~\rm{::=}\;~\vartheta\;~\vbar~\;~\reject~\]
             
 %         \showvjudgement{Eval-Alpha}{\veval{\alpha}{\valpha}}
 
-% Of note in both \VMinus and \D is that the 'decision-making construct'
+% Of note in both~\VMinus and~\D is that the 'decision-making construct'
 % is annotated with an $\alpha$. This annotation gives us type flexibility on the
-% right-hand side of the \it{terminating} case for each construct
-% (\tt{$\rightarrow$ exp} in \VMinus and the match node in \D.) 
+% right-hand side of the~\it{terminating} case for each construct
+% (\tt{$\rightarrow$ exp} in~\VMinus and the match node in~\D.) 
 
 
-        % \subsubsection{Or-patterns and pattern guards}
-        % \label{pplusindependently}
-        % \PPlus has side conditions, guards, and or-patterns. No major
+        %~\subsubsection{Or-patterns and pattern guards}
+        %~\label{pplusindependently}
+        %~\PPlus has side conditions, guards, and or-patterns. No major
         % functional language has all three of these extensions. Back
         % Section~\ref{extensions}'s examples, I~had to switch from OCaml to
         % Haskell to use guards, and back to OCaml for or-patterns. The two
@@ -422,43 +443,43 @@
         % claiming that theirs needs all known extensions to pattern matching;
         % three, Haskell, the only language with guards, is lazy, and lazy
         % semantics may not operate well with or-patterns. Future work may explore
-        % if a lazy semantics of \PPlus is possible; such a study may answer this
+        % if a lazy semantics of~\PPlus is possible; such a study may answer this
         % question. 
 
-        \subsubsection{Using \VMinus to inform programming in Verse}
-        \label{vminusandvc}
+        % \subsubsection{Using~\VMinus to inform programming in Verse}
+        % \label{vminusandvc}
         
         % At ICFP last year, Tim Sweeney said that he wanted Verse to be an
         % accessible programming language to write a scalable, collaborative
-        % metaverse~\citep{timtalk}. Can \VMinus be aid in this goal? I~can imagine
+        % metaverse~\citep{timtalk}. Can~\VMinus be aid in this goal? I~can imagine
         % two ways in which it might:
         
-        % \begin{enumerate}
-        %     \item \VMinus could be  a tool to help ease programmers who are
+        %~\begin{enumerate}
+        %     \item~\VMinus could be  a tool to help ease programmers who are
         %     more familiar with pattern matching into the realm of functional
         %     logic programming with equations. 
-        %     \item Programs written in Verse using ideas from \VMinus might have
+        %     \item Programs written in Verse using ideas from~\VMinus might have
         %     a friendlier cost model (depending on the compiler)
-        % \end{enumerate}
+        %~\end{enumerate}
         
-        % To point~1, \VMinus sits both syntactically and semantically in between
-        % \PPlus and \VC, which might help a new programmer to Verse bridge the
-        % conceptual gap between pattern matching and equations. Also, \PtoVTran,
-        % the $\PPlus \rightarrow \VMinus$ translation, could help a programmer 
+        % To point~1,~\VMinus sits both syntactically and semantically in between
+        %~\PPlus and~\VC, which might help a new programmer to Verse bridge the
+        % conceptual gap between pattern matching and equations. Also,~\PtoVTran,
+        % the $\PPlus~\rightarrow~\VMinus$ translation, could help a programmer 
         % who wishes to write code using pattern matching see how their ideas 
         % can be expressed in Verse. 
 
         % To point~2, 
         
-        \DTran\ and the proof that \DTran\ preserves semantics help show that
-        certain computations that use equations for decision-making can be
-        compiled to efficient code. A future project could be to extend \VMinus
-        to include \it{all} of \VC, and use \DTran to eliminates as much
-        backtracking at runtime as possible, falling back to the VC's fully
-        general evaluation mechanism only when necessary. My hope is that, using
-        these ideas, both the Verse programmer and language designer might make
-        any discovery that allows them to increase the efficiency of full-Verse
-        programs. 
+        % \DTran\ and the proof that~\DTran\ preserves semantics help show that
+        % certain computations that use equations for decision-making can be
+        % compiled to efficient code. A future project could be to extend~\VMinus
+        % to include~\it{all} of~\VC, and use~\DTran to eliminates as much
+        % backtracking at runtime as possible, falling back to the VC's fully
+        % general evaluation mechanism only when necessary. My hope is that, using
+        % these ideas, both the Verse programmer and language designer might make
+        % any discovery that allows them to increase the efficiency of full-Verse
+        % programs. 
 
 
 \end{document}

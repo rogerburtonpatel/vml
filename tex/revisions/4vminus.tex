@@ -1,4 +1,4 @@
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{vmlmacros}
 \AtBeginDocument{%
@@ -25,91 +25,90 @@
 \label{compromise}
     
     To bridge the gap between pattern matching, equations, and decision trees, I
-    have created and implemented a semantics for a new core language: \VMinus
+    have created and implemented a semantics for a new core language:~\VMinus
     ("V-minus"). 
     
-    \VMinus has equations and choice, like \VC, but without multiple results or
-    backtracking. To eliminate multiple results, expressions in \VMinus evaluate
-    to at most one result, and choice only \it{guards} computation; is not a
+    \VMinus has equations and choice, like~\VC, but without multiple results or
+    backtracking. To eliminate multiple results, expressions in~\VMinus evaluate
+    to at most one result, and choice only~\it{guards} computation; is not a
     valid form of expression in the language. To eliminate backtracking, the
-    compiler rejects a \VMinus program that would need to backtrack at runtime.
-    To provide an efficient and backtracking-free cost model to which \VMinus
-    can be compiled, I later introduce a core language of decision trees, \D
+    compiler rejects a~\VMinus program that would need to backtrack at runtime.
+    To provide an efficient and backtracking-free cost model to which~\VMinus
+    can be compiled, I later introduce a core language of decision trees,~\D
     (Section~\ref{d}). 
 
     \subsection{Two languages of a kind}
     
     % TODO: dsemantics 
-    In this section, I~present \VMinus. Its semantics appears in Section
+    In this section, I~present~\VMinus. Its semantics appears in Section
     \ref{vmsemantics}, and for reference in Appendix~\ref{languagedefs}. In my
-    design, I~took inspiration from Verse: \VMinus has a conventional
+    design, I~took inspiration from Verse:~\VMinus has a conventional
     sub-language that is the lambda calculus extended with named value
-    constructors \it{K} applied to zero or more values. I~chose named value
-    constructors over \VC's tuples because they look more like patterns. \D, the
-    language of decision trees and target of translation from \VMinus, has the
+    constructors~\it{K} applied to zero or more values. I~chose named value
+    constructors over~\VC's tuples because they look more like patterns.~\D, the
+    language of decision trees and target of translation from~\VMinus, has the
     same lambda-calculus-plus-value-constructors core, with decision trees
-    substituted for \VMinus's \iffibf. Because they share a core, and to
-    facilitate comparisons and proofs, I present \VMinus and \D as two subsets
-    of a single unifying language \U, whose abstract syntax appears in
+    substituted for~\VMinus's~\iffibf. Because they share a core, and to
+    facilitate comparisons and proofs, I present~\VMinus and~\D as two subsets
+    of a single unifying language~\U, whose abstract syntax appears in
     Table~\ref{fig:unilang1}. Forms in black are present in both languages,
-    forms in \red{red} are specific to \VMinus, and forms in \blue{blue} are
-    specific to \D. 
+    forms in~\red{red} are specific to~\VMinus, and forms in~\blue{blue} are
+    specific to~\D. 
 
     \begin{table}[ht]
       \utable
-      \caption{Abstract Syntax of \VMinus and \D. Forms in black are present in
-              both languages, forms in \red{red} are specific to \VMinus, and
-              forms in \blue{blue} are specific to \D.}
+      \caption{Abstract Syntax of~\VMinus and~\D. Forms in black are present in
+              both languages, forms in~\red{red} are specific to~\VMinus, and
+              forms in~\blue{blue} are specific to~\D.}
       \label{fig:unilang1}
     \end{table}
 
-    As in \VC, every lambda-calculus term is valid in \VMinus and \D has the
-    same semantics. Also like the lambda calculus and \VC, \VMinus and \D are
+    As in~\VC, every lambda-calculus term is valid in~\VMinus and~\D has the
+    same semantics. Also like the lambda calculus and~\VC,~\VMinus and~\D are
     \it{strict}, meaning every expression is evaluated when it is bound to a
-    variable. \VMinus and \D are also untyped. 
+    variable.~\VMinus and~\D are also untyped. 
     
-    The only form of constructed data in \VMinus and \D is value-constructor
-    application, represented by the metavariable \it{K}. In full languages,
+    The only form of constructed data in~\VMinus and~\D is value-constructor
+    application, represented by the metavariable~\it{K}. In full languages,
     other forms of data like numbers and strings have a similar status to value
     constructors, but their presence would complicate the development of
     semantics and code. 
     
     Using just value constructors, though, a programmer can simulate more
-    primitive data like strings. For example, \tt{Wow! That's A Tall Square} is
-    a valid expression in \VMinus and \D, because it is an application of
-    constructor \tt{Wow!} to the arguments \tt{That's}, \tt{A}, \tt{Tall}, and
+    primitive data like strings. For example,~\tt{Wow! That's A Tall Square} is
+    a valid expression in~\VMinus and~\D, because it is an application of
+    constructor~\tt{Wow!} to the arguments~\tt{That's},~\tt{A},~\tt{Tall}, and
     \tt{Square}, all of which are value constructors themselves. Each name in
     this “sentence” is considered a value constructor because it begins with a
     capital letter. To simulate integers, a programmer can use Peano numbers,
     they can use value constructors to implement binary numbers, or they can
-    cheat with singletons: \tt{One}, \tt{Two}, etc. Because the languages all
+    cheat with singletons:~\tt{One},~\tt{Two}, etc. Because the languages all
     also have lambda, Church Numerals~\citep{church1985calculi} are another
     option. 
 
-    In the subsection below, I~discuss \VMinus in more detail. I discuss \D in
+    In the subsection below, I~discuss~\VMinus in more detail. I discuss~\D in
     more detail in Section~\ref{d}. In Section~\ref{futurework}, I discuss how
-    \VMinus relates to \VC. 
+    \VMinus relates to~\VC. 
 
-\subsection{Introducing \VMinus}
+\subsection{Introducing~\VMinus}
 \label{vminus}
 
         To fuel the pursuit of smarter decision-making, I~now draw inspiration
-        from \VC. Equations in \VC look attractive, but the cost model of \VC is
+        from~\VC. Equations in~\VC look attractive, but the cost model of~\VC is
         a challenge. 
         
-        The elements of \VC that lead to unpredictable or costly run times are
-        backtracking and multiple results. So, I~begin with a subset of \VC,
-        which I~call \VMinus ("V minus"), with these elements removed. Removing
-        them strips much of the identity of \VC, but it leaves its
+        The elements of~\VC that lead to unpredictable or costly run times are
+        backtracking and multiple results. So, I~begin with a subset of~\VC,
+        which I~call~\VMinus ("V minus"), with these elements removed. Removing
+        them strips much of the identity of~\VC, but it leaves its
         \it{equations} to build on top of in an otherwise-typical programming
         context of single results and no backtracking at runtime. 
 
-        Having stripped out the functional logic programming elements of \VC
+        Having stripped out the functional logic programming elements of~\VC
         (backtracking and multiple results), only the decision-making bits are
         left over. To wrap these, I~add a classic decision-making construct:
-        guarded commands~\citep{dijkstra} The result is \VMinus. 
+        guarded commands~\citep{dijkstra} The result is~\VMinus. 
 
-        \VMinus's concrete syntax is defined in Figure~\ref{fig:vmsyntax}.
         % , illustrated in Table~\ref{tab:vmvsvc}. 
 
 
@@ -117,79 +116,79 @@
       %     \centering
       %     \begin{tabular}{|p{0.5\linewidth}|p{0.48\linewidth}|}
       %         \hline
-      %         \bfseries Like \VC & \bfseries Unlike \VC \\
+      %         \bfseries Like~\VC &~\bfseries Unlike~\VC~\\
       %         \hline
-      %         \VMinus uses equations to guard computation.  & \VMinus solves an equation at most once at runtime and never backtracks. \\
+      %         \VMinus uses equations to guard computation.  &~\VMinus solves an equation at most once at runtime and never backtracks.~\\
       %         \hline
-      %         \VMinus uses choice. & \VMinus's choice can only guard computation and its result is never returned. \\
+      %         \VMinus uses choice. &~\VMinus's choice can only guard computation and its result is never returned.~\\
       %         \hline
-      %         \VMinus uses \textit{success} and \textit{failure} to make decisions. & An expression in \VMinus returns at most one value. \\
+      %         \VMinus uses~\textit{success} and~\textit{failure} to make decisions. & An expression in~\VMinus returns at most one value.~\\
       %         \hline
       %     \end{tabular}
-      %     \caption{Key similarities and differences between \VMinus and \VC}
+      %     \caption{Key similarities and differences between~\VMinus and~\VC}
       %     \label{tab:vmvsvc}
-      % \end{table}
+      %~\end{table}
 
-      % \begin{lemma}
-      %   An expression in \VMinus can return at most one result. 
-      % \end{lemma}
+      %~\begin{lemma}
+      %   An expression in~\VMinus can return at most one result. 
+      %~\end{lemma}
 
-      % \newcommand\ev{\ensuremath{e_{v}}\xspace}
-      % \begin{proof}
-      %   The syntax of \VMinus (Figure~\ref{fig:vmsyntax}) forbids any expression
-      %   to return the result of evaluating choice. Let \ev be a \VMinus
-      %   expression. If choice appears in \ev, it may only appear in a guard.
+      %~\newcommand\ev{\ensuremath{e_{v}}\xspace}
+      %~\begin{proof}
+      %   The syntax of~\VMinus (Figure~\ref{fig:vmsyntax}) forbids any expression
+      %   to return the result of evaluating choice. Let~\ev be a~\VMinus
+      %   expression. If choice appears in~\ev, it may only appear in a guard.
       %   Guards may only precede expressions and are never returned. Therefore,
       %   \ev\ may never return the result of evaluating choice, and there is no
-      %   other syntactic form in \VMinus that allows for multiple results. 
+      %   other syntactic form in~\VMinus that allows for multiple results. 
 
-      %   % The only values in \VMinus are value constructor application and lambda,
+      %   % The only values in~\VMinus are value constructor application and lambda,
       %   % each of which is itself a single result. 
-      % \end{proof}
+      %~\end{proof}
 
-      % \begin{lemma}
-      %   An expression in \VMinus can never backtrack at runtime. 
-      % \end{lemma}
-      % % \newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
-      % \begin{proof}
+      %~\begin{lemma}
+      %   An expression in~\VMinus can never backtrack at runtime. 
+      %~\end{lemma}
+      % %~\newcommand\gs{\ensuremath{\mathit{gs}}\xspace}
+      %~\begin{proof}
       %   In progress. 
-      % \end{proof}
+      %~\end{proof}
 
-        % Both backtracking and multiple results often manifest within \VC's
+        % Both backtracking and multiple results often manifest within~\VC's
         % choice operator, which tempt its removal altogether. 
         
         % However, I~am drawn
         % to harnessing the expressive potential of this operator, particularly
-        % when paired with \VC's 'one' keyword. When employed with choice as a
+        % when paired with~\VC's 'one' keyword. When employed with choice as a
         % condition, 'one' elegantly signifies 'proceed if any branch of the
         % choice succeeds. 
         
-        % To this end, I~propose a new language, \VMinus, in which choice is
+        % To this end, I~propose a new language,~\VMinus, in which choice is
         % permitted with several modifications:
 
-        % \begin{enumerate}
-        % \item Choice may only appear as a condition or 'guard', not as a result
+        %~\begin{enumerate}
+        %~\item Choice may only appear as a condition or 'guard', not as a result
         % or the right-hand side of a binding.
-        % \item If any branch of the choice succeeds, the choice succeeds,
+        %~\item If any branch of the choice succeeds, the choice succeeds,
         % producing any bindings found in that branch. The program examines the
         % branches in a left-to-right order.
-        % \item The existential $\exists$ may not appear under choice.
-        % \end{enumerate}
+        %~\item The existential $\exists$ may not appear under choice.
+        %~\end{enumerate}
 
-        % I~introduce one more crucial modification to the \VC runtime: a name in
-        % \VMinus is an \it{expression} rather than a \it{value}. This alteration,
+        % I~introduce one more crucial modification to the~\VC runtime: a name in
+        %~\VMinus is an~\it{expression} rather than a~\it{value}. This alteration,
         % coupled with my adjustments to choice, eradicates backtracking. Our
         % rationale behind this is straightforward: if an expression returns a
         % name, and subsequently, the program imposes a new constraint on that
         % name, it may necessitate the reevaluation of the earlier expression—- a
         % scenario I~strive to avoid. 
         
-        % An example in \VC illustrates this precise
+        % An example in~\VC illustrates this precise
         % scenario: 
 
         % FIRST PAPER EXAMPLE 
 
-        % IMPORTANTLY, \VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
+        % IMPORTANTLY,~\VMinus REALLY ISN'T A FUNCTIONAL LOGIC PROGRAMMING LANGUAGE ANYMORE. 
         
         %  Doesn't backtrack
         
@@ -208,7 +207,7 @@
         % equations, existentials, and nondeterministic evaluation order—and
         % juxtapose them with pattern matching.    
 
-        % \bf{Choice forces "name knowing." Names must be known in all branches 
+        %~\bf{Choice forces "name knowing." Names must be known in all branches 
         % if bound to unknown variable or bound to known variable if any name 
         % is unknown}.
         
@@ -217,37 +216,38 @@
         % evaluation (footnote: we discuss these later), I~unveil a redefined
         % decision-making core. To complete this transformation, we incorporate a
         % venerable decision-making construct: Guarded commands [cite: Dijkstra].
-        % The result is \VMinus. 
+        % The result is~\VMinus. 
         \begin{figure}[H]
           \begin{center}
-              \begin{bnf}
-              $P$ : \textsf{Programs} ::=
-              $\bracketed{d}$ : definition
-              ;;
-              $d$ : \textsf{Definitions} ::=
-              | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
-              ;;
-              $\expr$ : \textsf{Expressions} ::=
-              | $v$ : literal values 
-              | $x, y, z$ : names
-              | $\tt{if}\; [\; \G\; \bracketed{\tt{[]}\; \G}\;]\; \tt{fi}$ : if-fi 
-              | $K \bracketed{\expr}$ : value constructor application 
-              | $\expr[1]\; \expr[2]$ : function application 
-              | $\ttbackslash x\tt{.}\; \expr$ : lambda declaration 
-              ;;
-              $\G$ : \textsf{Guarded Expressions} ::=  
-              $[\tt{E }{\bracketed{x}}{\tt{.}}] \bracketed{g} \;\ttrightarrow\; \expr$ : names, guards, and body
-              ;;
-              $g$ : \textsf{Guards} ::=  
-              | $\expr$ : intermediate expression 
-              | $\expr[1] \;\tt{=}\; \expr[2]$ : $\text{equation}^{*}$
-              | $ g \bracketed{\tt{;} g} \; \pbar \; g \bracketed{\tt{;} g}$ : choice 
-              ;;
-              $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-              | $\ttbackslash x\tt{.}\; \expr$ : lambda value
-              \end{bnf}
-
-              * Desugars to \tt{x = e\_{1}; x = e\_{2}}, where \tt{x} is fresh. 
+            \begin{bnf}
+            $P$ :~\textsf{Programs} ::=
+            $\bracketed{d}$ : definition
+            ;;
+            $d$ :~\textsf{Definitions} ::=
+            | $\it{val}\; x\;~\it{=}\;~\expr$ : bind name to expression
+            ;;
+            $\expr$ :~\textsf{Expressions} ::=
+            | $\v$ : literal values 
+            | $x, y, z$ : names
+            | $\bf{if}\;~\left[\; G\;~\bracketed{\dbar\; G}\;~\right]\;~\bf{fi}$ : if-fi 
+            | $K~\bracketed{\expr}$ : value constructor application 
+            | $\expr[1]\;~\expr[2]$ : function application 
+            | $\lambda x.\;~\expr$ : lambda declaration 
+            ;;
+            $G$ :~\textsf{Guarded Expressions} ::=  
+            $[\vexists{\bracketed{x}}]~\bracketed{g}~\boldsymbol{\rightarrow}\expr$ : names, guards, and body
+            ;;
+            $g$ :~\textsf{Guards} ::=  
+            | $\expr$ : intermediate expression 
+            | $\expr[1] =~\expr[2]$ : equation 
+            | $ g~\bracketed{; g}~\;~\choice~\; g~\bracketed{; g}$ : choice 
+            ;;
+            $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+            | $\lambda x.\;~\expr$ : lambda value
+            ;;
+            \end{bnf}
+            \medskip
+          * Desugars to~\tt{x = e\_{1}; x = e\_{2}}, where~\tt{x} is fresh. 
           \end{center}
           \Description{The concrete syntax of VMinus.}
               \caption{\VMinus: Concrete syntax}
@@ -255,15 +255,15 @@
               \end{figure}      
 
         \VMinus takes several key concepts from {\VC}---namely, equations and
-        choice---with several key modifications. Like \VC, \VMinus has
-        equations and choice, but unlike in \VC, choice only guards computations, 
+        choice---with several key modifications. Like~\VC,~\VMinus has
+        equations and choice, but unlike in~\VC, choice only guards computations, 
         there are no multiple results, and all decision-making appears in the 
         \iffibf construct, inspired by Dijkstra~\citep{dijkstra}. 
       
 
-    \subsection{Programming in \VMinus}
+    \subsection{Programming in~\VMinus}
 
-    Even with multiple modifications, \VMinus still allows for many of the same
+    Even with multiple modifications,~\VMinus still allows for many of the same
     pleasing computations as full Verse. A programmer can\dots
         \begin{enumerate}
             \item Introduce a set of equations, to be solved in a
@@ -275,7 +275,7 @@
         \end{enumerate}
 
     Figure~\ref{fig:vminusfuncs} provides an example of how a programmer can
-    utilize \VMinus to solve the previous problems (Section~\ref{extensions}): 
+    utilize~\VMinus to solve the previous problems (Section~\ref{extensions}): 
     
     
     \begin{figure}[ht] 
@@ -284,7 +284,7 @@
         \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
           showstringspaces=false,
           frame=single]
-val exclaimTall = \sh.
+val exclaimTall =~\sh.
   if E s. sh = Square s; (> s) 100 -> 
             Wow! That's A Tall Square!  
     [] E w h. sh = Triangle w h; (> h) 100 ->
@@ -295,7 +295,7 @@ val exclaimTall = \sh.
   fi 
   \end{lstlisting}
       \Description{exclaimTall in VMinus}
-      \subcaption{\tt{exclaimTall} in \VMinus}
+      \subcaption{\tt{exclaimTall} in~\VMinus}
           \label{fig:vmexclaimtall} 
       %   \vspace{4ex}
       \end{minipage}%%
@@ -303,7 +303,7 @@ val exclaimTall = \sh.
         \vmlst 
         \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
                       frame=single]
-val tripleLookup = \rho. \x.
+val tripleLookup =~\rho.~\x.
   if E w y z v1 v2 v3. 
     v1 = (lookup rho) x; v1 = Some w; 
     v2 = (lookup rho) w; v2 = Some y; 
@@ -313,7 +313,7 @@ val tripleLookup = \rho. \x.
   fi 
    \end{lstlisting}
         \Description{tripleLookup in VMinus}
-        \subcaption{\tt{tripleLookup} in \VMinus}
+        \subcaption{\tt{tripleLookup} in~\VMinus}
             \label{fig:vmtriplelookup} 
         \vspace{4ex}
       \end{minipage} 
@@ -322,7 +322,7 @@ val tripleLookup = \rho. \x.
         \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em,
           showstringspaces=false,
           frame=single]
-val game_of_token = \t. 
+val game_of_token =~\t. 
   if E f. (t = BattlePass f  | (t = ChugJug f | t = TomatoTown f)) -> 
         P (Fortnite f)
   [] E f. (t = HuntersMark f | t = SawCleaver f)                   -> 
@@ -333,95 +333,67 @@ val game_of_token = \t.
   fi 
 \end{lstlisting}
       \Description{game_of_token in VMinus}
-      \subcaption{\tt{game\_of\_token} in \VMinus}
+      \subcaption{\tt{game\_of\_token} in~\VMinus}
           \label{fig:vmgot}
       \vspace{4ex}
       \end{minipage}%% 
-      \caption{The functions in \VMinus have a desirably concise
+      \caption{The functions in~\VMinus have a desirably concise
       implementation, as before.}
   \label{fig:vminusfuncs}
     \end{figure}   
 
-    \VMinus looks satisfyingly similar to both \PPlus and \VC. The \VMinus
+    \VMinus looks satisfyingly similar to both~\PPlus and~\VC. The~\VMinus
     examples in Figure~\ref{fig:vminusfuncs} have the same number of cases as
-    the \PPlus examples in Figure~\ref{fig:ppfuncs}, and share the existential
-    and equations with the \VC examples in Figure~\ref{fig:verseextfuncs}. 
+    the~\PPlus examples in Figure~\ref{fig:ppfuncs}, and share the existential
+    and equations with the~\VC examples in Figure~\ref{fig:verseextfuncs}. 
    
-% \subsection{Concrete Syntax of \VMinus}
+\subsection{Syntax of~\VMinus}
 
 % \bigskip
 
-% \begin{center}
-%     \begin{bnf}
-%     $P$ : \textsf{Programs} ::=
-%     $\bracketed{d}$ : definition
-%     ;;
-%     $d$ : \textsf{Definitions} ::=
-%     | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
-%     ;;
-%     $\expr$ : \textsf{Expressions} ::=
-%     | $v$ : literal values 
-%     | $x, y, z$ : names
-%     | $\tt{if}\; \tt{[}\; G\; \bracketed{\square\; G}\; \tt{]}\; \tt{fi}$ : if-fi 
-%     | $K \bracketed{\expr}$ : value constructor application 
-%     | $\expr[1]\; \expr[2]$ : function application 
-%     | $\lambda x.\; \expr$ : lambda declaration 
-%     ;;
-%     $G$ : \textsf{Guarded Expressions} ::=  
-%     $[\vexists{\bracketed{x}}] \bracketed{g} \boldsymbol{\rightarrow}\expr$ : names, guards, and body
-%     ;;
-%     $g$ : \textsf{Guards} ::=  
-%     | $\expr$ : intermediate expression 
-%     | $x = \expr$ : equation 
-%     | $ g \bracketed{; g} \; \choice \; g \bracketed{; g}$ : choice 
-%     ;;
-%     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-%     | $\lambda x.\; \expr$ : lambda value
-%     ;;
-%     \end{bnf}
-% \end{center}
 
-% A \it{name} is any token that is not an integer literal, 
+
+% A~\it{name} is any token that is not an integer literal, 
 % does not contain whitespace, a bracket, or parenthesis, 
 % and is not a value constructor name or a reserved word.
 
 \subsection{Formal Semantics of $\VMinus$:}
-    In this section, I~present a big-step operational semantics for \VMinus. The
-    semantics describes how an expression in \VMinus is evaluated and how an
+    In this section, I~present a big-step operational semantics for~\VMinus. The
+    semantics describes how an expression in~\VMinus is evaluated and how an
     equation (and more generally, a guard) works in the language. Instead of a
-    rewrite semantics that makes substitutions within guards, \VMinus has a
+    rewrite semantics that makes substitutions within guards,~\VMinus has a
     big-step semantics that directly describes how they are handled by the
-    runtime core. Figure~\ref{fig:vmsyntax} contains the concrete syntax of
-    \VMinus, Figure~\ref{fig:vmmetavars} provides the metavariables used in the
-    judgement forms and~rules of the semantics, and Section~\ref{vmsemantics}
-    contains the forms and rules. Since solving guards is the heart of \VMinus,
-    I~also describe it in plain English.
+    runtime core. Figure~\ref{fig:vmsyntax} contains the syntax of \VMinus,
+    Figure~\ref{fig:vmmetavars} provides the metavariables used in the judgement
+    forms and~rules of the semantics, and Section~\ref{vmsemantics} contains the
+    forms and rules. Since solving guards is the heart of~\VMinus, I~also
+    describe it in plain English.
 
 
 \begin{table}
 \begin{tabular}{ll}
 \toprule
-    \multicolumn2{l}{\emph{\VMinus Metavariables}} \\
+    \multicolumn2{l}{\emph{\VMinus Metavariables}}~\\
 \midrule
-    $\expr$& An expression \\ 
-    $\v,\; \v'$& A value \\
-    $\fail$& An expression failure \\
-    $\result$& $\v \vert \fail$ : expressions produce \it{results}: values or
-    failure. \\
-    \Rho& An environment: $name \rightarrow {\mathcal{V}}_{\bot}$ \\
-    $\rho\{ x \mapsto y \} $& An environment extended with name $x$ mapping to $y$ \\
-    $\g$& A guard \\
-    $\gs$& Zero or more guards, separated by~\it{;} \\
-    $\G$& A guarded expression \\
-    $\Gs$& Zero or more guarded expressions, separated by~\dbar \\
-    $eq$& An equation \\ 
-    % $\tempstuck$& a temporarily-stuck equation \\
-    $\dagger$& when solving guards is rejected \\
-    $\result$& $\rhohat \mid \dagger$ : guards produce \it{solutions}: a
-    refined environment \rhohat\; or rejection\\
-    $\mathcal{T}$& A context of all temporarily stuck guards (a sequence) \\ 
-    % $G$& A guarded expression \\
-    % \uppsidown& Inability to compile to a decision tree; a compile time error \\
+    $\expr$& An expression~\\ 
+    $\v,\;~\v'$& A value~\\
+    $\fail$& An expression failure~\\
+    $\result$& $\v~\vert~\fail$ : expressions produce~\it{results}: values or
+    failure.~\\
+    \Rho& An environment: $name~\rightarrow {\mathcal{V}}_{\bot}$~\\
+    $\rho\{ x~\mapsto y~\} $& An environment extended with name $x$ mapping to $y$~\\
+    $\g$& A guard~\\
+    $\gs$& Zero or more guards, separated by~\it{;}~\\
+    $\G$& A guarded expression~\\
+    $\Gs$& Zero or more guarded expressions, separated by~\dbar~\\
+    $eq$& An equation~\\ 
+    % $\tempstuck$& a temporarily-stuck equation~\\
+    $\dagger$& when solving guards is rejected~\\
+    $\result$& $\rhohat~\mid~\dagger$ : guards produce~\it{solutions}: a
+    refined environment~\rhohat\; or rejection\\
+    $\mathcal{T}$& A context of all temporarily stuck guards (a sequence)~\\ 
+    % $G$& A guarded expression~\\
+    %~\uppsidown& Inability to compile to a decision tree; a compile time error~\\
 \bottomrule
 \end{tabular}    
 \Description{Metavariables used in rules for VMinus.}
@@ -433,31 +405,31 @@ val game_of_token = \t.
     
     \subsubsection{Expressions}
     
-    \newcommand\GNoTree{\vmrung \rightsquigarrow \uppsidown} 
+    \newcommand\GNoTree{\vmrung~\rightsquigarrow~\uppsidown} 
     
-    An expression in \VC evaluates to produce possibly-empty sequence of values,
-    where an empty sequence of values is identical to the syntactic form \fail.
-    In \VMinus, an expression never returns multiple values, but it can \fail.
-    Specifically, in \VMinus, an expression evaluates to produce a single \it{result}.
-    A result is either a single value $\v$ or \fail. 
+    An expression in~\VC evaluates to produce possibly-empty sequence of values,
+    where an empty sequence of values is identical to the syntactic form~\fail.
+    In~\VMinus, an expression never returns multiple values, but it can~\fail.
+    Specifically, in~\VMinus, an expression evaluates to produce a single~\it{result}.
+    A result is either a single value $\v$ or~\fail. 
     
-    \[\result\; \rm{::=}\; \v\; \vert \; \fail \]
+    \[\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\]
     
     \showvjudgement{Eval}{\vmeval}
 
     \subsubsection{Names and refinement of environments}
 
-    In \VMinus, like in \VC, names can be introduced with the existential
+    In~\VMinus, like in~\VC, names can be introduced with the existential
     {$\exists$} before they are given a binding. Bindings are given by equations
     in guards~(\ref{guards}). When a name is introduced with {$\exists$}, it is
-    bound in the environment \Rho to $\bot$ (pronounced “bottom”). Success of a
-    guard only \it{refines} the environment; that~is, when
-    $\grefine[solution=\Rhoprime]$, we~expect $\rho \subseteq \Rhoprime$. The
+    bound in the environment~\Rho to $\bot$ (pronounced “bottom”). Success of a
+    guard only~\it{refines} the environment; that~is, when
+    $\grefine[solution=\Rhoprime]$, we~expect $\rho~\subseteq~\Rhoprime$. The
     definition of $\subseteq$ on environments is given below. 
     
     \begin{align*}
-    \rho \subseteq \Rhoprime \text{ when }&\dom\rho  \subseteq \dom \Rhoprime\\
-    \text{ and } &\forall x \in \dom \rho: \rho(x) \subseteq \Rhoprime(x)
+    \rho~\subseteq~\Rhoprime~\text{ when }&\dom\rho  \subseteq~\dom~\Rhoprime\\
+    \text{ and } &\forall x~\in~\dom~\rho:~\rho(x)~\subseteq~\Rhoprime(x)
     \end{align*}
     
     \medskip
@@ -465,19 +437,19 @@ val game_of_token = \t.
     \subsubsection{Guards}
     \label{guards}
 
-    For example, the \VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
-    succeeds and returns the value \tt{K}. The \VMinus expression \tt{if  fi},
-    the empty \tt{if-fi}, always {\fail}s. 
+    For example, the~\VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
+    succeeds and returns the value~\tt{K}. The~\VMinus expression~\tt{if  fi},
+    the empty~\tt{if-fi}, always {\fail}s. 
 
-    Like \VC, \VMinus has a nondeterministic semantics. Guards are solved in \VMinus
+    Like~\VC,~\VMinus has a nondeterministic semantics. Guards are solved in~\VMinus
     similarly to how equations are solved in Verse: the program nondeterministically
     picks one out of a context (\context), attempts to solve it, and moves on. 
 
-In our semantics, this process occurs over a \it{list} of guards \gs in a
-context \context: the program picks a guard from \context, attempts to solve it
-to refine the environment or fail, and repeats. \VMinus can only pick a guard
-out of the context \context\ that it "knows" it can solve. "Knowing" a guard can
-be solved can be determined in \VMinus at compile time. If \VMinus can't pick a
+In our semantics, this process occurs over a~\it{list} of guards~\gs in a
+context~\context: the program picks a guard from~\context, attempts to solve it
+to refine the environment or fail, and repeats.~\VMinus can only pick a guard
+out of the context~\context\ that it "knows" it can solve. "Knowing" a guard can
+be solved can be determined in~\VMinus at compile time. If~\VMinus can't pick a
 guard and there are guards left over, the semantics gets stuck at compile time. 
 
 \showvjudgement{Solve-Guards}{\vmgs}
@@ -485,28 +457,28 @@ guard and there are guards left over, the semantics gets stuck at compile time.
 
 The environment $\rho$ maps from a name to a value {\v}s or $\bot$. $\bot$ means
 a name has been introduced with the existential, $\exists$, but is not yet bound
-to a value. Given any such $\rho$, a guard \g\ will either refine $\rho$
-($\Rhoprime$) or be \bf{rejected}. We use the metavariable $\dagger$ to
+to a value. Given any such $\rho$, a guard~\g\ will either refine $\rho$
+($\Rhoprime$) or be~\bf{rejected}. We use the metavariable $\dagger$ to
 represent rejection, and a guard producing $\dagger$ will cause the top-level
 list of guards to also produce $\dagger$. 
 
     \showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
     \showvjudgement{Guard-reject}\gfail
 
-  For example, in the \VMinus expression \tt{if E x. x = K; x = K2 -> x fi}, the
-  existential (in concrete syntax, \tt{E}) introduces \tt{x} to \Rho bound to
-  $\bot$, producing the environment $\bracketed{x \mapsto \bot}$. The guard
-  \tt{x = K} successfully unifies \tt{x} with \tt{K}, producing the environment
-  $\bracketed{x \mapsto \tt{K}}$. The guard \tt{x = K2} attempts to unify \tt{K}
-  with \tt{K2} and fails with $\dagger$. 
+  For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
+  existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho bound to
+  $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. The guard
+  \tt{x = K} successfully unifies~\tt{x} with~\tt{K}, producing the environment
+  $\bracketed{x~\mapsto~\tt{K}}$. The guard~\tt{x = K2} attempts to unify~\tt{K}
+  with~\tt{K2} and fails with $\dagger$. 
 
     
     \vfilbreak
     
-    \subsection{Rules (Big-step Operational Semantics) for \U, shared by \VMinus and \D}
+    \subsection{Rules (Big-step Operational Semantics) for~\U, shared by~\VMinus and~\D}
     \label{usemantics1}
     \usemantics 
-    \subsection{Rules (Big-step Operational Semantics) specific to \VMinus}
+    \subsection{Rules (Big-step Operational Semantics) specific to~\VMinus}
     \label{vmsemantics}
     \vmsemantics
 \end{document}

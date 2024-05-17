@@ -1,4 +1,4 @@
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{vmlmacros}
 
@@ -15,26 +15,26 @@ deconstructing data is pattern matching.
 Pattern matching is also an established and well-researched topic
 \citep{wadler1987views, macqueen1985tree, burton1993pattern, palao1996new,
 maranget, bpc}. It is appreciated by programmers and researchers alike for two
-main reasons: It enables \it{implicit} data deconstruction, and it has a
+main reasons: It enables~\it{implicit} data deconstruction, and it has a
 desirable cost model. Specifically (regarding the latter), pattern matching can
-be compiled to a \it{decision tree}, a data structure that enforces linear
+be compiled to a~\it{decision tree}, a data structure that enforces linear
 runtime performance by guaranteeing no part of the data will be examined more
 than once.~\citep{maranget}
 
 However, pattern matching cannot express certain common computations succinctly,
 forcing programmers who wish to express these computations to duplicate code,
-nest \it{case} expressions, and create multiple points of truth. To mitigate
-this, designers of popular programming languages have introduced \it{extensions}
+nest~\it{case} expressions, and create multiple points of truth. To mitigate
+this, designers of popular programming languages have introduced~\it{extensions}
 to pattern matching (Section~\ref{extensions}). 
 
 Extensions strengthen pattern matching, but they are not standardized, so each
 popular programming language with pattern matching features its own unique suite
 of extensions. Extensions are subject to the discretion of the individual
 language designer, not ubiquitous. Rather than continuing to extend pattern
-matching \it{ad hoc}, a worthwhile goal could be to find an alternative that
+matching~\it{ad hoc}, a worthwhile goal could be to find an alternative that
 doesn't need extensions. A tempting possibility was introduced last year by the
 programming language Verse~\citep{verse}. In Verse, a programmer can deconstruct
-data using a different tool the language offers: \it{equations}. Equations are
+data using a different tool the language offers:~\it{equations}. Equations are
 expressive and flexible, and it appears that they can express everything that
 pattern matching can, including with popular extensions. 
 
@@ -48,15 +48,15 @@ and return multiple results, both of which are hard to predict in their costs.
 \bf{In this thesis, I~show} that the expressive quality of Verse's equations and
 the decision-tree property of patterns can be combined in a single language.
 Since the language is a streamlined adaptation of Verse with a reduced feature
-set, I~call it \VMinus (“V minus”). 
-% I~also show that \VMinus subsumes pattern matching with popular extensions. 
+set, I~call it~\VMinus (“V minus”). 
+% I~also show that~\VMinus subsumes pattern matching with popular extensions. 
 
-To support this claim, I~have formalized \VMinus with a big-step operational
+To support this claim, I~have formalized~\VMinus with a big-step operational
 semantics (Section~\ref{vminus}), I~have formalized decision trees into a core
-language \D (“D”) with a big-step operational semantics (Section~\ref{d}), 
-% I~have formalized pattern matching in a core language \PPlus (“P plus”) with a
+language~\D (“D”) with a big-step operational semantics (Section~\ref{d}), 
+% I~have formalized pattern matching in a core language~\PPlus (“P plus”) with a
 % big-step operational semantics (Section~\ref{pplus}),
-I~have formalized a translation from \VMinus to \D (Sections \ref{vminustod}),
+I~have formalized a translation from~\VMinus to~\D (Sections~\ref{vminustod}),
 and I~have implemented both languages in Standard ML. 
 
 \end{document}

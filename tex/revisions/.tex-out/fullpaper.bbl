@@ -10,10 +10,10 @@ Philip Wadler.
 \newblock Views: A way for pattern matching to cohabit with data abstraction.
 \newblock In \emph{Proceedings of the 14th ACM SIGACT-SIGPLAN symposium on Principles of programming languages}, pages 307--313, 1987.
 
-\bibitem[MacQueen and Baudinet(1985)]{macqueen1985tree}
-David MacQueen and M~Baudinet.
-\newblock Tree pattern matching for ml.
-\newblock \emph{Unpublished manuscript}, 1985.
+\bibitem[Baudinet and MacQueen(1986)]{macqueen1985tree}
+Marianne Baudinet and David MacQueen.
+\newblock Tree pattern matching for {ML}.
+\newblock Available from David MacQueen, AT\&T Bell Laboratories, 600 Mountain Avenue, Murray, Hill, NJ 07974, 1986.
 
 \bibitem[Burton and Cameron(1993)]{burton1993pattern}
 F~Warren Burton and Robert~D Cameron.
@@ -37,7 +37,7 @@ Norman Ramsey.
 
 \bibitem[Augustsson et~al.(2023)Augustsson, Breitner, Claessen, Jhala, Peyton~Jones, Shivers, Steele~Jr, and Sweeney]{verse}
 Lennart Augustsson, Joachim Breitner, Koen Claessen, Ranjit Jhala, Simon Peyton~Jones, Olin Shivers, Guy~L Steele~Jr, and Tim Sweeney.
-\newblock The verse calculus: a core calculus for deterministic functional logic programming.
+\newblock The verse calculus: A core calculus for deterministic functional logic programming.
 \newblock \emph{Proceedings of the ACM on Programming Languages}, 7\penalty0 (ICFP):\penalty0 417--447, 2023.
 
 \bibitem[Liskov and Guttag(1986)]{liskov:abstraction}
@@ -54,11 +54,11 @@ Martin Erwig and Simon~Peyton Jones.
 Simon Marlow et~al.
 \newblock Haskell 2010 language report: Chapter 3.
 \newblock 2010.
+\newblock URL \url{https://www.haskell.org/onlinereport/haskell2010/}.
 
 \bibitem[Leroy et~al.(2023)Leroy, Doligez, Frisch, Garrigue, R{\'e}my, Sivaramakrishnan, and Vouillon]{ocaml}
 Xavier Leroy, Damien Doligez, Alain Frisch, Jacques Garrigue, Didier R{\'e}my, KC~Sivaramakrishnan, and J{\'e}r{\^o}me Vouillon.
-\newblock \emph{The OCaml system release 5.1: Documentation and user's manual}.
-\newblock PhD thesis, Inria, 2023.
+\newblock The ocaml system release 5.1: Documentation and user's manual, 2023.
 
 \bibitem[developers()]{scala}
 Scala developers.
@@ -117,21 +117,21 @@ KL~Clark.
 \bibitem[Church(1985)]{church1985calculi}
 Alonzo Church.
 \newblock \emph{The calculi of lambda-conversion}.
-\newblock Number~6. Princeton University Press, 1985.
+\newblock Princeton University Press, 1985.
 
 \bibitem[Dijkstra(1976)]{dijkstra}
 Edsger~W. Dijkstra.
 \newblock \emph{A Discipline of Programming}.
 \newblock Prentice Hall, Englewood Cliffs, NJ, 1976.
 
-\bibitem[Scott and Ramsey(2000)]{scottramsey}
-Kevin Scott and Norman Ramsey.
-\newblock When do match-compilation heuristics matter.
-\newblock \emph{University of Virginia, Charlottesville, VA}, 2000.
-
 \bibitem[Augustsson(1985)]{augustsson1985compiling}
 Lennart Augustsson.
 \newblock Compiling pattern matching.
 \newblock In \emph{Conference on Functional Programming Languages and Computer Architecture}, pages 368--381. Springer, 1985.
+
+\bibitem[Scott and Ramsey(2000)]{scottramsey}
+Kevin Scott and Norman Ramsey.
+\newblock When do match-compilation heuristics matter?
+\newblock Technical Report CS-2000-13, Department of Computer Science, University of Virginia, May 2000.
 
 \end{thebibliography}

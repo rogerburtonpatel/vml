@@ -1,4 +1,4 @@
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{vmlmacros}
 \AtBeginDocument{%
@@ -30,25 +30,25 @@ matching and equations. These tradeoffs inform the compromises I~make in
 \VMinus (Section~\ref{vminus}).
 
 
-% \1 What is pattern matching 
+%~\1 What is pattern matching 
 
 Pattern matching lets programmers examine and deconstruct data by matching them
 against patterns. When a pattern $p$ matches with a value $v$, it can produce
 bindings for sub-values of $v$. For example, pattern $x::xs$ matches any 
-application of the value constructor \it{cons} (\it{::}), and it binds the first 
+application of the value constructor~\it{cons} (\it{::}), and it binds the first 
 element of the cons cell to $x$ and the second to $xs$. 
 
 Why use pattern matching? What could programmers use instead? Before pattern
-matching was invented, a programmer had to deconstruct data using \it{observers}
+matching was invented, a programmer had to deconstruct data using~\it{observers}
 \citep{liskov:abstraction}: functions that explicitly examine a piece of data
 and extract its components. Examples of observers in functional programming
-languages include Scheme's \tt{null?}, \tt{car}, and \tt{cdr}, and ML's
-\tt{null}, \tt{hd}, and \tt{tl}. Given the option of pattern matching, however,
+languages include Scheme's~\tt{null?},~\tt{car}, and~\tt{cdr}, and ML's
+\tt{null},~\tt{hd}, and~\tt{tl}. Given the option of pattern matching, however,
 many functional programmers favor it over observers. I~demonstrate with an
 example and a claim. 
 
-Consider a \tt{standard\_shape} datatype in Standard ML, which represents shapes
-by their dimensions\footnote{For sake of simplicity, \tt{standard\_shape}s
+Consider a~\tt{standard\_shape} datatype in Standard ML, which represents shapes
+by their dimensions\footnote{For sake of simplicity,~\tt{standard\_shape}s
 always have an area that can be obtained by standard area formulas: $\frac{1}{2}
 * base * height$ for triangles; $\frac{1}{2} * (base_{1} + base_{2}) * height$
 for trapezoids.}: 
@@ -63,7 +63,7 @@ for trapezoids.}:
 \end{minipage}
 \medskip 
 
-I~define an \tt{area} function on \it{standard\_shape}s, with this type and these
+I~define an~\tt{area} function on~\it{standard\_shape}s, with this type and these
 algebraic laws: 
 
 \medskip 
@@ -78,7 +78,7 @@ algebraic laws:
 \end{minipage}
 \medskip 
 
-Now compare two implementations of \tt{area}, one with observers and one with
+Now compare two implementations of~\tt{area}, one with observers and one with
 pattern matching (Figure~\ref{fig:area}).
 
     \begin{figure}[H]
@@ -97,7 +97,7 @@ fun observers_area sh =
       \end{minipage}
       \vfill
       \begin{minipage}[t]{0.7\textwidth}
-        % \centering 
+        %~\centering 
         \begin{verbatim}
 fun pm_area sh =
   case sh 
@@ -111,14 +111,14 @@ fun pm_area sh =
        \subcaption{\tt{area} with pattern matching}
        \label{fig:pmarea}
       \end{minipage}
-      \caption{Implementing \tt{area} using observers is tedious, and the code
+      \caption{Implementing~\tt{area} using observers is tedious, and the code
       doesn't look like the algebraic laws. Using pattern matching makes an
       equivalent implementation more appealing.}
       \label{fig:area}
     \end{figure}
 
-    Implementing the observers \tt{isSquare}, \tt{isTriangle}, \tt{sqSide},
-    \tt{triW}, \tt{traB1}, \tt{traB2}, and \tt{traH} is left as an
+    Implementing the observers~\tt{isSquare},~\tt{isTriangle},~\tt{sqSide},
+    \tt{triW},~\tt{traB1},~\tt{traB2}, and~\tt{traH} is left as an
     (excruciating) exercise to the reader. 
 
     In general, pattern matching is preferred over observers for five reasons. 
@@ -129,21 +129,21 @@ fun pm_area sh =
         \item  \it{Lawlike.} With pattern matching, code more closely
         resembles algebraic laws. 
         \label{p1}
-        \item \it{Single copy} With pattern matching, it's easier to avoid
+        \item~\it{Single copy} With pattern matching, it's easier to avoid
         duplicating code.
         \label{p2}
-        \item \it{Exhaustiveness.} With pattern matching, a programmer can
+        \item~\it{Exhaustiveness.} With pattern matching, a programmer can
         easily tell if they've covered all cases, and a compiler can verify this
-        through \it{exhaustiveness analysis}.
+        through~\it{exhaustiveness analysis}.
         \label{p5}
     \end{enumerate}
 
     \item [\textbf{B.}]
     \begin{enumerate}[start=4, label=\arabic*]
-      \item \it{Call-free.} Pattern matching does not need function
-      calls to deconstruct data. \nolinebreak
+      \item~\it{Call-free.} Pattern matching does not need function
+      calls to deconstruct data.~\nolinebreak
       \label{p3}
-      \item \it{Signposting.} With pattern matching, important
+      \item~\it{Signposting.} With pattern matching, important
       intermediate values are always given names. 
       \nolinebreak
       \label{p4}
@@ -161,44 +161,44 @@ fun pm_area sh =
     duplication. Upholding these two properties is the primary responsibility of
     \it{extensions} to pattern matching (Section~\ref{extensions}). 
     
-    Let's see how each of our Nice~Properties holds up in \tt{area}: 
+    Let's see how each of our Nice~Properties holds up in~\tt{area}: 
     
     \begin{enumerate}
       \item [\textbf{A.}]
       \begin{enumerate}[label=\arabic*]
-        \item \hyperref[p1]{\it{Lawlike.}}
+        \item~\hyperref[p1]{\it{Lawlike.}}
         \hyperref[fig:pmarea]{\tt{pm\_area}} more closely resembles the
-        algebraic laws for \tt{area}. 
-        \item \hyperref[p2]{\it{Single copy.}}
+        algebraic laws for~\tt{area}. 
+        \item~\hyperref[p2]{\it{Single copy.}}
         \hyperref[fig:observersarea]{\tt{observers\_area}} had to call observers
-        like \tt{squareSide} multiple times, and each observer needs \tt{sh} as
-        an argument. \hyperref[fig:pmarea]{\tt{pm\_area}} was able to extract
-        the \tt{standard\_shape}s' internal values with a single pattern, and
-        the name \tt{sh} is not duplicated anywhere in its body. 
-        \item \hyperref[p5]{\it{Exhaustiveness.}} 
+        like~\tt{squareSide} multiple times, and each observer needs~\tt{sh} as
+        an argument.~\hyperref[fig:pmarea]{\tt{pm\_area}} was able to extract
+        the~\tt{standard\_shape}s' internal values with a single pattern, and
+        the name~\tt{sh} is not duplicated anywhere in its body. 
+        \item~\hyperref[p5]{\it{Exhaustiveness.}} 
         If the user adds another value
-        constructor to \tt{standard\_shape}---say, \tt{CIRCLE}, the compiler
-        will warn the user of the possibility of a \tt{Match} exception in
+        constructor to~\tt{standard\_shape}---say,~\tt{CIRCLE}, the compiler
+        will warn the user of the possibility of a~\tt{Match} exception in
         \hyperref[fig:pmarea]{\tt{pm\_area}}, and even tell them that they must
-        add a pattern for \tt{CIRCLE} to rule out this possibility.
+        add a pattern for~\tt{CIRCLE} to rule out this possibility.
         \hyperref[fig:observersarea]{\tt{observers\_area}} will not cause the
-        compiler to complain, and if it's passed a \tt{CIRCLE} at runtime, the
+        compiler to complain, and if it's passed a~\tt{CIRCLE} at runtime, the
         program will likely crash! 
     \end{enumerate}
       
     \item [\textbf{B.}]
       \begin{enumerate}[start=4, label=\arabic*]
-        \item \hyperref[p3]{\it{Call-free.}} Where did \tt{isSquare},
+        \item~\hyperref[p3]{\it{Call-free.}} Where did~\tt{isSquare},
         \tt{sqSide}, and all the other observers come from? To even
-        \it{implement} \hyperref[fig:observersarea]{\tt{observers\_area}}, a
+        \it{implement}~\hyperref[fig:observersarea]{\tt{observers\_area}}, a
         programmer has to define a whole new set of observers for
         \tt{standard\_shape}s!\footnote{Sometimes the compiler throws
         programmers a bone: with some constructed data, i.e., Scheme's records,
         the compiler provides observers automatically. In others, i.e.,
         algebraic datatypes in ML, it does not.} Most programmers find this
-        tiresome indeed. \hyperref[fig:pmarea]{\tt{pm\_area}} did not have to do
+        tiresome indeed.~\hyperref[fig:pmarea]{\tt{pm\_area}} did not have to do
         any of this.
-        \item \hyperref[p4]{\it{Signposting.}} 
+        \item~\hyperref[p4]{\it{Signposting.}} 
         To extract the internal values,
         \hyperref[fig:pmarea]{\tt{pm\_area}} had to name them, and their names
         serve as documentation. 
@@ -208,22 +208,22 @@ fun pm_area sh =
 
     Having had the chance to compare pattern matching and observers, if you
     moderately prefer pattern matching, that's good: most functional
-    programmers---in fact, most \it{programmers}---likely do as well. 
+    programmers---in fact, most~\it{programmers}---likely do as well. 
 
     \hyperref[fig:pmarea]{\tt{pm\_area}} provides an opportunity to introduce a
     few terms that are common in pattern matching.
     \hyperref[fig:pmarea]{\tt{pm\_area}}~is a classic example of where pattern
-    matching most commonly occurs: within a \it{case} expression. A \it{case}
-    expression tests a \it{scrutinee} (\tt{sh}) against a list of \it{branches}.
+    matching most commonly occurs: within a~\it{case} expression. A~\it{case}
+    expression tests a~\it{scrutinee} (\tt{sh}) against a list of~\it{branches}.
     Each branch contains a pattern on the left-hand side (\tt{SQUARE s}, etc.)
     and an expression on the right-hand side (\tt{s * s}, etc.). When the result
     of evaluating the scrutinee matches with a pattern, the program evaluates
     the right-hand side of the respective branch.\footnote{OCaml, which you'll
-    see in future sections, calls \it{case} \tt{match}. Some
-    literature~\citep{guardproposal} calls this a \it{head expression}. I~follow
-    the example of~\citet{bpc} and \citet{maranget} in calling the things
-    \it{case} and \it{scrutinee}. Any of these terms does the job.} 
-% \1 Pattern matching has these properties, observers do not. 
+    see in future sections, calls~\it{case}~\tt{match}. Some
+    literature~\citep{guardproposal} calls this a~\it{head expression}. I~follow
+    the example of~\citet{bpc} and~\citet{maranget} in calling the things
+    \it{case} and~\it{scrutinee}. Any of these terms does the job.} 
+%~\1 Pattern matching has these properties, observers do not. 
 
 \subsection{Popular extensions to pattern matching}
 \label{extensions}
@@ -239,7 +239,7 @@ fun pm_area sh =
     and implemented in compilers: side conditions, pattern guards, and
     or-patterns. 
     
-    To denote pattern matching \it{without} extensions, I~coin the term \it{bare
+    To denote pattern matching~\it{without} extensions, I~coin the term~\it{bare
     pattern matching}. In bare pattern matching, pattern have only two syntactic
     forms: a name or an application of a value constructors to zero or more
     patterns. 
@@ -249,16 +249,16 @@ fun pm_area sh =
 
 \subsubsection{Side conditions}
 
-    First, I~illustrate why programmers want \it{side conditions}, an extension
+    First, I~illustrate why programmers want~\it{side conditions}, an extension
     to pattern matching common in most popular functional programming languages,
-    including OCaml, Erlang, Scala, and~Haskell\footnote{I~use the term \it{side
+    including OCaml, Erlang, Scala, and~Haskell\footnote{I~use the term~\it{side
     conditions} to refer to a pattern followed by a Boolean expression. Some
-    languages call this a \it{guard}, which I~use to describe a different, more
+    languages call this a~\it{guard}, which I~use to describe a different, more
     powerful extension to pattern matching in Section~\ref{guards}. Haskell has
-    \it{only} guards, but a Boolean guard \underline{is} a side condition.}. 
+    \it{only} guards, but a Boolean guard~\underline{is} a side condition.}. 
     
-    I~define a (rather silly) function \tt{exclaimTall} in OCaml on
-    \tt{standard\_shape}s. I~have to translate our \tt{standard\_shape} datatype to OCaml, and
+    I~define a (rather silly) function~\tt{exclaimTall} in OCaml on
+    \tt{standard\_shape}s. I~have to translate our~\tt{standard\_shape} datatype to OCaml, and
     while I'm at it, I~write the type and algebraic laws for
     \tt{exclaimTall}:
 
@@ -283,7 +283,7 @@ exclaimTall sh                      == "Your shape is small.",
     \end{verbatim}
     \end{minipage}
 
-    Armed with pattern matching, I~implement \tt{exclaimTall} in OCaml
+    Armed with pattern matching, I~implement~\tt{exclaimTall} in OCaml
     (Figure~\ref{fig:ifexclaimtall}).
 
     \begin{figure}[ht]
@@ -302,28 +302,28 @@ exclaimTall sh                      == "Your shape is small.",
                             then "Zounds! Tremendous trapezoid!"
                             else "Your shape is small." 
             \end{verbatim}    
-        \caption{An invented function \tt{exclaimTall} in OCaml combines pattern
-        matching with an \tt{if} expression, and is not very pretty.}   
+        \caption{An invented function~\tt{exclaimTall} in OCaml combines pattern
+        matching with an~\tt{if} expression, and is not very pretty.}   
         \Description{An implementation of a function exclaimTall in OCaml, which
         uses pattern matching and an if statement.}
         \label{fig:ifexclaimtall}
     \end{figure}
     
-    Here, I'm using the special variable \tt{\_}---that's the underscore
+    Here, I'm using the special variable~\tt{\_}---that's the underscore
     character, a wildcard pattern---to indicate that I~don't care about the
     bindings of a pattern. 
 
     I~am not thrilled with this code. It gets the job done, but it fails to
     adhere to the Nice~Properties of~\hyperref[p1]{Lawlike}
     and~\hyperref[p2]{Single copy}: the code does not look like the algebraic
-    laws, and it duplicates right-hand side, \tt{"Your shape is small"}, three
+    laws, and it duplicates right-hand side,~\tt{"Your shape is small"}, three
     times. I~find the code unpleasant to read, too: the actual “good” return
     values of the function, the exclamatory strings, are gummed up in the middle
-    of the \tt{if-then-else} expressions.
+    of the~\tt{if-then-else} expressions.
     
-    Fortunately, this code can be simplified by using the \tt{standard\_shape} patterns
-    with a \it{side condition}, i.e., a syntactic form for “match a pattern
-    \it{and} a Boolean condition.” The \tt{when} keyword in OCaml provides such
+    Fortunately, this code can be simplified by using the~\tt{standard\_shape} patterns
+    with a~\it{side condition}, i.e., a syntactic form for “match a pattern
+    \it{and} a Boolean condition.” The~\tt{when} keyword in OCaml provides such
     a form, as seen in Figure~\ref{fig:whenexclaimtall}.
         
         \begin{figure}[]
@@ -338,7 +338,7 @@ exclaimTall sh                      == "Your shape is small.",
                             "Zounds! Tremendous trapezoid!"
                     | _ ->  "Your shape is small." 
                 \end{verbatim}
-            \caption{With a side condition, \tt{exclaimTall} in OCaml becomes
+            \caption{With a side condition,~\tt{exclaimTall} in OCaml becomes
             simpler and more adherent to the Nice~Properties.} 
             \Description{An implementation of a function exclaimTall in OCaml,
             which uses pattern matching and a side condition.}
@@ -346,12 +346,12 @@ exclaimTall sh                      == "Your shape is small.",
         \end{figure}
 
     A side condition streamlines pattern-and-Boolean cases and minimizes
-    overhead, restoring \hyperref[p1]{Lawlike} and~\hyperref[p2]{Single copy}.
+    overhead, restoring~\hyperref[p1]{Lawlike} and~\hyperref[p2]{Single copy}.
     And a side condition can exploit bindings that emerge from the preceding
-    pattern match. For instance, the \tt{when} clauses in
-    Figure~\ref{fig:whenexclaimtall} exploit names \tt{s} and \tt{h}, which are
-    bound in the match of \tt{sh} to \tt{Square s}, \tt{Triangle (\_, h)}, and
-    \tt{Trapezoid (\_, \_, h)}, respectively. 
+    pattern match. For instance, the~\tt{when} clauses in
+    Figure~\ref{fig:whenexclaimtall} exploit names~\tt{s} and~\tt{h}, which are
+    bound in the match of~\tt{sh} to~\tt{Square s},~\tt{Triangle (\_, h)}, and
+    \tt{Trapezoid (\_,~\_, h)}, respectively. 
 
     Importantly, side conditions come at a cost: their inclusion means that a
     compiler enforcing the~\hyperref[p5]{Exhaustiveness} Nice~Property becomes
@@ -359,11 +359,11 @@ exclaimTall sh                      == "Your shape is small.",
     only on patterns, but on arbitrary expressions. Modern compilers give a
     weaker form of exhaustiveness that only deals with patterns, and side
     conditions are worth the tradeoff for restoring the two most important of
-    the Nice~Properties: \hyperref[p1]{Lawlike} and~\hyperref[p2]{Single copy}.
+    the Nice~Properties:~\hyperref[p1]{Lawlike} and~\hyperref[p2]{Single copy}.
 
     A side condition adds an extra “check”---in this case, a Boolean
     expression---to a pattern. But side conditions have a limitation: the check
-    can make a decision based off of an expression evaluating to \tt{true} or
+    can make a decision based off of an expression evaluating to~\tt{true} or
     \tt{false}, but not if an expression matches with a non-Boolean pattern. In
     the next section, I~showcase when this limitation matters, and how another
     extension addresses it. 
@@ -372,7 +372,7 @@ exclaimTall sh                      == "Your shape is small.",
     \label{guards}
 
     To highlight a common use of pattern guards to address such a limitation, I
-    modify an example from \citet{guardproposal}, the proposal for pattern
+    modify an example from~\citet{guardproposal}, the proposal for pattern
     guards in GHC. Suppose I~have an OCaml abstract data type of finite maps,
     with a lookup operation: 
 
@@ -383,7 +383,7 @@ exclaimTall sh                      == "Your shape is small.",
         \end{verbatim}
     \end{minipage}
     Let's say I~want to perform three successive lookups, and call a “fail”
-    function if \it{any} of them returns \tt{None}. Specifically, I~want a
+    function if~\it{any} of them returns~\tt{None}. Specifically, I~want a
     function with this type and algebraic laws: 
 
     \begin{minipage}[t]{\textwidth}
@@ -437,16 +437,16 @@ exclaimTall sh                      == "Your shape is small.",
 
     Once again, the code works, but it's lost
     the~\hyperref[p1]{Lawlike}~and~\hyperref[p2]{Single copy} Nice~Properties by
-    duplicating three calls to \tt{handleFailure} and stuffing the screen full
+    duplicating three calls to~\tt{handleFailure} and stuffing the screen full
     of syntax that distracts from the algebraic laws. Unfortunately, it's not
     obvious how a side condition could help us here, because we need pattern
-    matching to extract and name internal values \tt{w}, \tt{y}, and~\tt{z}
+    matching to extract and name internal values~\tt{w},~\tt{y}, and~\tt{z}
     from constructed data.
 
     To restore the Nice~Properties, I~introduce a more powerful extension to
-    pattern matching: \it{pattern guards}, a form of “smart pattern” in which
+    pattern matching:~\it{pattern guards}, a form of “smart pattern” in which
     intermediate patterns bind to expressions within a single branch of a
-    \tt{case}. Pattern guards can make \tt{tripleLookup} appear \it{much}
+    \tt{case}. Pattern guards can make~\tt{tripleLookup} appear~\it{much}
     simpler, as shown in Figure~\ref{fig:guardtriplelookup}---which, since
     pattern guards aren't found in OCaml, is written in Haskell.
 
@@ -467,8 +467,8 @@ exclaimTall sh                      == "Your shape is small.",
     \label{fig:guardtriplelookup}
     \end{figure}
 
-    Guards appear as a comma-separated list between the \tt{|} and the \tt{=}.
-    Each guard has a pattern, followed by \tt{<-}, then an expression. The guard
+    Guards appear as a comma-separated list between the~\tt{|} and the~\tt{=}.
+    Each guard has a pattern, followed by~\tt{<-}, then an expression. The guard
     is evaluated by evaluating the expression and testing if it matches with the
     pattern. If it does, the next guard is evaluated in an environment that
     includes the bindings introduced by evaluating guards before it. If the
@@ -478,26 +478,26 @@ exclaimTall sh                      == "Your shape is small.",
     so guards subsume side conditions! 
     
     If you need further convincing on why programmers want for guards, look no
-    further than Erwig \& Peyton Jones's \it{Pattern Guards and Transformational
+    further than Erwig~\& Peyton Jones's~\it{Pattern Guards and Transformational
     Patterns}~\citep{guardproposal}, the proposal for pattern guards in GHC: the
     authors show several other examples where guards drastically simplify
     otherwise-maddening code. 
     
     Pattern guards enable expressions within guards to utilize names bound in
     preceding guards, enabling imperative pattern-matched steps with expressive
-    capabilities akin to Haskell's \tt{do} notation. It should come as no
-    surprise that pattern guards are built in to GHC. \raggedbottom
+    capabilities akin to Haskell's~\tt{do} notation. It should come as no
+    surprise that pattern guards are built in to GHC.~\raggedbottom
 \subsubsection{Or-patterns}
     I~conclude our tour of extensions to pattern matching with or-patterns,
     which are built in to OCaml. Let's consider a final example. I~have a type
     \tt{token} which represents an item or location in a video game and how much
     fun it is, and I~need to quickly know what game it's from and how much fun
     I'd have playing it. To do so, I'm going to write a function
-    \tt{game\_of\_token} in OCaml. Here are the \tt{token} type and the type and
-    algebraic laws for \tt{game\_of\_token}. 
+    \tt{game\_of\_token} in OCaml. Here are the~\tt{token} type and the type and
+    algebraic laws for~\tt{game\_of\_token}. 
   
 \begin{minipage}[t]{\textwidth}
-% \begin{figure}[t]
+%~\begin{figure}[t]
     \centering 
     \begin{footnotesize}
       \begin{verbatim}  
@@ -528,12 +528,12 @@ game_of_token _ == ("Irrelevant", 0), otherwise
     \end{footnotesize}
     \Description{Type and laws for game_of_token.} 
   \end{minipage}  
-%     \caption{Type and laws for \tt{game\_of\_token}, which make great use of
+%     \caption{Type and laws for~\tt{game\_of\_token}, which make great use of
 %     "where."}
 %     \ref{fig:gottypelaws}
-% \end{figure}        
+%~\end{figure}        
         
-        I~can write code for \tt{game\_of\_token} in OCaml using bare patterns
+        I~can write code for~\tt{game\_of\_token} in OCaml using bare patterns
         (Figure~\ref{fig:baregot}), but I'm dissatisfied with how it fails the
         \hyperref[p1]{Lawlike} and~\hyperref[p2]{Single copy} Nice~Properties:
         it is visually different from the algebraic laws, and it has many
@@ -562,8 +562,8 @@ game_of_token _ == ("Irrelevant", 0), otherwise
 
         I~could try to use a couple of helper functions to reduce clutter, so I
         do so and come up with the code in Figure~\ref{fig:helpergot}. It looks
-        ok, but I'm still hurting for Nice~Property \hyperref[p2]{Lawlike}, and
-        now I've lost the \hyperref[p3]{Call-free} Property, as well.
+        ok, but I'm still hurting for Nice~Property~\hyperref[p2]{Lawlike}, and
+        now I've lost the~\hyperref[p3]{Call-free} Property, as well.
 
         \begin{figure}
             \begin{center}
@@ -583,7 +583,7 @@ game_of_token _ == ("Irrelevant", 0), otherwise
         \label{fig:helpergot}
         \end{figure}
 
-        Once again, an extension comes to the rescue. \it{Or-patterns} condense
+        Once again, an extension comes to the rescue.~\it{Or-patterns} condense
         multiple patterns that share a right-hand side, and when any one of the
         patterns matches with the scrutinee, the right-hand side is evaluated
         with the bindings created by that pattern. I~exploit or-patterns in
@@ -601,7 +601,7 @@ let game_of_token token = match token with
     | _                                        -> ("Irrelevant", 0)
     \end{verbatim}
     \end{center}    
-    \caption{Or-patterns condense \tt{game\_of\_token}
+    \caption{Or-patterns condense~\tt{game\_of\_token}
     significantly, and it is easier to read line-by-line.} 
     \Description{An
     implementation of game_of_token using or-patterns.}
@@ -621,7 +621,7 @@ let game_of_token token = match token with
     I~have presented three popular extensions that make pattern matching more
     expressive and how to use them effectively. Earlier, though, you might have
     noticed a problem. Say I~face a decision-making problem that obliges me to
-    use \emph{all} of these extensions. When picking a language to do so, I am
+    use~\emph{all} of these extensions. When picking a language to do so, I am
     stuck! No major functional language has all three of these extensions.
     Remember when I~had to switch from OCaml to Haskell to use guards, and back
     to OCaml for or-patterns? The two extensions are mutually exclusive in

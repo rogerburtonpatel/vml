@@ -1,4 +1,4 @@
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen, 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{vmlmacros}
 \AtBeginDocument{%
@@ -25,72 +25,59 @@
 \section{\VMinus can be compiled to a decision tree}
 \label{vminustod}
 
-\subsection{Introducing \D}
+\subsection{Introducing~\D}
 \label{d}
 
-While \PPlus and \VMinus exist for writing programs, \D exists as the target of
-translation and provides a means by which to demonstrate \VMinus's efficient
-cost model. This is because the decision-making construct itself in \D, the
+While~\PPlus and~\VMinus exist for writing programs,~\D exists as the target of
+translation and provides a means by which to demonstrate~\VMinus's efficient
+cost model. This is because the decision-making construct itself in~\D, the
 \it{decision tree}, has an efficient cost model. A decision tree can implement
-pattern matching or \iffibf while guaranteeing never to repeat a test. The
-worst-case cost of evaluating a decision tree is linear in its depth, which
+either pattern matching or~\iffibf while guaranteeing never to repeat a test.
+The worst-case cost of evaluating a decision tree is linear in its depth, which
 itself linear in the size of the code. This desirable property of decision trees
-is half of a space-time tradeoff. When a decision tree is produced by compiling
-a \it{case} expression, there are pathological cases in which the total size of
-the tree is exponential in the size of the source code (from \it{case}). Run
+is half of a space-time tradeoff: when a decision tree is produced by compiling
+a~\it{case} expression, there are pathological cases in which the total size of
+the tree is exponential in the size of the source code (from~\it{case}). Run
 time remains linear, but code size may not be. 
 
-Decision trees are classically used as an intermediate representation for
-compiling \it{case} expressions. In this work, I~use them as a target for
-compiling \iffibf in \VMinus. I~do so to prove that equations, at least given
-their restrictions in \VMinus, can be compiled to a decision tree. 
+Although decision trees are classically used as an intermediate representation
+for compiling~\it{case} expressions, in this work, I~use them as a target for
+compiling~\iffibf in~\VMinus. In particular, I~show that equations in~\VMinus
+can be compiled to a decision tree. 
 
 \D is a generalization of the trees found in~\citet{maranget}. 
 
 \subsection{\D is a generalization of Maranget's trees} 
 
-\D's concrete syntax is given in Figure~\ref{fig:dsyntax}. Decision trees in \D
-  are engineered to look like Maranget's trees. There are a few minor
-  differences in the algorithm I~use and Maranget's: his compilation algorithm
-  is more complex than the one in this paper, and involves an intermediate
-  representation of occurrence vectors and clause matrices which the algorithm
-  I~present does not use. Maranget uses vectors and matrices to express
-  multiple simultaneous matches of values to patterns as a single match of a
-  vector with a matrix row. This allows him to run a \it{specialization} pass
-  that reduces the number of rows in the matrix, ultimately leading to smaller
-  trees.
+\D's syntax is given in Figure~\ref{fig:dsyntax}. Decision trees in~\D are
+engineered to look like Maranget's trees. 
   
       
-  The underlying structures of Maranget's and \D's decision trees, however,
-  are analogous. The same operation is the heart of their evaluation: they
-  take a value, examine it, and choose a branch based on its form (Maranget
-  calls the operation \textsc{Switch}; we call it \it{test}). 
+  The heart of a decision tree is the~\it{test} form: it takes a value, examines
+  it, and chooses a branch based on its form (Maranget calls the operation
+  \textsc{Switch}). 
 
-  Let's look at an example from \it{Compiling Pattern Matching to Good
-  Decision Trees} which shows the structure of a simple pattern-matching
-  function and its corresponding decision tree.
-  % , then at a corresponding tree
-  % in \D. 
-
-  Maranget beings with the function, \tt{merge}, which merges two lists: 
+  Let's look at an example from~\citet{maranget} which shows the structure of a
+  simple pattern-matching function and its corresponding decision tree. The
+  example beings with the function,~\tt{merge}, which merges two lists: 
 
   \begin{figure}[H]
       \includegraphics[scale=0.7]{../images/merge.png}
       \Description{Maranget's merge implementation}
-      \caption{The skeleton of Maranget's \tt{merge}}
+      \caption{The skeleton of Maranget's~\tt{merge}}
   \end{figure}
 
   % He then shows an intermediate representation in his compilation algorithm,
   % the occurrence vector and clause matrix: 
 
-  % \begin{figure}[H]
+  %~\begin{figure}[H]
   %     \begin{gather*}
-  %         \vec{o} = (\tt{xs ys}) \hspace{3em}
-  %         P \rightarrow A = 
+  %         \vec{o} = (\tt{xs ys})~\hspace{3em}
+  %         P~\rightarrow A = 
   %         \begin{pmatrix}
-  %             \tt{[]}     & \tt{\_}     & \rightarrow \tt{xs} \\
-  %             \tt{\_}     & \tt{[]}     & \rightarrow \tt{ys} \\
-  %             \tt{\_::\_} & \tt{\_::\_} & \rightarrow \tt{...} 
+  %            ~\tt{[]}     &~\tt{\_}     &~\rightarrow~\tt{xs}~\\
+  %            ~\tt{\_}     &~\tt{[]}     &~\rightarrow~\tt{ys}~\\
+  %            ~\tt{\_::\_} &~\tt{\_::\_} &~\rightarrow~\tt{...} 
   %         \end{pmatrix}
   %     \end{gather*}
 
@@ -100,27 +87,26 @@ their restrictions in \VMinus, can be compiled to a decision tree.
   %     representations in Maranget's compilation. I~do not exploit this
   %     representation in my own algorithm, but it helps to understand his final
   %     tree.}
-  % \end{figure}
+  %~\end{figure}
 
-  He compiles the function to this decision tree: 
+  The function is compiled to this decision tree: 
 
   \begin{figure}[H]
       \includegraphics[scale=0.7]{../images/dtree.png}
       \Description{The final decision tree for merge} 
-      \caption{The final compiled decision tree for \tt{merge}, right-to-left}
+      \caption{The final compiled decision tree for~\tt{merge}, right-to-left}
   \end{figure}
 
-  When presented with the values \tt{xs} and \tt{ys}, the tree first tests
-  \tt{xs} against its two known possible forms: the nullary list constructor
-  \tt{[]}, and the application of the \it{cons} constructor \tt{::}. If
-  \tt{xs} is equal to \tt{[]}, the tree immediately returns \tt{ys}. If
-  \tt{xs} is an application of \tt{::}, the tree then tests \tt{ys} against
-  the same list of possible constructors, and returns a value according to the
-  result of the match. Each time the tree goes down a \tt{::} branch, it can
-  extract the arguments of the \tt{::} for later use: these are \tt{x},
-  \tt{y}, \tt{xr}, and \tt{yr}, which are used in the \tt{...} branch. This
-  process of extracting arguments generalizes to all value constructors with
-  one or more arguments. 
+  When presented with the values~\tt{xs} and~\tt{ys}, the tree first tests
+ ~\tt{xs} against its two known possible forms: the nullary list constructor
+ ~\tt{[]}, and an application of the~\it{cons} constructor~\tt{::}. If ~\tt{xs}
+ is equal to~\tt{[]}, the tree immediately returns~\tt{ys}. If ~\tt{xs} is an
+ application of~\tt{::}, the tree then tests~\tt{ys} against~\tt{[]}
+ and~\tt{::}, and it returns a value according to the result of the match. Each
+ time the tree goes down a~\tt{::} branch, it extracts the arguments of
+ the~\tt{::} for later use: these are~\tt{x}, ~\tt{y},~\tt{xr}, and~\tt{yr},
+ which are used in the~\tt{...} branch. This process of extracting arguments
+ generalizes to all value constructors with one or more arguments. 
 
   \begin{figure}
     \begin{center}
@@ -131,243 +117,142 @@ their restrictions in \VMinus, can be compiled to a decision tree.
     \label{fig:dsyntax}
     \end{figure}
 
-  % Here is the decision tree for \tt{merge} in \D. 
+  % Here is the decision tree for~\tt{merge} in~\D. 
 
-  % \begin{figure}[H]
+  %~\begin{figure}[H]
   %   \centering
   %     \it{Like the semantics, this figure is in progress.}
   %     \Description{The decision tree for merge, now in D} 
-  %     \caption{The tree for \tt{merge} in D looks similar to Maranget's.}
-  % \end{figure}
+  %     \caption{The tree for~\tt{merge} in D looks similar to Maranget's.}
+  %~\end{figure}
 
-  In \D, an \it{extract} node extract all from a value constructor at once for
-  use in subtrees. The compiler is responsible for introducing the fresh names
-  used in \it{extract}. \VMinus syntax is not closed under substitution during 
-  match compilation; this is acceptable because the compiler alpha-renames all
-  necessary terms before it translates an \iffibf to a decision tree. 
+  In~\D, as in Maranget's trees, the~\it{test} node extracts all names from a
+  value constructor at once for use in subtrees. The compiler is responsible for
+  introducing the fresh names used in~\it{test}. The compiler alpha-renames all
+  necessary terms before it translates an~\iffibf to a decision tree to ensure
+  all names are unique. 
 
-  In \D, like in \VMinus, expressions can \it{fail}, meaning some of \D's
-  syntactic forms like \it{try-let} and \it{cmp} have an extra branch which is
+  In~\D, like in~\VMinus, expressions can~\it{fail}, meaning some of~\D's
+  syntactic forms like~\it{try-let} and~\it{cmp} have an extra branch which is
   executed if the examined expression fails. 
 
+    % Includes subsection
+    \label{dsemantics}
+    \dsemantics
 
-    To demonstrate that \VMinus has the same desirable cost model as pattern
-    matching, I~present an algorithm for compiling \VMinus to a decision tree. I
-    choose the decision tree as a target for compilation for the simple reason
-    of its appealing cost model. A decision tree can be exponential in size but
-    never examines a word of the \it{scrutinee}--- the value being tested---
-    more than once. It is the compilation from \VMinus to \D that establishes
-    this property by ensuring that no \it{test} node \it{T} has any proper
-    ancestor \it{T'} such that \it{T} and \it{T'} both test the same location in
-    memory.   
 
-    This compilation algorithm serves to demonstrate that \VMinus is a viable
+    \subsection{The~\DTran\ algorithm:~\VMinus $\rightarrow$~\D}
+
+    To demonstrate that~\VMinus has a similar cost model to pattern matching,
+    I~present an algorithm for compiling~\VMinus to a decision tree. I choose
+    the decision tree as a target for compilation for the simple reason of its
+    appealing cost model. A decision tree can be exponential in size but never
+    examines any word of the~\it{scrutinee}--- the value being tested--- more
+    than once. This property is established by the compilation from~\VMinus to
+    \D, which ensuring that no~\it{test} node~\it{T} has any proper ancestor
+    \it{T'} such that~\it{T} and~\it{T'} both test the same location in memory.   
+
+    There are a few minor differences in the algorithm I~use and Maranget's: his
+    compilation algorithm is more complex than the one in this paper, and
+    involves an intermediate representation of occurrence vectors and clause
+    matrices which the algorithm I~present does not use. Maranget uses vectors
+    and matrices to express multiple simultaneous matches of values to patterns
+    as a single match of a vector with a matrix row. This allows him to run a
+    \it{specialization} pass that reduces the number of rows in the matrix,
+    ultimately leading to smaller trees. Because the trees produced by my
+    algorithm still have the linear-in-code-size property, I find them
+    acceptable for the current work. 
+
+    This compilation algorithm serves to demonstrate that~\VMinus is a viable
     alternative to pattern matching on the grounds that they have equivalent
     cost models: pattern matching can be compiled to a decision tree,
     which~\citet{macqueen1985tree} built the foundation for and~\citet{maranget}
     expanded on. 
 
-    The algorithm runs during \DTran, the transformation from \VMinus to \D. Its
-    domain, instead of a \it{case} expression, is \VMinus's \iffibf. 
+    The algorithm runs during~\DTran, the transformation from~\VMinus to~\D. Its
+    domain, instead of a~\it{case} expression, is~\VMinus's~\iffibf.
+    \DTran~propegates a context~\ctx\; which maps names to~\it{known} or
+    \it{unknown}. The context is used when determining the form of a guard in
+    the compilation rules. 
        
 
+    %~\algrenewcommand\algorithmicwhile{\bf{let }}
+    %~\algrenewcommand\algorithmicdo{\bf{in }}
+    %~\algrenewcommand\algorithmicend{\bf{end}}
+    %~\newcommand\alet\algorithmicwhile
+    %~\newcommand\ain\algorithmicdo
+    %~\newcommand\aend\algorithmicend
 
-    \subsection{Rules (Big-step Operational Semantics) for \D:}
-    \label{dsemantics}
-    \dsemantics
-    \subsection{The \DTran\ algorithm: \VMinus $\rightarrow$ \D}
-
-    \algrenewcommand\algorithmicwhile{\bf{let }}
-    \algrenewcommand\algorithmicdo{\bf{in }}
-    \algrenewcommand\algorithmicend{\bf{end}}
-    \newcommand\alet\algorithmicwhile
-    \newcommand\ain\algorithmicdo
-    \newcommand\aend\algorithmicend
-
-    \newcommand\branches{\ensuremath{\mathit{branches}}}
-    \newcommand\mg{\ensuremath{-}}
+    %~\newcommand\branches{\ensuremath{\mathit{branches}}}
+    %~\newcommand\mg{\ensuremath{-}}
 
 
-    When presented with an \iffibf, \DTran\ calls the function \Compile,
-    whole algorithm is presented in Figure~\ref{dtran}. \DTran\ first introduces
-    all the names under the all existential $\exists$'s to a context which
-    determines if a name is \it{known} or \it{unknown}. At the start, each name
-    introduced by $\exists$ is \it{unknown}. Since all names are unique at this
-    stage, there are no clashes. \DTran\ also desugars choice to multiple
-    \iffibf branches with a desugaring function \ITran: 
-
-    \itran{if\; \dots \square\; gs_{1};\; \choiceg{gs_{2}}{gs_{3}};\; gs_{4} \rightarrow e\; \square \dots \;fi}
+    When presented with an~\iffibf,~\DTran\~invokes~\Compile with context~\ctx.
+    \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
+    branches with a desugaring function~\ITran: 
+    
+    \itran{if\;~\dots~\square\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\square~\dots~\;fi}
     
     ==
     
-    ${if\; \dots \square\; gs_{1};\; gs_{2} \rightarrow e \;\square\; gs_{3};\; gs_{4} \rightarrow e \;\square \dots \;fi}$
+    ${if\;~\dots~\square\; gs_{1};\; gs_{2}~\rightarrow e~\;\square\; gs_{3};\; gs_{4}~\rightarrow e~\;\square~\dots~\;fi}$
+
+    With the desugared~\iffibf,~\Compile\ then repeatedly chooses a guarded
+    expression $G$ and applies one of the compilation rules below. The rules are
+    applied in a nondeterministic order. 
+
+    The algorithm terminates when inserts a final~\it{match} node (with rule
+    \textsc{Match}) for a right-hand side expression~\expr when the list of
+    guards preceding~\expr is empty or a list of assignments from names to
+    unbound names. Termination of~\DTran\~is guaranteed because each recursive
+    call passes a list of guarded expressions in which the number of guards is
+    strictly smaller, so eventually the algorithm reaches a state in which the
+    first unmatched branch is all trivially-satisfied guards.
 
 
-    With the new context and desugared \iffibf, \Compile\ then repeatedly
-    chooses a guarded expression $G$ and attempts the following while
-    translating $G$'s internal expressions with \DTran: 
-
-    \begin{enumerate}
-        \item If there are no guards in $G$, insert a \it{match} node with the
-        right-hand side of $G$. 
-        \item Otherwise, choose an equation in $G$ of the form $x = K \dots$
-        s.t. $x$ is \it{known}. 
-        \item If one is found, use it to generate a \it{test} node, building
-        each subtree of the \it{test} by pruning all branches in \it{all}
-        guarded expressions of the \iffibf in which $x = e$ and $e \neq K
-        \dots$ and invoking \Compile\ on the remaining ones with a context where
-        $x$ is known. Each of these remainders is the child of an \it{extract}
-        node which extracts the internals of each possible value constructor
-        into a list of names which are introduced to the context. The algorithm
-        builds the default tree of the \it{test} by finding any branches of the
-        in the \iffibf in which $x$ is not bound to a value constructor. 
-        \item If no equation of the form \it{x = K \dots} is found, try to find
-        an equation $x = e$ s.t. either $x$ is unknown and all names in $e$ are
-        known. 
-        \item If one is found, use it to generate a \it{try-let} node with two
-        children: one if binding succeeds, and one if $e$ fails. \Compile prunes
-        each subtree of the \it{try-let} accordingly.
-        \item If no equation is found, try to find an equation $x = y$ s.t. $x$
-        is known and $y$ is unknown. 
-        \item If one is found, use it to generate a \it{try-let} node with one
-        child for when binding succeeds. \Compile prunes the subtree of all 
-        instance of $x = y$. 
-        \item If no such equation is found, try to find a condition $e$ s.t. all
-        names in $e$ are known. 
-        \item If one is found, generate a fresh name $x'$ and use it to generate
-        a \it{try-let} node for the equation $x = e'$, pruning each subtree of
-        $e$ with a substitution of $[x/e]$. 
-        \item If no condition $e$ is found, try to find an equation $x = e$ s.t.
-        both $x$ and all names in $e$ are \it{known}.
-        \item If one is found, generate a \it{cmp} node, prune the \iffibf of
-        all duplicate instances of that $x = e$, and invoke \Compile again. 
-        \item If none is found, the \iffibf cannot be compiled to a decision
-        tree. The algorithm halts with an error. 
-    \end{enumerate}
-    \raggedbottom
-
-    The algorithm terminates when inserts a final \it{match} node for a
-    right-hand side expression $e$ when the list of guards preceding $e$ is
-    empty or a list of assignments from names to unbound names. Termination of
-    \DTran\ is guaranteed because each recursive call passes a list of guarded
-    expressions in which the number of guards is strictly smaller, so eventually
-    the algorithm reaches a state in which the first unmatched branch is all
-    trivially-satisfied guards. 
-
-    In the figure, I~use the notation $x@b$ to denote the bag of all guards and
-    expressions in branch $b$ in which name $x$ appears. A branch is a list of
-    guards followed by a terminal expression; it is a branch of an \iffibf
-    stripped of the existential since \DTran\ introduces all names at the top
-    level. I~use the notation $\dom(b)$ to describe the set of all names that
-    appear in a branch. I~use the notation $\mathit{branches -- g}$ to mean
-    “$\mathit{branches}$ pruned of guard $g$” and the notation $\mathit{branches
-    ---g}$ to mean “$\mathit{branches}$ pruned of all \it{branches} containing
-    $g$.” I~use the standard substitution notation $\mathit{branches[x/e]}$ to
-    mean “$\mathit{branches}$ with name $x$ substituted for expression $e$.” I
-    use a shorthand $\mathit{(context + \bracketed{n_1 \dots n_i \mapsto
-    known})}$ to mean “$\mathit{context}$ extended with each of $n_x$ bound to
-    $\mathit{known}$. 
-
-    Not show in the algorithm is the case where \Compile\ cannot choose a $g$ of
-    one of the valid forms; in this case, \Compile\ halts with an error. This
+    Not show in the algorithm is the case where~\Compile\ cannot choose a $g$ of
+    one of the valid forms; in this case,~\Compile\ halts with an error. This
     can happen when no $g$ is currently solvable in the context, as determined
-    by the same algorithm that \VMinus uses to pick a guard to solve, or when
+    by the same algorithm that~\VMinus uses to pick a guard to solve, or when
     the program would be forced to unify incompatible values, such as any value
     with a lambda. 
 
-    % \DTran\ makes the distinction for an equation \it{x = e}
-    % based off of this model: 
-    % \begin{enumerate}
-    % \item 
-    % \end{enumerate}
-    % No guards  ==  MATCH
-    % CONDITION  ==   if known, convert to LET, IF
-    % EQN (x, e) ==
-    %    - if x is known and e is VCONAPP, generate TEST
-    %    - if x is known and e is not VCONAPP and e is known
-    %         generate LET, IF
-    %    - if x is unknown and e is known, then generate LET
-       
-%  What if we don't find any of the above? 
-%  There must be only unknown guards. 
-%  Can't compile! 
-    
-    % For an equation that
-    % represents a binding of values to values, the algorithm inserts a \it{let}
-    % node, and for a condition guard \it{e}, it inserts a \it{let} followed by 
-    % an \it{if-then-else}. 
-    
-  
-    % \begin{figure}[H]
-      % \scriptsize
-      \subsection{The \DTran algorithm}
+      \subsection{Big-step rules for \Compile}
         \compiler
-%       \begin{algorithmic}
-% \Require $\forall (n : \rm{name})\; \in \branches, \; n\; \rm{unique}$
-% \State \it{compile context \branches} = 
-%   \If{\it{null(\branches)}} {\it{fail}}
-%   \ElsIf{$\neg\exists{g} \in$ \it{fst(hd(\branches))}} 
-%     \State {\it{match (hd branches)}}
-%   \Else
-%     \State \alet $g$ be a guard such that $g \in \branches$
-%     \ain 
-%     \If{$g$ has the form $x = K (e_1 \dots e_i)$}
-%     \alet 
-%     \State 
-%     $\mathit{KS = \bracketed{K\; \vert\; \exists\; b \in \branches : x \in \dom(b) \wedge K(\dots) \in x@b }}$ 
-        
-%     $\mathit{edges = map(}$ 
-%     \State $\mathit{\lambda K.}$ (\alet $ns = n_1 \dots n_i, \; n_x \rm{ fresh}$
-%         \ain 
-%         \State $\mathit{(K, extract (x, ns, \Compile (context + \bracketed{n_1 \dots n_i \mapsto known})}$ 
-%         \State $\mathit{(mapPartial (refine\; x\; (K (ns))) branches))}$ 
-%         \State \aend) 
-%       \State $\mathit{defaults = filter(\lambda b. x \notin \dom(b) \lor K(\dots) \notin x@b)}$ 
-%       \State \ain $\mathit{test (x, edges, SOME (compile\; defaults))}$ 
-%       \State \aend 
-%     \ElsIf {$g$ has the form $x = e$ : $x \;\mathit{unknown},\; e \;\mathit{known}$} 
-%       \State $\mathit{try\_let (x, \DTran\; (context\; e)}$, 
-%       \State $\mathit{compile (context\bracketed{x \mapsto known}) ((branches -- eq)[x/e])}$,
-%       \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$
-%     \ElsIf {$g$ has the form $x = y$ : $x \;\mathit{known},\; y \;\mathit{unknown}$} 
-%     \State $\mathit{try\_let (x, y, compile (context\bracketed{y \mapsto known}) (branches -- eq), NONE)}$
-%     \ElsIf {$g$ has the form $x = e$ : $x \;\mathit{known},\; e \;\mathit{known}$} 
-%       \State $\mathit{cmp (x, \DTran\; (context\; e)}$, 
-%       \State $\mathit{compile\; context\; ((branches -- eq)[x/e])}$,
-%       \State $\mathit{compile\; context\; (branches --- eq -- e)}$,
-%       \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$
-%     \ElsIf {$g$ has the form $e$ : $e \;\mathit{known}$} 
-%     \State $\mathit{try\_let (x, \DTran\; (context\; e)}$, 
-%     \State $\mathit{compile (context\bracketed{x \mapsto known}) ((branches -- eq)[x/e])}$,
-%     \State $\mathit{SOME (compile\; context\; (branches --- eq --- e)))}$ 
-%     \State {, $x$ fresh} \\
-%     \aend
-%     \EndIf
-%   \EndIf
-%   \State \bf{where} 
-%   \State $\mathit{snd (a, b) = b}$ 
-%   \State $\mathit{refine (x, K (ns) b) = }$
-%   \If{$\mathit{K' (es) \in x@b \land (K \neq K' \lor length(es) \neq length(ns))}$}
-%         $\mathit{NONE}$
-%   \Else $\;\mathit{SOME\; b}$
-%   \EndIf 
 
-% \end{algorithmic}
+      \subsection{Reduction Strategies}
 
+      In my implementation, I apply the~\textsc{Test} rule before other rules,
+      having found in my experiments that this leads to the smallest trees. A
+      risk of inserting a \it{test} node before a \it{let-unless} node is that
+      if there are many shared names across branches, a \it{test} node will have
+      all of them introduced with a list of \it{let-unless} nodes in each
+      subtree, while inserting \it{let-unless} nodes before \it{test} means this
+      list of bindings will appear only once. A risk of this strategy, however,
+      is that if there are many names used in only one subtree of a \it{test},
+      these names will be introduced to \it{all} branches, potentially harming
+      performance by bloating an environment in an interpreter or thrashing the
+      icache if the tree further is compiled to machine code. 
 
-% \Description{The \DTran\ algorithm} 
-%     \caption{The \DTran\ algorithm.}
-%     \label{dtran}
-%     \end{figure}    
+      In the implementation,~\DTran\~first introduces all the names under the
+      all existential $\exists$'s to a context which determines if a name is
+      \it{known} or~\it{unknown}, applying the~\textsc{Exists} rule is applied
+      all at the start. At the start of compilation, each name introduced by
+      $\exists$ is~\it{unknown} in a context~\ctx. Since all names in the
+      program are unique at this stage, there are no clashes. 
 
-
-    \subsection{Translation from \VMinus to \D preserves semantics}
+    \subsection{Translation from~\VMinus to~\D preserves semantics}
     
-    Translating \iffibf to a decision tree should preserve semantics. The
+    Translating~\iffibf to a decision tree should preserve semantics. The
     following theorem formalizes this claim: 
 
-    \begin{proof}
-        See appendix A. 
-    \end{proof}
+    \begin{theorem}
+      \text{Given a specific but arbitrarily chosen environment~\Rho\; and context~\ctx, when}
+      \vmeval[result={\result[1]}]\;and\;\compilebig[iffi=\expr,
+      compiled=\expr']\;and\;\vmeval[exp=\expr', result={\result[2]}], then
+      {\result[1]} = {\result[2]}. 
+    \end{theorem}
+
+    Proving this theorem is the subject of future work. 
 
 \end{document}

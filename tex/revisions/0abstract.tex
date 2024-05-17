@@ -1,4 +1,4 @@
-\documentclass[manuscript,screen,review, 12pt, nonacm]{acmart}
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
 \let\Bbbk\relax % Fix for amssymb clash 
 \usepackage{vmlmacros}
 % Title included so this document can compile alone
@@ -11,21 +11,19 @@
     Pattern matching % S
     appeals % V
     to functional programmers for its expressiveness and good cost model, 
-    but     
+    but 
     it % S
-    can only express % V
-    certain computations verbosely. 
-    Verbosity % S 
+    fails to express % V
+    certain computations without verbosity. Verbosity % S 
     can be reduced % V
     by using extended forms of pattern matching,
     but extensions % (S = the problem)
     are % V
-    not standardized, and
-    the most desirable combination of extensions cannot be found in 
-    any one popular programming language. As an alternative, 
-    computations can be expressed succinctly by 
-    using equations, as has been demonstrated by the Verse programming language. 
-    But such computations have time and space costs that can be hard to predict. 
+    not standardized, and the most desirable combination of extensions cannot be
+    found in any one popular programming language. Alternatively to pattern
+    matching, computations can be expressed succinctly by using equations, as
+    has been demonstrated by the Verse programming language. But such
+    computations may have time and space costs that can be hard to predict. 
     % But Verse's cost model % S-sub
     % is % V-sub
     % a challenge because of backtracking and multiple
@@ -34,39 +32,35 @@
     I % S
     ~propose % V
      a 
-    new language, \VMinus, % object 
+    new language,~\VMinus, % object 
     which~uses equations in a limited way that makes time and space costs easy
-    to predict while retaining much of the expressiveness of Verse. 
+    to predict. 
     % to succinctly express computation while
     % enjoying a friendlier cost model by prohibiting backtracking and multiple
     % results. 
     \VMinus~ % S 
     expresses % V
     computations as succinctly as pattern matching with popular extensions in
-    comparative examples, and 
-    it % S
+    comparative examples, and just like pattern matching, it % S
     can be compiled % V 
     to a decision tree. 
     
-    To support the theoretical foundation of my work and to run experiments, 
-    I %S 
-    ~have % V 
-    implemented \VMinus and the algorithm for compiling it to a decision tree in
-    Standard ML.
+    An implementation of~\VMinus and its compiler can be found
+    at~\url{https://github.com/rogerburtonpatel/vml}.
     % Question: implied that I've implemented D here, or not? 
     %%%%%%% Old, with "I show":
     % I % S
     % ~show % V
-    %  that \VMinus's equations capture the desirable properties of
+    %  that~\VMinus's equations capture the desirable properties of
     % pattern matching with popular extensions, 
     % and I % S-sub
     % ~also
     %  show % V 
-    % that \VMinus~can be compiled to a decision tree and therefore has
+    % that~\VMinus~can be compiled to a decision tree and therefore has
     % the same desirable cost model as pattern matching. Finally, 
     % I % S 
     % ~have % V 
-    % implemented \VMinus in Standard ML, alongside an algorithm for compiling it
+    % implemented~\VMinus in Standard ML, alongside an algorithm for compiling it
     % to a decision tree. 
 \end{abstract}
 

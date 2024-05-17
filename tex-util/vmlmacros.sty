@@ -94,10 +94,10 @@
 
 %%%%%%%%%% D ABSTRACT SYNTAX %%%%%%%%%%
 
-\newcommand\treetestabstract{\ensuremath{\mathit{test}\; x\; \bracketed{K_{i}/\ybar[i]\; \rightarrow\; \dt}}\; [else\; \dt]}
+\newcommand\treetestabstract{\ensuremath{\mathit{test}\; x\; \bracketed{K_{i}/\ybar[i]\; \Rightarrow\; \dt}}\; [else\; \dt]}
 % \newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{then}\; \dt\; \mathit{else}\; \dt}}
-\newcommand\treetryletabstract{\ensuremath{\mathit{try}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt[; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt]}}
-\newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{\xlongequal{\;}}\; \expr\; \mathit{then}\; \dt\; \mathit{else}\;  \dt\; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt}}
+\newcommand\treetryletabstract{\ensuremath{\mathit{let}\; x\; \mathit{=}\; \expr\; \mathit{in}\; \dt[; \mathit{unless}\; \bf{fail} \Rightarrow \; \dt]}}
+\newcommand\treeifabstract{\ensuremath{\mathit{if}\; x\; \mathit{\xlongequal{\;}}\; \expr\; \mathit{then}\; \dt\; \mathit{else}\;  \dt}}
 \newcommand\treeextractabstract{\ensuremath{\mathit{extract}\; x\; \bracketed{y}\; \expr\; \mathit{ in }\; \dt}}
 \newcommand\treefailabstract{\ensuremath{\bf{fail}}}
 
@@ -179,36 +179,32 @@
 }
 
 \newcommand\dcsyntax {% 
+
 \begin{bnf}
-  $P$ : \textsf{Programs} ::=
+  $P$ :~\textsf{Programs} ::=
   $\bracketed{d}$ : definition
   ;;
-  $d$ : \textsf{Definitions} ::=
-  | $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
+  $d$ :~\textsf{Definitions} ::=
+  | $\it{val}\; x\;~\it{=}\;~\expr$ : bind name to expression
   ;;
-  $\expr$ : Expressions ::= 
-  | $v$ : literal values 
+  $\expr$ :~\textsf{Expressions} ::=
+  | $\v$ : literal values 
   | $x, y, z$ : names
-  | $K\bracketed{\expr}$ : value constructor application 
-  | $\ttbackslash x.\; \expr$ : lambda declaration  
-  | $\expr[1]\; \expr[2]$ : function application 
   | $\dt$ : decision tree
-  | \ttbraced{$\expr$}
+  | $K~\bracketed{\expr}$ : value constructor application 
+  | $\expr[1]\;~\expr[2]$ : function application 
+  | $\lambda x.\;~\expr$ : lambda declaration 
   ;;
   $\dt$ : Decision Trees ::= 
-  {\ensuremath{\tt{test}\; x\; {\bracketed{K\bracketed{y} \; \ttrightarrow\; \dt}} [\tt{else}\; \dt]}} : test node
-| {\ensuremath{\tt{let}\; x\; \tt{=}\; \expr\; \tt{in}\; \dt[\tt{ unless fail => } \; \dt]}} : try-unless node
-| {\ensuremath{\tt{if}\; x\; \tt{=}\; \expr\; \tt{then} \; \dt\; \tt {else}\; \dt\; \tt {unless fail => } \dt}} : comparison node
-| {\ensuremath{\tt{E}\; x\tt{.} \dt}} : exists node
-| {\ensuremath{\tt{fail}}} : fail node
-;;
-  $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-  | $\ttbackslash x.\; \expr$ : lambda value 
+  {\ensuremath{\it{test}\; x\; {\bracketed{K\bracketed{y} \; \Rightarrow\; \dt}} [\it{else}\; \dt]}} : test node
+  | {\ensuremath{\it{let}\; x\; \it{=}\; \expr\; \it{in}\; \dt[\it{ unless fail => } \; \dt]}} : let-unless node
+  | {\ensuremath{\it{if}\; x\; \it{=}\; \expr\; \it{then} \; \dt\; \it {else}\; \dt}} : comparison node
+  | {\ensuremath{\exists\; x\it{.}\; \dt}} : exists node
+  | {\ensuremath{\fail}} : fail node
   ;;
-  $K$ : \textsf{Value Constructors} ::=
-  | $\tt{true}\; \vert\; \tt{false}$ : booleans
-  | $\tt{A-Z}x$ : name beginning with capital
-  % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+  $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+  | $\lambda x.\;~\expr$ : lambda value
+  ;;
   \end{bnf}
 }
 
@@ -1236,9 +1232,9 @@ These judgement forms and rules are specific to \VMinus.
 }
 
 \newcommand\dsemantics{% 
-\label{dsemantics}
 
 \subsection{Rules (Big-step Operational Semantics) for ${\D}$:}
+\label{dsemantics}
 
 \subsubsection{Evaluating Decision Trees}
 
@@ -1306,7 +1302,7 @@ These judgement forms and rules are specific to \VMinus.
     \\\\ 
     {\treeval[envext={\bracketed{x \mapsto \v}}, tree={\dt_{1}}, result={\result}]}
     }
-    {\treeval[tree={try\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
+    {\treeval[tree={let\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
 \]
 
 
@@ -1316,7 +1312,7 @@ These judgement forms and rules are specific to \VMinus.
     \\\\ 
     {\treeval[tree={\dt_{2}}, result={\result}]}
     }
-    {\treeval[tree={try\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
+    {\treeval[tree={let\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
 \]
 
 \[
@@ -1344,11 +1340,18 @@ The judgement form for the compiler is:
 
 \subsection{Rules (Big-step Translation) for compiling \iffibf}
 
+These rules in a nondeterministic order by the compiler. 
+
 \[
 \inferrule*[Left=\textsc{ (Exists) }]
     {\compilebig[ctxext={\bracketed{x_1 \mapsto unknown}}, gexps={\GsgsGs{\vexists{\dots x_{n}}\; \gs \rightarrow \expr'}}]}
     {\compilebig[gexps={\GsgsGs{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr'}}]}
 \]
+
+If the compiler finds one or more names introduced by $\exists$, it strips a
+name from the $\exists$ list and adds it to~\ctx as~\it{unknown}. This is the
+rule that grows the context with new names, along with lambda, which 
+introduces its argument as \it{known}. 
 
 \[
 \inferrule*[Left=\textsc{ (Fail) }]
@@ -1356,11 +1359,17 @@ The judgement form for the compiler is:
     {\compile[guard={\fail}]}
 \]
 
+If the compiler finds a guarded expression \G which contains~\fail, it stops
+compiling \G altogether. 
+
 \[
 \inferrule*[Left=\textsc{ (Match) }]
     {\ }
-    {\compile[guard={}]}
+    {\compilebig[gexps={\GsgsGs{}}]}
 \]
+
+If the compiler finds an ungarded right-hand side expression~\expr', it inserts
+a~\it{match} node containing~\expr'.
 
 \[
 \inferrule*[Left=\textsc{ (Test) }]
@@ -1377,15 +1386,26 @@ The judgement form for the compiler is:
     compiled={test(x, \tbar, \expr[0])}]}
 \]
 
+If the compiler finds a known name $x$ equated to the application of a value
+constructor~\it{K}, it assembles a set of branches that correspond to varying
+value constructors. The only requirement of the set is that it contain~\it{K}.
+With substiution of~$\subst{}{K_{i}{\ybar[i]}}{x}$, the compiler ensures that
+$x$ will never be tested again, and also allows for rules~\textsc{Elim-Vcon}
+and~\textsc{Expand-Vcon} to make progress. 
+
 \[
 \inferrule*[Left=\textsc{ (Elim-Vcon) }]
     {
     \compilebig[gexps=\GsGs]
     \\\\
-    v \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+    \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
     }
-    {\compile[guard={v = K\; \expr[1] \dots \expr[n]}]}
+    {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
 \]
+
+If the compiler finds two equated expressions where one is an application of a
+value constructor to $n$ arguments and the other isn't, the compiler skips over
+that branch, like in \textsc{Fail}.
 
 \[
 \inferrule*[Right=\textsc{ (Expand-Vcon) }]
@@ -1395,17 +1415,49 @@ The judgement form for the compiler is:
     {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
 \]
 
+If the compiler finds two equated expressions where each is an application of a
+value constructor to $n$ arguments, the compiler expands the single equation
+into a list of equations between the arguments. 
+
 \[
 \inferrule*[Right=\textsc{ (Let-Unless) }]
     {\rho(x) = unknown \and \knownj[exp=\expr']
     \\\\
-    \dt_{1} = \subst{\expr}{x}{\expr'}
+    \compilebig[ctxext={\bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
     \\\\
     \dt_{2} = \subst{\expr}{\fail}{\expr'}
     }
     {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-              compiled={try\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
+              compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
 \]
 
+If the compiler finds an opportunity to bind a name to an expression \expr', it
+creates a~\it{let-unless} node and substitutes $x$ for all instances of \expr',
+making $x$ known in the new context. In the \it{unless \fail} branch, \fail is
+substituted for \expr' so that \textsc{Fail} can eliminate guarded expressions
+containing it. 
+
+\[
+\inferrule*[Right=\textsc{ (Let-If) }]
+    {\rho(x) = known \and \knownj[exp=\expr'] 
+    \\\\
+    \dt_{1} = \subst{\expr}{x}{\expr'}
+    \\\\
+    \compilebig[ctxext={\bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
+    \\\\
+    \dt_{3} = \subst{\expr}{\fail}{\expr'}
+    \\\\
+    \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
+    }
+    {\compile[eas={\expr \text{ as }}, guard={y = e}, 
+              compiled={let\; x = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
+\]
+
+If the compiler finds two expressions being compared \expr', it creates
+an~\it{if} node within a~\it{let-unless} node, binding a fresh name $y$ to
+\expr' and using it for substitution to ensure \expr' is never evaluated again.
+Like in \textsc{Let-Unless}, in the \it{unless \fail} branch, \fail is
+substituted for \expr' so that \textsc{Fail} can eliminate guarded expressions
+containing it. 
 
 }
