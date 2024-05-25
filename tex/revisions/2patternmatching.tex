@@ -33,7 +33,7 @@ matching. These tradeoffs inform the compromises I~make in \VMinus
 %~\1 What is pattern matching 
 
 Pattern matching lets programmers examine and deconstruct data by matching them
-against patterns. When a pattern $p$ matches with a value $v$, it can produce
+against patterns. When a pattern $p$ matches a value $v$, it can produce
 bindings for sub-values of $v$. For example, pattern $x::xs$ matches any 
 application of the value constructor~\it{cons} (\it{::}), and it binds the first 
 element of the cons cell to $x$ and the second to~$xs$. 
@@ -216,10 +216,10 @@ fun pm_area sh =
     matching most commonly occurs: within a~\it{case} expression. A~\it{case}
     expression tests a~\it{scrutinee} (\tt{sh}) against a list of~\it{branches}.
     Each branch contains a pattern on the left-hand side (\tt{SQUARE s}, etc.)
-    and an expression on the right-hand side (\tt{s * s}, etc.). When the result
-    of evaluating the scrutinee matches with a pattern, the program evaluates
-    the right-hand side of the respective branch.\footnote{OCaml, which you'll
-    see in future sections, calls~\it{case}~\tt{match}. Some
+    and an expression on the right-hand side (\tt{s * s}, etc.). When a pattern
+    matches the result of evaluating the scrutinee, the program
+    evaluates the right-hand side of the respective branch.\footnote{OCaml,
+    which you'll see in future sections, calls~\it{case}~\tt{match}. Some
     literature~\citep{guardproposal} calls this a~\it{head expression}. I~follow
     the example of~\citet{bpc} and~\citet{maranget} in calling the things
     \it{case} and~\it{scrutinee}. Any of these terms does the job.} 
@@ -364,9 +364,9 @@ exclaimTall sh                      == "Your shape is small.",
     A side condition adds an extra “check”---in this case, a Boolean
     expression---to a pattern. But side conditions have a limitation: the check
     can make a decision based off of an expression evaluating to~\tt{true} or
-    \tt{false}, but not if an expression matches with a non-Boolean pattern. In
-    the next section, I~use an example to~showcase when this limitation matters,
-    and how another extension addresses it. 
+    \tt{false}, but not an expression evaluating to, say, \tt{nil} or \tt{::}
+    (cons). In the next section, I~use an example to~showcase when this
+    limitation matters, and how another extension addresses it. 
 
     \subsubsection{Pattern guards}
     \label{guards}
@@ -469,13 +469,13 @@ exclaimTall sh                      == "Your shape is small.",
 
     Guards appear as a comma-separated list between the~\tt{|} and the~\tt{=}.
     Each guard has a pattern, followed by~\tt{<-}, then an expression. The guard
-    is evaluated by evaluating the expression and testing if it matches with the
-    pattern. If it does, the next guard is evaluated in an environment that
-    includes the bindings introduced by evaluating guards before it. If the
-    match fails, the program skips evaluating the rest of the branch and falls
-    through to the next one. As a bonus, a guard can simply be a Boolean
-    expression which the program tests the same way it would a side condition,
-    so guards subsume side conditions! 
+    is evaluated by evaluating the expression and testing if the pattern matches
+    with the result. If it does, the next guard is evaluated in an
+    environment that includes the bindings introduced by evaluating guards
+    before it. If the match fails, the program skips evaluating the rest of the
+    branch and falls through to the next one. As a bonus, a guard can simply be
+    a Boolean expression which the program tests the same way it would a side
+    condition, so guards subsume side conditions! 
     
     If you need further convincing on why programmers want for guards, look no
     further than Erwig~\& Peyton Jones's~\it{Pattern Guards and Transformational
@@ -493,11 +493,11 @@ exclaimTall sh                      == "Your shape is small.",
     \tt{token} which represents an item or location in a video game and how much
     fun it is, and I~need to quickly know what game it's from and how much fun
     I'd have playing it. To do so, I'm going to write a function
-    \tt{game\_of\_token} in OCaml. Here are the~\tt{token} type and the type and
-    algebraic laws for~\tt{game\_of\_token}. 
+    \tt{game\_of\_token} in OCaml. HThe~\tt{token} type and the type and
+    algebraic laws for~\tt{game\_of\_token} are in Figure~\ref{fig:gotlaws}.
   
-\begin{minipage}[t]{\textwidth}
-%~\begin{figure}[t]
+% \begin{minipage}[t]{\textwidth}
+\begin{figure}[t]
     \centering 
     \begin{footnotesize}
       \begin{verbatim}  
@@ -527,11 +527,12 @@ game_of_token _ == ("Irrelevant", 0), otherwise
       \end{verbatim}
     \end{footnotesize}
     \Description{Type and laws for game_of_token.} 
-  \end{minipage}  
-%     \caption{Type and laws for~\tt{game\_of\_token}, which make great use of
-%     "where."}
-%     \ref{fig:gottypelaws}
-%~\end{figure}        
+  % \end{minipage}  
+    \caption{Type and laws for~\tt{game\_of\_token}, which make helpful use of
+    "where."}
+    % \ref{fig:gotlaws}
+\label{fig:gotlaws}
+\end{figure}        
         
         I~can write code for~\tt{game\_of\_token} in OCaml using bare patterns
         (Figure~\ref{fig:baregot}), but I'm dissatisfied with how it fails the

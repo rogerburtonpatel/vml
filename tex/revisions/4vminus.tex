@@ -40,14 +40,13 @@
     \subsection{Two languages of a kind}
     
     In this section, I~present~\VMinus. Its semantics appears in Section
-    \ref{vmsemantics}, and for reference in Section~\ref{languagedefs1} and
-    Appendix~\ref{languagedefs}. In my design, I~took inspiration from
-    Verse:~\VMinus has a conventional sub-language that is the lambda calculus
-    extended with named value constructors~\it{K} applied to zero or more
-    values. I~chose named value constructors over~\VC's tuples because they look
-    more like patterns.~\D, the language of decision trees and target of
-    translation from~\VMinus, has the same
-    lambda-calculus-plus-value-constructors core, with decision trees
+    \ref{vmsemantics}, and for reference in~Appendix~\ref{languagedefs}. In my
+    design, I~took inspiration from Verse:~\VMinus has a conventional
+    sub-language that is the lambda calculus extended with named value
+    constructors~\it{K} applied to zero or more values. I~chose named value
+    constructors over~\VC's tuples because they look more like patterns.~\D, the
+    language of decision trees and target of translation from~\VMinus, has the
+    same lambda-calculus-plus-value-constructors core, with decision trees
     substituted for~\VMinus's~\iffibf. Because they share a core, and to
     facilitate comparisons and proofs, I present~\VMinus and~\D as two subsets
     of a single unifying language~\U, whose abstract syntax appears in
