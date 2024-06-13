@@ -1,8 +1,5 @@
-$\newcommand\vminus{V^{-}}$
-$\newcommand\pplus{P^{+}}$
-
 # vml
-This repository contains the source for $\vminus$ and $\pplus$, a subset of Verse and a pattern-based language.
+This repository contains the source for $V^{-}$ and $P^{+}$, a subset of Verse and a pattern-based language.
 
 
 The code is the implementation component of *An Alternative to Pattern Matching,
