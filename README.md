@@ -1,7 +1,15 @@
+$\newcommand\vminus{V^{-}}$
+$\newcommand\pplus{P^{+}}$
+
 # vml
-Code and proofs for P+ and V-, a pattern-based language and a subset of Verse. 
-Part of an undergraduate senior thesis with Norman Ramsey, Milod Kazerounian, 
-and Roger Burtonpatel. 
+This repository contains the source for $\vminus$ and $\pplus$, a subset of Verse and a pattern-based language.
+
+
+The code is the implementation component of *An Alternative to Pattern Matching,
+Inspired by Verse*, my undergraduate senior thesis with Norman Ramsey and Milod
+Kazerounian. The repository also contains the source for the paper. The full paper can be found [here](rogerburtonpatel.github.io/fullpaper.pdf). 
+
+
 
 
 `tex`: tex source and generated pdfs. 

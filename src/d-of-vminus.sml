@@ -323,12 +323,10 @@ struct
               let val k_ns = givenames app
                   val ns = snd k_ns
                   val choices' = mapPartial (refineGexp x k_ns) choices
-              in (app, 
-                  D.EXTRACT (x, ns, compile (makeAllKnown ns context) choices'))
+              in (k_ns, compile (makeAllKnown ns context) choices')
               end 
 
-            val edges = foldr (fn (app, cs) => refineChoicesWith app :: cs) 
-                              [] cons
+            val edges    = map refineChoicesWith cons 
             val defaults = List.filter (noApp x) choices
             val default  = if null defaults 
                            then NONE

@@ -319,7 +319,7 @@ case lookup rho x of Some w =>
   | _ => handleFailure x)
 | _ => handleFailure x *)
 
-
+(* 
 datatype token = BattlePass  of funlevel 
            | ChugJug     of funlevel 
            | TomatoTown  of funlevel
@@ -346,4 +346,4 @@ fun game_of_token token = case token of
   BattlePass f  | ChugJug f | TomatoTown f => ("Fortnite", f)
 | HuntersMark f | SawCleaver f             => ("Bloodborne", 2 * f)
 | MoghLordOfBlood f | PreatorRykard f      => ("Elden Ring", 3 * f)
-| _                                        => ("Irrelevant", 0)
+| _                                        => ("Irrelevant", 0) *)

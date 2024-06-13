@@ -2,13 +2,12 @@ signature DECISION_TREE = sig
   type name = Core.name 
   type vcon = Core.vcon 
   type arity = int
-  type labeled_constructor = vcon * arity
+  type labeled_constructor = vcon * name list 
 
   datatype ('e, 'a) tree = MATCH of 'a
               | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
               | TRY_LET of name  * 'e * ('e, 'a) tree * ('e, 'a) tree option
               | CMP of name  * 'e * ('e, 'a) tree * ('e, 'a) tree * ('e, 'a) tree 
-              | EXTRACT of name * name list * ('e, 'a) tree 
               | FAIL
 
   datatype exp = C of exp Core.t 
@@ -29,13 +28,12 @@ struct
   type name = Core.name 
   type vcon = Core.vcon 
   type arity = int
-  type labeled_constructor = vcon * arity
+  type labeled_constructor = vcon * name list
 
   datatype ('e, 'a) tree = MATCH of 'a
               | TEST of name * (labeled_constructor * ('e, 'a) tree) list * ('e, 'a) tree option
               | TRY_LET of name  * 'e * ('e, 'a) tree * ('e, 'a) tree option
               | CMP of name  * 'e * ('e, 'a) tree * ('e, 'a) tree * ('e, 'a) tree 
-              | EXTRACT of name * name list * ('e, 'a) tree 
               | FAIL
 
   datatype exp = C of exp Core.t 
@@ -63,7 +61,7 @@ struct
   and emitTree t = 
     let fun emitCase [] default = Impossible.impossible "no patterns to match on"
            | emitCase (x::xs) default = 
-           let fun emitBranch ((Core.K vc, i), tr) = "(" ^ vc ^ ", " ^ Int.toString i ^ ") -> " ^ emitTree' tr ^ "\n"
+           let fun emitBranch ((Core.K vc, ys), tr) = "(" ^ vc ^ ", " ^ String.concatWith "," ys ^ ") -> " ^ emitTree' tr ^ "\n"
            val emittedBranches = foldr (fn (b, acc) => "| " ^ emitBranch b ^ acc) "" xs
         in emitBranch x ^ emittedBranches ^ (if isSome default then "| _ -> " ^ emitTree' (valOf default) else "")
         end 
@@ -72,8 +70,6 @@ struct
           | emitTree' (TRY_LET (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ emitTree' t1 
           | emitTree' (TRY_LET (n, e, t1, SOME t2)) = "try let " ^ n ^ " = " ^ expString e ^ " in " ^ emitTree' t1 ^ ", \n otherwise \n" ^ emitTree' t2
           | emitTree' (CMP (n, e, t1, t2, t3)) = n ^ " = " ^ expString e ^ "? \n ->" ^ emitTree' t1 ^ "\n -> " ^ emitTree' t2 ^ "\n -> " ^ emitTree' t3
-          | emitTree' (EXTRACT (n, [], t)) = emitTree' t
-          | emitTree' (EXTRACT (n, ns, t)) = "extract " ^ n ^ " into " ^ String.concatWith ", " ns ^ " in " ^ emitTree' t
           | emitTree' FAIL = "fail"
     in emitTree' t ^ "\n"
     end 
@@ -180,12 +176,13 @@ struct
         | TEST (x, [], NONE) => 
               raise Fail ("No match found while testing \"" ^ x ^ "\"")
         | TEST (x, [], SOME default) => evalTree rho default
-        | TEST (x, (vc_arity, t)::options, default) => 
+        | TEST (x, ((k, ys), t)::options, default) => 
           (case lookup x rho 
             of C.VCON (vc, vs) => 
-              let val me = (vc, length vs)
-              in if me = vc_arity 
-                 then evalTree rho t 
+              let val me   = (vc, length vs)
+                  val them = (k, length ys)
+              in if me = them
+                 then evalTree (ListPair.foldl Env.bind rho (ys, vs)) t 
                  else evalTree rho (TEST (x, options, default))
               end
              | _ => Impossible.impossible "cannot test non-vcon")
@@ -208,13 +205,13 @@ struct
              in if eqval (v1, v2) then evalTree rho t1 else evalTree rho t2
              end 
             handle Fail _ => evalTree rho t3)
-        | EXTRACT (n, ns, t) => 
+        (* | EXTRACT (n, ns, t) => 
           (case lookup n rho 
             of C.VCON (_, vs) => 
               let val rho' = ListPair.foldlEq Env.bind rho (ns, vs)
               in evalTree rho' t
               end 
-             | _ => Impossible.impossible "extracting a non-vcon- bug in MC")
+             | _ => Impossible.impossible "extracting a non-vcon- bug in MC") *)
         | FAIL => raise Fail "reached a fail node in a decision tree"
 
   and runpredef which (rho, arg) = 
