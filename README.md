@@ -74,25 +74,31 @@ reaches a fix point, so compilation can take a few tens of seconds.
 `vminus` and `pplus` can be executed as an interpreter or with a filename as a
 single argument. 
 
-`dtran` is a differentiable compiler, and it takes two arguments: *from* and
-*to*. Each of *from* and *to*, separated by a dash to form a single command-line
-argument, and an optional filename. Each of *from* and *to* is a language, and
-`dtran` will attempt to compile from *from* as source to *to* as target. For
-example, `dtran pp-vm` will translate $P^{+}$ to $V^{-}$. All output 
-is written to stdout. 
+`dtran` is a differentiable compiler, and it takes several arguments: *from* and
+*to*, an optional output file, and any number of input files. Each of *from* and
+*to*, separated by a dash to form a single command-line argument, is a language,
+and `dtran` will attempt to compile from *from* as source to *to* as target. For
+example, `dtran pp-vm` will translate $P^{+}$ to $V^{-}$. 
+
+All output is written to stdout, unless an output filename is provided with `-o outfile`. 
+Outfile specification must come before input files.
 
 Example commands: 
 
 `dtran pp-vm test.pp` -> Translates `test.pp` to $V^{-}$, writing the result to stdout. 
 
-`dtran vm-vm test.vm` -> Parses and unparses `test.vm`. 
+`dtran vm-vm -o output.vm test.vm` -> Parses `test.vm` and unparses it into `output.vm`. 
 
-`dtran pp-d` -> Runs `dtran` as an interpreter that takes in $P^{+}$ code and emits $D$ code. 
+`dtran pp-d -o output.d` -> Runs `dtran` as an interpreter that takes in $P^{+}$ code and emits $D$ code to `output.d`. 
+
+`dtran pp-pp` -> Runs `dtran` as an interpreter that parses $P^{+}$ code unparses it to stdout. 
 
 
-`dtran` can also execute programs: 
+`dtran` can also execute programs with the special `eval` flag: 
 
 `dtran vm-eval test.vm` -> Interprets and evaluates `test.vm`. 
+
+Of course, `eval` cannot go before the dash. You know better than to try. 
 
 All language names can be found by running `dtran` with no arguments. 
 

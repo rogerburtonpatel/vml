@@ -19,6 +19,9 @@ RAWTARGETS=$(addprefix $(BIN)/,$(MAINS:%=%))
 mosml: $(BIN)/dtran
 	@: do nothing, and say nothing about doing nothing
 
+dtran: $(BIN)/dtran
+	@: do nothing, and say nothing about doing nothing
+
 vminus: $(BIN)/vminus
 	@: do nothing, and say nothing about doing nothing
 
