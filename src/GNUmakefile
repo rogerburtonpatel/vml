@@ -28,6 +28,9 @@ vminus: $(BIN)/vminus
 pplus: $(BIN)/pplus
 	@: do nothing, and say nothing about doing nothing
 
+d: $(BIN)/d
+	@: do nothing, and say nothing about doing nothing
+
 
 .PHONY: clean
 
@@ -50,6 +53,9 @@ vminus-mlton: $(MLBS) $(SRCS)
 
 pplus-mlton: $(MLBS) $(SRCS)
 	mlton -default-ann 'allowExtendedTextConsts true' -output pplus -verbose 1 pplus.mlb
+
+d-mlton: $(MLBS) $(SRCS)
+	mlton -default-ann 'allowExtendedTextConsts true' -output d -verbose 1 pplus.mlb
 
 
 # $(BIN)/dtran.opt: $(MLBS) $(SRCS)
@@ -74,11 +80,8 @@ $(BIN)/vminus: $(SRCS) $(CMS)
 $(BIN)/pplus: $(SRCS) $(CMS)
 	$(TOP)/bin/mosml-compile-cm -o $@ pplus.cm
 
-dml-test: $(BIN)/dml-test
-	@: do nothing, and say nothing about doing nothing
-
-$(BIN)/dml-test: $(DML_SRCS) $(DML_CM)
-	$(TOP)/bin/mosml-compile-cm -o $@ $(DML_CM)
+$(BIN)/d: $(SRCS) $(CMS)
+	$(TOP)/bin/mosml-compile-cm -o $@ d.cm
 
 millet.cm: $(CMS)
 	expand-cm all.cm > $@

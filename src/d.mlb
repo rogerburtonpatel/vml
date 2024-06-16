@@ -15,30 +15,13 @@ $(SML_LIB)/basis/basis.mlb
   freshnames.sml
   producer.sml
   lexer-combinators.sml
-
   
   core-lang.sml
-  pplus.sml
-  vminus.sml
-  decision-tree.sml  
   
-  pplus-lex.sml
-  pplus-parse.sml
-  vminus-lex.sml
-  vminus-parse.sml
+  decision-tree.sml
+
   d-lex.sml
   d-parse.sml
 
+  (* d-main.sml *)
   
-
-  d-of-vminus.sml
-  vm-of-pp.sml
-
-  renaming.sml
-  languages.sml
-  dtran.sml
-
-
-  main.sml
-  
-  d-lex.sml
