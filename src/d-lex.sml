@@ -1,4 +1,4 @@
-structure PPlusLex : sig
+structure DLex : sig
   datatype bracket_shape = ROUND | SQUARE | CURLY
 
   datatype token
@@ -87,10 +87,12 @@ struct
 
 
 
-  val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", "_", ",", sbackslash,
+  val reserved = ["val", "=", doublequote, ".", "of", "|", 
+                  "<-", "when", "_", ",", sbackslash,
+                  "test", "->", "=>", "else", "let", "in", "unless", 
+                  "if", "then", "fail", "[]", "E",
                   (* debugging *)
-                  "parse", "pat"
+                  "parse", "tree"
                   ]
   val predefvcons = ["true", "false"]
 

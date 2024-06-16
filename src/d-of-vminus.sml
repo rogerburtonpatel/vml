@@ -340,14 +340,14 @@ struct
                 val c  = (V.CONDITION e)
                 val choices_no_eq = choices -- eq withsubst (x, e)
                 val choices_no_e = choices --- eq --- c
-            in  D.TRY_LET (x, translate context e, 
+            in  D.LET_UNLESS (x, translate context e, 
                             compile (makeKnown x context) choices_no_eq, 
                             SOME (compile context choices_no_e))
             end 
         | NONE => 
         (case findAnyRHSBinding context choices
           of SOME (x, y as V.C (C.NAME y')) => 
-              D.TRY_LET (x, D.C (C.NAME y'), compile (makeKnown y' context) 
+              D.LET_UNLESS (x, D.C (C.NAME y'), compile (makeKnown y' context) 
                         (choices -- (V.EQN (x, y))), NONE)
           | SOME (x, e) => can'tunify x e
           | NONE => 
@@ -358,10 +358,12 @@ struct
                 val cmp_pruned = choices -- eq withsubst (x, e)
                 val no_eq_choices_no_c = choices --- eq -- c
                 val no_e_choices = choices --- eq --- c
-            in D.CMP (x, translate context e, 
+            in 
+            (raise Impossible.unimp "fix mc")
+            (* D.IF_THEN_ELSE (x, , 
                          compile context cmp_pruned, 
                          compile context no_eq_choices_no_c, 
-                         compile context no_e_choices)
+                         compile context no_e_choices) *)
             end 
           | NONE => 
         (case findAnyCondition context choices
@@ -371,7 +373,7 @@ struct
                 val c  = V.CONDITION e
                 val choices_x_for_e = choices -- c withsubst (x, e)
                 val choices_no_e = choices --- eq --- c
-            in  D.TRY_LET (x, translate context e, 
+            in  D.LET_UNLESS (x, translate context e, 
                             compile (makeKnown x context) choices_x_for_e, 
                             SOME (compile context choices_no_e))
             end 

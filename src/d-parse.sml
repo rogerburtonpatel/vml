@@ -1,9 +1,9 @@
-structure PPlusParse : sig
-  val parse    :  PPlusLex.token list -> PPlus.def list Error.error
+structure DParse : sig
+  val parse    :  DLex.token list -> D.def list Error.error
 end = struct
 
-  structure L = PPlusLex
-  structure A = PPlus (* AST *)
+  structure L = DLex
+  structure A = D (* AST *)
 
   fun listShow _ [] = "[]"
     | listShow show xs = "[" ^ String.concatWith ", " (map show xs) ^ "]"
@@ -35,12 +35,15 @@ end = struct
   val peek    = P.peek
   val notFollowedBy = P.notFollowedBy
   val eos     = P.eos
+  val optional     = P.optional
   
   fun flip f x y  = f y x
   val member = ListUtil.member
   fun uncurry f (x, y) = f x y
   val backslash = StringEscapes.backslash
   (* utilities *)
+
+  fun curry4 f x y z w = f (x, y, z, w)
 
   (* val int       = P.maybe (fn (L.INT   n)    => SOME n  | _ => NONE) one *)
   val name         = P.maybe (fn (L.NAME  n)    => SOME n  | _ => NONE) one
@@ -94,56 +97,54 @@ end = struct
 
   val vcon = Core.K <$> (sat isVcon vcon)
 
-  fun ppname n = A.C (Core.NAME n)
-  fun ppvconapp vc es = A.C (Core.VCONAPP (vc, es))
-  fun pplambdaexp n body = A.C (Core.LAMBDAEXP (n, body))
-  fun ppfunapp e1 e2 = A.C (Core.FUNAPP (e1, e2))
-  fun ppcase e branches = A.I (A.CASE (e, branches))
+  fun dname n = A.C (Core.NAME n)
+  fun dvconapp vc es = A.C (Core.VCONAPP (vc, es))
+  fun dlambdaexp n body = A.C (Core.LAMBDAEXP (n, body))
+  fun dfunapp e1 e2 = A.C (Core.FUNAPP (e1, e2))
+  fun dtree t = A.I t
 
-(* p ::= term [| term]
-term ::= factor {, factor}
-factor ::= atom [<- exp]
-atom ::= x | K {atom} | when exp | ❨p❩ *)
 
   fun nullaryvcon vc = A.C (Core.VCONAPP (vc, []))
-  val emptyconapp : PPlus.exp PPlus.pattern P.producer
-        = flip (curry A.CONAPP) <$> succeed [] <*> vcon
+  fun branch a = succeed a
+
+(* test 𝑥 {𝐾 {𝑦} ⇒ 𝑡 }[else 𝑡] node
+| let 𝑥 = 𝑒 in 𝑡 [ unless fail => 𝑡]-unless node
+| if 𝑥 = 𝑒 then 𝑡 else 𝑡 node
+| ∃ 𝑥. 𝑡 node
+| fail fail *)
 
   val exp = P.fix (fn exp : A.exp P.producer => 
     let         
-    val pattern = P.fix (fn pattern => 
-      let val atom = P.fix (fn atom =>
-      curry A.CONAPP <$> vcon <*> many (emptyconapp <|> atom)
-        <|> A.WHEN     <$> (word "when" >> exp)
-        <|> wildcard >> (succeed A.WILDCARD)
-        <|> A.PNAME    <$> name
-        <|> bracketed pattern)
-    val factor = A.PATGUARD <$> (P.pair <$> atom <*> leftarrow >> exp)       
-        <|> atom 
-    val term = A.PATSEQ <$> (P.pair <$> factor <~> comma <*> pattern)      
-        <|> factor  
-    in A.ORPAT <$> (P.pair <$> term  <~> bar <*> term)                       
-        <|> term
-    end)
-    fun choice e = P.pair <$> pattern <*> rightarrow >> e
+    val tree = P.fix (fn tree : (D.exp, 'a) D.tree P.producer =>
+      let val branch = P.fix (fn branch : ((Core.vcon * string list) * (D.exp, 'a) D.tree) P.producer
+      =>  
+      P.pair <$> (P.pair <$> vcon <*> many name) <*> tree)
+      in
+        curry3 A.TEST <$> word "test" >> name <*> many branch <*> optional (word "else" >> tree)
+    <|> curry4 A.LET_UNLESS <$> word "let" >> name <*> equalssign >> exp 
+        <*> word "in" >> tree 
+        <*> optional (word "unless" >> word "fail" >> word "=>" >> tree)
+    <|> curry4 A.IF_THEN_ELSE <$> word "if" >> name <*> equalssign >> name 
+       <*> word "then" >> tree <*> word "else" >> tree
+    <|> word "fail" >> succeed A.FAIL
+    end
+    )
 
-    val vconarg : A.exp P.producer =  ppname <$> name 
+    val vconarg : A.exp P.producer =  dname <$> name 
                                   <|> nullaryvcon <$> vcon 
                                   <|> bracketed exp
     val subexp = P.fix (fn subexp =>
-      ppvconapp <$> vcon <*> many vconarg                                  
-        <|> pplambdaexp  <$> bslash >> name <~> dot <*> exp                         
-        <|> ppname       <$> name                                                   
-        <|> ppcase       <$> word "case" >> exp <*> 
-                      word "of"   >> barSeparated (choice exp)               
+      dvconapp <$> vcon <*> many vconarg                                  
+        <|> dlambdaexp  <$> bslash >> name <~> dot <*> exp                         
+        <|> dname       <$> name                                                   
+        <|> A.I <$> tree
         <|> bracketed exp)
     in 
       (* reserved "pat" >> pattern >> succeed (ppname "x") <|>  *)
               (* debugging *)
-      uncurry ppfunapp <$> (P.pair <$> subexp <*> subexp)                    
+      uncurry dfunapp <$> (P.pair <$> subexp <*> subexp)                    
       <|> subexp
      end)
-    
 
   val def = 
         word "val"       >> (curry A.DEF <$> name <*> (equalssign >> exp))   
