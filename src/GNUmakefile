@@ -10,7 +10,7 @@ SRCS=$(shell echo *.sml)
 DML_SRCS=dml/example-dml.sml Unit.sml
 DML_CM=dml/dml.cm
 
-MAINS=dtran.opt dtran vminus.opt vminus pplus.opt pplus
+MAINS= dtran vminus pplus
 
 RAWTARGETS=$(addprefix $(BIN)/,$(MAINS:%=%))
 
@@ -37,26 +37,26 @@ clean:
 all: $(MAINS:%=$(BIN)/%)
 	@: do nothing, and say nothing about doing nothing
 
-.PHONY: mlton
+.PHONY: dtran-mlton vminus-mlton pplus-mlton
 
-mlton: $(BIN)/dtran.opt
-	@: do nothing, and say nothing about doing nothing
+dtran-mlton: $(MLBS) $(SRCS)
+	mlton -default-ann 'allowExtendedTextConsts true' -output dtran -verbose 1 all.mlb
 
-vminus-mlton: $(BIN)/vminus.opt
-	@: do nothing, and say nothing about doing nothing
+vminus-mlton: $(MLBS) $(SRCS)
+	mlton -default-ann 'allowExtendedTextConsts true' -output vminus -verbose 1 vminus.mlb
 
-pplus-mlton: $(BIN)/pplus.opt
-	@: do nothing, and say nothing about doing nothing
+pplus-mlton: $(MLBS) $(SRCS)
+	mlton -default-ann 'allowExtendedTextConsts true' -output pplus -verbose 1 pplus.mlb
 
 
-$(BIN)/dtran.opt: $(MLBS) $(SRCS)
-	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 all.mlb
+# $(BIN)/dtran.opt: $(MLBS) $(SRCS)
+# 	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 all.mlb
 
-$(BIN)/vminus.opt: $(MLBS) $(SRCS)
-	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 vminus.mlb
+# $(BIN)/vminus.opt: $(MLBS) $(SRCS)
+# 	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 vminus.mlb
 
-$(BIN)/pplus.opt: $(MLBS) $(SRCS)
-	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 pplus.mlb
+# $(BIN)/pplus.opt: $(MLBS) $(SRCS)
+# 	mlton -default-ann 'allowExtendedTextConsts true' -output $@ -verbose 1 pplus.mlb
 
 
 %.mlb: %.cm

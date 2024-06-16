@@ -62,8 +62,7 @@ structure Main = struct
       ; OS.Process.exit OS.Process.failure
       )
         | Dtran.Can'tDigest Languages.D => 
-          (app eprint [arg0, ": Uh-oh!\n  I can't parse or evaluate D: ",
-                             "D is parsed and evaluated as Standard ML!\n"]
+          (app eprint [arg0, ": Uh-oh!\n  I can't parse or evaluate D yet.\n"]
       ; OS.Process.exit OS.Process.failure
       )
         | Dtran.Can'tDigest Languages.Eval => 
