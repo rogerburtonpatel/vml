@@ -1,0 +1,65 @@
+\contentsline {section}{Abstract}{1}{section*.1}%
+\contentsline {section}{Contents}{2}{section*.2}%
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
+\contentsline {section}{\numberline {2}Pattern Matching and its Extensions}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Popular extensions to pattern matching}{8}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Side conditions}{8}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Pattern guards}{11}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Or-patterns}{13}{subsubsection.2.1.3}%
+\contentsline {subsubsection}{\numberline {2.1.4}Wrapping up pattern matching and extensions}{15}{subsubsection.2.1.4}%
+\contentsline {section}{\numberline {3}Equations}{16}{section.3}%
+\contentsline {subsection}{\numberline {3.1}\ensuremath {\mathcal {VC}}\xspace has a challenging cost model}{18}{subsection.3.1}%
+\contentsline {section}{\numberline {4}A compromise}{19}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Two languages of a kind}{20}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Introducing\nonbreakingspace \ensuremath {V^{-}}\xspace }{21}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Programming in\nonbreakingspace \ensuremath {V^{-}}\xspace }{22}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Formal Semantics of $\ensuremath {V^{-}}\xspace $:}{23}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Expressions}{24}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Names and refinement of environments}{24}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}Guards}{25}{subsubsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.5}Notable rules in the \ensuremath {V^{-}}\xspace semantics}{26}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Rules (Big-step Operational Semantics) for\nonbreakingspace \ensuremath {U}\xspace , shared by\nonbreakingspace \ensuremath {V^{-}}\xspace and\nonbreakingspace \ensuremath {D}\xspace }{27}{subsection.4.6}%
+\contentsline {subsubsection}{\numberline {4.6.1}Judgement forms for \ensuremath {U}\xspace }{27}{subsubsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.7}Evaluating general expressions in \ensuremath {U}\xspace }{27}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Rules (Big-step Operational Semantics) specific to\nonbreakingspace \ensuremath {V^{-}}\xspace }{28}{subsection.4.8}%
+\contentsline {subsubsection}{\numberline {4.8.1}Judgement forms for \ensuremath {V^{-}}\xspace }{28}{subsubsection.4.8.1}%
+\contentsline {subsubsection}{\numberline {4.8.2}Choosing and solving a guard}{29}{subsubsection.4.8.2}%
+\contentsline {subsubsection}{\numberline {4.8.3}Properties of guards}{29}{subsubsection.4.8.3}%
+\contentsline {subsubsection}{\numberline {4.8.4}Desugaring of Complex Equations}{29}{subsubsection.4.8.4}%
+\contentsline {subsubsection}{\numberline {4.8.5}Refinement with different types of guards}{29}{subsubsection.4.8.5}%
+\contentsline {subsubsection}{\numberline {4.8.6}Evaluating \textbf {if-fi}}{31}{subsubsection.4.8.6}%
+\contentsline {section}{\numberline {5}\ensuremath {V^{-}}\xspace can be compiled to a decision tree}{31}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Introducing\nonbreakingspace \ensuremath {D}\xspace }{31}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}\ensuremath {D}\xspace is a generalization of Maranget's trees}{32}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Rules (Big-step Operational Semantics) for ${\ensuremath {D}\xspace }$:}{34}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Evaluating Decision Trees}{34}{subsubsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.4}The\nonbreakingspace \ensuremath {\mathcal {D}}\xspace \ algorithm:\nonbreakingspace \ensuremath {V^{-}}\xspace $\rightarrow $\nonbreakingspace \ensuremath {D}\xspace }{35}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Big-step rules for \ensuremath {\mathit {compile}}\xspace }{36}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Rules (Big-step Translation) for compiling \textbf {if-fi}\xspace }{37}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Reduction Strategies}{39}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}Full Big-step rules for \ensuremath {\mathit {compile}}\xspace , with no descriptions}{39}{subsection.5.8}%
+\contentsline {subsection}{\numberline {5.9}Translation from\nonbreakingspace \ensuremath {V^{-}}\xspace to\nonbreakingspace \ensuremath {D}\xspace preserves semantics}{41}{subsection.5.9}%
+\contentsline {section}{\numberline {6}Implementations}{41}{section.6}%
+\contentsline {section}{\numberline {7}Related and Future Work}{41}{section.7}%
+\contentsline {section}{\numberline {8}Discussion: The design of \ensuremath {V^{-}}\xspace }{42}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Forms in \ensuremath {\mathcal {VC}}\xspace and \ensuremath {V^{-}}\xspace }{42}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Choice in \ensuremath {V^{-}}\xspace vs. \ensuremath {\mathcal {VC}}\xspace }{43}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Conclusion}{44}{section.9}%
+\contentsline {section}{\numberline {10}Acknowledgements}{44}{section.10}%
+\contentsline {section}{References}{45}{section*.22}%
+\contentsline {section}{\numberline {A}Is\nonbreakingspace \ensuremath {V^{-}}\xspace \ a true subset of\nonbreakingspace \ensuremath {\mathcal {VC}}\xspace ?}{47}{section.1}%
+\contentsline {section}{\numberline {B}Formal Definitions of all languages}{48}{section.2}%
+\contentsline {subsection}{\numberline {B.1}Rules (Big-step Operational Semantics) for\nonbreakingspace \ensuremath {U}\xspace , shared by\nonbreakingspace \ensuremath {V^{-}}\xspace and\nonbreakingspace \ensuremath {D}\xspace }{48}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {B.1.1}Judgement forms for \ensuremath {U}\xspace }{48}{subsubsection.2.1.1}%
+\contentsline {subsection}{\numberline {B.2}Evaluating general expressions in \ensuremath {U}\xspace }{49}{subsection.2.2}%
+\contentsline {subsection}{\numberline {B.3}Rules (Big-step Operational Semantics) specific to\nonbreakingspace \ensuremath {V^{-}}\xspace }{50}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {B.3.1}Judgement forms for \ensuremath {V^{-}}\xspace }{50}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {B.3.2}Choosing and solving a guard}{50}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {B.3.3}Properties of guards}{50}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {B.3.4}Desugaring of Complex Equations}{50}{subsubsection.2.3.4}%
+\contentsline {subsubsection}{\numberline {B.3.5}Refinement with different types of guards}{50}{subsubsection.2.3.5}%
+\contentsline {subsubsection}{\numberline {B.3.6}Evaluating \textbf {if-fi}}{52}{subsubsection.2.3.6}%
+\contentsline {subsection}{\numberline {B.4}Rules (Big-step Operational Semantics) for ${\ensuremath {D}\xspace }$:}{53}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {B.4.1}Evaluating Decision Trees}{53}{subsubsection.2.4.1}%
+\contentsline {subsection}{\numberline {B.5}Full Big-step rules for \ensuremath {\mathit {compile}}\xspace , with no descriptions}{54}{subsection.2.5}%
+\contentsline {subsection}{\numberline {B.6}Rules (Big-step Translation) for compiling \textbf {if-fi}\xspace }{54}{subsection.2.6}%

@@ -4,20 +4,21 @@ This repository contains the source for $V^{-}$ and $P^{+}$, a subset of Verse a
 
 The code is the implementation component of *An Alternative to Pattern Matching,
 Inspired by Verse*, my undergraduate senior thesis with Norman Ramsey and Milod
-Kazerounian. The repository also contains the source for the paper. The full paper can be found [here](https://rogerburtonpatel.github.io/fullpaper.pdf). 
+Kazerounian. The repository also contains the source for the paper. The full
+paper can be found [here](https://rogerburtonpatel.github.io/fullpaper.pdf). 
 
 
 
-<!-- 
+
 `tex`: tex source and generated pdfs. 
 
-`tex/.tex-out`: the glut of latex build output lives here. 
+`*/.tex-out`: the glut of latex build output lives here. 
 
 `tex/translations`: specifically for translation work. 
 
 `tex/paper-sections`: formal and informal work on the paper. 
 
-`braindump`: dump for all ideas, good and especially bad.  -->
+`braindump`: dump for all ideas, good and especially bad. 
 
 `src`: source code for vml. 
 

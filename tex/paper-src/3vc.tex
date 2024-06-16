@@ -1,0 +1,247 @@
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+  \institution{Tufts University}
+  \streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+}
+\begin{document}
+    
+    \section{Equations}
+    \label{verseoverobservers}
+
+    An intriguing alternative to pattern matching exists in~\it{equations}, from
+    the Verse Calculus (\VC), a core calculus for the functional logic
+    programming language~\it{Verse}~\citep{antoy2010functional,
+    hanus2013functional, verse}. (For the remainder of this thesis, I~use “\VC”
+    and “Verse” interchangeably.)
+
+    % Equations present a different, yet powerful, way to write code that makes
+    % decisions and deconstructs data. In this section, I~will introduce you to
+    % equations similarly to I~how I~introduced to you pattern matching. Once
+    % you're familiar with equations, you'll be ready to compare their strengths
+    % and weaknesses with those of pattern matching, and judge the compromise I
+    % propose. 
+
+    % Even if you read~\citet{verse},~\VC's equations and the paradigms of
+    % functional logic programming might look unfamiliar. To help ease you into
+    % familiarity with equations, I~ground explanations and examples in how
+    % they relate to pattern matching. 
+
+    \VC's~\it{equations} test for structural equality and create bindings. Like
+    pattern matching, equations scrutinize and deconstruct data at runtime by
+    testing for structural equality and unifying names with values. Unlike
+    pattern matching,~\VC's equations can unify names on both left-~\it{and}
+    right-hand sides. 
+
+    Every equation in~\VC takes the form~\it{x = e}, where~\it{x} is a name and
+    \it{e} is an expression\footnote{To make programmers happy, full Verse
+    allows an equation to take the form $e_{1} = e_{2}$, which desugars to
+    $\vexists{x} x = e_{1};\; x = e_{2}$, with $x$ fresh.}. During runtime,~\VC
+    relies on a process called~\it{unification}~\citep{robinson} to attempt to
+    bind~\it{x} and any unbound names in~\it{e} to values. Unification is the
+    process of finding a substitution that makes two different logical atomic
+    expressions identical. Much like pattern matching, unification can fail if
+    the runtime attempts to bind incompatible values or structures (i.e., finds
+    no substitution). 
+
+    An equation offers a form of binding that looks like a single pattern match.
+    What about a list of many patterns and right-hand sides, as in a case
+    expression? For this,~\VC has~\it{choice} ($\choice$). The full semantics of
+    choice are too complex to cover here, but choice, when combined with the
+    \one operator, has a very similar semantics to case; that is, “proceed
+    and create bindings if any one of these computations succeed.” 
+
+    Let's look at what equations,~\one, and choice look like in~\VC
+    (Figure~\ref{fig:versearea}). I've written the~\tt{area} function in~\VC
+    extended with a~\tt{float} type and a multiplication operator~\tt{*}.
+
+    \begin{figure}[]
+        \verselst
+        \begin{lstlisting}[numbers=none]
+$\exists$ vc_area. vc_area = $\lambda$ sh. 
+  one {  $\exists$ s. sh   = $\langle$SQUARE, s$\rangle$; s * s
+       $\choice$ $\exists$ w h. sh = $\langle$TRIANGLE, w, h$\rangle$; 
+              0.5 * w * h
+       $\choice$ $\exists$ b1 b2 h. sh = $\langle$TRAPEZOID, b1, b2, h$\rangle$; 
+              0.5 * (b1 + b2) * h}
+        \end{lstlisting}
+
+        \small
+\begin{verbatim}
+
+
+                        Laws for area: 
+                        
+                        area (SQUARE s)              == s * s 
+                        area (TRIANGLE (w, h))       == 0.5 * w * h
+                        area (TRAPEZOID (b1, b2, h)) == 0.5 * (b1 + b2) * h
+        \end{verbatim}
+    \caption{\tt{vc\_area} in~\VC uses existentials and equations rather than
+    pattern matching. Below are the algebraic laws for the original~\tt{area}
+    function.}~\Description{An implementation of area in~\VC.}
+    \label{fig:versearea}
+    \end{figure}
+
+    In the figure, the name~\tt{vc\_area} is bound to a lambda ($\lambda$) that
+    takes a single argument,~\tt{sh}. The body of the function is a~\one
+    expression over three choices (separated by~$\choice$). If any of the
+    choices succeeds,~\one~ensures evaluation of the other choices halts and the
+    succeeding expression's result is returned. In each branch, the existential
+    $\exists$ introduces names~\tt{s, w, h, b1, b2}, and is followed by an
+    \it{equation} that unifies them with~\tt{sh}, along with the familiar value
+    constructors~\tt{SQUARE},~\tt{TRIANGLE}, and~\tt{TRAPEZOID}. After the
+    equation is a semicolon followed by an expression, which is evaluated if the
+    equation succeeds. As in~\hyperref[fig:pmarea]{\tt{pm\_area}}, the
+    right-hand sides of~\tt{vc\_area} are~\it{guarded} by a “check;” now, the
+    check is successful unification in an equation rather than a successful
+    match on a pattern. Similarly,~\one with a list of choices represents
+    matching on any~\it{one} pattern to evaluate a single right-hand side. 
+
+    Why use equations? I~begin with a digestible claim:~\VC's equations are
+    preferable to observer functions. This claim mirrors my argument for pattern
+    matching, and to support it I~appeal to the Nice~Properties: 
+
+    \begin{enumerate}
+      \item~\hyperref[p1]{\it{Lawlike.}} 
+      \tt{vc\_area} makes only one addition to the algebraic laws: the explicit
+      $\exists$. This makes~\tt{vc\_area} look more like mathematical notation
+      than pure algebraic laws, but that might not be a bad thing: while it less
+      resembles the algebraic laws a programmer would write, it more resembles
+      the equations that a mathematician would. 
+      \item~\hyperref[p2]{\it{Single copy.}}~\tt{vc\_area} does not duplicate any code. 
+      \item~\hyperref[p5]{\it{Exhaustiveness.}}  By writing the equations that
+      unify~\tt{sh} with the value-constructor forms first, it is easy in this
+      example to see that the code is exhaustive. Creating a static analysis
+      tool for~\VC that ensures exhaustiveness on all expressions may or may not
+      be a significant challenge; full Verse has a tool that can verify if a
+      terminating expression on the right-hand side of a function will
+      \it{always succeed} or not~\citep{peyton-jones2024verification}.
+      \item~\hyperref[p3]{\it{Call-free.}}~\tt{vc\_area} deconstructs
+      user-defined types as easily as~\hyperref[fig:pmarea]{\tt{pm\_area}} does
+      with pattern matching. 
+      \item~\hyperref[p4]{\it{Signposting.}}~\tt{vc\_area} has all important
+      internal values named explicitly.
+      
+      % This Property may not hold, because~\VC on its own is untyped.
+      % Without a type system, a compiler cannot help me with non-exhaustive
+      % cases. However, there is no published compiler, type system or no, for
+      % Verse, and only when one is made available can I~make this assertion. For
+      % this reason, and for the sake of focusing on more important details, I
+      % choose to proceed in my analysis of equations in~\VC without considering
+      % this Property. 
+    \end{enumerate}
+
+    You understand why I claim programmers prefer equations to observer
+    functions. Now I~make a stronger claim: equations are~\it{at least as good
+    as} pattern matching with popular extensions. How can I~claim this? By
+    appealing again to the Nice~Properties! In~Section~\ref{pmandextensions},
+    I~demonstrated how pattern matching had to resort to extensions to regain
+    the Properties when challenging examples stole them away. In
+    Figure~\ref{fig:verseextfuncs}, I've implemented those examples in~\VC (this
+    time extended with strings, floats, and~\tt{*}) using choice and equations.
+    Take a look for yourself! 
+
+    \begin{figure}[ht] 
+        \begin{minipage}[h]{0.54\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+                            showstringspaces=false,
+                            frame=single]
+$\exists$ exclaimTall. exclaimTall = $\lambda$ sh. 
+  one { 
+      $\exists$ s. sh = $\langle$Square s$\rangle$; 
+      s > 100.0; "Wow! That's a sizeable square!"
+    | $\exists$ w h. sh = $\langle$Triangle, w, h$\rangle$; 
+      h > 100.0; "Goodness! Towering triangle!"
+    | $\exists$ b1 b2 h. sh = $\langle$Trapezoid, b1, b2, h$\rangle$;
+      h > 100.0; "Zounds! Tremendous trapezoid!"
+    | "Your shape is small." }
+            \end{lstlisting}
+                \Description{exclaimTall}
+        \subcaption{\tt{exclaimTall} in~\VC }
+            \label{fig:verseexclaimtall} 
+        %   \vspace{4ex}
+        \end{minipage}%%
+        \begin{minipage}[h]{0.5\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                        frame=single]
+$\exists$ tripleLookup. tripleLookup = $\lambda$ rho x. 
+    one { $\exists$ w. lookup rho x = $\langle$Just w$\rangle$; 
+          $\exists$ y. lookup rho w = $\langle$Just y$\rangle$; 
+          $\exists$ z. lookup rho y = $\langle$Just z$\rangle$;
+          z
+        | handleFailure x }
+          \end{lstlisting}
+                \Description{exclaimTall}
+            \subcaption{\tt{tripleLookup} in~\VC }
+            \label{fig:versetriplelookup} 
+        \vspace{4ex}
+        \end{minipage} 
+        \begin{minipage}[h]{\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em, 
+                            frame=single, showstringspaces=false]
+$\exists$ game_of_token. game_of_token = $\lambda$ token. 
+  $\exists$ f. one {
+         token = one { $\langle$BattlePass, f$\rangle$ | $\langle$ChugJug, f$\rangle$ | $\langle$TomatoTown, f$\rangle$}; 
+           $\langle$"Fortnite", f$\rangle$
+       | token = one { $\langle$HuntersMark, f$\rangle$ | $\langle$SawCleaver, f$\rangle$}; 
+           $\langle$"Bloodborne", 2 * f$\rangle$
+       | token = one { $\langle$MoghLordOfBlood, f$\rangle$ | $\langle$PreatorRykard, f$\rangle$}; 
+           $\langle$"Elden Ring", 3 * f$\rangle$
+       |   $\langle$"Irrelevant", 0$\rangle$ }
+          \end{lstlisting}
+                \Description{game_of_token in~\VC}
+        \subcaption{\tt{game\_of\_token} in~\VC }
+            \label{fig:versegot} 
+        \vspace{4ex}
+        \end{minipage}%% 
+    \caption{Code for the~\ref{pmandextensions} functions with equations looks
+    similar, and it doesn't need extensions.}
+    \label{fig:verseextfuncs}
+      \end{figure}
+        
+    The code in Figure~\ref{fig:verseextfuncs} has all the Nice~Properties. This
+    is promising for~\VC. If it rivals pattern matching with popular extensions
+    in desirable properties, and~\VC does everything using only equations and
+    choice, it seems like the language is an intriguing option for writing code! 
+
+    \subsection{\VC has a challenging cost model}
+    \label{vcbadcost}
+
+    So what's the catch? In~\VC, names (logical variables) are~\it{values}, and
+    they can just as easily be the result of evaluating an expression as an
+    integer or tuple. To bind these names,~\VC, like other functional logic
+    languages, relies on~\it{unification} of its logical variables and
+    \it{search} at runtime to meet a set of program
+    constraints~\citep{antoy2010functional, hanus2013functional}. Combining
+    unifying logical variables with search requires backtracking, which can lead
+    to exponential runtime cost~\citep{hanus2013functional, wadler1985replace,
+    clark1982introduction}. 
+
+    % Todo: An example would be nice. Backtracking/evaluating backwards, then
+    % done. 
+
+    Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a
+    data structure that enforces linear runtime performance by guaranteeing no
+    part of the scrutinee will be examined more than once~\citep{maranget}. A
+    decision tree does not backtrack: once a program makes a decision based on
+    the form of a value, it does not re-test it later with new information. 
+    
+
+\end{document}
