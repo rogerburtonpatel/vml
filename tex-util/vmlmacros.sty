@@ -237,7 +237,8 @@
 % \newcommand\dbar{\ensuremath{\square}}
 \newfontfamily\dys{OpenDyslexic}[Scale=2.0]
 % \newcommand\dbar{\raisebox{-4pt}{\dys ▯}}
-\newcommand\dbar{\raisebox{-4pt}{\dys {▯}}\llap{\textsf{X\hspace{0.7pt}}}}
+\newcommand\dbar{\raisebox{-4pt}{\dys {▯}}}
+% \llap{\hspace{0.7pt}}}
 
 \renewcommand\v[1][]{\ensuremath{v_{#1}}\xspace}
 
@@ -744,7 +745,7 @@ A result is either a single value \v or \fail.
 
 Here, I show all the rules which are shared by \VMinus and \D under \U. 
 
-\[
+\begin{mathpar}
 \inferrule*[Left=\textsc{ (Eval-Vcon) }]
     {\inferrule* {}
     {
@@ -754,61 +755,61 @@ Here, I show all the rules which are shared by \VMinus and \D under \U.
     }}
     {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={K(v_{1}, 
     \dots v_{i})}]}
-\]
 
-\[
-\inferrule*[Left=\textsc{ (Eval-Vcon-Fail) }]
+\hva \and 
+
+\inferrule*[Right=\textsc{ (Eval-Vcon-Fail) }]
     {\inferrule* {}
     {
     \exists e_{i}.\; 1 \leq i \leq n : \vmeval[exp={\expr[i]}, result={\fail}]
     }}
     {\vmeval[exp={K(\expr[1], \dots \expr[n])}, result={\fail}]}
-\]
 
 
-\[
+\hva \\
+
 \inferrule*[Left=\textsc{ (Eval-Name) }]
     {x \in \dom \rho 
     \\\\
     \rho(x) = \v}
     {\vmeval[exp={x}, result={\v}]}
-\]
 
-\[
-\inferrule*[Left=\textsc{ (Eval-LambdaDecl-MkClosure)}]
+\hva \and 
+
+\inferrule*[Right=\textsc{ (Eval-LambdaDecl)}]
     {\ }
     {\prun[exp={\lambda x.\expr}, value={\llparenthesis \lambda x.\expr, \rho \rrparenthesis}]}
-\]
 
+\hva \\
 
-\[
-\inferrule*[Left=\textsc{ (Eval-Funapp-WithClosure) }]
+\inferrule*[Left=\textsc{ (Eval-Funapp) }]
     {\vmeval[exp={\expr[1]}, result={\llparenthesis \lambda x.\expr, \rho' \rrparenthesis}]
     \\\\
     \vmeval[exp={\expr[2]}, result={\v}]
     \\\\
     \vmeval[env= {(\rho + \rho')}, envext=\bracketed{x \mapsto \v}]}
     {\vmeval[exp={\expr[1]\; \expr[2]}]}
-\]
 
-\[
-\inferrule*[Left=\textsc{ (Eval-Funapp-Fail) }]
+\hva \and
+
+\inferrule*[Right=\textsc{ (Eval-Funapp-Fail) }]
     {\vmeval[exp={\expr[1]}, result={\llparenthesis \lambda x.\expr, \rho' \rrparenthesis}]
     \\\\
     \vmeval[exp={\expr[2]}, result={\fail}]}
     {\vmeval[exp={\expr[1]\; \expr[2]}, result=\fail]}
-\]
 
-\[
+\hva \\
+
 \inferrule*[Left=\textsc{ (Eval-Literal) }]
     {\ }
     {\vmeval[exp={\v}, result={\v}]}
-\]
+
+\end{mathpar}
 }
 
 \newcommand\guardnameexpbot{%
-\[
-\inferrule*[Left=\textsc{ (Guard-NameExp-Bot) }]
+\ensuremath{%
+  \inferrule*[Left=\textsc{ (Guard-NameExp-Bot) }]
     {\inferrule* {}
     {
     x \in \dom \rho
@@ -817,13 +818,12 @@ Here, I show all the rules which are shared by \VMinus and \D under \U.
     \\\\
     \rho(x) = \bot
     }}
-    {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}
-\]
+    {\eqrefine[eq={x = \expr},newenv={\Rho[x \mapsto \v]}]}}
 }
 
 \newcommand\guardnameexpeq{%
-\[
-\inferrule*[Left=\textsc{ (Guard-NameExp-Eq) }]
+\ensuremath{%
+  \inferrule*[Left=\textsc{ (Guard-NameExp-Eq) }]
     {\inferrule* {}
     {
     x \in \dom \rho
@@ -832,13 +832,12 @@ Here, I show all the rules which are shared by \VMinus and \D under \U.
     \\\\
     \rho(x) = \v
     }}
-    {\eqrefine[eq={x = \expr},newenv={\Rho}]}
-\]
+    {\eqrefine[eq={x = \expr},newenv={\Rho}]}}
 }
 
 \newcommand\guardnameexpfail{%
-\[
-\inferrule*[Left=\textsc{ (Guard-NameExp-Fail) }]
+\ensuremath{%
+  \inferrule*[Right=\textsc{ (Guard-NameExp-Fail) }]
     {\inferrule* {}
     {
     x \in \dom \rho
@@ -849,35 +848,32 @@ Here, I show all the rules which are shared by \VMinus and \D under \U.
     \\\\
     \v \neq \v'
     }}
-    {\eqrefine[eq={x = \expr},newenv=\dagger]}
-\]
+    {\eqrefine[eq={x = \expr},newenv=\dagger]}}
 }
 
 \newcommand\guardnamesbotsucc{%
-\[
-\inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ) }]
+\ensuremath{%
+  \inferrule*[Right=\textsc{ (Guard-Names-Bot-Succ) }]
     {\inferrule* {}
     {
     x, \;y  \in \dom \rho
     \\\\
     \rho(x) = \v,\; \rho(y) = \bot
     }}
-    {\eqrefine[eq={x = y},newenv={\Rho[y \mapsto \v]}]}
-\]
+    {\eqrefine[eq={x = y},newenv={\Rho[y \mapsto \v]}]}}
 }
 
 
 \newcommand\guardnamesbotsuccrev{%
-\[
-\inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ-Rev) }]
+\ensuremath{%
+  \inferrule*[Left=\textsc{ (Guard-Names-Bot-Succ-Rev) }]
     {\inferrule* {}
     {
     x, \;y  \in \dom \rho
     \\\\
     \rho(x) = \bot,\; \rho(y) = \v
     }}
-    {\eqrefine[eq={x = y},newenv={\Rho[x \mapsto \v]}]}
-\]
+    {\eqrefine[eq={x = y},newenv={\Rho[x \mapsto \v]}]}}
 }
 
 \newcommand\vmsemantics{% 
@@ -890,20 +886,23 @@ These judgement forms and rules are specific to \VMinus.
 \showvjudgement{Guard-reject}\gfail
 
 \subsubsection{Choosing and solving a guard}
+\begin{mathpar}
+  
 
-\[
 \inferrule*[Left=\textsc{ (Solve-Guard-Refine) }]
     {\grefine[solution=\Rhoprime]
     \and
     \vmgs[env=\Rhoprime,guards=\;\gsgs]}
     {\vmgs[guards=\gseqgs{\g}]}
-\]
 
-\[
+    \hva \\
+
 \inferrule*[Left=\textsc{ (Solve-Guard-Reject) }]
     {\gfail}
     {\vmgs[guards=\gseqgs{\g},solution=\dagger]}
-\]
+
+\end{mathpar}
+
 \subsubsection{Properties of guards}
 
 \[
@@ -941,21 +940,26 @@ These judgement forms and rules are specific to \VMinus.
 % \]
 
 \subsubsection{Refinement with different types of guards}
+\begin{mathpar}
 
 \guardnameexpbot
 
-\guardnameexpeq
+\hva \and
+
+\guardnameexpeq \hva \\
 
 \guardnameexpfail
 
-\guardnamesbotsucc
+\hva \and
+
+\guardnamesbotsucc \hva \\
 
 \guardnamesbotsuccrev
-
+\end{mathpar}
 
 % \rab{The vcon success rule is being edited with a change in the semantics.}
+\begin{mathpar}
 
-\[
   \inferrule*[Left=\textsc{ (Guard-Vcon-Succ) }]
       {\inferrule* {}
       {x \in \dom \rho 
@@ -969,9 +973,9 @@ These judgement forms and rules are specific to \VMinus.
       }}
       {\eqrefine[eq={x = K\; e_{1} \dots e_{n}}, 
               newenv=\solution]}
-  \]
   
-  \[
+\hva \\
+  
   \inferrule*[Left=\textsc{ (Guard-Vcon-Fail) }]
       {x \in \dom \rho
       \\\\
@@ -980,46 +984,47 @@ These judgement forms and rules are specific to \VMinus.
       \v \rm{ does not have the form }  K [v_{1}', \dots v_{n}']}
       {\eqrefine[eq={x = K\; e_{1}, \dots e_{n}}, 
               newenv=\dagger]}
-  \]
+  
+\hva \\
 
-\[
 \inferrule*[Left=\textsc{ (Guard-Expseq-Succ) }]
     {\inferrule* {}
     {
     \vmeval[result=\v]}}
     {\grefine[guard=\expr, solution=\rho]}
-\]
 
-\[
-\inferrule*[Left=\textsc{ (Guard-Expseq-Fail) }]
+\hva \and 
+
+\inferrule*[Right=\textsc{ (Guard-Expseq-Fail) }]
     {\vmeval[result={\fail}]}
     {\grefine[guard=\expr, solution=\dagger]}
-\]
 
-\[
+\hva \\
+
 \inferrule*[Left=\textsc{ (Guard-Choice-First) }]
     {\vmgs[context=\emptyseq, solution=\rho']}
     {\grefine[guard={\choiceg{\gs}{\gs'}}, solution=\rho']}
-\]
 
-\[
+\hva \and 
+
 \inferrule*[Left=\textsc{ (Guard-Choice-Second) }]
     {\vmgs[context=\emptyseq, solution=\dagger] 
     \and 
     \vmgs[context=\emptyseq, guards=\gs']}
     {\grefine[guard={\choiceg{\gs}{\gs'}}]}
-\]
+
+\end{mathpar}
 
 \subsubsection{Evaluating \bf{if-fi}}
+\begin{mathpar}
 
-\[
 \inferrule*[Left=\textsc{ (Eval-IfFi-Fail) }]
     {\ }
     {\vmeval[exp={\iffi{\ }}, result={\fail}]}
-\]
 
-\[
-\inferrule*[Left=\textsc{ (Eval-IfFi-Success) }]
+\hva \and
+
+\inferrule*[Right=\textsc{ (Eval-IfFi-Success) }]
 {\inferrule* {}
     {\rho' = \Rho[x_{1} \mapsto \bot \dots x_{n} \mapsto \bot]}
     \\\\
@@ -1027,9 +1032,9 @@ These judgement forms and rules are specific to \VMinus.
     \\\\ 
     {\vmeval[env={\rho''}]}}
     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \dbar; \Gs}}]}
-\]
 
-\[
+\hva \\
+
 \inferrule*[Left=\textsc{ (Eval-IfFi-Reject) }]
 {\inferrule* {}
     {\rho' = \Rho[x_{1} \mapsto \bot \dots x_{n} \mapsto \bot]}
@@ -1038,7 +1043,9 @@ These judgement forms and rules are specific to \VMinus.
     \\\\
     \vmeval[exp={\iffi{\Gs}}]}
     {\vmeval[exp={\iffi{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr\; \dbar\; \Gs}}]}
-\]
+
+
+\end{mathpar}
 }
 
 

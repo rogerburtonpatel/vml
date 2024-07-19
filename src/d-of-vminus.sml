@@ -359,7 +359,7 @@ struct
                 val no_eq_choices_no_c = choices --- eq -- c
                 val no_e_choices = choices --- eq --- c
             in 
-            (raise Impossible.unimp "fix mc")
+            (raise Impossible.unimp "inconsistent with paper- being fixed")
             (* D.IF_THEN_ELSE (x, , 
                          compile context cmp_pruned, 
                          compile context no_eq_choices_no_c, 

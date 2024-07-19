@@ -246,7 +246,8 @@
             ;;
             \end{bnf}
             \medskip
-          * Desugars to~\tt{x = e\_{1}; x = e\_{2}}, where~\tt{x} is fresh. 
+          
+          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. 
           \end{center}
           \Description{The concrete syntax of VMinus.}
               \caption{\VMinus: Concrete syntax}
@@ -355,8 +356,8 @@ val game_of_token =~\t.
 % A~\it{name} is any token that is not an integer literal, 
 % does not contain whitespace, a bracket, or parenthesis, 
 % and is not a value constructor name or a reserved word.
-
-\subsection{Formal Semantics of $\VMinus$:}
+\pagebreak
+\subsection{Formal Semantics of $\VMinus$}
     In this section, I~present a big-step operational semantics for~\VMinus. The
     semantics describes how an expression in~\VMinus is evaluated and how an
     equation (and more generally, a guard) works in the language. Instead of a
@@ -421,7 +422,7 @@ val game_of_token =~\t.
     In~\VMinus, like in~\VC, names can be introduced with the existential
     {$\exists$} before they are given a binding. Bindings are given by equations
     in guards~(\ref{guards}). When a name is introduced with {$\exists$}, it is
-    bound in the environment~\Rho to $\bot$ (pronounced “bottom”). Success of a
+    bound in the environment~\Rho\ to $\bot$ (pronounced “bottom”). Success of a
     guard only~\it{refines} the environment; that~is, when
     $\grefine[solution=\Rhoprime]$, we~expect $\rho~\subseteq~\Rhoprime$. The
     definition of $\subseteq$ on environments is given below. 
@@ -431,13 +432,13 @@ val game_of_token =~\t.
     \text{ and } &\forall x~\in~\dom~\rho:~\rho(x)~\subseteq~\Rhoprime(x)
     \end{align*}
     
-    \medskip
+    \smallskip
         
     \subsubsection{Guards}
     \label{guards}
 
     For example, the~\VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
-    succeeds and returns the value~\tt{K}. The~\VMinus expression~\tt{if  fi},
+    succeeds and returns the value~\tt{K}. The~\VMinus expression~\tt{if~~fi},
     the empty~\tt{if-fi}, always {\fail}s. 
 
     Like~\VC,~\VMinus has a nondeterministic semantics. Guards are solved in~\VMinus
@@ -447,7 +448,7 @@ val game_of_token =~\t.
 In my semantics, this process occurs over a~\it{list} of guards~\gs in a guarded
 expression \G: the program picks a guard from~\G, attempts to solve it to refine
 the environment or fail, and repeats.~\VMinus can only pick a guard out of \G\
-that it “knows” it can solve. “Knowing” a guard can be solved can be determined
+that it \it{knows} it can solve. \it{Knowing} a guard can be solved can be determined
 in~\VMinus before code is executed. If~\VMinus can't pick a guard and there are
 guards left over, the semantics gets stuck before code is executed. 
 
@@ -487,34 +488,41 @@ guards is rejected.
   use this terminology again when compiling~\VMinus to \D, since it describes
   the same status in both evaluation in compilation. 
 
-  \bigskip 
-
+\[
 \guardnameexpbot
+\]
 
 When $\rho(x) = \bot$ ($x$ is \it{unknown}) and $\vmeval$, the program refines
-\Rho by making a binding of $x$ to \v. Here,~\it{=} is treated like a
+\Rho\ by making a binding of $x$ to \v. Here,~\it{=} is treated like a
 let-binding in ML-like languages. 
 
-\guardnameexpeq
-
+\[
+  \guardnameexpfail
+\]
+  
 When $\rho(x) = \v$ ($x$ is \it{known}) and $\vmeval$, the program proceeds
 without refining the environment, since no new information is gained.
 Here,~\it{=} is treated like a \tt{==} in C-like languages. 
 
+\[
 \guardnameexpfail
+\]
 
 When $\rho(x) = \v'$ ($x$ is \it{known}) and $\vmeval$ and $\v \neq \v'$,
 unification fails, so the guarded expression fails. Here,~\it{=} is treated like
 a \tt{==} in C-like languages. 
 
+\[
 \guardnamesbotsucc
+\]
 
 When $\rho(x) = \v$ ($x$ is \it{known}) and $rho(y) = \bot$ ($y$ is
 \it{unknown}), the program can always bind $y$ to \v. Here,~\it{=} is treated
 like a let-binding in ML-like languages. 
 
-
+\[
 \guardnamesbotsuccrev
+\]
 
 This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse. 
     
