@@ -40,13 +40,13 @@
 \contentsline {subsection}{\numberline {5.8}Full Big-step rules for \ensuremath {\mathit {compile}}\xspace , with no descriptions}{39}{subsection.5.8}%
 \contentsline {subsection}{\numberline {5.9}Translation from\nonbreakingspace \ensuremath {V^{-}}\xspace to\nonbreakingspace \ensuremath {D}\xspace preserves semantics}{40}{subsection.5.9}%
 \contentsline {section}{\numberline {6}Implementations}{40}{section.6}%
-\contentsline {section}{\numberline {7}Related and Future Work}{40}{section.7}%
+\contentsline {section}{\numberline {7}Related and Future Work}{41}{section.7}%
 \contentsline {section}{\numberline {8}Discussion: The design of \ensuremath {V^{-}}\xspace }{42}{section.8}%
 \contentsline {subsection}{\numberline {8.1}Forms in \ensuremath {\mathcal {VC}}\xspace and \ensuremath {V^{-}}\xspace }{42}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Choice in \ensuremath {V^{-}}\xspace vs. \ensuremath {\mathcal {VC}}\xspace }{42}{subsection.8.2}%
 \contentsline {section}{\numberline {9}Conclusion}{43}{section.9}%
 \contentsline {section}{\numberline {10}Acknowledgements}{43}{section.10}%
-\contentsline {section}{References}{44}{section*.22}%
+\contentsline {section}{References}{45}{section*.22}%
 \contentsline {section}{\numberline {A}Is\nonbreakingspace \ensuremath {V^{-}}\xspace \ a true subset of\nonbreakingspace \ensuremath {\mathcal {VC}}\xspace ?}{46}{section.1}%
 \contentsline {section}{\numberline {B}Formal Definitions of all languages}{47}{section.2}%
 \contentsline {subsection}{\numberline {B.1}Rules (Big-step Operational Semantics) for\nonbreakingspace \ensuremath {U}\xspace , shared by\nonbreakingspace \ensuremath {V^{-}}\xspace and\nonbreakingspace \ensuremath {D}\xspace }{47}{subsection.2.1}%
