@@ -370,10 +370,10 @@ struct
                 val no_e_choices = choices --- eq --- c
             in 
             (raise Impossible.unimp "inconsistent with paper- being fixed")
-            D.IF_THEN_ELSE (x, , 
+            (* D.IF_THEN_ELSE (x, , 
                          compile context cmp_pruned, 
                          compile context no_eq_choices_no_c, 
-                         compile context no_e_choices)
+                         compile context no_e_choices) *)
             end 
           | NONE => 
         (case findAnyCondition context choices
