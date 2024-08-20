@@ -1397,7 +1397,7 @@ compiling \G altogether.
 \[
 \inferrule*[Left=\textsc{ (Match) }]
     {\ }
-    {\compilebig[gexps={\GsgsGs{}}, compiled=\expr']}
+    {\compilebig[gexps={\GsgsGs{ \rightarrow \expr}}, compiled=\expr]}
 \]
 
 If the compiler finds an ungarded right-hand side expression~\expr', it inserts
@@ -1513,7 +1513,7 @@ containing it.
 \[
 \inferrule*[Left=\textsc{ (Match) }]
     {\ }
-    {\compilebig[gexps={\GsgsGs{}}]}
+    {\compilebig[gexps={\GsgsGs{\rightarrow \expr}}]}
 \]
 
 \[
@@ -1534,11 +1534,19 @@ containing it.
 \[
 \inferrule*[Left=\textsc{ (Elim-Vcon) }]
     {
-    \compilebig[gexps=\GsGs]
-    \\\\
     \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+    \\\\
+    \compilebig[gexps=\GsGs]
     }
     {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
+\]
+
+\[
+\inferrule*[Right=\textsc{ (Expand-Vcon) }]
+    {
+    \compile[guard={{\expr[1]} = {\expr[1]}';\; \dots;\; {\expr[n]} = {\expr[n]}'}]
+    }
+    {\compile[guard={K\; {\expr[1]} \dots {\expr[n]} = K\; {\expr[1]}' \dots {\expr[n]}'}]}
 \]
 
 \[
@@ -1551,14 +1559,14 @@ containing it.
 
 \[
 \inferrule*[Right=\textsc{ (Let-Unless) }]
-    {\rho(x) = unknown \and \knownj[exp=\expr']
+    {\rho(x) = unknown \and \knownj[exp=\expr]
     \\\\
-    \compilebig[ctxext={\bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
+    \compilebig[ctxext={  + \bracketed{x \mapsto known}}, iffi=\subst{\expr'}{x}{\expr}, compiled=\dt_{1}]
     \\\\
-    \dt_{2} = \subst{\expr}{\fail}{\expr'}
+    \dt_{2} = \subst{\expr'}{\fail}{\expr}
     }
     {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-              compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
+              compiled={let\; x = \expr\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
 \]
 
 
@@ -1566,16 +1574,16 @@ containing it.
 \inferrule*[Right=\textsc{ (Let-If) }]
     {\rho(x) = known \and \knownj[exp=\expr'] 
     \\\\
-    \dt_{1} = \subst{\expr}{x}{\expr'}
+    \dt_{1} = \subst{\expr'}{x}{\expr}
     \\\\
-    \compilebig[ctxext={\bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
+    \compilebig[ctxext={  + \bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr'}{\fail}{x = \expr}}{y}{\expr}, compiled=\dt_{2}] \and y \text{ fresh}
     \\\\
-    \dt_{3} = \subst{\expr}{\fail}{\expr'}
+    \dt_{3} = \subst{\expr'}{\fail}{\expr}
     \\\\
     \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
     }
-    {\compile[eas={\expr \text{ as }}, guard={y = e}, 
-              compiled={let\; x = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
+    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
+              compiled={let\; y = \expr\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
 \]
 
 }

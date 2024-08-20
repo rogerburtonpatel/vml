@@ -309,12 +309,21 @@ struct
       in D.I (compile initialcontex gexps)
       end 
 
-
+(* need rule for removing fail 
+   all subtracts are s[fail/thing]
+   just go by paper. should be one case per rule. label each. 
+   update the README after 
+   *)
   and compile context [] = D.FAIL
     | compile context (choices as ([], e) :: _) = 
          D.MATCH (translate context e)  (* unguarded rhs *)
     | compile context choices = 
       (
+     
+     (* rule 1 *)
+     (* ... *)
+     (* rule n *)
+
         (* dumpctx context;  *)
       case findAnyConstructorApplication context choices
         of SOME x =>  
@@ -355,15 +364,16 @@ struct
           of SOME (x, e) => 
             let val eq = V.EQN (x, e)
                 val c  = V.CONDITION e
-                val cmp_pruned = choices -- eq withsubst (x, e)
-                val no_eq_choices_no_c = choices --- eq -- c
+                val cmp_pruned = choices withsubst (x, e)
+                val y = FreshName.freshNameGen () 
+              val no_eq_choices_no_c = choices --- eq -- c
                 val no_e_choices = choices --- eq --- c
             in 
             (raise Impossible.unimp "inconsistent with paper- being fixed")
-            (* D.IF_THEN_ELSE (x, , 
+            D.IF_THEN_ELSE (x, , 
                          compile context cmp_pruned, 
                          compile context no_eq_choices_no_c, 
-                         compile context no_e_choices) *)
+                         compile context no_e_choices)
             end 
           | NONE => 
         (case findAnyCondition context choices
