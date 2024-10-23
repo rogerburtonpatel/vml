@@ -254,6 +254,7 @@ struct
                 [] => SOME []
               | (g as V.CONDITION e)::gs' => Option.map (curry op :: g) (refine gs')
               (* todo weak- want to refine in condition as well *)
+              (* go into g and attempt refinement.  *)
               | (g as V.EQN (n, V.C (C.VCONAPP (vc, es))))::gs' => 
                   if n = x then 
                     if vc' = vc andalso length es = length ns
@@ -309,9 +310,10 @@ struct
       in D.I (compile initialcontex gexps)
       end 
 
-(* need rule for removing fail 
-   all subtracts are s[fail/thing]
-   just go by paper. should be one case per rule. label each. 
+(* 
+   all "subtractions" (---) are s[fail/expr]. This merges the FAIL rule with its
+   instantiation sites, making the compiler more efficient. 
+   need: 2 missing rules 
    update the README after 
    *)
   and compile context [] = D.FAIL
@@ -319,12 +321,8 @@ struct
          D.MATCH (translate context e)  (* unguarded rhs *)
     | compile context choices = 
       (
-     
-     (* rule 1 *)
-     (* ... *)
-     (* rule n *)
-
         (* dumpctx context;  *)
+        (* TEST, ELIM-VCON, EXPAND-VCON *)
       case findAnyConstructorApplication context choices
         of SOME x =>  
         let val cons = nub $ List.concat $ map (allApplicationsEquatedTo x o fst) choices
@@ -343,39 +341,39 @@ struct
         in D.TEST (x, edges, default)
         end 
         | NONE => 
+        (* LET-UNLESS : Done *)
         (case findAnyLHSBinding context choices
-          of SOME (x, e) => 
-            let val eq =  V.EQN (x, e)
-                val c  = (V.CONDITION e)
-                val choices_no_eq = choices -- eq withsubst (x, e)
-                val choices_no_e = choices --- eq --- c
-            in  D.LET_UNLESS (x, translate context e, 
-                            compile (makeKnown x context) choices_no_eq, 
-                            SOME (compile context choices_no_e))
+          of SOME (x, e') => 
+            let val eq =  V.EQN (x, e')
+                val c  =  V.CONDITION e'
+                val t1 = compile (makeKnown x context) (choices withsubst (x, e'))
+                val t2 = compile context (choices --- eq --- c)
+            in  D.LET_UNLESS (x, translate context e', t1, SOME t2)
             end 
         | NONE => 
+        (* Missing a rule *)
         (case findAnyRHSBinding context choices
           of SOME (x, y as V.C (C.NAME y')) => 
               D.LET_UNLESS (x, D.C (C.NAME y'), compile (makeKnown y' context) 
                         (choices -- (V.EQN (x, y))), NONE)
+        (* TODO WRONG: Consider known x = unknown K y1 y2 case *)
           | SOME (x, e) => can'tunify x e
           | NONE => 
+          (* LET-IF *)
         (case findAnyConstraint context choices
-          of SOME (x, e) => 
-            let val eq = V.EQN (x, e)
-                val c  = V.CONDITION e
-                val cmp_pruned = choices withsubst (x, e)
+          of SOME (x, e') => 
+            let val eq = V.EQN (x, e')
+                val c  = V.CONDITION e'
+                val t1 = compile context (choices withsubst (x, e'))
                 val y = FreshName.freshNameGen () 
-              val no_eq_choices_no_c = choices --- eq -- c
-                val no_e_choices = choices --- eq --- c
+                val t2 = compile (makeKnown y context) (choices --- eq withsubst (y, e'))
+                val t3 = compile context (choices --- c)
+                val tif = D.IF_THEN_ELSE (x, y, t1, t2)
             in 
-            (raise Impossible.unimp "inconsistent with paper- being fixed")
-            (* D.IF_THEN_ELSE (x, , 
-                         compile context cmp_pruned, 
-                         compile context no_eq_choices_no_c, 
-                         compile context no_e_choices) *)
+            D.LET_UNLESS (y, translate context e', tif, SOME t3)
             end 
           | NONE => 
+          (* Missing a rule *)
         (case findAnyCondition context choices
           of SOME e => 
             let val x = FreshName.freshNameGen ()

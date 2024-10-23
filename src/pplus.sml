@@ -265,6 +265,8 @@ fun area sh =
 fun append (xs, ys) = case xs of [] => ys | (x::xr) => x::append (xr, ys)
 
 
+
+
 fun exclaimTall sh =
 case sh of 
    Square s => if s > 100.0 

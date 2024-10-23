@@ -27,14 +27,6 @@
 \RequirePackage{stmaryrd}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[noEnd=true]{algpseudocodex}
-% TODO remove if unused 
-% \RequirePackage{tikz}
-% \RequirePackage{ebproof}
-% \RequirePackage{alltt}
-% \RequirePackage{qtree}
-% \RequirePackage{semantic}
-
-
 
 %%%%%%%%%% LANGUAGES %%%%%%%%%%
 \newcommand\VMinus{\ensuremath{V^{-}}\xspace}
@@ -459,6 +451,7 @@
 \defcomponent{gexp}{\G}
 \defcomponent{gexps}{\Gs}
 \defcomponent{exp}{\expr}
+\defcomponent{expr}{\expr''}
 \defcomponent{pat}{\pat}
 \defcomponent{value}{\v}
 \defcomponent{result}{\result}
@@ -595,7 +588,7 @@
   {\setkeys{state}{#1}%
     \let\c=\component
     \ensuremath{\c{ctx}\c{ctxext} \vdash\; \c{eas}\; \bf{if}\; \Gs\; \dbar\; 
-                \gs;\; \c{guard};\; \gsp\; \rightarrow \c{exp}'\;
+                \gs;\; \c{guard};\; \gsp\; \rightarrow \c{expr}\;
                 \dbar\; \Gsp\; \bf{fi} \compilesto \c{compiled}}}}
 
 
@@ -1360,6 +1353,38 @@ These judgement forms and rules are specific to \VMinus.
 
 }
 
+\newcommand\compileletunless {
+\[
+\inferrule*[Right=\textsc{ (Let-Unless) }]
+    {\rho(x) = unknown \and \knownj[exp=\expr]
+    \\\\
+    \compilebig[ctxext={  + \bracketed{x \mapsto known}}, iffi=\subst{\expr'}{x}{\expr}, compiled=\dt_{1}]
+    \\\\
+    \compilebig[iffi=\subst{\expr'}{\fail}{\expr}, compiled=\dt_{2}]
+    }
+    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
+              compiled={let\; x = \expr\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
+\]
+}
+
+\newcommand\compileletif {
+\[
+\inferrule*[Right=\textsc{ (Let-If) }]
+    {\rho(x) = known \and \knownj[exp=\expr'] 
+    \\\\
+    \compilebig[iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
+    \\\\
+    \compilebig[ctxext={  + \bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
+    \\\\
+    \compilebig[iffi=\subst{\expr}{\fail}{\expr'}, compiled=\dt_{3}]
+    \\\\
+    \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
+    }
+    {\compile[eas={\expr \text{ as }}, guard={x = \expr'}, 
+              compiled={let\; y = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
+\]
+}
+
 \newcommand\compiler{%
 \label{compiler}
 
@@ -1397,11 +1422,12 @@ compiling \G altogether.
 \[
 \inferrule*[Left=\textsc{ (Match) }]
     {\ }
-    {\compilebig[gexps={\GsgsGs{ \rightarrow \expr}}, compiled=\expr]}
+    {\compilebig[gexps={\GsgsGs{\rightarrow \expr}}]}
 \]
 
-If the compiler finds an ungarded right-hand side expression~\expr', it inserts
-a~\it{match} node containing~\expr'.
+
+If the compiler finds an ungarded right-hand side expression~\expr, it inserts
+a~\it{match} node containing~\expr.
 
 \[
 \inferrule*[Left=\textsc{ (Test) }]
@@ -1428,11 +1454,11 @@ and~\textsc{Expand-Vcon} to make progress.
 \[
 \inferrule*[Left=\textsc{ (Elim-Vcon) }]
     {
-    \compilebig[gexps=\GsGs]
+    \expr' \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
     \\\\
-    \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+    \compilebig[gexps=\GsGs]
     }
-    {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
+    {\compile[guard={\expr' = K\; \expr[1] \dots \expr[n]}]}
 \]
 
 If the compiler finds two equated expressions where one is an application of a
@@ -1442,10 +1468,11 @@ that branch, like in \textsc{Fail}.
 \[
 \inferrule*[Right=\textsc{ (Expand-Vcon) }]
     {
-    \compile[guard={{\expr[1]}' = \expr[1];\; \dots;\; {\expr[n]}' = \expr[n]}]
+    \compile[guard={{\expr[1]} = {\expr[1]}';\; \dots;\; {\expr[n]} = {\expr[n]}'}]
     }
-    {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
+    {\compile[guard={K\; {\expr[1]} \dots {\expr[n]} = K\; {\expr[1]}' \dots {\expr[n]}'}]}
 \]
+
 
 If the compiler finds two equated expressions where each is an application of a
 value constructor to $n$ arguments, the compiler expands the single equation
@@ -1453,45 +1480,23 @@ into a list of equations between the arguments. This rule takes advante of
 \VMinus's sugared equation form $\expr[1] = \expr[2]$, which desugars to $x =
 \expr[1] \cdot x = \expr[2]$, with $x$ fresh. 
 
-\[
-\inferrule*[Right=\textsc{ (Let-Unless) }]
-    {\rho(x) = unknown \and \knownj[exp=\expr']
-    \\\\
-    \compilebig[ctxext={\bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
-    \\\\
-    \dt_{2} = \subst{\expr}{\fail}{\expr'}
-    }
-    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-              compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
-\]
+\compileletunless
 
-If the compiler finds an opportunity to bind a name to an expression \expr', it
-creates a~\it{let-unless} node and substitutes $x$ for all instances of \expr',
+If the compiler finds an opportunity to bind a name to an expression \expr, it
+creates a~\it{let-unless} node and substitutes $x$ for all instances of \expr,
 making $x$ known in the new context. In the \it{unless \fail} branch, \fail is
-substituted for \expr' so that \textsc{Fail} can eliminate guarded expressions
+substituted for \expr so that \textsc{Fail} can eliminate guarded expressions
 containing it. 
 
-\[
-\inferrule*[Right=\textsc{ (Let-If) }]
-    {\rho(x) = known \and \knownj[exp=\expr'] 
-    \\\\
-    \dt_{1} = \subst{\expr}{x}{\expr'}
-    \\\\
-    \compilebig[ctxext={\bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr}{\fail}{x = \expr'}}{y}{\expr'}, compiled=\dt_{2}] \and y \text{ fresh}
-    \\\\
-    \dt_{3} = \subst{\expr}{\fail}{\expr'}
-    \\\\
-    \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
-    }
-    {\compile[eas={\expr \text{ as }}, guard={y = e}, 
-              compiled={let\; x = \expr'\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
-\]
 
-If the compiler finds two expressions being compared \expr', it creates
+\compileletif
+
+
+If the compiler finds a known name being compared to \expr, it creates
 an~\it{if} node within a~\it{let-unless} node, binding a fresh name $y$ to
-\expr' and using it for substitution to ensure \expr' is never evaluated again.
+\expr and using it for substitution to ensure \expr is never evaluated again.
 Like in \textsc{Let-Unless}, in the \it{unless \fail} branch, \fail is
-substituted for \expr' so that \textsc{Fail} can eliminate guarded expressions
+substituted for \expr so that \textsc{Fail} can eliminate guarded expressions
 containing it. 
 
 }
@@ -1534,11 +1539,11 @@ containing it.
 \[
 \inferrule*[Left=\textsc{ (Elim-Vcon) }]
     {
-    \expr[lhs] \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
+    \expr' \text{ does not have the form } K\; \expr'[1] \dots \expr'[n]
     \\\\
     \compilebig[gexps=\GsGs]
     }
-    {\compile[guard={\expr[lhs] = K\; \expr[1] \dots \expr[n]}]}
+    {\compile[guard={\expr' = K\; \expr[1] \dots \expr[n]}]}
 \]
 
 \[
@@ -1549,41 +1554,12 @@ containing it.
     {\compile[guard={K\; {\expr[1]} \dots {\expr[n]} = K\; {\expr[1]}' \dots {\expr[n]}'}]}
 \]
 
-\[
-\inferrule*[Right=\textsc{ (Expand-Vcon) }]
-    {
-    \compile[guard={{\expr[1]}' = \expr[1];\; \dots;\; {\expr[n]}' = \expr[n]}]
-    }
-    {\compile[guard={K\; {\expr[1]}' \dots {\expr[n]}' = K\; \expr[1] \dots \expr[n]}]}
-\]
+\compileletunless
 
-\[
-\inferrule*[Right=\textsc{ (Let-Unless) }]
-    {\rho(x) = unknown \and \knownj[exp=\expr]
-    \\\\
-    \compilebig[ctxext={  + \bracketed{x \mapsto known}}, iffi=\subst{\expr'}{x}{\expr}, compiled=\dt_{1}]
-    \\\\
-    \dt_{2} = \subst{\expr'}{\fail}{\expr}
-    }
-    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-              compiled={let\; x = \expr\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
-\]
+\compileletif
 
-
-\[
-\inferrule*[Right=\textsc{ (Let-If) }]
-    {\rho(x) = known \and \knownj[exp=\expr'] 
-    \\\\
-    \dt_{1} = \subst{\expr'}{x}{\expr}
-    \\\\
-    \compilebig[ctxext={  + \bracketed{y \mapsto known}}, iffi=\subst{\subst{\expr'}{\fail}{x = \expr}}{y}{\expr}, compiled=\dt_{2}] \and y \text{ fresh}
-    \\\\
-    \dt_{3} = \subst{\expr'}{\fail}{\expr}
-    \\\\
-    \dt_{if} = {if\; x = y\; then\; \dt_{1}\; else\; \dt_{2}}
-    }
-    {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-              compiled={let\; y = \expr\; in \;{\dt_{if}}\; unless\; \fail\; \Rightarrow\; \dt_{3}}]}
-\]
-
+% NEEDS FIX: 
+% remember "e as," use correctly for subst
+% rename -> e' to -> e_r or sm 
+% make commands of each of these
 }
