@@ -14,7 +14,7 @@ MAINS= dtran vminus pplus
 
 RAWTARGETS=$(addprefix $(BIN)/,$(MAINS:%=%))
 
-.PHONY: mosml
+.PHONY: mosml test
 
 mosml: $(BIN)/dtran
 	@: do nothing, and say nothing about doing nothing
@@ -31,6 +31,8 @@ pplus: $(BIN)/pplus
 d: $(BIN)/d
 	@: do nothing, and say nothing about doing nothing
 
+test:
+	runtests-vml
 
 .PHONY: clean
 

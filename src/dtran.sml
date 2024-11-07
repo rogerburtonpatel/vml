@@ -54,6 +54,13 @@ struct
     >>> Error.map List.concat (* token list error *)
     >=> VMinusParse.parse       (* def list error *)    
 
+  val dOfFile : instream -> D.def list error =
+    lines                    (* line list *)
+    >>> map DLex.tokenize_line  (* token list error list *)
+    >>> Error.list           (* token list list error *)
+    >>> Error.map List.concat (* token list error *)
+    >=> DParse.parse       (* def list error *)
+
   (* For bad use of eval, attempting to read in D, etc. *)
   exception Can'tDigest of language
 
@@ -77,7 +84,7 @@ struct
 
   fun D_of VMINUS  = vminusOfFile    >>> Error.map dofVM
     | D_of PPLUS   = VMINUS_of PPLUS >>> Error.map dofVM (* the composition *)
-    | D_of D       = raise Can'tDigest D
+    | D_of D       = dOfFile
     | D_of _       = raise Backward
   
 
@@ -92,9 +99,15 @@ struct
                  ; TextIO.output(outfile, "\n")
                  ))
 
+  fun emitD outfile =
+    app (fn d => ( TextIO.output(outfile, D.defString d)
+                 ; TextIO.output(outfile, "\n")
+                 ))
+
   fun curry f x y = f (x, y)
 
-  fun emitD outfile = D.progString >>> curry TextIO.output outfile
+  (* old version, also works *)
+  fun emitD outfile = D.progString >>> (fn p => p ^ "\n") >>> curry TextIO.output outfile
   
   (**** The Universal Forward Translator ****)
 
@@ -105,7 +118,9 @@ struct
     (case outLang
        of PPLUS  => PPLUS_of  inLang >>> Error.map (emitPPLUS outfile)
         | VMINUS => VMINUS_of inLang >>> Error.map (emitVMINUS outfile)
-        | D      => D_of      inLang >>> Error.map (emitD outfile)
+        | D      => D_of      inLang >>> 
+        (* Error.map D.runProg *)
+        Error.map (emitD outfile)
         | Eval   => runProg inLang
     ) infile
     handle Backward                => raise NotForward (inLang, outLang)

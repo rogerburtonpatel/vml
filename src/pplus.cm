@@ -17,6 +17,7 @@ group is
   producer.sml
   lexer-combinators.sml
   (* **** shared core language **** *)
+  syntax.sml
   core-lang.sml
   (****** PPLUS ******)
   pplus.sml

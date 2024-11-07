@@ -16,14 +16,16 @@ signature DECISION_TREE = sig
 
   datatype def = DEF of name * exp 
 
-  val emitTree  : (exp, exp) tree -> string
+  val treeString  : (exp, exp) tree -> string
   val expString : exp -> string
+  val defString : def -> string 
 
   val progString : def list -> string
 
   type value = exp Core.value
 
   val eval : value option Env.env -> exp -> value  
+  val runProg : def list -> unit
 
 end
 
@@ -51,6 +53,8 @@ struct
 
   fun br' input = "(" ^ input ^ ")"
 
+  val rightarrow = "->"
+
   structure C = Core 
   val member = ListUtil.member
   infix 6 <+>
@@ -62,25 +66,25 @@ struct
                           maybeparenthesize e1 ^ " " ^ maybeparenthesize e2
             | C.VCONAPP (vc, es) => C.vconAppStr maybeparenthesize vc es
             | _ => C.expString expString ce)
-    | expString   (I tree) = emitTree tree
+    | expString   (I tree) = treeString tree
   and valString v = C.valString expString v
   and maybeparenthesize (C e) = C.maybeparenthesize expString e
     | maybeparenthesize other = br' (expString other)
-  and emitTree t = 
+  and treeString t = 
     let fun emitBranches [] default = Impossible.impossible "no patterns to match on"
            | emitBranches (x::xs) default = 
-           let fun emitBranch ((Core.K vc, ys), tr) = "(" ^ vc ^ ", " ^ String.concatWith "," ys ^ ") => " ^ emitTree' tr ^ "\n"
-           val emittedBranches = foldr (fn (b, acc) => emitBranch b ^ acc) "" xs
-        in emitBranch x ^ emittedBranches ^ (if isSome default then "else " ^ emitTree' (valOf default) else "")
+           let fun emitBranch ((Core.K vc, ys), tr) = "(" ^ vc ^ ", " ^ String.concatWith "," ys ^ ") " ^ rightarrow ^ " " ^ treeString' tr ^ "\n"
+           val emittedBranches = foldr (fn (b, acc) => "| " ^ emitBranch b ^ acc) "" xs
+        in emitBranch x ^ emittedBranches ^ (if isSome default then "else " ^ treeString' (valOf default) else "")
         end 
-    and emitTree'     (MATCH a) = expString a
-          | emitTree' (TEST (n, branches, default)) = "test " ^ n ^ "\n " ^ emitBranches branches default
-          | emitTree' (LET_UNLESS (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ emitTree' t1 
-          | emitTree' (LET_UNLESS (n, e, t1, SOME t2)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ emitTree' t1 ^ "\n unless fail => " ^ emitTree' t2
-          | emitTree' (IF_THEN_ELSE (x, y, t1, t2)) = "if " ^ x ^ " = " ^ y ^ "\n then " ^ emitTree' t1 ^ "\n else " ^ emitTree' t2
-          | emitTree' (EXISTS (n, t)) = "E " ^ n ^ ". " ^ emitTree' t
-          | emitTree' FAIL = "fail"
-    in emitTree' t ^ "\n"
+    and treeString'     (MATCH a) = expString a
+          | treeString' (TEST (n, branches, default)) = "test " ^ n ^ "\n " ^ emitBranches branches default
+          | treeString' (LET_UNLESS (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ treeString' t1 
+          | treeString' (LET_UNLESS (n, e, t1, SOME t2)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ treeString' t1 ^ "\n unless fail => " ^ treeString' t2
+          | treeString' (IF_THEN_ELSE (x, y, t1, t2)) = "if " ^ x ^ " = " ^ y ^ "\n then " ^ treeString' t1 ^ "\n else " ^ treeString' t2
+          | treeString' (EXISTS (n, t)) = "E " ^ n ^ ". " ^ treeString' t
+          | treeString' FAIL = "fail"
+    in treeString' t ^ "\n"
     end 
 
 
@@ -90,7 +94,7 @@ struct
   fun defString (DEF (n, e)) = "val " ^ n ^ " = " ^ expString e
 
     (* val testTree = TEST ("r1", [((C.K "C1", 2), MATCH "foo"), ((C.K "C1", 2), LET ("x", "C1/2", IF ("x", MATCH "foo", MATCH "bar")))], SOME (MATCH "Foo")) 
-    val () = print (emitTree id id testTree) *)
+    val () = print (treeString id id testTree) *)
   fun progString (ds : def list) = 
     String.concatWith "\n" (map defString ds)
     
@@ -129,6 +133,15 @@ struct
   fun find_or_die n rho = 
       if n exists_in rho then lookupv n rho else raise C.NameNotBound n
 
+
+  fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
+  fun optValString v = optString (C.valString expString) v
+
+  fun ctxString ctx = Env.toString optValString ctx
+  val dumpctx = println o ctxString
+
+
   fun check_let_name_bot n e rho = 
   if not (rho binds n)
           then raise Core.NameNotBound ("name " ^ n ^ " in \"let " ^ n ^ " = " ^ expString e ^"\" not bound")
@@ -148,7 +161,14 @@ struct
         C.LAMBDA (n, project (rho <+> embed captured), body)
     | captureVal rho (C.VCON (vc, vs)) = C.VCON (vc, map (captureVal rho) vs)
 
-  fun eval rho (C ce) = 
+  fun eval rho (C ce) =  
+       
+        (* println 
+      ("Context:\n" ^
+      ctxString rho ^
+      "\nExp:\n" ^
+      expString (C ce) ^
+      "\n"); *)
     (case ce of
       (* C.LITERAL (C.LAMBDA (n, captured, body)) =>  *)
       C.LITERAL v => captureVal rho v
@@ -169,9 +189,11 @@ struct
                     in eval rho' b
                     end
                  | _ => raise Core.BadFunApp "attempted to apply non-function"))
+    
     | eval rho (I tree) = evalTree rho tree
-
     and evalTree rho tree = 
+        (* "Context:\n" ^
+      ctxString rho ^ *)
       case tree of MATCH e => eval rho e
         | TEST (x, [], NONE) => 
               raise Fail ("No match found while testing \"" ^ x ^ "\"")
@@ -187,13 +209,11 @@ struct
               end
              | _ => Impossible.impossible "cannot test non-vcon")
         | LET_UNLESS (n, e, t1, NONE) => 
-            (check_let_name_bot n e rho ; 
             let val v = eval rho e 
             in evalTree (bind n v rho) t1
-            end)
+            end
         | LET_UNLESS (n, e, t1, SOME t2) => 
-          (check_let_name_bot n e rho ; 
-          let val v = eval rho e 
+          (let val v = eval rho e 
           in evalTree (bind n v rho) t1
           end 
             handle Fail _ => evalTree rho t2)
@@ -204,13 +224,26 @@ struct
              end
         | EXISTS (n, t) => evalTree (introduce n rho) t 
         | FAIL => raise Fail "reached a fail node in a decision tree"
-
+      
   and runpredef which (rho, arg) = 
     case which of 
       "print" => ( println (C.valString expString (eval rho arg)) 
                   ; C.VCON (C.K "unit", [])
                  )
       | _ => Impossible.impossible "runtime bug: running non-predef function"
+  
 
+  fun def rho (DEF (n, e)) = 
+    let val v = eval rho e
+    in bind n v rho
+    end
+
+  fun runProg defs = 
+  (  foldl (fn (d, env) => 
+      let val rho = def env d
+      in  rho <+> env
+      end) empty defs;
+      ()
+  )
 
 end

@@ -75,7 +75,7 @@ end = struct
 
   fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
   fun barSeparated p = curry op :: <$> p <*> many (reserved "|" >> p)
-  fun commaSep p = curry op :: <$> p <*> many (reserved "," >> p)
+  fun commaSeparated p = curry op :: <$> p <*> many (reserved "," >> p)
   fun barSeparatedMulti p = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
 

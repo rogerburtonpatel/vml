@@ -52,9 +52,9 @@ struct
     | RIGHT of bracket_shape
     | RESERVED of string
 
-  val doublequote = Char.toString (chr 96)
-  val backslash = (chr 92)
-  val sbackslash = StringEscapes.backslash
+  val doublequote = Syntax.doublequote
+  val backslash   = Syntax.backslash  
+  val sbackslash  = Syntax.sbackslash 
 
   fun bracketLexer token
     =  char #"(" >> succeed (LEFT  ROUND)
@@ -82,15 +82,11 @@ struct
   fun intToken isDelim =
     L.check (intFromChars <$> intChars isDelim)
 
-  fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};,.\\" c
+  fun isMyDelim c = Char.isSpace c orelse Char.contains Syntax.delimiters c
 
 
-  val reserved = ["val", "=", "if", "fi", doublequote, ".", "of", "|", 
-                  "->", ";", "[]", "E", sbackslash,
-                  (* debugging *)
-                  "parse", "guard", "gexp"
-                  ]
-  val predefvcons = ["true", "false"]
+  val reserved    = Syntax.vmreserved 
+  val predefvcons = Syntax.predefvcons
 
   fun atom x =
     if member x reserved then
@@ -113,7 +109,7 @@ struct
 
   fun onereserved c = char c >> succeed (RESERVED (Char.toString c))
 
-  val anyreserved =   onereserved #"'"
+  val reserveddelim =   onereserved #"'"
                   <|> onereserved #"."
                   <|> onereserved #";"
                   <|> char backslash >> succeed (RESERVED sbackslash)
@@ -121,7 +117,7 @@ struct
   val token =
     whitespace >>
     optional comment >>
-    bracketLexer   (  anyreserved
+    bracketLexer   (  reserveddelim
                   <|> (atom o implode) <$> many1 (sat (not o isMyDelim) one)
                   <|> L.check (barf <$> one)
                    )

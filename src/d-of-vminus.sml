@@ -11,7 +11,6 @@ struct
 
   type 'a guarded_exp = V.exp V.guard list * 'a
 
-  exception Stuck of string
 
   fun unitify (gs, a) = (gs, ())
   val mapPartial = List.mapPartial
@@ -25,6 +24,21 @@ struct
   fun a xor b = (a orelse b) andalso not (a andalso b)
 
   fun nub xs = Set.elems (Set.fromList xs)
+
+  (* checks if two vcons are equal based on application *)
+  fun vcappsneq (vc1, es1) (vc2, es2) = 
+    not (vc1 = vc2 andalso length es1 = length es2)
+
+(* nub for vcon applications since no inherent equality *)
+  fun connub [] = []
+  | connub (x::xs) = x::connub(List.filter (vcappsneq x) xs)
+
+    (* observers for names; unfortunately useful *)
+  fun isname (V.C (C.NAME n)) = true | isname _ = false 
+
+  fun getname (V.C (C.NAME n)) = n 
+    | getname _ = raise Impossible.impossible "misused getname"
+
 
   datatype status = KNOWN | UNKNOWN  (* status of each bound variable *)
   
@@ -63,16 +77,22 @@ struct
   fun env_of_ctx ctx = Env.map (fn UNKNOWN => NONE 
                                  | KNOWN => SOME (C.VCON (C.K "Dummy", []))) ctx
 
+
   (*** Debugging ***)
+
+  exception Stuck of string
+
 
   fun gexpString ([], rhs) = "([], " ^ V.expString rhs ^ ")"
     | gexpString (gs, rhs) = "(" ^ String.concatWith ";" (map V.guardString gs) ^ " -> " ^ V.expString rhs ^ ")"
 
-  fun choicesString choices = String.concatWith "[]" (map gexpString choices)
+  fun choicesString choices = (V.expString (V.I (V.IF_FI (map (fn choice => ([], choice)) choices))) ^ "\n")
 
   fun println x = print (x ^ "\n")
 
-  fun dumpctx ctx = println ("context: " ^  Env.toString (fn KNOWN => "KNOWN" | _ => "UNKNOWN") ctx)
+
+  fun ctxstring ctx = Env.toString (fn KNOWN => "KNOWN" | _ => "UNKNOWN") ctx
+  val dumpctx = println o ctxstring
 
   (* Compiler helper functions *)
 
@@ -188,12 +208,17 @@ struct
                                 then NONE 
                                 else SOME (gs, rhs)) choices
 
+  (* -- removes a guard g from choices *)
   infix 6 --
   fun choices -- g = map (fn (gs, rhs) => (prune g gs, rhs)) choices
 
+  (* --- removes a branch containing a guard g from choices. 
+     it is an efficient version of choices[fail/guard] and 
+     application the Fail rule. *)
   infix 6 ---
   fun choices --- g = pruneall g choices
 
+  (* subst (x, e) choices is choices[x/e]. *)
   fun subst (x, e) choices = 
     let fun dosubst e' = if V.eqexp (e, e') then V.C (C.NAME x) else e'
         val subguard = V.gmap dosubst
@@ -233,18 +258,21 @@ struct
             []      => []
           | V.CONDITION e::gs' => findAllEq gs'
           | V.EQN (n, V.C (C.VCONAPP (vc, es)))::gs' => 
-              (if n = x then [(vc, length es)] else []) @ findAllEq gs'
+              (if n = x then [(vc, es)] else []) @ findAllEq gs'
           | V.EQN _::gs' => findAllEq gs'
     in findAllEq guards
     end 
 
-  val _ = allApplicationsEquatedTo : V.name -> V.exp V.guard list -> (C.vcon * int) list
+  val _ = allApplicationsEquatedTo : V.name -> V.exp V.guard list -> (C.vcon * V.exp list) list
 
-  fun givenames (vcon, i) =
-    let fun args 0 = []
-          | args n = FreshName.freshNameGen () :: args (n - 1)
-    in  (vcon, args i)
-    end
+(* givenames synthesizes a fresh name for each non-name argument of a value constructor.
+   e.g. K x (Z y) w = [x, .freshname1, w]
+ *)
+  fun givenames [] = []
+    | givenames (e::es) = 
+      let val n = case e of V.C (C.NAME n') => n' | _ => FreshName.freshNameGen ()
+      in n :: givenames es
+      end 
 
   fun refineGexp x vconapp gs_rhs = 
     let val (vc' as C.K vname, ns)  = vconapp
@@ -259,7 +287,8 @@ struct
                   if n = x then 
                     if vc' = vc andalso length es = length ns
                     then Option.map (curry op @ (ListPair.map V.EQN (ns, es))) 
-                    (* todo only introduce as many as are used. constrainedAt helps here.  *)
+                    (* todo optimization: only introduce as many as are used.
+                    constrainedAt helps here.  *)
                                     (refine gs')
                     else NONE  
                   else 
@@ -276,6 +305,7 @@ struct
     fun xNotAnApp gs = 
        case gs of 
             [] => true
+            (* weak - needs checking in condition *)
           | V.CONDITION e::gs' => xNotAnApp gs'
           | V.EQN (n, V.C (C.VCONAPP _))::gs' => x <> n andalso xNotAnApp gs'
           | V.EQN (n, V.C (C.LITERAL (C.VCON _)))::gs' => 
@@ -294,9 +324,9 @@ struct
                                  C.VCON (vc, map (translate_val ctx') vs)
       in  D.C 
     (case ce of 
-      C.LITERAL v => (C.LITERAL (translate_val ctx v))
+      C.LITERAL v => C.LITERAL (translate_val ctx v)
     | C.LAMBDAEXP (n, body) => C.LAMBDAEXP (n, translate (makeKnown n ctx) body)
-    | C.NAME n    => (C.NAME n)
+    | C.NAME n    => C.NAME n
     | C.VCONAPP (vc, es) => C.VCONAPP (vc, map tr es)
     | C.FUNAPP (e1, e2) => C.FUNAPP (tr e1, tr e2))
     end 
@@ -321,14 +351,21 @@ struct
          D.MATCH (translate context e)  (* unguarded rhs *)
     | compile context choices = 
       (
-        (* dumpctx context;  *)
+        (* dumpctx context;
+        println (choicesString choices);  *)
         (* TEST, ELIM-VCON, EXPAND-VCON *)
       case findAnyConstructorApplication context choices
         of SOME x =>  
-        let val cons = nub $ List.concat $ map (allApplicationsEquatedTo x o fst) choices
-            fun refineChoicesWith (app : C.vcon * int) = 
-              let val k_ns = givenames app
-                  val ns = snd k_ns
+        let val cons = connub $ List.concat $ map (allApplicationsEquatedTo x o fst) choices
+            (* refineChoicesWith app breaks a vcon equality of the form 
+            `x = K a b c`
+            into `x.1 = a, x.2 = b, x.3 = c`.
+            it removes a branch where x is not K/3. 
+            x.n is a fresh name projected with a let binding, 
+            and x.n = n' is only generated if n' is not already a name.
+            This reduces redundant bindings. *)
+            fun refineChoicesWith (app : C.vcon * V.exp list) = 
+              let val k_ns as (_, ns) = (fst app, givenames (snd app))
                   val choices' = mapPartial (refineGexp x k_ns) choices
               in (k_ns, compile (makeAllKnown ns context) choices')
               end 
@@ -351,27 +388,35 @@ struct
             in  D.LET_UNLESS (x, translate context e', t1, SOME t2)
             end 
         | NONE => 
-        (* Missing a rule *)
+        (* Missing a rule in the paper: x known, rhs unknown *)
         (case findAnyRHSBinding context choices
           of SOME (x, y as V.C (C.NAME y')) => 
               D.LET_UNLESS (x, D.C (C.NAME y'), compile (makeKnown y' context) 
                         (choices -- (V.EQN (x, y))), NONE)
-        (* TODO WRONG: Consider known x = unknown K y1 y2 case *)
+        (* TODO: the `known x = unknown K y1 y2 ...` case is caught by
+        findAnyConstructorApplication being first. This needs to change for a 
+        parameterized heuristic where the order of these two is not certain. *)
           | SOME (x, e) => can'tunify x e
           | NONE => 
-          (* LET-IF *)
+          (* LET-IF : Done *)
         (case findAnyConstraint context choices
+          (* A side condition or guard would be incredibly nice here *)
           of SOME (x, e') => 
-            let val eq = V.EQN (x, e')
-                val c  = V.CONDITION e'
+          let val eq = V.EQN (x, e') in 
+          case (isname e', getname e' = x)
+            of (true, true) => 
+            compile context (choices -- (V.EQN (x, e')))
+          | _ =>   
+          let val c  = V.CONDITION e'
                 val t1 = compile context (choices withsubst (x, e'))
                 val y = FreshName.freshNameGen () 
                 val t2 = compile (makeKnown y context) (choices --- eq withsubst (y, e'))
-                val t3 = compile context (choices --- c)
+                val t3 = compile context (choices --- c --- eq)
                 val tif = D.IF_THEN_ELSE (x, y, t1, t2)
             in 
             D.LET_UNLESS (y, translate context e', tif, SOME t3)
-            end 
+            end
+          end 
           | NONE => 
           (* Missing a rule *)
         (case findAnyCondition context choices
@@ -385,13 +430,16 @@ struct
                             compile (makeKnown x context) choices_x_for_e, 
                             SOME (compile context choices_no_e))
             end 
-          | NONE => raise Stuck (choicesString choices))))))
+          | NONE => raise Stuck ("Context:\n" 
+                                  ^ ctxstring context 
+                                  ^ "\n Choices:\n"
+                                  ^ choicesString choices))))))
           
 
   (* compilation continues until there are no known variables equal to constructor applications *)
 
   val translate : context -> VMinus.exp -> D.exp = 
-  fn context => fn e => translate context (DesugaredVMinus.desugar e)
+    fn context => fn e => translate context (DesugaredVMinus.desugar e)
   
   val compile = compile emptyContext
 

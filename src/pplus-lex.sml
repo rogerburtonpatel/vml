@@ -83,16 +83,12 @@ struct
   fun intToken isDelim =
     L.check (intFromChars <$> intChars isDelim)
 
-  fun isMyDelim c = Char.isSpace c orelse Char.contains "()[]{};,.\\" c
+  fun isMyDelim c = Char.isSpace c orelse Char.contains Syntax.delimiters c
 
 
 
-  val reserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", "_", ",", sbackslash,
-                  (* debugging *)
-                  "parse", "pat"
-                  ]
-  val predefvcons = ["true", "false"]
+  val reserved = Syntax.ppreserved  
+  val predefvcons = Syntax.predefvcons
 
   fun atom x =
     if member x reserved then

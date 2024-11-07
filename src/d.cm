@@ -17,9 +17,10 @@ group is
   producer.sml
   lexer-combinators.sml
   (* **** shared core language **** *)
+  syntax.sml
   core-lang.sml
   (****** D ******)
-  (* d.sml *)
+  decision-tree.sml
 
   d-lex.sml
   d-parse.sml

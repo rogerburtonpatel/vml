@@ -58,8 +58,6 @@ end = struct
   val equalssign   = reserved "="
   val bar          = reserved "|"
   val rightarrow   = reserved "->"
-  val leftarrow    = reserved "<-"
-  val wildcard     = reserved "_"
 
   val word = reserved
   
@@ -76,10 +74,34 @@ end = struct
     in  P.check ( bads <$> many one )
     end
 
+    (* always-succeed parser; prints msg when run *)
+  fun debug msg =
+      P.ofFunction (fn ts => (app eprint ["@> ", msg, "\n"]; SOME (Error.OK (), ts)))
+
+  (* make another parser chatter on entry *)
+  val verbose : string -> 'a parser -> 'a parser
+   = (fn msg => fn p => debug msg >> p)
+
+  val veryVerbose : string -> 'a parser -> 'a parser
+      = (fn what => fn p =>
+           let fun shout s = app eprint ["looking for ", what, s, "\n"]
+           in  P.ofFunction (fn ts =>
+                                let val _ = shout "..."
+                                    val answer = P.asFunction p ts
+                                    val _ =
+                                        case answer
+                                          of NONE => shout ": failed"
+                                           | SOME (Error.ERROR _, _) => shout ": errored"
+                                           | SOME (Error.OK _, _) => shout ": succeeded"
+                                in  answer
+                                end)
+           end)
+
+
   fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
-  fun barSeparated p = curry op :: <$> p <*> many (reserved "|" >> p)
-  fun commaSep p = curry op :: <$> p <*> many (reserved "," >> p)
-  fun barSeparatedMulti p = curry op :: <$> p <*> many1 (reserved "|" >> p)
+  fun barSeparated p = many (reserved "|" >> p)
+  fun commaSeparated p = curry op :: <$> p <*> many (reserved "," >> p)
+  fun barSeparatedMulti p = curry op :: <$> p <*> many (reserved "|" >> p)
 
 
   fun lookfor s p = P.ofFunction (fn tokens => 
@@ -113,20 +135,32 @@ end = struct
 | ∃ 𝑥. 𝑡 node
 | fail fail *)
 
+(* todo: 'reserved word used as name' error message *)
+
   val exp = P.fix (fn exp : A.exp P.producer => 
+    (* 2nd arg to tree is D.exp to silence erroneous
+        millet value polymorphism error lines. 
+        Change back to 'a with no current semantic effect,
+        but useful if trees ever become polymorphic again.  *)
     let         
-    val tree = P.fix (fn tree : (D.exp, 'a) D.tree P.producer =>
-      let val branch = P.fix (fn branch : ((Core.vcon * string list) * (D.exp, 'a) D.tree) P.producer
-      =>  
-      P.pair <$> (P.pair <$> vcon <*> many name) <*> tree)
+    val tree : (D.exp, D.exp) D.tree P.producer = P.fix (fn tree =>
+      let 
+      val branch = P.fix (fn branch =>  
+        P.pair <$> (bracketed (P.pair <$> vcon <~> comma <*> commaSeparated name)) 
+                                               <~> rightarrow <*> tree)
       in
-        curry3 A.TEST <$> word "test" >> name <*> many branch <*> optional (word "else" >> tree)
+        curry3 A.TEST <$> word "test" >> name 
+        <*> (barSeparatedMulti branch
+             <|> barSeparated branch) 
+             (* allows for ocaml-style *)
+        <*> optional (word "else" >> tree)
     <|> curry4 A.LET_UNLESS <$> word "let" >> name <*> equalssign >> exp 
         <*> word "in" >> tree 
-        <*> optional (word "unless" >> word "fail" >> word "=>" >> tree)
+        <*> optional (word "unless" >> word "fail" >> rightarrow >> tree)
     <|> curry4 A.IF_THEN_ELSE <$> word "if" >> name <*> equalssign >> name 
        <*> word "then" >> tree <*> word "else" >> tree
     <|> word "fail" >> succeed A.FAIL
+    <|> bracketed tree
     end
     )
 
@@ -148,7 +182,7 @@ end = struct
 
   val def = 
         word "val"       >> (curry A.DEF <$> name <*> (equalssign >> exp))   
-        (* <|>        reserved "parse" >> exp >> P.succeed (A.DEF ("z", ppname "z"))        *)
+        <|>        reserved "parse" >> exp >> P.succeed (A.DEF ("z", dname "z"))       
         <|>      (* debugging *)
         peek one         >> expected "definition"
 

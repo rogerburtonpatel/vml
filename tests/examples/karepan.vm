@@ -1,0 +1,24 @@
+# 
+# val try = λ x. λ y. Yen Three
+# val isOpen = λ x. Ok
+# val ge = λ x. λ y. Ok
+# val costOfKarePan = Three 
+# 
+#  val eat_karepan = λ iccard. λ konbini.
+#   if
+#     ∃ amt tot. (konbini = SevenEleven | konbini = FamilyMart); isOpen konbini
+#     ;tot = (try iccard) konbini; (tot = Yen amt | tot = USD amt); 
+#     (ge amt) costOfKarePan 
+# -> Itadakimasu 
+#   [] -> Kanashimi
+#   fi
+#
+#val foo = (eat_karepan ICCARD) FamilyMart
+#
+#val x = print foo
+#
+
+# This tree generates a bunch of spurious nodes. fix it. 
+val x = if 
+E y. x = y; y = K -> print Ok 
+fi 

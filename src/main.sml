@@ -76,7 +76,7 @@ structure Main = struct
       ; OS.Process.exit OS.Process.failure
       )
         | Dtran.Can'tDigest Languages.D => 
-          (app eprint [arg0, ": Uh-oh!\n  I can't parse or evaluate D yet.\n"]
+          (app eprint [arg0, ": Uh-oh!\n  I can't parse D yet.\n"]
       ; OS.Process.exit OS.Process.failure
       )
         | Dtran.Can'tDigest Languages.Eval => 
@@ -84,4 +84,9 @@ structure Main = struct
                              "  eval can only be used after the \"-\"!\n"]
       ; OS.Process.exit OS.Process.failure
       )
+        | DofVminus.Stuck s => 
+        let val msg = "Error: Compiler got stuck with the following context and remaining choices:\n " ^ s in 
+        reportAndExit (Error.ERROR msg)
+        end 
+
 end

@@ -51,11 +51,13 @@ end = struct
                                                     else NONE | _ => NONE) one
   val semicolon    = reserved ";"
   val bslash       = reserved backslash
+  val unilambda    = reserved "λ"
   val dot          = reserved "."
   val equalssign   = reserved "="
   val bar          = reserved "|"
   val rightarrow   = reserved "->"
   val exists       = reserved "E"
+  val uniexists    = reserved "∃"
 
   val word = reserved
   
@@ -82,7 +84,7 @@ end = struct
                         (* parse a token-separated list; may be empty *)
   fun barSeparated p       = tokSeparated (reserved "|") p
   fun semicolonSeparated p = tokSeparated (reserved ";") p
-  fun commaSep p           = tokSeparated (reserved ",") p
+  fun commaSeparated p           = tokSeparated (reserved ",") p
   fun boxSeparated p       = tokSeparated box p
   fun barSeparatedMulti p  = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
@@ -129,7 +131,7 @@ end = struct
   val exp = P.fix (fn exp : V.exp P.producer => 
     let         
       val existentials = 
-             exists >> sat (not o containsDuplicates) (many name) <~> dot
+             (exists <|> uniexists) >> sat (not o containsDuplicates) (many name) <~> dot
           <|> succeed []
       val guard = P.fix (fn guard : V.exp V.guard P.producer =>
           let val baseguard = curry V.EQN <$> name <*> equalssign >> exp 
@@ -149,7 +151,7 @@ end = struct
                                   <|> bracketed exp
     val subexp = P.fix (fn subexp =>
       vvconapp <$> vcon <*> many vconarg                                  
-        <|> vlambdaexp  <$> bslash >> name <~> dot <*> exp                         
+        <|> vlambdaexp  <$> (bslash <|> unilambda) >> name <~> dot <*> exp                         
         <|> vname       <$> name                                                   
         <|> viffi       <$> word "if" 
                               >> boxSeparated guarded_exp 

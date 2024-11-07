@@ -42,4 +42,3 @@ $(SML_LIB)/basis/basis.mlb
 
   main.sml
   
-  d-lex.sml
