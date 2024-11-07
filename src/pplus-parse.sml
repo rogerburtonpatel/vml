@@ -39,7 +39,6 @@ end = struct
   fun flip f x y  = f y x
   val member = ListUtil.member
   fun uncurry f (x, y) = f x y
-  val backslash = StringEscapes.backslash
   (* utilities *)
 
   (* val int       = P.maybe (fn (L.INT   n)    => SOME n  | _ => NONE) one *)
@@ -49,12 +48,12 @@ end = struct
   val right        = P.maybe (fn (L.RIGHT s) => SOME s     | _ => NONE) one
   fun reserved s   = P.maybe (fn (L.RESERVED s') => if s = s' then SOME () 
                                                     else NONE | _ => NONE) one
+  val bslash       = reserved Syntax.sbackslash
+  val rightarrow   = reserved Syntax.rightarrow
   val comma        = reserved ","
-  val bslash       = reserved backslash
   val dot          = reserved "."
   val equalssign   = reserved "="
   val bar          = reserved "|"
-  val rightarrow   = reserved "->"
   val leftarrow    = reserved "<-"
   val wildcard     = reserved "_"
 

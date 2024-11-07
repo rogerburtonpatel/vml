@@ -82,7 +82,7 @@ struct
   fun intToken isDelim =
     L.check (intFromChars <$> intChars isDelim)
 
-  fun isMyDelim c = Char.isSpace c orelse Char.contains Syntax.delimiters c
+  fun isMyDelim c = Char.isSpace c orelse Char.contains Syntax.vmdelimiters c
 
 
   val reserved    = Syntax.vmreserved 

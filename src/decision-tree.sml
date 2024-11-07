@@ -53,7 +53,7 @@ struct
 
   fun br' input = "(" ^ input ^ ")"
 
-  val rightarrow = "->"
+  val rightarrow = Syntax.rightarrow
 
   structure C = Core 
   val member = ListUtil.member
@@ -71,15 +71,27 @@ struct
   and maybeparenthesize (C e) = C.maybeparenthesize expString e
     | maybeparenthesize other = br' (expString other)
   and treeString t = 
-    let fun emitBranches [] default = Impossible.impossible "no patterns to match on"
-           | emitBranches (x::xs) default = 
-           let fun emitBranch ((Core.K vc, ys), tr) = "(" ^ vc ^ ", " ^ String.concatWith "," ys ^ ") " ^ rightarrow ^ " " ^ treeString' tr ^ "\n"
-           val emittedBranches = foldr (fn (b, acc) => "| " ^ emitBranch b ^ acc) "" xs
-        in emitBranch x ^ emittedBranches ^ (if isSome default then "else " ^ treeString' (valOf default) else "")
+    let fun emitBranches [] default = Impossible.impossible "no branches present in tree"
+           | emitBranches xs default = 
+           let fun emitBranch ((Core.K vc, ys), tr) = 
+              let val justvcon = null ys
+                  val l     = if justvcon then "" else "("
+                  val r     = if justvcon then "" else ")"
+                  val space = if justvcon then "" else " "
+              in 
+              l ^ vc 
+              ^ space
+              ^ String.concatWith " " ys 
+              ^ r
+              ^ " " ^ rightarrow ^ " " ^ treeString' tr 
+              ^ "\n"
+            end
+           val emittedBranches = foldr (fn (b, acc) => "  | " ^ emitBranch b ^ acc) "" xs
+        in emittedBranches ^ (if isSome default then "else " ^ treeString' (valOf default) else "")
         end 
     and treeString'     (MATCH a) = expString a
-          | treeString' (TEST (n, branches, default)) = "test " ^ n ^ "\n " ^ emitBranches branches default
-          | treeString' (LET_UNLESS (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ treeString' t1 
+          | treeString' (TEST (n, branches, default)) = "test " ^ n ^ "\n" ^ emitBranches branches default
+          | treeString' (LET_UNLESS (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in \n " ^ treeString' t1 
           | treeString' (LET_UNLESS (n, e, t1, SOME t2)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ treeString' t1 ^ "\n unless fail => " ^ treeString' t2
           | treeString' (IF_THEN_ELSE (x, y, t1, t2)) = "if " ^ x ^ " = " ^ y ^ "\n then " ^ treeString' t1 ^ "\n else " ^ treeString' t2
           | treeString' (EXISTS (n, t)) = "E " ^ n ^ ". " ^ treeString' t

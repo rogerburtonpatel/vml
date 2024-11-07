@@ -439,8 +439,7 @@ struct
   (* compilation continues until there are no known variables equal to constructor applications *)
 
   val translate : context -> VMinus.exp -> D.exp = 
-    fn context => fn e => translate context (DesugaredVMinus.desugar e)
-  
+    fn context => fn e => translate context (DesugaredVMinus.desugar e) 
   val compile = compile emptyContext
 
   fun def context (VMinus.DEF (n, e)) = 

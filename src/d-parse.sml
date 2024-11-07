@@ -14,6 +14,9 @@ end = struct
                                type input = L.token
                                val show = showTokens)
 
+  type 'a parser = 'a P.producer
+
+
   (* parsing-combinators boilerplate *)
 
   infix 3  <*>      val op <*> = P.<*>
@@ -44,14 +47,66 @@ end = struct
   (* utilities *)
 
   fun curry4 f x y z w = f (x, y, z, w)
+  fun eprint s = TextIO.output (TextIO.stdErr, s)
 
   (* val int       = P.maybe (fn (L.INT   n)    => SOME n  | _ => NONE) one *)
   val name         = P.maybe (fn (L.NAME  n)    => SOME n  | _ => NONE) one
   val vcon         = P.maybe (fn (L.VCON  n)    => SOME n  | _ => NONE) one
   val left         = P.maybe (fn (L.LEFT s) => SOME s      | _ => NONE) one
+  val leftround    = P.maybe (fn (L.LEFT L.ROUND) => SOME L.ROUND      | _ => NONE) one
   val right        = P.maybe (fn (L.RIGHT s) => SOME s     | _ => NONE) one
+  val rightround   = P.maybe (fn (L.RIGHT L.ROUND) => SOME L.ROUND     | _ => NONE) one
   fun reserved s   = P.maybe (fn (L.RESERVED s') => if s = s' then SOME () 
                                                     else NONE | _ => NONE) one
+
+ val right : L.bracket_shape parser = right
+
+  fun notCurly L.CURLY = false
+    | notCurly _     = true
+
+  val leftCurly = sat (not o notCurly) left
+
+  (************** bracket parsers ******)
+
+  datatype right_result
+    = FOUND_RIGHT      of L.bracket_shape
+    | SCANNED_TO_RIGHT (* location where scanning started *)
+    | NO_RIGHT
+
+  val scanToClose = P.ofFunction (fn tokens =>
+    let fun scan lpcount tokens =
+          (* lpcount is the number of unmatched left parentheses *)
+          case tokens
+            of L.LEFT  t :: tokens => scan (lpcount+1) tokens
+             | L.RIGHT t :: tokens => if lpcount = 0 then
+                                      P.asFunction (succeed SCANNED_TO_RIGHT) tokens
+                                    else
+                                      scan (lpcount-1) tokens
+             | _  :: tokens => scan lpcount tokens
+             | []           => P.asFunction (succeed NO_RIGHT) tokens
+    in  scan 0 tokens
+    end)
+
+  val matchingRight = FOUND_RIGHT <$> right <|> scanToClose
+
+  fun matchBrackets _ left _ NO_RIGHT =
+        Error.ERROR ("unmatched " ^ L.leftString left)
+    | matchBrackets e left _ SCANNED_TO_RIGHT =
+        Error.ERROR ("expected " ^ e) 
+    | matchBrackets _ left a (FOUND_RIGHT right) =
+        if left = right then
+          Error.OK a
+        else
+          Error.ERROR (L.rightString right ^ " does not match " ^ L.leftString left)
+
+  fun liberalBracket (expected, p) =
+    P.check (matchBrackets expected <$> left <*> p <*> matchingRight)
+
+
+  fun wrap what f =
+    fn x => (app eprint [what, "\n"]; TextIO.flushOut TextIO.stdErr; f x)
+            before app eprint ["finished ", what, "\n"]
+
   val comma        = reserved ","
   val bslash       = reserved backslash
   val dot          = reserved "."
@@ -62,10 +117,6 @@ end = struct
   val word = reserved
   
   fun token t = sat (P.eq t) one >> succeed () (* parse any token *)
-
-  fun eprint s = TextIO.output (TextIO.stdErr, s)
-
-  type 'a parser = 'a P.producer
 
   (* always-error parser; useful for messages *)
   fun expected what =
@@ -98,9 +149,9 @@ end = struct
            end)
 
 
-  fun bracketed p = left >> p <~> right  (* XXX TODO they need not match *)
+
   fun barSeparated p = many (reserved "|" >> p)
-  fun commaSeparated p = curry op :: <$> p <*> many (reserved "," >> p)
+  fun commaSeparated p = curry op :: <$> p <*> many (reserved "," >> p) <|> succeed []
   fun barSeparatedMulti p = curry op :: <$> p <*> many (reserved "|" >> p)
 
 
@@ -129,11 +180,11 @@ end = struct
   fun nullaryvcon vc = A.C (Core.VCONAPP (vc, []))
   fun branch a = succeed a
 
-(* test 𝑥 {𝐾 {𝑦} ⇒ 𝑡 }[else 𝑡] node
-| let 𝑥 = 𝑒 in 𝑡 [ unless fail => 𝑡]-unless node
-| if 𝑥 = 𝑒 then 𝑡 else 𝑡 node
-| ∃ 𝑥. 𝑡 node
-| fail fail *)
+(* test 𝑥 {𝐾 {𝑦} -> 𝑡 }+ [else 𝑡]
+| let 𝑥 = 𝑒 in 𝑡 [ unless fail -> 𝑡]
+| if 𝑥 = 𝑒 then 𝑡 else 𝑡 
+| ∃ 𝑥. 𝑡 
+| fail *)
 
 (* todo: 'reserved word used as name' error message *)
 
@@ -146,13 +197,14 @@ end = struct
     val tree : (D.exp, D.exp) D.tree P.producer = P.fix (fn tree =>
       let 
       val branch = P.fix (fn branch =>  
-        P.pair <$> (bracketed (P.pair <$> vcon <~> comma <*> commaSeparated name)) 
+        P.pair <$> (liberalBracket ("a bracketed value constructor application", 
+                                                P.pair <$> vcon <*> many name)) 
                                                <~> rightarrow <*> tree)
       in
         curry3 A.TEST <$> word "test" >> name 
         <*> (barSeparatedMulti branch
              <|> barSeparated branch) 
-             (* allows for ocaml-style *)
+             (* allows for sml-style and ocaml-style branches *)
         <*> optional (word "else" >> tree)
     <|> curry4 A.LET_UNLESS <$> word "let" >> name <*> equalssign >> exp 
         <*> word "in" >> tree 
@@ -160,19 +212,21 @@ end = struct
     <|> curry4 A.IF_THEN_ELSE <$> word "if" >> name <*> equalssign >> name 
        <*> word "then" >> tree <*> word "else" >> tree
     <|> word "fail" >> succeed A.FAIL
-    <|> bracketed tree
+    <|> liberalBracket ("a bracketed tree", tree)
     end
     )
 
     val vconarg : A.exp P.producer =  dname <$> name 
                                   <|> nullaryvcon <$> vcon 
-                                  <|> bracketed exp
+                                  <|> liberalBracket 
+                                      ("a bracketed expression within a value constructor application", 
+                                      exp)
     val subexp = P.fix (fn subexp =>
       dvconapp <$> vcon <*> many vconarg                                  
         <|> dlambdaexp  <$> bslash >> name <~> dot <*> exp                         
         <|> dname       <$> name                                                   
         <|> A.I <$> tree
-        <|> bracketed exp)
+        <|> liberalBracket ("a bracketed expression", exp))
     in 
       (* reserved "pat" >> pattern >> succeed (ppname "x") <|>  *)
               (* debugging *)
@@ -182,7 +236,7 @@ end = struct
 
   val def = 
         word "val"       >> (curry A.DEF <$> name <*> (equalssign >> exp))   
-        <|>        reserved "parse" >> exp >> P.succeed (A.DEF ("z", dname "z"))       
+        (* <|>        reserved "parse" >> exp >> P.succeed (A.DEF ("z", dname "z"))        *)
         <|>      (* debugging *)
         peek one         >> expected "definition"
 

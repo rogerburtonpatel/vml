@@ -83,7 +83,7 @@ struct
   fun intToken isDelim =
     L.check (intFromChars <$> intChars isDelim)
 
-  fun isMyDelim c = Char.isSpace c orelse Char.contains Syntax.delimiters c
+  fun isMyDelim c = Char.isSpace c orelse Char.contains Syntax.ppdelimiters c
 
 
 
@@ -105,7 +105,7 @@ struct
     in  Error.ERROR msg
     end
 
-  val comment = char #";" >> many one
+  val comment = char #"#" >> many one
 
   fun optional p = SOME <$> p <|> succeed NONE
 

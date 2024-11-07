@@ -1,6 +1,8 @@
 structure Syntax :> sig 
 
-  val delimiters : string 
+  val vmdelimiters : string 
+  val ppdelimiters : string 
+  val ddelimiters : string 
   val vmreserved : string list 
   val ppreserved : string list 
   val dreserved : string list 
@@ -8,6 +10,7 @@ structure Syntax :> sig
   val doublequote  : string
   val backslash  : char
   val sbackslash : string
+  val rightarrow : string
 
 end 
   =
@@ -17,39 +20,45 @@ struct
   val backslash = (chr 92)
   val sbackslash = StringEscapes.backslash
 
-(* todo: 
+  val lambda = "λ"
+  val exists = "∃"
+  val dot = "."
+  val valkw = "val"
+  val equals = "="
+  val rightarrow = "->"
+  val bar = "|"
+  
+  val corereserved = [
+    valkw, 
+    equals,
+    lambda, 
+    sbackslash,
+    dot, 
+    doublequote
+  ]
 
-then d parser empty name list after vcon in test node fix
-
-then specify delimiters
-
-then better parser error messages
-
-then make semantic tests
- *)
-
-  val vmreserved = ["val", "=", doublequote, ".", "of", "|",
-                  ",", sbackslash,
-                  "->",
-                  "if", "fi", "[]", "E"
+  val vmreserved = ["if", "fi", "[]", "E", exists, 
+                  bar, rightarrow
                   (* debugging *)
-                  (* , "parse", "tree" *)
-                  ]
-  val ppreserved = ["val", "=", "case", doublequote, ".", "of", "|", 
-                  "->", "<-", "when", "_", ",", sbackslash
+                  (* , "parse", "guard" *)
+                  ] @ corereserved
+  val ppreserved = ["case", "of", 
+                  "<-", "when", "_", ",",
+                  bar, rightarrow
                   (* debugging *)
                   (* , "parse", "pat" *)
-                  ]
+                  ] @ corereserved
 
-  val dreserved = ["val", "=", doublequote, ".", "of", "|", 
-                  ",", sbackslash,
-                  "test", "->", "else", "let", "in", "unless", 
-                  "if", "then", "fail", "[]"
+  val dreserved = ["test", "else", "let", "in", "unless", 
+                  "if", "then", "fail", "[]",
+                  bar, rightarrow
                   (* debugging *)
                   (* , "parse", "tree" *)
-                  ]
+                  ] @ corereserved
 
   val predefvcons = ["true", "false"]
 
-  val delimiters = "()[]{};,.\\" 
+  val vmdelimiters = "()[]{};.\\" 
+  val ppdelimiters = "()[]{},.\\" 
+  val ddelimiters = "()[]{},.\\" 
 end
