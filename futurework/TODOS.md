@@ -16,6 +16,8 @@
 
 - [x] make vcon commas consistent
 
+- [ ] use better brackets for other parsers
+
 - [ ] match compiler stronger: prune in conditions
 
 - [ ] heuristic hole
