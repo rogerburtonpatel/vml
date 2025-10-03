@@ -1,0 +1,222 @@
+\documentclass[manuscript,screen, 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+\institution{Tufts University}
+\streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+  }
+\bibliographystyle{ACM-Reference-Format}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+
+\section{Acknowledgements}
+
+This thesis would not have been possible without the infinitely generous time
+and support of my advisors, Norman Ramsey and Milod Kazerounian. Norman's
+offhand comment of “I~wonder if Verse's equations subsume pattern matching” was
+the entire basis of this work, and his generosity in agreeing to advise a full
+thesis to answer his question will always be profoundly appreciated. During the
+academic year, Norman provided me with materials on both the technical story and
+on how to write about it well. He gave me regular feedback and has helped
+improve my research skills, my technical writing, and my understanding of
+programming languages in general tremendously. I~especially appreciate how he
+has guided me in-person at the end of my undergrad when his book~\citep{bpc} got
+me started down the path of PL at the beginning of it. Finally, Norman is also
+fantastically fun to pair program with. 
+
+From the beginning, Milod provided me with encouraging mentorship that kept
+me enthusiastic and determined to complete the project. He was exceptionally
+patient as I~gave him whirlwind tour after whirlwind tour of the changing
+codebase and problems, and he kept me grounded in the problems at hand. He 
+sent me helpful examples of his research to aid me in my proofs, and gave me
+some particularly encouraging words towards the end of the project that I~
+will not soon forget. 
+
+My undergraduate advisor, Mark Sheldon, has always been both supportive and
+kind. I~have enjoyed many long talks in his office, and I~am deeply grateful
+that he is on my committee. 
+
+Alva Couch was the advisor of my original thesis idea, which was to compile
+programming languages with music. Ultimately, we decided that I~should pursue
+this project instead, and I~am grateful to him for his mentorship in that moment
+and onwards. 
+
+My family---my mother, Jennifer Burton, my father, Aniruddh Patel, and my
+sister, Lilia Burtonpatel, have all given me support, encouragement, and
+(arguably most importantly) food. My gratitude for them is immeasurable. 
+
+My gratitude towards my friends is also without limit. In particular, and in
+no order, Liam Strand, Annika Tanner, Max Stein, Cecelia Crumlish, and
+Charlie Bohnsack all showed specific interest in the work and encouraged me
+as I~moved forward. Rachael Clawson was subjected to much rubber-ducking,
+and endured valiantly. Aliénor Rice and Marie Kazibwe were as steadfast
+thesis buddies as I~could ever hope for. Jasper Geer, my PL partner in
+crime, was always one of my favorite people to talk to about my thesis. His
+pursuits in research inspire mine. 
+
+Skylar Gilfeather, my unbelievable friend. Yours is support that goes
+beyond words; care, food, silent and spoken friendship, late night rides to
+anywhere, laughs and tears are some that can try to capture it. I~am so, so
+grateful for how ceaselessly you've encouraged me on this journey. Every one
+of your friends is lucky to have you in their life, and I~am blessed that 
+you are such a core part of mine. 
+
+Anna Quirós, I~am writing these words as you sleep behind me. Your support
+and love have been immeasurable. I~will always be grateful to you for this
+year~\it{increíble}. I~could not have smiled through it all without you. 
+
+Thank you all. 
+
+%\section{References}
+\bibliography{sources}
+
+\renewcommand\thesection{\Alph{section}}
+\setcounter{section}{0}
+% \section{Proofs}
+% \begin{outline}
+% \1~\bf{Proof: Translation from~\VMinus to~\D\ preserves semantics }
+% \begin{proof}
+%   In progress. 
+% \end{proof}
+% \1~\bf{Proof: Translation from~\PPlus\ to~\VMinus preserves semantics }
+% \begin{proof}
+%   In progress. 
+% \end{proof}
+% %~\1~\bf{Proof: Translation from~\VMinus to Verse preserves semantics}
+% \end{outline}
+
+
+\section{Is~\VMinus\ a true subset of~\VC?}
+\VMinus\ certainly appears to relate to~\VC\ semantically. If they are formally
+related, \VMinus may inform programming in \VC, which could help new Verse
+programmers learn the language if they are familiar with more traditional
+decision-making constructs like \iffibf. By starting with \VMinus, they could
+move from subset to full set as they learn the full Verse language. 
+
+Translating \iffibf and choice in~\VMinus to~\bf{one} and choice in~\VC\ is
+likely a sufficient embedding. Formalizing this translation and, more
+importantly, proving that my semantics of~\VMinus are consistent with Augutsson
+et al.'s \VC\ is an excellent goal for future work. 
+
+\section{Formal Definitions of all languages}
+\label{languagedefs}
+
+\begin{table}[H]
+  \utable
+  \caption{Abstract Syntax of~\VMinus and~\D. Forms in black are present in both
+              languages, forms in~\red{red} are specific to~\VMinus, and forms
+              in~\blue{blue} are specific to~\D.}
+  \label{fig:unilang2}
+\end{table}
+
+\subsection{Rules (Big-step Operational Semantics) for~\U, shared by~\VMinus and~\D}
+\label{usemantics1}
+\usemantics 
+\subsection{Rules (Big-step Operational Semantics) specific to~\VMinus}
+\label{vmsemantics2}
+\vmsemantics
+\label{dsemantics2}
+\dsemantics
+
+\subsection{Full Big-step rules for \Compile, with no descriptions}
+
+
+\showvjudgement{Compile}{\compilebig}
+
+\subsection{Rules (Big-step Translation) for compiling \iffibf}
+
+These rules in a nondeterministic order by the compiler. 
+
+\rawcompiler
+
+
+%~\begin{figure}
+%~\begin{center}
+%     \begin{bnf}
+%     $P$ :~\textsf{Programs} ::=
+%     $\bracketed{d}$ : definition
+%     ;;
+%     $d$ :~\textsf{Definitions} ::=
+%     | $\tt{val}\; x\;~\tt{=}\;~\expr$ : bind name to expression
+%     ;;
+%     $\expr$ :~\textsf{Expressions} ::=
+%     | $v$ : literal values 
+%     | $x, y, z$ : names
+%     | $\tt{if}\; [\; G\;~\bracketed{\tt{[]}\; G}\;]\;~\tt{fi}$ : if-fi 
+%     | $K~\bracketed{\expr}$ : value constructor application 
+%     | $\expr[1]\;~\expr[2]$ : function application 
+%     | $\ttbackslash x\tt{.}\;~\expr$ : lambda declaration 
+%     ;;
+%     $G$ :~\textsf{Guarded Expressions} ::=  
+%     $[\tt{E }{\bracketed{x}}{\tt{.}}]~\bracketed{g}~\;\ttrightarrow\;~\expr$ : names, guards, and body
+%     ;;
+%     $g$ :~\textsf{Guards} ::=  
+%     | $\expr$ : intermediate expression 
+%     | $x~\;\tt{=}\;~\expr$ : equation 
+%     | $ g~\bracketed{\tt{;} g}~\;~\pbar~\; g~\bracketed{\tt{;} g}$ : choice 
+%     ;;
+%     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+%     | $\ttbackslash x\tt{.}\;~\expr$ : lambda value
+%     \end{bnf}
+%~\end{center}
+%~\Description{The concrete syntax of PPlus.}
+%     \caption{\VMinus: Concrete syntax}
+%     \label{fig:vmsyntax}
+%     \end{figure}
+
+%~\begin{figure}
+%     \begin{center}
+%     \begin{bnf}
+%     $P$ :~\textsf{Programs} ::=
+%     $\bracketed{d}$ : definition
+%     ;;
+%     $d$ :~\textsf{Definitions} ::=
+%     | $\tt{val}\; x\;~\tt{=}\;~\expr$ : bind name to expression
+%     ;;
+%     $\expr$ : Expressions ::= 
+%     | $v$ : literal values 
+%     | $x, y, z$ : names
+%     | $K\bracketed{\expr}$ : value constructor application 
+%     | $\ttbackslash x\tt{.}\;~\expr$ : lambda declaration  
+%     | $\expr[1]\;~\expr[2]$ : function application 
+%     | $\tt{case}\;~\expr\;~\bracketed{p\;~\ttrightarrow\;~\expr}$ : case expression 
+%     |~\ttbraced{$\expr$}
+%     ;;
+%     $p$ :~\textsf{Patterns} ::= $p_{1}\pbar p_{2}$ : or-pattern
+%     | $p~\tt{,} p'$ : pattern guard 
+%     | $p\;~\tt{<-}\;~\expr$ : pattern from explicit expression  
+%     | $x$ : name 
+%     | $\tt{\_}$ : wildcard 
+%     | $K\;~\bracketed{p}$ : value constructor application 
+%     | $\tt{when}\;~\expr$
+%     |~\ttbraced{$p$}
+%     ;;
+%     $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+%     | $\ttbackslash x\tt{.}\;~\expr$ : lambda value 
+%     ;;
+%     $K$ :~\textsf{Value Constructors} ::=
+%     | $\tt{true}\;~\vert\;~\tt{false}$ : booleans
+%     | $\tt{A-Z}x$ : name beginning with capital letter
+%     % | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+%     \end{bnf}
+%     \end{center}
+%     \Description{The concrete syntax of PPlus.}
+%     \caption{\PPlus: Concrete syntax}
+%     \end{figure}
+
+\end{document}
