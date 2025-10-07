@@ -1,3 +1,6 @@
+GOALS:
+- REALLY strong examples: Stephanie: "Examples can make or break a paper."
+
 0 abstract : 1 par
 - PM is good and well studied. But extensions to PM are hard to get to work
   together: only in 2023 did GHC get or-patterns, OCaml still doesn't have

@@ -29,18 +29,6 @@
     hanus2013functional, verse}. (For the remainder of this thesis, I~use “\VC”
     and “Verse” interchangeably.)
 
-    % Equations present a different, yet powerful, way to write code that makes
-    % decisions and deconstructs data. In this section, I~will introduce you to
-    % equations similarly to I~how I~introduced to you pattern matching. Once
-    % you're familiar with equations, you'll be ready to compare their strengths
-    % and weaknesses with those of pattern matching, and judge the compromise I
-    % propose. 
-
-    % Even if you read~\citet{verse},~\VC's equations and the paradigms of
-    % functional logic programming might look unfamiliar. To help ease you into
-    % familiarity with equations, I~ground explanations and examples in how
-    % they relate to pattern matching. 
-
     \VC's~\it{equations} test for structural equality and create bindings. Like
     pattern matching, equations scrutinize and deconstruct data at runtime by
     testing for structural equality and unifying names with values. Unlike
@@ -65,88 +53,7 @@
     \one operator, has a very similar semantics to case; that is, “proceed
     and create bindings if any one of these computations succeed.” 
 
-    Let's look at what equations,~\one, and choice look like in~\VC
-    (Figure~\ref{fig:versearea}). I've written the~\tt{area} function in~\VC
-    extended with a~\tt{float} type and a multiplication operator~\tt{*}.
-
-    \begin{figure}[]
-        \verselst
-        \begin{lstlisting}[numbers=none]
-$\exists$ vc_area. vc_area = $\lambda$ sh. 
-  one {  $\exists$ s. sh   = $\langle$SQUARE, s$\rangle$; s * s
-       $\choice$ $\exists$ w h. sh = $\langle$TRIANGLE, w, h$\rangle$; 
-              0.5 * w * h
-       $\choice$ $\exists$ b1 b2 h. sh = $\langle$TRAPEZOID, b1, b2, h$\rangle$; 
-              0.5 * (b1 + b2) * h}
-        \end{lstlisting}
-
-        \small
-\begin{verbatim}
-
-
-                        Laws for area: 
-                        
-                        area (SQUARE s)              == s * s 
-                        area (TRIANGLE (w, h))       == 0.5 * w * h
-                        area (TRAPEZOID (b1, b2, h)) == 0.5 * (b1 + b2) * h
-        \end{verbatim}
-    \caption{\tt{vc\_area} in~\VC uses existentials and equations rather than
-    pattern matching. Below are the algebraic laws for the original~\tt{area}
-    function.}~\Description{An implementation of area in~\VC.}
-    \label{fig:versearea}
-    \end{figure}
-
-    In the figure, the name~\tt{vc\_area} is bound to a lambda ($\lambda$) that
-    takes a single argument,~\tt{sh}. The body of the function is a~\one
-    expression over three choices (separated by~$\choice$). If any of the
-    choices succeeds,~\one~ensures evaluation of the other choices halts and the
-    succeeding expression's result is returned. In each branch, the existential
-    $\exists$ introduces names~\tt{s, w, h, b1, b2}, and is followed by an
-    \it{equation} that unifies them with~\tt{sh}, along with the familiar value
-    constructors~\tt{SQUARE},~\tt{TRIANGLE}, and~\tt{TRAPEZOID}. After the
-    equation is a semicolon followed by an expression, which is evaluated if the
-    equation succeeds. As in~\hyperref[fig:pmarea]{\tt{pm\_area}}, the
-    right-hand sides of~\tt{vc\_area} are~\it{guarded} by a “check;” now, the
-    check is successful unification in an equation rather than a successful
-    match on a pattern. Similarly,~\one with a list of choices represents
-    matching on any~\it{one} pattern to evaluate a single right-hand side. 
-
-    Why use equations? I~begin with a digestible claim:~\VC's equations are
-    preferable to observer functions. This claim mirrors my argument for pattern
-    matching, and to support it I~appeal to the Nice~Properties: 
-
-    \begin{enumerate}
-      \item~\hyperref[p1]{\it{Lawlike.}} 
-      \tt{vc\_area} makes only one addition to the algebraic laws: the explicit
-      $\exists$. This makes~\tt{vc\_area} look more like mathematical notation
-      than pure algebraic laws, but that might not be a bad thing: while it less
-      resembles the algebraic laws a programmer would write, it more resembles
-      the equations that a mathematician would. 
-      \item~\hyperref[p2]{\it{Single copy.}}~\tt{vc\_area} does not duplicate any code. 
-      \item~\hyperref[p5]{\it{Exhaustiveness.}}  By writing the equations that
-      unify~\tt{sh} with the value-constructor forms first, it is easy in this
-      example to see that the code is exhaustive. Creating a static analysis
-      tool for~\VC that ensures exhaustiveness on all expressions may or may not
-      be a significant challenge; full Verse has a tool that can verify if a
-      terminating expression on the right-hand side of a function will
-      \it{always succeed} or not~\citep{peyton-jones2024verification}.
-      \item~\hyperref[p3]{\it{Call-free.}}~\tt{vc\_area} deconstructs
-      user-defined types as easily as~\hyperref[fig:pmarea]{\tt{pm\_area}} does
-      with pattern matching. 
-      \item~\hyperref[p4]{\it{Signposting.}}~\tt{vc\_area} has all important
-      internal values named explicitly.
-      
-      % This Property may not hold, because~\VC on its own is untyped.
-      % Without a type system, a compiler cannot help me with non-exhaustive
-      % cases. However, there is no published compiler, type system or no, for
-      % Verse, and only when one is made available can I~make this assertion. For
-      % this reason, and for the sake of focusing on more important details, I
-      % choose to proceed in my analysis of equations in~\VC without considering
-      % this Property. 
-    \end{enumerate}
-
-    You understand why I claim programmers prefer equations to observer
-    functions. Now I~make a stronger claim: equations are~\it{at least as good
+    Now I~make a stronger claim: equations are~\it{at least as good
     as} pattern matching with popular extensions. How can I~claim this? By
     appealing again to the Nice~Properties! In~Section~\ref{pmandextensions},
     I~demonstrated how pattern matching had to resort to extensions to regain
