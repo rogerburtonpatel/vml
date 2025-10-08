@@ -1,0 +1,1020 @@
+\documentclass[article,screen,12pt, nonacm]{acmart}
+\let\Bbbk\relax %
+\usepackage{standalone}
+\usepackage{vmlmacros}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{0.7em plus 0.2em minus 0.1em}{0.5em}
+\usepackage{titlesec}
+
+% Reduce whitespace before and after section titles
+\titlespacing*{\section}
+  {0pt}    % left margin
+  {0.6em plus 0.2em minus 0.1em} % before section
+  {0.4em plus 0.1em minus 0.1em} % after section
+
+\titlespacing*{\subsection}
+  {0pt}
+  {0.5em plus 0.1em minus 0.1em}
+  {0.3em plus 0.1em minus 0.1em}
+
+\titlespacing*{\subsubsection}
+  {0pt}
+  {0.4em plus 0.1em minus 0.1em}
+  {0.2em plus 0.05em minus 0.05em}
+
+% Slightly reduce paragraph spacing to match
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1em}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\citestyle{acmauthoryear}
+\begin{document}
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+  \institution{Tufts University}
+  \streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+}
+\bibliographystyle{plainnat}
+
+
+
+
+\renewcommand{\shortauthors}{Burtonpatel}
+
+\rab{fix odd page indentation}
+\begin{abstract}
+    Pattern matching %
+    appeals %
+    to functional programmers for its expressiveness and good cost model, 
+    but 
+    it %
+    fails to express %
+    certain computations without verbosity. Verbosity %
+    can be reduced %
+    by using extended forms of pattern matching,
+    but extensions %
+    are %
+    not standardized, and making certain extensions like or-patterns and pattern
+    guards cooperate in a large-scale programming language is a significant
+    implementation challenge that has not seen success until recent years. 
+    
+    
+    Alternatively to pattern matching, computations can be expressed succinctly
+    by using equations, as has been demonstrated by the Verse programming
+    language. But such computations may have time and space costs that can be
+    hard to predict. 
+    As a compromise, 
+    we %
+    ~propose %
+    a new language,~\VMinus, %
+    which~uses equations in a limited way that makes time and space costs easy
+    to predict. 
+    In
+    comparative examples,
+    \VMinus~ %
+    expresses %
+    computations as succinctly as pattern matching with popular extensions, and just like pattern matching, it %
+    can be compiled %
+    to a decision tree. 
+    
+    To evaluate %
+    the succinctness of \VMinus,
+    we compare %
+    it with a novel pattern-matching language, \PPlus. \PPlus
+    demonstrates \rab{want better verb} %
+    three popular pattern matching extensions 
+    in unison: side conditions, or-patterns, and pattern guards. 
+    We evaluate %
+    the expressiveness of both languages using four smaller contrived examples 
+    and a larger example from \_. 
+
+    An implementation of~\VMinus, \PPlus, and the match compiler can be found
+    at~\url{https://github.com/rogerburtonpatel/vml}.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Perhaps the most beloved tool among functional programmers for examining and
+deconstructing data is pattern matching. 
+Pattern matching is also an established and well-researched topic
+\citep{wadler1987views, macqueen1985tree, burton1993pattern, palao1996new,
+maranget, bpc}. It is appreciated by programmers and researchers alike for two
+main reasons: It enables~\it{implicit} data deconstruction, and it has a
+desirable cost model. Specifically (regarding the latter), pattern matching can
+be compiled to a~\it{decision tree}, a data structure that enforces linear
+runtime performance by guaranteeing no part of the data will be examined more
+than once.~\citep{maranget}
+
+However, pattern matching cannot express certain common computations succinctly,
+forcing programmers who wish to express these computations to duplicate code,
+nest~\it{case} expressions, and create multiple points of truth. To mitigate
+this, designers of popular programming languages have introduced~\it{extensions}
+to pattern matching (Section~\ref{extensions}). 
+
+Extensions strengthen pattern matching, but they are not standardized, so each
+popular programming language with pattern matching features its own unique suite
+of extensions. Extensions are subject to the discretion of the individual
+language designer, not ubiquitous. Rather than continuing to extend pattern
+matching~\it{ad hoc}, a worthwhile goal could be to find an alternative that
+doesn't need extensions. A tempting possibility was introduced last year by the
+programming language Verse~\citep{verse}. In Verse, a programmer can deconstruct
+data using a different tool the language offers:~\it{equations}. Equations are
+expressive and flexible, and it appears that they can express everything that
+pattern matching can, including with popular extensions. 
+
+But a full implementation of Verse is complicated, cost-wise. Verse is a
+functional logic programming language, and expressions can backtrack at runtime
+and return multiple results, both of which are hard to predict in their costs. 
+
+
+In this paper, we~show that the expressive quality of Verse's equations and
+the decision-tree property of patterns can be combined in a single language.
+Since the language is a streamlined adaptation of Verse with a reduced feature
+set, we~call it~\VMinus (“V minus”). For comparison, we present~\PPlus, a novel
+pattern-matching language with three popular extensions. We compare~\VMinus
+with~\PPlus in several small examples and a large example which is \padlexample. 
+
+
+\rab{todo flow}
+
+Our contributions are: 
+We~have formalized~\PPlus and \VMinus with a big-step operational semantics
+(Section~\ref{vminus}), we~have formalized decision trees into a core
+language~\D (“D”) with a big-step operational semantics (Section~\ref{d}), 
+we~have formalized a translation from~\VMinus to~\D (Sections~\ref{vminustod}),
+and we~have implemented both languages in Standard ML. 
+
+
+
+\section{Pattern Matching and its Extensions}
+\label{pmandextensions}
+    \textbf{\rab{GOAL: Introduce pattern matching in a way that's neither
+    dismissive of the interesting problem nor insulting to the audience's
+    intelligence and knowledge of functional programming.}}
+
+
+    Pattern matching is a battle-tested and beloved features in declarative and
+    functional programming, but it often requires extensions to simplify cases
+    that are otherwise troublesome. 
+    
+    
+    Specifically, in sophisticated programs that involve complex
+    decision-making, pattern matching without extensions tends to duplicate
+    code. Consider this example of "simple" pattern matching (without
+    extensions): 
+
+    \rab{Example; will discuss which to use. Adaptation of 'cellar' example
+    seems good}.
+
+    \rab{Example says along the lines of: "Without extensions to pattern
+    matching, expressing the algorithm looks like this: \dots}. 
+
+    The code gets the job done, but it is cumbersome to write and read because
+    of the large amount of duplication, which arises from the limitations of
+    what can be expressed in simple pattern matching. 
+    
+    Furthermore, if the spec changes, will the programmer be shrewd enough to
+    find and modify all the duplicated parts of the program to match the change?
+    Such an example demands an improvement. Indeed, we can do better, by 
+    augmenting pattern matching with \textit{extensions}. 
+
+
+    \subsection{Popular extensions to pattern matching}
+    \label{extensions}
+
+
+
+
+% ------------------------------------------------------------
+
+
+
+% ------------------------------------------------------------
+    
+
+
+    \rab{TODO: Format this paragraph so it presents information as clearly as possible.}
+    Duplicated code, especially in a complex case expression, can make code
+    difficult to maintain and more bug-prone. To address this, many large-scale
+    functional programming languages have added extensions to pattern matching,
+    most commonly \textit{side conditions}(cite), which extend a pattern match with a
+    boolean guard, \textit{or-patterns}(cite), which allow multiple branches in a case
+    expression to share a right-hand side, and \textit{pattern guards}(cite), which
+    allow multiple sequential pattern-matches and computations to guard a
+    right-hand side. 
+
+    \rab{Side condition example}
+    Side conditions do \dots which eliminate the need to \dots, 
+    illustrated in this small example of measuring shapes: 
+
+        \rab{The examples are funny, but they should be more serious for this 
+        submission.}
+
+        \rab{TODO: merge figures, make them appear in the right place}
+      
+          \begin{figure}[h]
+\centering
+\begin{minipage}{0.45\linewidth}
+\small
+\begin{verbatim}
+
+    type standard_shape = Square of float 
+                    | Triangle of float * float
+                    | Trapezoid of float * float * float
+
+let exclaimTall sh =
+  match sh with 
+    | Square s -> 
+        if s > 100.0 
+        then "Wow! That's a sizeable square!"
+        else "Your shape is small." 
+    | Triangle (_, h) -> 
+        if h > 100.0 
+        then "Goodness! Towering triangle!"
+        else "Your shape is small." 
+    | Trapezoid (_, _, h) -> 
+        if h > 100.0
+        then "Zounds! Tremendous trapezoid!"
+        else "Your shape is small." 
+\end{verbatim}
+\caption*{Without extensions}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+\small
+\begin{verbatim}
+let exclaimTall sh =
+  match sh with 
+    | Square s when s > 100.0 ->
+        "Wow! That's a sizeable square!"
+    | Triangle (_, h) when h > 100.0 ->
+        "Goodness! Towering triangle!"
+    | Trapezoid (_, _, h) when h > 100.0 -> 
+        "Zounds! Tremendous trapezoid!"
+    | _ -> "Your shape is small." 
+\end{verbatim}
+\caption*{With side conditions}
+\end{minipage}
+\caption{Comparing pattern matching with and without side conditions.}
+\end{figure}
+
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}{0.47\linewidth}
+\small
+\begin{verbatim}
+  let tripleLookup (rho : finitemap) (x : int) =
+      match lookup rho x with Some w -> 
+        (match lookup rho w with Some y -> 
+          (match lookup rho y with Some z -> z
+          | _ -> handleFailure x)
+        | _ -> handleFailure x)
+      | _ -> handleFailure x
+\end{verbatim}
+\caption*{OCaml version with nested pattern matching}
+\end{minipage}
+\hfill
+\begin{minipage}{0.47\linewidth}
+\small
+\begin{verbatim}
+  tripleLookup rho x
+     | Just w <- lookup rho x
+     , Just y <- lookup rho w
+     , Just z <- lookup rho y
+     = z
+  tripleLookup _ x = handleFailure x
+\end{verbatim}
+\caption*{Haskell version with pattern guards}
+\end{minipage}
+\caption{Comparing \texttt{tripleLookup} using pattern guards.}
+\label{fig:pmtriplelookup}
+\Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
+\end{figure}
+\label{fig:guardtriplelookup}
+
+    \rab{Or pattern example}
+    Or patterns do \dots which eliminate the need to \dots
+
+     \begin{figure}[h]
+\centering
+\begin{minipage}{0.45\linewidth}
+\small
+\begin{verbatim}
+let describeColor c =
+  match c with
+    | Red -> "Warm color"
+    | Orange -> "Warm color"
+    | Yellow -> "Warm color"
+    | Blue -> "Cool color"
+    | Green -> "Cool color"
+\end{verbatim}
+\caption*{Without extensions}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+\small
+\begin{verbatim}
+let describeColor c =
+  match c with
+    | Red | Orange | Yellow -> "Warm color"
+    | Blue | Green -> "Cool color"
+\end{verbatim}
+\caption*{With or-patterns}
+\end{minipage}
+\caption{Comparing pattern matching with and without or-patterns.}
+\end{figure}
+
+    \newpage
+    Individually, each of these three extensions grants a powerful abstraction
+    that reduces code duplication. It follows that they should retain their
+    powers of brevity when operating in unison, and indeed this is the case:
+    with these three extensions co-operating, the previous example reduces like
+    this \dots
+
+    Given the expressive power of this combination and each extension's
+    individual popularity, it would seem obvious that they are all supported by
+    myriad functional programming languages. But that's not true: among Haskell,
+    OCaml, Scala, Erlang/Elixir, Rust, F\#, Rocq, and Agda~\citep{haskell,
+    ocaml, scala, erlang, elixir, rust, fsharp, agda}, only Haskell has all
+    three of side conditions, or patterns, and pattern guards- and only as of
+    2023! In fact, when the original idea for this work was conceived in 2023, a
+    primary motivator for suggesting an alternative to pattern matching was that
+    there was \textit{no} language with all three of them. 
+
+    - No strict language with all three + significant implementation effort in
+    Haskell to get them all working -> evidence enough that having all of them
+    is a non-trivial problem. 
+    
+    We~find the extension story somewhat unsatisfying. At the very least,
+    we~want to be able to use pattern matching, with the extensions we~want, in
+    a single language. Or, we~want an alternative that gives me the expressive
+    power of pattern matching with these extensions. 
+
+    \section{Equations}
+
+    An intriguing alternative to pattern matching exists in~\it{equations}, from
+    the Verse Calculus (\VC), a core calculus for the functional logic
+    programming language~\it{Verse}~\citep{antoy2010functional,
+    hanus2013functional, verse}. (For the remainder of this work, we~use “\VC”
+    and “Verse” interchangeably.)
+
+    Verse's equations and choice mechanism allow for much of the same expressive
+    power as pattern matching with extensions. Rather than go into too much
+    detail (the curious may examine the Verse paper, which is well worth a
+    read), we support this claim with a familiar example: 
+
+    \rab{TODO : insert existing examples}
+
+    The brevity of the code in the figures is is promising for~\VC. If it rivals
+    pattern matching with popular extensions in expressiveness, and~\VC
+    does everything using only equations and choice, it seems like the language
+    is an intriguing option for writing code! 
+
+
+    But the VC semantics has a cost model that is hard to predict. Why? In~\VC,
+    names (logical variables) are~\it{values}, and they can just as easily be
+    the result of evaluating an expression as an integer or tuple. To bind these
+    names,~\VC, like other functional logic languages, relies
+    on~\it{unification} of its logical variables and \it{search} at runtime to
+    meet a set of program constraints~\citep{antoy2010functional,
+    hanus2013functional}. Combining unifying logical variables with search
+    requires backtracking, which can lead to exponential runtime
+    cost~\citep{hanus2013functional, wadler1985replace, clark1982introduction}. 
+
+
+    Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a
+    data structure that enforces linear runtime performance by guaranteeing no
+    part of the scrutinee will be examined more than once~\citep{maranget}. A
+    decision tree does not backtrack: once a program makes a decision based on
+    the form of a value, it does not re-test it later with new information. 
+    
+
+    Figures: 
+
+    \begin{figure}[ht] 
+        \begin{minipage}[h]{0.54\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+                            showstringspaces=false,
+                            frame=single]
+$\exists$ exclaimTall. exclaimTall = $\lambda$ sh. 
+  one { 
+      $\exists$ s. sh = $\langle$Square s$\rangle$; 
+      s > 100.0; "Wow! That's a sizeable square!"
+    | $\exists$ w h. sh = $\langle$Triangle, w, h$\rangle$; 
+      h > 100.0; "Goodness! Towering triangle!"
+    | $\exists$ b1 b2 h. sh = $\langle$Trapezoid, b1, b2, h$\rangle$;
+      h > 100.0; "Zounds! Tremendous trapezoid!"
+    | "Your shape is small." }
+            \end{lstlisting}
+                \Description{exclaimTall}
+        \subcaption{\tt{exclaimTall} in~\VC }
+            \label{fig:verseexclaimtall} 
+        \end{minipage}%
+        \begin{minipage}[h]{0.5\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                        frame=single]
+$\exists$ tripleLookup. tripleLookup = $\lambda$ rho x. 
+    one { $\exists$ w. lookup rho x = $\langle$Just w$\rangle$; 
+          $\exists$ y. lookup rho w = $\langle$Just y$\rangle$; 
+          $\exists$ z. lookup rho y = $\langle$Just z$\rangle$;
+          z
+        | handleFailure x }
+          \end{lstlisting}
+                \Description{exclaimTall}
+            \subcaption{\tt{tripleLookup} in~\VC }
+            \label{fig:versetriplelookup} 
+        \vspace{4ex}
+        \end{minipage} 
+        \begin{minipage}[h]{\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em, 
+                            frame=single, showstringspaces=false]
+$\exists$ game_of_token. game_of_token = $\lambda$ token. 
+  $\exists$ f. one {
+         token = one { $\langle$BattlePass, f$\rangle$ | $\langle$ChugJug, f$\rangle$ | $\langle$TomatoTown, f$\rangle$}; 
+           $\langle$"Fortnite", f$\rangle$
+       | token = one { $\langle$HuntersMark, f$\rangle$ | $\langle$SawCleaver, f$\rangle$}; 
+           $\langle$"Bloodborne", 2 * f$\rangle$
+       | token = one { $\langle$MoghLordOfBlood, f$\rangle$ | $\langle$PreatorRykard, f$\rangle$}; 
+           $\langle$"Elden Ring", 3 * f$\rangle$
+       |   $\langle$"Irrelevant", 0$\rangle$ }
+          \end{lstlisting}
+                \Description{game_of_token in~\VC}
+        \subcaption{\tt{game\_of\_token} in~\VC }
+            \label{fig:versegot} 
+        \vspace{4ex}
+        \end{minipage}%
+    \caption{Code for the~\ref{pmandextensions} functions with equations looks
+    similar, and it doesn't need extensions.}
+    \label{fig:verseextfuncs}
+      \end{figure}
+        
+
+
+      \rab{todo: name this better}
+    \section{Two Languages, Two Solutions}
+    We have created and implemented a semantics for three core languages that
+    aim to bridge the gap between pattern matching, equations, and decision
+    trees. They are \PPlus, which has pattern matching with all the above
+    extensions, \VMinus, which has equations without backtracking or multiple
+    results, and \D, which has decision trees. \PPlus\ and \VMinus serve to
+    explore the design space of pattern matching and equations, while \D\ serves
+    as the target of translation to reason about efficiency. Each language is an
+    extension of the untyped lambda calculus with value constructors. 
+    
+    Like in \VC, every lambda calculus term is valid in our languages and has
+    the same semantics. Also like the lambda calculus and \VC, all three
+    languages are \it{strict}, meaning expressions are always evaluated when
+    they are bound to variables, and they are all untyped. 
+    
+
+\subsection{Introducing \PPlus}
+\label{pplus}
+
+    \PPlus\ packages common extensions to pattern matching with a standard core.
+    In addition to bare pattern matching— names and applications of value
+    constructors— the language includes pattern guards, or-patterns, and side
+    conditions. You may point out that pattern guards subsume side conditions
+    (yes, they do!); we include side conditions and separate them from guards
+    for purpose of study. 
+    
+
+\subsection{Formal Semantics of \PPlus}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+      
+
+    
+  Figure~\ref{fig:ppfuncs} provides an example of how a programmer might utilize
+  \PPlus\ to solve the previous problems: 
+
+    \begin{figure}[ht] 
+      \begin{minipage}[h]{0.54\linewidth}
+        \pplst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+          showstringspaces=false,
+          frame=single]
+val exclaimTall = \sh.
+  case sh of Square s, when (> s) 100 -> 
+            Wow! That's A Tall Square!  
+    | Triangle w h, when (> s) 100 ->
+            Goodness! Towering Triangle!
+    | Trapezoid b1 b2 h, when (> s) 100 -> 
+            Zounds! Tremendous Trapezoid!
+    | _ ->  Your Shape Is Small
+  \end{lstlisting}
+      \Description{exclaimTall in PPlus}
+      \subcaption{\tt{exclaimTall} in \PPlus}
+          \label{fig:ppexclaimtall} 
+      \end{minipage}%
+      \begin{minipage}[h]{0.5\linewidth}
+        \pplst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                      frame=single]
+  val tripleLookup = \ rho. \x.
+    case x of 
+      Some w <- (lookup rho) x
+    , Some y <- (lookup rho) w
+    , Some z <- (lookup rho) y -> z
+    | _ -> handleFailure x
+
+   \end{lstlisting}
+        \Description{tripleLookup in PPlus}
+        \subcaption{\tt{tripleLookup} in \PPlus}
+            \label{fig:pptriplelookup} 
+        \vspace{4ex}
+      \end{minipage} 
+      \begin{minipage}[h]{\linewidth}
+        \pplst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em,
+          showstringspaces=false,
+          frame=single]
+val game_of_token = \t. 
+  case t of  
+    BattlePass f  | (ChugJug f | TomatoTown f) -> P (Fortnite f)
+  | HuntersMark f | SawCleaver f               -> P (Bloodborne ((* 2) f))
+  | MoghLordOfBlood f | PreatorRykard f        -> P (EldenRing ((* 3) f))
+  | _                                          -> P (Irrelevant 0)
+\end{lstlisting}
+      \Description{game_of_token in PPlus}
+      \subcaption{\tt{game\_of\_token} in \PPlus}
+          \label{fig:ppgot}
+      \vspace{4ex}
+      \end{minipage}%
+      \caption{The functions in \PPlus\ have the same desirable implementation
+      as before.}
+  \label{fig:ppfuncs}
+    \end{figure}        
+    
+    
+
+    
+    
+
+
+\subsection{Introducing \VMinus\ }
+\label{vminus}
+
+        To fuel the pursuit of smarter decision-making, we now draw inspiration
+        from \VC. We begin by trimming away the aforementioned culprits that
+        tends to lead to unpredictable or costly outcomes during runtime:
+        backtracking and multiple results. Removing these language traits strips
+        much of the identity of \VC; however, we do so in order to study only
+        \VC's \it{equations} while staying grounded in an otherwise-typical
+        programming context of single results and no backtracking at runtime.
+        Both backtracking and multiple results often manifest within \VC's
+        choice operator, which tempt its removal altogether. However, we are drawn
+        to harnessing the expressive potential of this operator, particularly
+        when paired with \VC's 'one' keyword. When employed with choice as a
+        condition, 'one' elegantly signifies 'proceed if any branch of the
+        choice succeeds. 
+        
+        To this end, we imagine a new language, \VMinus, in which choice is
+        permitted with several modifications:
+
+        \begin{enumerate}
+        \item Choice may only appear as a condition or 'guard', not as a result
+        or the right-hand side of a binding.
+        \item If any branch of the choice succeeds, the choice succeeds,
+        producing any bindings found in that branch. The program examines the
+        branches in a left-to-right order.
+        \item The existential $\exists$ may not appear under choice.
+        \end{enumerate}
+
+        We introduce one more crucial modification to the \VC\ runtime: a name in
+        \VMinus is an \it{expression} rather than a \it{value}. This alteration,
+        coupled with our adjustments to choice, eradicates backtracking. Our
+        rationale behind this is straightforward: if an expression returns a
+        name, and subsequently, the program imposes a new constraint on that
+        name, it may necessitate the reevaluation of the earlier expression—- a
+        scenario we strive to avoid. 
+        
+
+
+        
+        
+        
+
+
+        Indeed, having stripped out the functional logic programming elements of
+        \VC, only the decision-making bits are left over. To wrap these, we add
+        a classic decision-making construct: guarded commands\cite{dijkstra} The
+        result is \VMinus. \VMinus's concrete syntax is defined in
+        Figure~\ref{fig:vmsyntax}. 
+
+        
+
+    \bf{Programming in \VMinus}
+        
+    Even with multiple modifications, \VMinus\ still allows for many of the same
+    pleasing computations as full Verse. Programmers in \VMinus can\dots
+        \begin{enumerate}
+            \item Introduce a set of equations, to be solved in a
+            nondeterministic order 
+            \item Guard expressions with those equations 
+            \item Flexibly express “proceed when any of these operations
+            succeeds” with the new semantics of choice.  
+        \end{enumerate}
+
+    Figure~\ref{fig:vminusfuncs} provides an example of how a programmer can
+    utilize \VMinus\ to solve the previous problems: 
+    
+    
+    \begin{figure}[ht] 
+      \begin{minipage}[h]{0.54\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+          showstringspaces=false,
+          frame=single]
+val exclaimTall = \sh.
+  if sh = Square s; (> s) 100 -> 
+            Wow! That's A Tall Square!  
+    [] E w h. sh = Triangle w h; (> s) 100 ->
+            Goodness! Towering Triangle!
+    [] E b1 b2 h. sh = Trapezoid b1 b2 h; 
+     (> s) 100 -> Zounds! Tremendous Trapezoid!
+    [] ->  Your Shape Is Small
+  fi 
+  \end{lstlisting}
+      \Description{exclaimTall in VMinus}
+      \subcaption{\tt{exclaimTall} in \VMinus}
+          \label{fig:vmexclaimtall} 
+      \end{minipage}%
+      \begin{minipage}[h]{0.5\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                      frame=single]
+  val tripleLookup = \ rho. \x.
+    if E x w y z v1 v2 v3. 
+      v1 = (lookup rho) x; v1 = Some w; 
+      v2 = (lookup rho) w; v2 = Some y; 
+      v3 = (lookup rho) y; v3 = Some z; -> 
+            z 
+      [] -> handleFailure x
+    fi 
+   \end{lstlisting}
+        \Description{tripleLookup in VMinus}
+        \subcaption{\tt{tripleLookup} in \VMinus}
+            \label{fig:vmtriplelookup} 
+        \vspace{4ex}
+      \end{minipage} 
+      \begin{minipage}[h]{\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em,
+          showstringspaces=false,
+          frame=single]
+val game_of_token = \t. 
+  if E f. (t = BattlePass f  | t = ChugJug f | t = TomatoTown f) -> 
+        P (Fortnite f)
+  [] E f. (t = HuntersMark f | t = SawCleaver f)                 -> 
+        P (Bloodborne ((* 2) f))
+  [] E f. (t = MoghLordOfBlood f | t = PreatorRykard f)          -> 
+        P (EldenRing ((* 3) f))
+  [] -> P (Irrelevant 0)
+  fi 
+\end{lstlisting}
+      \Description{game_of_token in VMinus}
+      \subcaption{\tt{game\_of\_token} in \VMinus}
+          \label{fig:vmgot}
+      \vspace{4ex}
+      \end{minipage}%
+      \caption{The functions in \VMinus\ have a desirably concise
+      implementation, as before.}
+  \label{fig:vminusfuncs}
+    \end{figure}   
+
+    \VMinus\ looks satisfyingly similar to both \PPlus\ and \VC. 
+
+    \subsection{\VMinus\ and \PPlus, side by side}
+    \rab{include section?}
+
+
+
+
+
+
+
+
+\subsection{Formal Semantics of ${\VMinus}$:}
+\rab{How much semantics should I present here?}
+    
+    \subsection{Expressions}
+    
+    \newcommand\GNoTree{\vmrung \rightsquigarrow \uppsidown} 
+    
+    An expression in core Verse evaluates to produce possibly-empty sequence of
+    values. In {\VMinus}, expressions evaluate to a single value. 
+
+    An expression evaluates to produce a \bf{result}. A result is either a
+    value $\v$ or \fail. 
+    
+    \[\result\; \rm{::=}\; \rhohat\; \vert \; \fail \]
+    
+    \showvjudgement{Eval}{\vmeval}
+    \showvjudgement{Process-Guards}{\vmgs}
+\subsection{Guards}
+
+In {\VMinus}, we solve guards similarly to how the authors of the original Verse
+paper solve equations: we pick one, attempt to solve for it, and move on. 
+
+In our semantics, we do this with a \it{list} of guards: we pick a guard,
+attempt to solve it to refine our environment or fail, and repeat. We only pick
+a guard out of the context \context\ that we know we can solve. If we can't pick
+a guard and there are guards left over, the semantics gets stuck.
+
+Given an environment $\rho$ from names to values {\v}s plus $\bot$, solving a
+guard \g\ will either refine the environment ($\Rhoprime$) or be \bf{rejected}.
+We use the metavariable $\dagger$ to represent rejection, and a guard producing
+$\dagger$ will cause the top-level list of guards to also produce $\dagger$. 
+
+    \showvjudgement{Guard-Refine}{\grefine[result=\rho']}
+    \showvjudgement{Guard-reject}\gfail
+
+
+\rab{I put vminus semantics here, but they're quite long. How much to show?}
+
+\subsection{\VMinus compiles to a decision tree in the ~\D language}
+\label{d}
+
+Like pattern matching, \VMinus~compiles to a decision tree whose height is 
+linear with respect to code size. To formalize decision trees, we use 
+\D, a language which generalizes the trees found in~\citet{maranget}. 
+
+The spec of decision trees and match compilation algorithm is presented below. 
+
+
+
+
+
+  
+      
+
+
+
+
+
+
+
+
+
+\rab{do we want D's concrete syntax?}
+  % \begin{figure}
+  %   \begin{center}
+  %   \dcsyntax
+  %   \end{center}
+  %   \Description{The concrete syntax of D.}
+  %   \caption{\D: Concrete syntax}
+  %   \label{fig:dsyntax}
+  %   \end{figure}
+
+
+
+  In~\D, as in Maranget's trees, the~\it{test} node extracts all names from a
+  value constructor at once for use in subtrees. The compiler is responsible for
+  introducing the fresh names used in~\it{test}. The compiler alpha-renames all
+  necessary terms before it translates an~\iffibf to a decision tree to ensure
+  all names are unique. 
+
+  In~\D, like in~\VMinus, expressions can~\it{fail}, meaning some of~\D's
+  syntactic forms like~\it{try-let} and~\it{cmp} have an extra branch which is
+  executed if the examined expression fails. 
+
+\rab{d semantics- show or omit?}
+
+
+    \subsection{The~\DTran\ algorithm:~\VMinus $\rightarrow$~\D}
+
+
+
+       
+
+
+
+
+    When presented with an~\iffibf,~\DTran\~invokes~\Compile with context~\ctx.
+    \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
+    branches with a desugaring function~\ITran: 
+    
+    \itran{if\;~\dots~\dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
+    
+    ==
+    
+    ${if\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;fi}$
+
+    With the desugared~\iffibf,~\Compile\ then repeatedly chooses a guarded
+    expression $G$ and applies one of the compilation rules below. The rules are
+    applied in a nondeterministic order. 
+
+    The algorithm terminates when it inserts a final~\it{match} node (with rule
+    \textsc{Match}).  A~\it{match} node is inserted for a right-hand side expression~\expr when the list of
+    guards preceding~\expr is empty or a list of assignments from names to
+    unbound names. Termination of~\DTran\~is guaranteed because each recursive
+    call passes a list of guarded expressions in which the number of guards is
+    strictly smaller, so eventually the algorithm reaches a state in which the
+    first unmatched branch is all trivially-satisfied guards.
+
+
+    If~\Compile\ cannot choose a $g$ of one of the valid forms, it halts with an
+    error. This can happen when no $g$ is currently solvable in the context, as
+    determined by the same algorithm that~\VMinus uses to pick a guard to solve,
+    or when the program would be forced to unify incompatible values, such as
+    any value with a closure. 
+
+    \rab{I have these rules with english descriptions, though that increases length}.
+
+    
+\showvjudgement{Compile}{\compilebig}
+
+      \subsection{Reduction Strategies}
+      \rab{really interesting section, want to include}
+      % In our implementation, we apply the~\textsc{Test} rule before other rules,
+      % having found in our experiments that this heuristic leads to the smallest
+      % trees. A~%
+      % risk of inserting a \it{test} node before a \it{let-unless} node is that
+      % if there are many shared names across branches, a \it{test} node will
+      % introduce those names in \it{let-unless} nodes in each subtree. It is
+      % possible to insert \it{let-unless} nodes before \it{test} nodes, in which
+      % case those names will be bound only once.  The risk of the \it{let}-first
+      % strategy is that if there are many names used in only one subtree of a
+      % \it{test}, these names will be introduced to \it{all} branches.  The extra
+      % bindings may harm performance by bloating an environment in an interpreter
+      % or thrashing the icache if the tree further is compiled to machine code. 
+
+      % In the implementation,~\DTran\~first introduces all the names under the
+      % all existential $\exists$'s to a context which determines if a name is
+      % \it{known} or~\it{unknown}, applying the~\textsc{Exists} rule is applied
+      % all at the start. At the start of compilation, each name introduced by
+      % $\exists$ is~\it{unknown} in a context~\ctx. Since all names in the
+      % program are unique at this stage, there are no clashes. 
+
+      \subsection{Full Big-step rules for \Compile, with no descriptions}
+
+        The judgement form for compilation is \textsc{Compile}: 
+
+        \showvjudgement{Compile}{\compilebig}
+
+The rules are nondeterministic: the structure of the final result~\expr\ depends
+on the order in which rules are applied by the compiler.  
+
+\rawcompiler
+
+
+    \section{Implementations}
+
+    We~have placed implementations of~\VMinus and~\D at
+    \url{https://github.com/rogerburtonpatel/vml}. The implementations are
+    complete, from parsers to evaluation to unparsers. In the same repository
+    lives the~\tt{dtran} program, which translates from~\VMinus to~\D. With the
+    implementations, we~include test cases for
+    evaluation of~\VMinus, evaluation
+    of~\D, and the translation between the two. 
+    In~each of these test cases, the translation preserves semantics. 
+
+
+    \section{Related and Future Work}
+
+    This paper builds on Augustsson et al.'s Verse Calculus~\citep{verse} and
+    decision trees~\citep{maranget}. Augustsson et al. give the formal rewrite
+    semantics for the Verse Calculus; Maranget gives an elegant formalism of
+    decision trees and a translation algorithm from patterns to decision trees.
+    We~attempted to imitate the behavior of the rewrite semantics of~\VC in the
+    big-step semantics of~\VMinus by manually rewriting terms in~\VC and
+    creating rules that would imitate the ultimate result of term-rewriting.
+    Proving the equivalence between the two semantics is the subject of future
+    workWe~chose a big-step semantics because it is the style of semantics we~are
+    most comfortable with; writing the formalisms this way helped me write the
+    code. Using a rewrite semantics instead would more closely relate~\VMinus
+    and~\VC, and is a likely future project. Maranget's formalism was the
+    foundation off of which we~built~\D. 
+    
+    Extensions to pattern matching, and how they appeal to language designers,
+    find an excellent example in~\citet{guardproposal}. The authors describe
+    pattern guards and transformational patterns (another extension to pattern
+    matching), both of which allow a Haskell programmer to write more concise
+    code using pattern matching. Or-patterns are documented in the OCaml
+    Language Reference Manual~\citep{ocaml}.
+    
+    \citet{augustsson1985compiling}~ gives a foundation in compiling pattern
+    matching. \citet{scottramsey} have a crisp example of a match-compilation
+    algorithm (pattern matching to decision trees). Scott and Ramsey's algorithm
+    structurally inspired mine, and studying the source code from the paper
+    aided our implementation. 
+
+    For future work, our top priority is to prove that \DTran\ preserves
+    semantics.
+    Next, we~plan to prove that
+    \VMinus~is deterministic, and that \bf{the big-step semantics of~\VMinus~is
+    consistent with the published semantics of~\VC.} As the authors of the Verse
+    paper proved that the rewrite semantics of Verse is skew-confluent, we~plan
+    to prove that big-step semantics of~\VMinus is deterministic, despite the
+    nondeterminism of choosing a guard. Second, \VMinus~is designed to be
+    Verse-like, and formalizing the relationship between the two would
+    strengthen \VMinus's~viability as a language that compromises between
+    pattern matching and equations. 
+
+    Finally, we~would like to explore
+    exhaustiveness analysis of~\VMinus.
+    Exhaustiveness analysis
+    can warn programmers of a missing or extraneous alternative in a~\it{case} expression.
+    Owing to its significantly more flexible structure,
+    however,~\iffibf may prove trickier to analyze.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
+    
+
+
+    
+    
+    
+
+    
+    
+        
+
+
+
+
+
+
+
+        
+
+            
+            
+            
+
+
+
+
+
+        
+        
+        
+
+        
+
+    \section{Conclusion}
+
+    We~have introduced \VMinus, a~language that makes decisions using equations.
+    By~example, we have shown that programs written in~\VMinus can have the same
+    desirable properties as equivalent programs written using pattern matching.
+    And~to~show that equations can be compiled to efficient decision trees, we
+    have introduced~\D and~\DTran. In doing so, we~have demonstrated that
+    programming with equations is a promising alternative to pattern matching.
+
+    We~have also fully implemented the languages. They exist for use and
+    experimentation: they are syntactically simple and have conceptually
+    accessible operational semanticsWe~hope that programmers will explore and
+    develop their own opinions of these languages, which are publically
+    available at~\url{https://github.com/rogerburtonpatel/vml}. 
+
+    
+    
+
+
+
+\end{document}

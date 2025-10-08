@@ -136,6 +136,42 @@
         \end{figure}
 
 
+\begin{figure}[ht]
+        \begin{verbatim}
+
+          let tripleLookup (rho : finitemap) (x : int) =
+              match lookup rho x with Some w -> 
+                (match lookup rho w with Some y -> 
+                  (match lookup rho y with Some z -> z
+                  | _ -> handleFailure x)
+                | _ -> handleFailure x)
+              | _ -> handleFailure x
+            \end{verbatim}
+        \caption{\tt{tripleLookup} in OCaml with bare pattern matching breaks
+         the Nice~Property of~\hyperref[p2]{Single copy}: avoiding duplicated
+         code.} 
+                    
+        \Description{An implementation of the tripleLookup with three levels of
+        nested pattern matching.}
+        \label{fig:pmtriplelookup}
+    \end{figure}
+
+     \begin{figure}
+        \begin{center}
+        \begin{verbatim}
+                        tripleLookup rho x
+                           | Just w <- lookup rho x
+                           , Just y <- lookup rho w
+                           , Just z <- lookup rho y
+                           = z
+                        tripleLookup _ x = handleFailure x
+        \end{verbatim}
+        \end{center}    
+    \caption{Pattern guards swoop in to restore the Nice~Properties, and all is
+    right again.} 
+    \Description{An implementation of nameOf using pattern guards.}
+    \label{fig:guardtriplelookup}
+    \end{figure}
 
     \rab{Or pattern example}
     Or patterns do \dots which eliminate the need to \dots
