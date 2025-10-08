@@ -1,0 +1,483 @@
+%%
+\documentclass[manuscript,screen,12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{standalone}
+\usepackage{vmlmacros}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+%~\usepackage{natbib}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\citestyle{acmauthoryear}
+\begin{document}
+\title{An Alternative to Pattern Matching, Inspired by Verse}
+\author{Roger Burtonpatel}
+\email{roger.burtonpatel@tufts.edu}
+\affiliation{%
+  \institution{Tufts University}
+  \streetaddress{419 Boston Ave}
+  \city{Medford}
+  \state{Massachusetts}
+  \country{USA}
+  \postcode{02155}
+}
+\bibliographystyle{plainnat}
+% \renewcommand\refname{}
+% ~\setcitestyle{sort&compress}
+
+
+%~\author{Norman Ramsey}
+%~\email{nr@cs.tufts.edu}
+%~\affiliation{%
+%~\institution{Tufts University}
+%~\streetaddress{177 College Ave}
+%~\city{Medford}
+%~\state{Massachusetts}
+%~\country{USA}
+%~\postcode{02155}
+% }
+
+%~\author{Milod Kazerounian}
+%~\email{milod.mazerouniantufts.edu}
+%~\affiliation{%
+%~\institution{Tufts University}
+%~\streetaddress{177 College Ave}
+%~\city{Medford}
+%~\state{Massachusetts}
+%~\country{USA}
+%~\postcode{02155}
+% }
+
+\renewcommand{\shortauthors}{Burtonpatel}
+
+% Pretty dece: have Steve read. 
+\begin{abstract}
+    Pattern matching % S
+    appeals % V
+    to functional programmers for its expressiveness and good cost model, 
+    but 
+    it % S
+    fails to express % V
+    certain computations without verbosity. Verbosity % S 
+    can be reduced % V
+    by using extended forms of pattern matching,
+    but extensions % (S = the problem)
+    are % V
+    not standardized, and making certain extensions like or-patterns and pattern
+    guards cooperate in a large-scale programming language is a significant
+    implementation challenge that has not seen success until recent years. 
+    
+    % the most desirable combination of extensions could not
+    % until recently found in any one popular programming language.
+    
+    Alternatively to pattern matching, computations can be expressed succinctly
+    by using equations, as has been demonstrated by the Verse programming
+    language. But such computations may have time and space costs that can be
+    hard to predict. 
+    % But Verse's cost model % S-sub
+    % is % V-sub
+    % a challenge because of backtracking and multiple
+    % results. 
+    As a compromise, 
+    we % S
+    ~propose % V
+    a new language,~\VMinus, % object 
+    which~uses equations in a limited way that makes time and space costs easy
+    to predict. 
+    % to succinctly express computation while
+    % enjoying a friendlier cost model by prohibiting backtracking and multiple
+    % results. 
+    In
+    comparative examples,
+    \VMinus~ % S 
+    expresses % V
+    computations as succinctly as pattern matching with popular extensions, and just like pattern matching, it % S
+    can be compiled % V 
+    to a decision tree. 
+    
+    % Evaluation
+    To evaluate % v
+    the succinctness of \VMinus,
+    we compare % V
+    it with a novel pattern-matching language, \PPlus. \PPlus
+    demonstrates \rab{want better verb} % V
+    three popular pattern matching extensions 
+    in unison: side conditions, or-patterns, and pattern guards. 
+    We evaluate % V 
+    the expressiveness of both languages using four smaller contrived examples 
+    and a larger example from \_. 
+
+    An implementation of~\VMinus, \PPlus, and the match compiler can be found
+    at~\url{https://github.com/rogerburtonpatel/vml}.
+    % Question: implied that I've implemented D here, or not? 
+    %%%%%%% Old, with "I show":
+    % I % S
+    % ~show % V
+    %  that~\VMinus's equations capture the desirable properties of
+    % pattern matching with popular extensions, 
+    % and I % S-sub
+    % ~also
+    %  show % V 
+    % that~\VMinus~can be compiled to a decision tree and therefore has
+    % the same desirable cost model as pattern matching. Finally, 
+    % I % S 
+    % ~have % V 
+    % implemented~\VMinus in Standard ML, alongside an algorithm for compiling it
+    % to a decision tree. 
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+% Subjects: Pattern matching and Equations 
+
+Perhaps the most beloved tool among functional programmers for examining and
+deconstructing data is pattern matching. 
+% It does so implicitly by matching constructed data
+% directly against a number of possible forms.
+% Maybe combine? 
+Pattern matching is also an established and well-researched topic
+\citep{wadler1987views, macqueen1985tree, burton1993pattern, palao1996new,
+maranget, bpc}. It is appreciated by programmers and researchers alike for two
+main reasons: It enables~\it{implicit} data deconstruction, and it has a
+desirable cost model. Specifically (regarding the latter), pattern matching can
+be compiled to a~\it{decision tree}, a data structure that enforces linear
+runtime performance by guaranteeing no part of the data will be examined more
+than once.~\citep{maranget}
+
+However, pattern matching cannot express certain common computations succinctly,
+forcing programmers who wish to express these computations to duplicate code,
+nest~\it{case} expressions, and create multiple points of truth. To mitigate
+this, designers of popular programming languages have introduced~\it{extensions}
+to pattern matching (Section~\ref{extensions}). 
+
+Extensions strengthen pattern matching, but they are not standardized, so each
+popular programming language with pattern matching features its own unique suite
+of extensions. Extensions are subject to the discretion of the individual
+language designer, not ubiquitous. Rather than continuing to extend pattern
+matching~\it{ad hoc}, a worthwhile goal could be to find an alternative that
+doesn't need extensions. A tempting possibility was introduced last year by the
+programming language Verse~\citep{verse}. In Verse, a programmer can deconstruct
+data using a different tool the language offers:~\it{equations}. Equations are
+expressive and flexible, and it appears that they can express everything that
+pattern matching can, including with popular extensions. 
+
+But a full implementation of Verse is complicated, cost-wise. Verse is a
+functional logic programming language, and expressions can backtrack at runtime
+and return multiple results, both of which are hard to predict in their costs. 
+
+% A worthwhile goal could be to harmonize the expressive quality of Verse's
+% equations with the decision tree property of patterns.
+
+\bf{In this thesis, I~show} that the expressive quality of Verse's equations and
+the decision-tree property of patterns can be combined in a single language.
+Since the language is a streamlined adaptation of Verse with a reduced feature
+set, I~call it~\VMinus (“V minus”). 
+% I~also show that~\VMinus subsumes pattern matching with popular extensions. 
+
+To support this claim, I~have formalized~\VMinus with a big-step operational
+semantics (Section~\ref{vminus}), I~have formalized decision trees into a core
+language~\D (“D”) with a big-step operational semantics (Section~\ref{d}), 
+% I~have formalized pattern matching in a core language~\PPlus (“P plus”) with a
+% big-step operational semantics (Section~\ref{pplus}),
+I~have formalized a translation from~\VMinus to~\D (Sections~\ref{vminustod}),
+and I~have implemented both languages in Standard ML. 
+
+
+
+\section{Pattern Matching and its Extensions}
+\label{pmandextensions}
+    \textbf{\rab{GOAL: Introduce pattern matching in a way that's neither
+    dismissive of the interesting problem nor insulting to the audience's
+    intelligence and knowledge of functional programming.}}
+
+
+    Pattern matching is a battle-tested and beloved features in declarative and
+    functional programming, but it often requires extensions to simplify cases
+    that are otherwise troublesome. 
+    
+    
+    Specifically, in sophisticated programs that involve complex
+    decision-making, pattern matching without extensions tends to duplicate
+    code. Consider this example of "simple" pattern matching (without
+    extensions): 
+
+    \rab{Example; will discuss which to use. Adaptation of 'cellar' example
+    seems good}.
+
+    \rab{Example says along the lines of: "Without extensions to pattern
+    matching, expressing the algorithm looks like this: \dots}. 
+
+    The code gets the job done, but it is cumbersome to write and read because
+    of the large amount of duplication, which arises from the limitations of
+    what can be expressed in simple pattern matching. 
+    
+    Furthermore, if the spec changes, will the programmer be shrewd enough to
+    find and modify all the duplicated parts of the program to match the change?
+    Such an example demands an improvement. Indeed, we can do better, by 
+    augmenting pattern matching with \textit{extensions}. 
+
+
+    \subsection{Popular extensions to pattern matching}
+    \label{extensions}
+
+        % Extensions to pattern matching simplify cases that are otherwise
+    % troublesome. In this section, we~illustrate several such cases. The three
+    % extensions we~describe are those commonly found in the literature and
+    % implemented in compilers: side conditions, pattern guards, and or-patterns. 
+    
+    % To denote pattern matching~\it{without} extensions, we~coin the
+    % term~\it{simple pattern matching}. In bare pattern matching, a pattern has
+    % one of two syntactic forms: a name or an application (of a value constructor
+    % to zero or more patterns). 
+
+
+    \rab{TODO: Format this paragraph so it presents information as clearly as possible.}
+    Duplicated code, especially in a complex case expression, can make code
+    difficult to maintain and more bug-prone. To address this, many large-scale
+    functional programming languages have added extensions to pattern matching,
+    most commonly \textit{side conditions}(cite), which extend a pattern match with a
+    boolean guard, \textit{or-patterns}(cite), which allow multiple branches in a case
+    expression to share a right-hand side, and \textit{pattern guards}(cite), which
+    allow multiple sequential pattern-matches and computations to guard a
+    right-hand side. 
+
+    \rab{Side condition example}
+    Side conditions do \dots which eliminate the need to \dots, 
+    illustrated in this small example of measuring shapes: 
+
+        \rab{The examples are funny, but they should be more serious for this 
+        submission.}
+
+        \rab{TODO: merge figures, make them appear in the right place}
+        \begin{figure}[ht]
+        \begin{verbatim}
+            type standard_shape = Square of float 
+                    | Triangle of float * float
+                    | Trapezoid of float * float * float
+                    
+
+            let exclaimTall sh =
+            match sh with 
+              | Square s -> if s > 100.0 
+                            then "Wow! That's a sizeable square!"
+                            else "Your shape is small." 
+              | Triangle (_, h) -> 
+                            if h > 100.0 
+                            then "Goodness! Towering triangle!"
+                            else "Your shape is small." 
+              | Trapezoid (_, _, h) -> 
+                            if h > 100.0
+                            then "Zounds! Tremendous trapezoid!"
+                            else "Your shape is small." 
+            \end{verbatim}    
+        \caption{An invented function~\tt{exclaimTall} in OCaml combines pattern
+        matching with an~\tt{if} expression, and is not very pretty.}   
+        \Description{An implementation of a function exclaimTall in OCaml, which
+        uses pattern matching and an if statement.}
+        \label{fig:ifexclaimtall}
+    \end{figure}
+
+
+       \begin{figure}[]
+            \begin{verbatim}
+                let exclaimTall sh =
+                  match sh with 
+                    | Square s when s > 100.0 ->
+                            "Wow! That's a sizeable square!"
+                    | Triangle (_, h) when h > 100.0 ->
+                            "Goodness! Towering triangle!"
+                    | Trapezoid (_, _, h) when h > 100.0 -> 
+                            "Zounds! Tremendous trapezoid!"
+                    | _ ->  "Your shape is small." 
+                \end{verbatim}
+            \caption{With a side condition,~\tt{exclaimTall} in OCaml becomes
+            simpler and more adherent to the Nice~Properties.} 
+            \Description{An implementation of a function exclaimTall in OCaml,
+            which uses pattern matching and a side condition.}
+            \label{fig:whenexclaimtall}
+        \end{figure}
+
+
+
+    \rab{Or pattern example}
+    Or patterns do \dots which eliminate the need to \dots
+
+     \begin{figure}
+            \begin{center}
+                \begin{verbatim}
+        let game_of_token token = match token with 
+            | BattlePass f      -> ("Fortnite", f)
+            | ChugJug f         -> ("Fortnite", f)
+            | TomatoTown f      -> ("Fortnite", f)
+            | HuntersMark f     -> ("Bloodborne", 2 * f)
+            | SawCleaver f      -> ("Bloodborne", 2 * f)
+            | MoghLordOfBlood f -> ("Elden Ring", 3 * f)
+            | PreatorRykard f   -> ("Elden Ring", 3 * f)
+            | _                 -> ("Irrelevant", 0)
+                \end{verbatim}
+            \end{center}    
+
+        \caption{\tt{game\_of\_token}, with redundant right-hand sides,
+        should raise a red flag.} 
+        \Description{An implementation of game_of_token using bare patterns.}
+        \label{fig:baregot}
+        \end{figure}
+
+
+          \begin{figure}
+    \begin{center}
+    \begin{verbatim}
+let game_of_token token = match token with 
+    | BattlePass f | ChugJug f | TomatoTown f  -> ("Fortnite", f)
+    | HuntersMark f | SawCleaver f             -> ("Bloodborne", 2 * f)
+    | MoghLordOfBlood f | PreatorRykard f      -> ("Elden Ring", 3 * f)
+    | _                                        -> ("Irrelevant", 0)
+    \end{verbatim}
+    \end{center}    
+    \caption{Or-patterns condense~\tt{game\_of\_token}
+    significantly, and it is easier to read line-by-line.} 
+    \Description{An
+    implementation of game_of_token using or-patterns.}
+    \label{fig:orgot}
+    \end{figure}
+
+    \newpage
+    Individually, each of these three extensions grants a powerful abstraction
+    that reduces code duplication. It follows that they should retain their
+    powers of brevity when operating in unison, and indeed this is the case:
+    with these three extensions co-operating, the previous example reduces like
+    this \dots
+
+    Given the expressive power of this combination and each extension's
+    individual popularity, it would seem obvious that they are all supported by
+    myriad functional programming languages. But that's not true: among Haskell,
+    OCaml, Scala, Erlang/Elixir, Rust, F\#, Rocq, and Agda~\citep{haskell,
+    ocaml, scala, erlang, elixir, rust, fsharp, agda}, only Haskell has all
+    three of side conditions, or patterns, and pattern guards- and only as of
+    2023! In fact, when the original idea for this work was conceived in 2023, a
+    primary motivator for suggesting an alternative to pattern matching was that
+    there was \textit{no} language with all three of them. 
+
+    - No strict language with all three + significant implementation effort in
+    Haskell to get them all working -> evidence enough that having all of them
+    is a non-trivial problem. 
+    
+    We~find the extension story somewhat unsatisfying. At the very least,
+    we~want to be able to use pattern matching, with the extensions we~want, in
+    a single language. Or, we~want an alternative that gives me the expressive
+    power of pattern matching with these extensions. 
+
+        \section{Equations}
+
+    An intriguing alternative to pattern matching exists in~\it{equations}, from
+    the Verse Calculus (\VC), a core calculus for the functional logic
+    programming language~\it{Verse}~\citep{antoy2010functional,
+    hanus2013functional, verse}. (For the remainder of this work, we~use “\VC”
+    and “Verse” interchangeably.)
+
+    Verse's equations and choice mechanism allow for much of the same expressive
+    power as pattern matching with extensions. Rather than go into too much
+    detail (the curious may examine the Verse paper, which is well worth a
+    read), we support this claim with a familiar example: 
+
+
+
+    The brevity of the code in the figures is is promising for~\VC. If it rivals
+    pattern matching with popular extensions in expressiveness, and~\VC
+    does everything using only equations and choice, it seems like the language
+    is an intriguing option for writing code! 
+
+
+    But the VC semantics has a cost model that is hard to predict. Why? In~\VC,
+    names (logical variables) are~\it{values}, and they can just as easily be
+    the result of evaluating an expression as an integer or tuple. To bind these
+    names,~\VC, like other functional logic languages, relies
+    on~\it{unification} of its logical variables and \it{search} at runtime to
+    meet a set of program constraints~\citep{antoy2010functional,
+    hanus2013functional}. Combining unifying logical variables with search
+    requires backtracking, which can lead to exponential runtime
+    cost~\citep{hanus2013functional, wadler1985replace, clark1982introduction}. 
+
+    % Todo: An example would be nice. Backtracking/evaluating backwards, then
+    % done. 
+
+    Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a
+    data structure that enforces linear runtime performance by guaranteeing no
+    part of the scrutinee will be examined more than once~\citep{maranget}. A
+    decision tree does not backtrack: once a program makes a decision based on
+    the form of a value, it does not re-test it later with new information. 
+    
+
+    Figures: 
+
+    \begin{figure}[ht] 
+        \begin{minipage}[h]{0.54\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+                            showstringspaces=false,
+                            frame=single]
+$\exists$ exclaimTall. exclaimTall = $\lambda$ sh. 
+  one { 
+      $\exists$ s. sh = $\langle$Square s$\rangle$; 
+      s > 100.0; "Wow! That's a sizeable square!"
+    | $\exists$ w h. sh = $\langle$Triangle, w, h$\rangle$; 
+      h > 100.0; "Goodness! Towering triangle!"
+    | $\exists$ b1 b2 h. sh = $\langle$Trapezoid, b1, b2, h$\rangle$;
+      h > 100.0; "Zounds! Tremendous trapezoid!"
+    | "Your shape is small." }
+            \end{lstlisting}
+                \Description{exclaimTall}
+        \subcaption{\tt{exclaimTall} in~\VC }
+            \label{fig:verseexclaimtall} 
+        %   \vspace{4ex}
+        \end{minipage}%%
+        \begin{minipage}[h]{0.5\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                        frame=single]
+$\exists$ tripleLookup. tripleLookup = $\lambda$ rho x. 
+    one { $\exists$ w. lookup rho x = $\langle$Just w$\rangle$; 
+          $\exists$ y. lookup rho w = $\langle$Just y$\rangle$; 
+          $\exists$ z. lookup rho y = $\langle$Just z$\rangle$;
+          z
+        | handleFailure x }
+          \end{lstlisting}
+                \Description{exclaimTall}
+            \subcaption{\tt{tripleLookup} in~\VC }
+            \label{fig:versetriplelookup} 
+        \vspace{4ex}
+        \end{minipage} 
+        \begin{minipage}[h]{\linewidth}
+          \verselst
+          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em, 
+                            frame=single, showstringspaces=false]
+$\exists$ game_of_token. game_of_token = $\lambda$ token. 
+  $\exists$ f. one {
+         token = one { $\langle$BattlePass, f$\rangle$ | $\langle$ChugJug, f$\rangle$ | $\langle$TomatoTown, f$\rangle$}; 
+           $\langle$"Fortnite", f$\rangle$
+       | token = one { $\langle$HuntersMark, f$\rangle$ | $\langle$SawCleaver, f$\rangle$}; 
+           $\langle$"Bloodborne", 2 * f$\rangle$
+       | token = one { $\langle$MoghLordOfBlood, f$\rangle$ | $\langle$PreatorRykard, f$\rangle$}; 
+           $\langle$"Elden Ring", 3 * f$\rangle$
+       |   $\langle$"Irrelevant", 0$\rangle$ }
+          \end{lstlisting}
+                \Description{game_of_token in~\VC}
+        \subcaption{\tt{game\_of\_token} in~\VC }
+            \label{fig:versegot} 
+        \vspace{4ex}
+        \end{minipage}%% 
+    \caption{Code for the~\ref{pmandextensions} functions with equations looks
+    similar, and it doesn't need extensions.}
+    \label{fig:verseextfuncs}
+      \end{figure}
+        
+
+
+
+
+\end{document}
+\endinput
+%%

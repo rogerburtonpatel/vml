@@ -21,46 +21,40 @@
 \begin{document}
     
     \section{Equations}
-    \label{verseoverobservers}
 
     An intriguing alternative to pattern matching exists in~\it{equations}, from
     the Verse Calculus (\VC), a core calculus for the functional logic
     programming language~\it{Verse}~\citep{antoy2010functional,
-    hanus2013functional, verse}. (For the remainder of this thesis, I~use “\VC”
+    hanus2013functional, verse}. (For the remainder of this work, we~use “\VC”
     and “Verse” interchangeably.)
 
-    \VC's~\it{equations} test for structural equality and create bindings. Like
-    pattern matching, equations scrutinize and deconstruct data at runtime by
-    testing for structural equality and unifying names with values. Unlike
-    pattern matching,~\VC's equations can unify names on both left-~\it{and}
-    right-hand sides. 
+    Verse's equations and choice mechanism allow for much of the same expressive
+    power as pattern matching with extensions. Rather than go into too much
+    detail (the curious may examine the Verse paper, which is well worth a
+    read), we support this claim with a familiar example: 
 
-    Every equation in~\VC takes the form~\it{x = e}, where~\it{x} is a name and
-    \it{e} is an expression\footnote{To make programmers happy, full Verse
-    allows an equation to take the form $e_{1} = e_{2}$, which desugars to
-    $\vexists{x} x = e_{1};\; x = e_{2}$, with $x$ fresh.}. During runtime,~\VC
-    relies on a process called~\it{unification}~\citep{robinson} to attempt to
-    bind~\it{x} and any unbound names in~\it{e} to values. Unification is the
-    process of finding a substitution that makes two different logical atomic
-    expressions identical. Much like pattern matching, unification can fail if
-    the runtime attempts to bind incompatible values or structures (i.e., finds
-    no substitution). 
 
-    An equation offers a form of binding that looks like a single pattern match.
-    What about a list of many patterns and right-hand sides, as in a case
-    expression? For this,~\VC has~\it{choice} ($\choice$). The full semantics of
-    choice are too complex to cover here, but choice, when combined with the
-    \one operator, has a very similar semantics to case; that is, “proceed
-    and create bindings if any one of these computations succeed.” 
+    But the VC semantics has a cost model that is hard to predict. Why? In~\VC,
+    names (logical variables) are~\it{values}, and they can just as easily be
+    the result of evaluating an expression as an integer or tuple. To bind these
+    names,~\VC, like other functional logic languages, relies
+    on~\it{unification} of its logical variables and \it{search} at runtime to
+    meet a set of program constraints~\citep{antoy2010functional,
+    hanus2013functional}. Combining unifying logical variables with search
+    requires backtracking, which can lead to exponential runtime
+    cost~\citep{hanus2013functional, wadler1985replace, clark1982introduction}. 
 
-    Now I~make a stronger claim: equations are~\it{at least as good
-    as} pattern matching with popular extensions. How can I~claim this? By
-    appealing again to the Nice~Properties! In~Section~\ref{pmandextensions},
-    I~demonstrated how pattern matching had to resort to extensions to regain
-    the Properties when challenging examples stole them away. In
-    Figure~\ref{fig:verseextfuncs}, I've implemented those examples in~\VC (this
-    time extended with strings, floats, and~\tt{*}) using choice and equations.
-    Take a look for yourself! 
+    % Todo: An example would be nice. Backtracking/evaluating backwards, then
+    % done. 
+
+    Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a
+    data structure that enforces linear runtime performance by guaranteeing no
+    part of the scrutinee will be examined more than once~\citep{maranget}. A
+    decision tree does not backtrack: once a program makes a decision based on
+    the form of a value, it does not re-test it later with new information. 
+    
+
+    Figures: 
 
     \begin{figure}[ht] 
         \begin{minipage}[h]{0.54\linewidth}
