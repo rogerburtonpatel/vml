@@ -90,12 +90,11 @@
     To evaluate %
     the succinctness of \VMinus,
     we compare %
-    it with a novel pattern-matching language, \PPlus. \PPlus
-    demonstrates \rab{want better verb} %
+    it with a novel pattern-matching language, \PPlus, which exhibits
     three popular pattern matching extensions 
     in unison: side conditions, or-patterns, and pattern guards. 
     We evaluate %
-    the expressiveness of both languages using four smaller contrived examples 
+    the expressiveness of \VMinus using four smaller contrived examples 
     and a larger example from \_. 
 
     An implementation of~\VMinus, \PPlus, and the match compiler can be found
@@ -121,28 +120,28 @@ However, pattern matching cannot express certain common computations succinctly,
 forcing programmers who wish to express these computations to duplicate code,
 nest~\it{case} expressions, and create multiple points of truth. To mitigate
 this, designers of popular programming languages have introduced~\it{extensions}
-to pattern matching (Section~\ref{extensions}). 
+to pattern matching, most commonly \textit{side conditions}(cite),
+\textit{or-patterns}(cite), and \textit{pattern guards}(cite).
+\rab{i define these below\dots do so here or in the main paper?}
 
 Extensions strengthen pattern matching, but they are not standardized, so each
 popular programming language with pattern matching features its own unique suite
-of extensions. Extensions are subject to the discretion of the individual
-language designer, not ubiquitous. Rather than continuing to extend pattern
+of extensions. Rather than continuing to extend pattern
 matching~\it{ad hoc}, a worthwhile goal could be to find an alternative that
-doesn't need extensions. A tempting possibility was introduced last year by the
+doesn't need extensions. A tempting possibility was introduced by the
 programming language Verse~\citep{verse}. In Verse, a programmer can deconstruct
-data using a different tool the language offers:~\it{equations}. Equations are
-expressive and flexible, and it appears that they can express everything that
-pattern matching can, including with popular extensions. 
+data using ~\it{equations}. Equations are flexible, and it appears that they can express everything that
+pattern matching can, including the popular extensions. 
 
 But a full implementation of Verse is complicated, cost-wise. Verse is a
 functional logic programming language, and expressions can backtrack at runtime
 and return multiple results, both of which are hard to predict in their costs. 
 
 
-In this paper, we~show that the expressive quality of Verse's equations and
-the decision-tree property of patterns can be combined in a single language.
-Since the language is a streamlined adaptation of Verse with a reduced feature
-set, we~call it~\VMinus (“V minus”). For comparison, we present~\PPlus, a novel
+In this paper, we~show that the expressive quality of Verse's equations and the
+decision-tree property of patterns can be combined in a single language. Since
+the language is a streamlined adaptation of Verse with a reduced feature set,
+we~call it~\VMinus (“V minus”). For comparison, we employ~\PPlus, a novel
 pattern-matching language with three popular extensions. We compare~\VMinus
 with~\PPlus in several small examples and a large example which is \padlexample. 
 
@@ -349,10 +348,8 @@ let describeColor c =
     myriad functional programming languages. But that's not true: among Haskell,
     OCaml, Scala, Erlang/Elixir, Rust, F\#, Rocq, and Agda~\citep{haskell,
     ocaml, scala, erlang, elixir, rust, fsharp, agda}, only Haskell has all
-    three of side conditions, or patterns, and pattern guards- and only as of
-    2023! In fact, when the original idea for this work was conceived in 2023, a
-    primary motivator for suggesting an alternative to pattern matching was that
-    there was \textit{no} language with all three of them. 
+    three of side conditions, or patterns, and pattern guards, and then only as
+    of 2023! 
 
     - No strict language with all three + significant implementation effort in
     Haskell to get them all working -> evidence enough that having all of them
@@ -373,8 +370,8 @@ let describeColor c =
 
     Verse's equations and choice mechanism allow for much of the same expressive
     power as pattern matching with extensions. Rather than go into too much
-    detail (the curious may examine the Verse paper, which is well worth a
-    read), we support this claim with a familiar example: 
+    detail (the curious may examine the Verse paper~\citep{verse}), we support
+    this claim with a familiar example: 
 
     \rab{TODO : insert existing examples}
 
@@ -480,18 +477,61 @@ $\exists$ game_of_token. game_of_token = $\lambda$ token.
     Like in \VC, every lambda calculus term is valid in our languages and has
     the same semantics. Also like the lambda calculus and \VC, all three
     languages are \it{strict}, meaning expressions are always evaluated when
-    they are bound to variables, and they are all untyped. 
+    they are bound to variables. 
     
 
 \subsection{Introducing \PPlus}
 \label{pplus}
 
+\begin{figure}
+\begin{center}
+\begin{bnf}
+$P$ : \textsf{Programs} ::=
+$\bracketed{d}$ : definition
+;;
+$d$ : \textsf{Definitions} ::=
+| $\tt{val}\; x\; \tt{=}\; \expr$ : bind name to expression
+;;
+$\expr$ : Expressions ::= 
+| $v$ : literal values 
+| $x, y, z$ : names
+| $K\bracketed{\expr}$ : value constructor application 
+| $\ttbackslash x.\; \expr$ : lambda declaration  
+| $\expr[1]\; \expr[2]$ : function application 
+| $\tt{case}\; \expr\; \bracketed{p\; \ttrightarrow\; \expr}$ : case expression 
+| \ttbraced{$\expr$}
+;;
+$p$ : \textsf{Patterns} ::= $p_{1}\pbar p_{2}$ : or-pattern
+| $p \tt{,} p'$ : pattern guard 
+| $p\; \tt{<-}\; \expr$ : pattern from explicit expression  
+| $x$ : name 
+| $\tt{\_}$ : wildcard 
+| $K\; \bracketed{p}$ : value constructor application 
+| $\tt{when}\; \expr$
+| \ttbraced{$p$}
+;;
+$\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+| $\ttbackslash x.\; \expr$ : lambda value 
+;;
+$K$ : \textsf{Value Constructors} ::=
+| $\tt{true}\; \vert\; \tt{false}$ : booleans
+| $\tt{A-Z}x$ : name beginning with capital letter
+% | $[\tt{-}\vert\tt{+}](\tt{0}-\tt{9})+$ : signed integer literal 
+\end{bnf}
+\end{center}
+\Description{The concrete syntax of PPlus.}
+\caption{\PPlus: Concrete syntax}
+\label{fig:ppsyntax}
+\end{figure}
+
+
     \PPlus\ packages common extensions to pattern matching with a standard core.
     In addition to bare pattern matching— names and applications of value
     constructors— the language includes pattern guards, or-patterns, and side
-    conditions. You may point out that pattern guards subsume side conditions
-    (yes, they do!); we include side conditions and separate them from guards
-    for purpose of study. 
+    conditions. 
+    
+    % Note that pattern guards subsume side conditions; we include side conditions
+    % and separate them from guards for purpose of study. 
     
 
 \subsection{Formal Semantics of \PPlus}
@@ -804,7 +844,7 @@ The spec of decision trees and match compilation algorithm is presented below.
   all names are unique. 
 
   In~\D, like in~\VMinus, expressions can~\it{fail}, meaning some of~\D's
-  syntactic forms like~\it{try-let} and~\it{cmp} have an extra branch which is
+  syntactic forms like~\it{try-let} and~\it{cmp} have an extra branch that is
   executed if the examined expression fails. 
 
 \rab{d semantics- show or omit?}
@@ -833,7 +873,7 @@ The spec of decision trees and match compilation algorithm is presented below.
     expression $G$ and applies one of the compilation rules below. The rules are
     applied in a nondeterministic order. 
 
-    The algorithm terminates when it inserts a final~\it{match} node (with rule
+    \Compile terminates when it inserts a final~\it{match} node (with rule
     \textsc{Match}).  A~\it{match} node is inserted for a right-hand side expression~\expr when the list of
     guards preceding~\expr is empty or a list of assignments from names to
     unbound names. Termination of~\DTran\~is guaranteed because each recursive
@@ -884,19 +924,20 @@ The spec of decision trees and match compilation algorithm is presented below.
 The rules are nondeterministic: the structure of the final result~\expr\ depends
 on the order in which rules are applied by the compiler.  
 
+\begingroup
+\scriptsize
 \rawcompiler
+\endgroup
 
 
     \section{Implementations}
 
-    We~have placed implementations of~\VMinus and~\D at
-    \url{https://github.com/rogerburtonpatel/vml}. The implementations are
-    complete, from parsers to evaluation to unparsers. In the same repository
-    lives the~\tt{dtran} program, which translates from~\VMinus to~\D. With the
-    implementations, we~include test cases for
-    evaluation of~\VMinus, evaluation
-    of~\D, and the translation between the two. 
-    In~each of these test cases, the translation preserves semantics. 
+    The implementations of \VMinus, \PPlus, and~\D are complete, from parsers to
+    evaluation to unparsers. In the same repository lives the complete
+    implementation of~\DTran, which translates from~\VMinus to~\D. With the
+    implementations, we~include test cases for evaluation of~\VMinus, evaluation
+    of~\D, and the translation between the two. In~each of these test cases, the
+    translation preserves semantics. 
 
 
     \section{Related and Future Work}
@@ -908,12 +949,20 @@ on the order in which rules are applied by the compiler.
     We~attempted to imitate the behavior of the rewrite semantics of~\VC in the
     big-step semantics of~\VMinus by manually rewriting terms in~\VC and
     creating rules that would imitate the ultimate result of term-rewriting.
-    Proving the equivalence between the two semantics is the subject of future
-    workWe~chose a big-step semantics because it is the style of semantics we~are
-    most comfortable with; writing the formalisms this way helped me write the
-    code. Using a rewrite semantics instead would more closely relate~\VMinus
-    and~\VC, and is a likely future project. Maranget's formalism was the
-    foundation off of which we~built~\D. 
+    
+    \rab{"big-step-looking interpreters are the way we like to write them?"
+    what's a good way to say this point? } 
+    
+    We~chose a big-step semantics because
+    the big-step evaulation rules closely mirrors the structure of our
+    interpreters and compiler, which helped us reason about the code. 
+
+    \rab{axe below, because too related to Verse?}
+
+    Using a rewrite semantics instead would more closely relate~\VMinus
+    and~\VC, and is a likely future project. 
+    
+    Maranget's formalism was the foundation off of which we~built~\D. 
     
     Extensions to pattern matching, and how they appeal to language designers,
     find an excellent example in~\citet{guardproposal}. The authors describe
@@ -928,17 +977,9 @@ on the order in which rules are applied by the compiler.
     structurally inspired mine, and studying the source code from the paper
     aided our implementation. 
 
-    For future work, our top priority is to prove that \DTran\ preserves
-    semantics.
-    Next, we~plan to prove that
-    \VMinus~is deterministic, and that \bf{the big-step semantics of~\VMinus~is
-    consistent with the published semantics of~\VC.} As the authors of the Verse
-    paper proved that the rewrite semantics of Verse is skew-confluent, we~plan
-    to prove that big-step semantics of~\VMinus is deterministic, despite the
-    nondeterminism of choosing a guard. Second, \VMinus~is designed to be
-    Verse-like, and formalizing the relationship between the two would
-    strengthen \VMinus's~viability as a language that compromises between
-    pattern matching and equations. 
+    For future work, our top priority is to prove that \DTran~preserves
+    semantics. Secondarily, we~plan to prove that \VMinus, like pattern
+    matching, is deterministic. 
 
     Finally, we~would like to explore
     exhaustiveness analysis of~\VMinus.
@@ -1005,13 +1046,6 @@ on the order in which rules are applied by the compiler.
     And~to~show that equations can be compiled to efficient decision trees, we
     have introduced~\D and~\DTran. In doing so, we~have demonstrated that
     programming with equations is a promising alternative to pattern matching.
-
-    We~have also fully implemented the languages. They exist for use and
-    experimentation: they are syntactically simple and have conceptually
-    accessible operational semanticsWe~hope that programmers will explore and
-    develop their own opinions of these languages, which are publically
-    available at~\url{https://github.com/rogerburtonpatel/vml}. 
-
     
     
 
