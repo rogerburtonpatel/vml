@@ -33,7 +33,7 @@
 \setlength{\footskip}{13.3pt}
 \citestyle{acmauthoryear}
 \begin{document}
-\title{An Alternative to Pattern Matching, Inspired by Verse}
+\title{Never Going Back (tracking) Again: Equational Pattern Matching with Efficient Compilation}
 \author{Roger Burtonpatel}
 \email{roger.burtonpatel@tufts.edu}
 \affiliation{%
@@ -52,56 +52,36 @@
 \renewcommand{\shortauthors}{Burtonpatel}
 
 \rab{fix odd page indentation}
+% Pretty dece: have Steve read. 
 \begin{abstract}
-    Pattern matching %
-    appeals %
-    to functional programmers for its expressiveness and good cost model, 
-    but 
-    it %
-    fails to express %
-    certain computations without verbosity. Verbosity %
-    can be reduced %
-    by using extended forms of pattern matching,
-    but extensions %
-    are %
-    not standardized, and making certain extensions like or-patterns and pattern
-    guards cooperate in a large-scale programming language is a significant
-    implementation challenge that has not seen success until recent years. 
-    
+    Pattern matching appeals to functional programmers for its expressiveness
+    and good cost model, but it fails to express certain computations without
+    verbosity. Verbosity can be reduced by using extended forms of pattern
+    matching, but extensions are not standardized, and making certain extensions
+    like or-patterns and pattern guards cooperate in a large-scale programming
+    language is a significant implementation challenge that has not seen success
+    until recent years. 
     
     Alternatively to pattern matching, computations can be expressed succinctly
     by using equations, as has been demonstrated by the Verse programming
     language. But such computations may have time and space costs that can be
-    hard to predict. 
-    As a compromise, 
-    we %
-    ~propose %
-    a new language,~\VMinus, %
+    hard to predict. As a compromise, we ~propose a new language,~\ensuremath{V^{-}},
     which~uses equations in a limited way that makes time and space costs easy
-    to predict. 
-    In
-    comparative examples,
-    \VMinus~ %
-    expresses %
-    computations as succinctly as pattern matching with popular extensions, and just like pattern matching, it %
-    can be compiled %
-    to a decision tree. 
+    to predict. In comparative examples, \ensuremath{V^{-}}~ expresses computations as
+    succinctly as pattern matching with popular extensions- namely, side
+    conditions, or-patterns, and pattern guards- and just like pattern matching,
+    it can be compiled to a decision tree. 
     
-    To evaluate %
-    the succinctness of \VMinus,
-    we compare %
-    it with a novel pattern-matching language, \PPlus, which exhibits
-    three popular pattern matching extensions 
-    in unison: side conditions, or-patterns, and pattern guards. 
-    We evaluate %
-    the expressiveness of \VMinus using four smaller contrived examples 
-    and a larger example from \_. 
+    We present formal rules and a Standard ML implementation for the \ensuremath{V^{-}}
+    match compiler, and we evaluate our implementation with micro-benchmarks and
+    a proof that our compilation algorithm preserves the desirable decision tree
+    height invariants. 
 
-    An implementation of~\VMinus, \PPlus, and the match compiler can be found
-    at~\url{https://github.com/rogerburtonpatel/vml}.
 \end{abstract}
 
 \maketitle
+
+
 
 % TODO Change this after the whole paper is done Verse is significantly more
 % expressive because of the backtracking. The point is to explore the design

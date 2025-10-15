@@ -1,3 +1,82 @@
+Scratch:
+
+- [ ] P+ as just the vessel for the specific examples of extensions.
+      then show v- has all that and more. 
+      then focus on dtran. 
+
+- [ ] make a doc from scratch, skip intro 
+
+
+Things to point out:
+
+
+- [ ] Talk about coverage checking
+
+2. Things to do :
+- [x] Workshop the title
+
+- [ ] intro: fancy pm is nice, there are standard ways but not unified, there
+  are other examples like vc and the ultimate, we’re looking at a compromise.
+  contribution is core calculus that is very small yet quite expressive.
+- [ ] Section 2: just examples
+- [ ] PM extensions are good. here are 3 examples:
+- [ ] But not unified/haskell/whatever
+- [ ] Cut section 3
+- [ ] 3. Go straight to Vminus - grammar, opsem, examples.
+
+- [ ] IT'S JUST AS EXPRESSIVE. AND MORE. 
+
+- [ ] Continue to cut relation to verse, but say “Verse is significantly more
+  expressive because of the backtracking. The point is to explore the design
+  space in the middle: existential quantifier and overload =, but retain
+  compilability to decision tree”
+
+- [ ] V- has nonlinear patterns by default from the existential quantifier -
+they know about nonlinear patterns, so explain only briefly. “V- supports the
+common ones, and there are even more that you get for free”
+
+
+- [ ] 4. Compilation- d syntax (semantics are straightforward, cite with
+  semantics.)
+- [ ] a. the target language
+- [ ] b. the compiler : the rules, the english script
+- [ ] 5. evaluation (steve will think on how to express correctness)
+- [ ] a. definitely 24 microbenchmarks
+- [ ] b. performance: decision trees are height-bound. exact shape depends on
+  heuristics, as is well known, here are how mine adhere to that, where the
+  knobs work
+
+V- and D sections
+- [ ] Beef up technical details as suggested
+- [ ] Include which heuristics, why they matter
+- [ ] V- syntax, semantics
+- [ ] Definitely english explanation of D-compile rules
+- [ ] Syntax of d, say sem are obvious
+- [ ] Coherent translation between them
+
+- [ ] 6. discussion, future work, related work, etc
+- [ ] talk about https://dl.acm.org/doi/pdf/10.1145/3689746 - write enough of a
+  summary for comparison
+
+  
+- [ ] EVAL:
+- [ ] Call it “Evaluation and Analysis”
+- [ ] 24 micro benchmarks: {side conditions, or patterns, guards, nonlinear
+  patterns} powerset
+- [ ] Heuristic affects code size but never affects the height. Point to NR
+  paper, then say how mine is different
+- [ ] It’s well-known that any match compiler with a heuristic can be given a
+  pessimal example.
+- [ ] Proof sketch of decision tree height boundedness
+- [ ] High-level:
+- [ ] Exploring the design space, do it by enumerating all the features people
+  want, then present solution, expressivity, compilation to decision trees.
+- [ ] Discussion: how does this compare to traditional PM? Then look at PPlus.
+  PP to D is established.
+
+
+
+
 GOALS:
 - REALLY strong examples: Stephanie: "Examples can make or break a paper."
 
