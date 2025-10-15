@@ -1,5 +1,7 @@
 Scratch:
 
+- [ ] improve syntax 
+- [ ] benchmarks 
 - [ ] Beef up technical details as suggested
 
 - [x] make a doc from scratch, skip intro 

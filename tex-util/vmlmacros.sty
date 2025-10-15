@@ -3,7 +3,7 @@
 % Thank you Norman Ramsey and Cheng Shao for the foundation needed for these!
 \RequirePackage{amsmath}
 \RequirePackage{geometry}
-\RequirePackage{amsthm}
+% \RequirePackage{amsthm}
 \RequirePackage{amssymb}
 \RequirePackage{verbatim}
 \RequirePackage{hyperref}
@@ -24,6 +24,9 @@
 \RequirePackage{tikz}
 \RequirePackage{extarrows}
 \RequirePackage{xcolor}
+\RequirePackage{fontspec}
+\RequirePackage{natbib}
+\RequirePackage{booktabs}
 \RequirePackage{stmaryrd}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[noEnd=true]{algpseudocodex}
@@ -231,8 +234,8 @@
 \newcommand\one{\bf{\tt{one}}\xspace}
 % \newcommand\dbar{\ensuremath{\square}}
 \newfontfamily\dys{OpenDyslexic}[Scale=2.0]
-% \newcommand\dbar{\raisebox{-4pt}{\dys ▯}}
-\newcommand\dbar{\raisebox{-4pt}{\dys {▯}}}
+\newcommand\dbar{\raisebox{-4pt}{\dys ▯}}
+% \newcommand\dbar{\raisebox{-4pt}{\dys {▯}}}
 % \llap{\hspace{0.7pt}}}
 
 \renewcommand\v[1][]{\ensuremath{v_{#1}}\xspace}
@@ -240,7 +243,7 @@
 \newcommand\fail{\bf{fail}\xspace}
 \newcommand\reject{\bf{reject}\xspace}
 \newcommand\result[1][]{\ensuremath{r_{#1}}\xspace}
-\newcommand\solution[1][]{\ensuremath{s_{#1}}\xspace}
+\renewcommand\solution[1][]{\ensuremath{s_{#1}}\xspace}
 \newcommand\arrowe{\ensuremath{\rightarrow \expr}\xspace}
 
 \newcommand\ttleftarrow{\tt{\char`\<-}}

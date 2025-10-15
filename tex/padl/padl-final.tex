@@ -1,48 +1,24 @@
-\documentclass[llncs,screen,12pt, nonacm]{acmart}
+\documentclass[runningheads]{llncs}
 \let\Bbbk\relax %
-\usepackage{standalone}
+
 \usepackage{vmlmacros}
-\usepackage{titlesec}
-\titlespacing*{\section}{0pt}{0.7em plus 0.2em minus 0.1em}{0.5em}
-\usepackage{titlesec}
 
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{caption}
-\usepackage{subcaption}
-
+\usepackage{float}
 
 \pagestyle{plain}
 \usepackage{lineno}
 \linenumbers 
-% Reduce whitespace before and after section titles
-\titlespacing*{\section}
-  {0pt}    % left margin
-  {0.6em plus 0.2em minus 0.1em} % before section
-  {0.4em plus 0.1em minus 0.1em} % after section
 
-\titlespacing*{\subsection}
-  {0pt}
-  {0.5em plus 0.1em minus 0.1em}
-  {0.3em plus 0.1em minus 0.1em}
-
-\titlespacing*{\subsubsection}
-  {0pt}
-  {0.4em plus 0.1em minus 0.1em}
-  {0.2em plus 0.05em minus 0.05em}
-
-% Slightly reduce paragraph spacing to match
-\setlength{\parskip}{0pt}
-\setlength{\parindent}{1em}
 \AtBeginDocument{%
   \providecommand\BibTeX{{%
     \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 \usepackage{outlines}
 \setlength{\headheight}{14.0pt}
 \setlength{\footskip}{13.3pt}
-\citestyle{acmauthoryear}
+% \citestyle{acmauthoryear}
 \begin{document}
 \title{Never Going Back (tracking) Again: Equational Pattern Matching with Efficient Compilation}
+
 % \author{Roger Burtonpatel}
 % \email{roger.burtonpatel@tufts.edu}
 % \affiliation{%
@@ -175,7 +151,7 @@ let exclaimTall sh =
 \end{minipage}
 \caption{Comparing \texttt{tripleLookup} using pattern guards.}
 \label{fig:pmtriplelookup}
-\Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
+% \Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
 \end{figure}
 \label{fig:guardtriplelookup}
 \begin{figure}[h]
@@ -230,6 +206,7 @@ let describeColor c =
 \label{vminus}
 
     \begin{figure}[H]
+      \scriptsize
           \begin{center}
             \begin{bnf}
             $P$ :~\textsf{Programs} ::=
@@ -262,7 +239,7 @@ let describeColor c =
           
           * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. 
           \end{center}
-          \Description{The concrete syntax of VMinus.}
+          % \Description{The concrete syntax of VMinus.}
               \caption{\VMinus: Concrete syntax}
               \label{fig:vmsyntax}
               \end{figure}      
@@ -289,7 +266,7 @@ val exclaimTall =~\sh.
     [] ->  Your Shape Is Small
   fi 
   \end{lstlisting}
-      \Description{exclaimTall in VMinus}
+      % \Description{exclaimTall in VMinus}
       \subcaption{\tt{exclaimTall} in~\VMinus}
           \label{fig:vmexclaimtall} 
       %   \vspace{4ex}
@@ -307,7 +284,7 @@ val tripleLookup =~\rho.~\x.
     [] -> handleFailure x
   fi 
    \end{lstlisting}
-        \Description{tripleLookup in VMinus}
+        % \Description{tripleLookup in VMinus}
         \subcaption{\tt{tripleLookup} in~\VMinus}
             \label{fig:vmtriplelookup} 
         \vspace{4ex}
@@ -327,7 +304,7 @@ val game_of_token =~\t.
   [] -> P (Irrelevant 0)
   fi 
 \end{lstlisting}
-      \Description{game_of_token in VMinus}
+      % \Description{game_of_token in VMinus}
       \subcaption{\tt{game\_of\_token} in~\VMinus}
           \label{fig:vmgot}
       \vspace{4ex}
@@ -366,7 +343,7 @@ val game_of_token =~\t.
     %~\uppsidown& Inability to compile to a decision tree; a compile time error~\\
 \bottomrule
 \end{tabular}    
-\Description{Metavariables used in rules for VMinus.}
+% \Description{Metavariables used in rules for VMinus.}
 \caption{\VMinus metavariables and their meanings}
 \label{fig:vmmetavars}
 \end{table}
@@ -530,7 +507,7 @@ The spec of decision trees and match compilation algorithm is presented below.
     \begin{center}
     \dcsyntax
     \end{center}
-    \Description{The concrete syntax of D.}
+    % \Description{The concrete syntax of D.}
     \caption{\D: Concrete syntax}
     \label{fig:dsyntax}
     \end{figure}
