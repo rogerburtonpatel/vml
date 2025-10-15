@@ -83,12 +83,28 @@
 
 \section{Introduction}
 
+Pattern matching is a beloved tool among functional programmers for examining
+and deconstructing data, but it cannot express certain common computations
+succinctly without~\it{extensions}. Observe in
+Figure~\ref{fig:pmextensioncomparison} how several examples of common extensions
+to pattern matching mitigate verbosity in comparative examples. 
+
+
+Naturally, designers of popular programming languages have introduced many such
+extensions, most commonly the exact ones from
+Figure~\ref{fig:pmextensioncomparison}: \textit{side conditions}(cite),
+\textit{or-patterns}(cite), and \textit{pattern guards}(cite). 
+
+
+
 % fancy pm is nice, there are standard ways but not unified, there
 %   are other examples like vc and the ultimate, we’re looking at a compromise.
 %   contribution is core calculus that is very small yet quite expressive.
 
 \section{Pattern Matching vs. Equations}
 \label{pmandextensions}
+
+
 
 % --------------------------------------------
 \begin{figure}[h]
@@ -116,7 +132,7 @@ let exclaimTall sh =
         then "Zounds! Tremendous trapezoid!"
         else "Your shape is small." 
 \end{verbatim}
-\caption*{Without side conditions}
+\caption*{OCaml, without side conditions}
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\linewidth}
@@ -132,7 +148,7 @@ let exclaimTall sh =
         "Zounds! Tremendous trapezoid!"
     | _ -> "Your shape is small." 
 \end{verbatim}
-\caption*{With side conditions}
+\caption*{OCaml with side conditions}
 \end{minipage}
 \caption{Comparing pattern matching with and without side conditions.}
 \end{figure}
@@ -154,7 +170,7 @@ tripleLookup rho x =
     Nothing -> handleFailure x
 
 \end{verbatim}
-\caption*{With nested pattern matching}
+\caption*{Haskell, with nested pattern matching}
 \end{minipage}
 \hfill
 \begin{minipage}{0.47\linewidth}
@@ -167,7 +183,7 @@ tripleLookup rho x =
      = z
   tripleLookup _ x = handleFailure x
 \end{verbatim}
-\caption*{With pattern guards}
+\caption*{Haskell with pattern guards}
 \end{minipage}
 \caption{Comparing \texttt{tripleLookup} using pattern guards.}
 \label{fig:pmtriplelookup}
@@ -179,28 +195,33 @@ tripleLookup rho x =
 \begin{minipage}{0.45\linewidth}
 \tiny
 \begin{verbatim}
-let describeColor c =
-  match c with
-    | Red -> "Warm color"
-    | Orange -> "Warm color"
-    | Yellow -> "Warm color"
-    | Blue -> "Cool color"
-    | Green -> "Cool color"
+freeNames : expr -> list string 
+  let freeNames e =
+  match e with
+    | Int _ -> []
+    | Bool _ -> []
+    | Float _ -> []
+    | Local n -> [n]
+    | Global n -> [n]
+    ... (* recursive cases *)
 \end{verbatim}
-\caption*{Without extensions}
+\caption*{OCaml, not using or-patterns}
 \end{minipage}
 \begin{minipage}{0.45\linewidth}
 \tiny
 \begin{verbatim}
-let describeColor c =
-  match c with
-    | Red | Orange | Yellow -> "Warm color"
-    | Blue | Green -> "Cool color"
-\end{verbatim}
-\caption*{With or-patterns}
+freeNames : expr -> list string 
+  let freeNames e =
+  match e with
+    | Int _ | Bool _ | Float _ -> []
+    | Local n | Global n -> [n]
+    ... (* recursive cases *)
+  \end{verbatim}
+\caption*{OCaml using or-patterns}
 \end{minipage}
 \caption{Comparing pattern matching with and without or-patterns.}
 \end{figure}
+\label{fig:pmextensioncomparison}
 
 % PM is great. But needs to be extended to be more expressive. Consider how 
 % pm without extensions is worse: 
