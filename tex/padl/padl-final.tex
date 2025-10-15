@@ -653,6 +653,9 @@ The spec of decision trees and match compilation algorithm is presented below.
 
 \section{Implementation}
 
+\rab{is there more to say here other than "we implemented this?" if not,
+probably axe this section and just say that we did in the Evaluation section.}
+
 \section{Evaluation and Analysis}
 
 \subsection{Microbenchmarks}
@@ -686,25 +689,118 @@ The spec of decision trees and match compilation algorithm is presented below.
 
 \subsection{Proof Sketch: \Compile~Preserves the Decision Tree Invariant}
 
-\section{Related and Future Work}
+    \section{Related and Future Work}
+
+    This paper builds on Augustsson et al.'s Verse Calculus~\cite{verse} and
+    decision trees~\cite{maranget}. Augustsson et al. give the formal rewrite
+    semantics for the Verse Calculus; Maranget gives an elegant formalism of
+    decision trees and a translation algorithm from patterns to decision trees.
+    We~attempted to imitate the behavior of the rewrite semantics of~\VC in the
+    big-step semantics of~\VMinus by manually rewriting terms in~\VC and
+    creating rules that would imitate the ultimate result of term-rewriting.
+    
+    \rab{"big-step-looking interpreters are the way we like to write them?"
+    what's a good way to say this point? } 
+    
+    We~chose a big-step semantics because
+    the big-step evaulation rules closely mirrors the structure of our
+    interpreters and compiler, which helped us reason about the code. 
+
+    \rab{axe below, because too related to Verse?}
+
+    Using a rewrite semantics instead would more closely relate~\VMinus
+    and~\VC, and is a likely future project. 
+    
+    Maranget's formalism was the foundation off of which we~built~\D. 
+    
+    Extensions to pattern matching, and how they appeal to language designers,
+    find an excellent example in~\cite{guardproposal}. The authors describe
+    pattern guards and transformational patterns (another extension to pattern
+    matching), both of which allow a Haskell programmer to write more concise
+    code using pattern matching. Or-patterns are documented in the OCaml
+    Language Reference Manual~\cite{ocaml}.
+    
+    \cite{augustsson1985compiling}~ gives a foundation in compiling pattern
+    matching. \cite{scottramsey} have a crisp example of a match-compilation
+    algorithm (pattern matching to decision trees). Scott and Ramsey's algorithm
+    structurally inspired mine, and studying the source code from the paper
+    aided our implementation. 
+
+    For future work, our top priority is to prove that \DTran~preserves
+    semantics. Secondarily, we~plan to prove that \VMinus, like pattern
+    matching, is deterministic. 
+
+    Finally, we~would like to explore
+    exhaustiveness analysis of~\VMinus.
+    Exhaustiveness analysis
+    can warn programmers of a missing or extraneous alternative in a~\it{case} expression.
+    Owing to its significantly more flexible structure,
+    however,~\iffibf may prove trickier to analyze.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
     
 
 
+    
+    
+    
+
+    
+    
+        
+
+
+
+
+
+
+
+        
+
+            
+            
+            
+
+
+
+
+
+        
+        
+        
+
+        
+
     \section{Conclusion}
 
-    % We~have introduced \VMinus, a~language that makes decisions using equations.
-    % By~example, we have shown that programs written in~\VMinus can have the same
-    % desirable properties as equivalent programs written using pattern matching.
-    % And~to~show that equations can be compiled to efficient decision trees, we
-    % have introduced~\D and~\DTran. In doing so, we~have demonstrated that
-    % programming with equations is a promising alternative to pattern matching.
+    We~have introduced \VMinus, a~language that makes decisions using equations.
+    By~example, we have shown that programs written in~\VMinus can have the same
+    desirable properties as equivalent programs written using pattern matching.
+    And~to~show that equations can be compiled to efficient decision trees, we
+    have introduced~\D and~\DTran. In doing so, we~have demonstrated that
+    programming with equations is a promising alternative to pattern matching.
     
     
 
 \begin{credits}
-\subsubsection{\ackname} A bold run-in heading in small font size at the end of the paper is
-used for general acknowledgments, for example: This study was funded
-by X (grant number Y).
+\subsubsection{\ackname} \rab{Enormous thanks Norman, Steve, Milod, Verse
+authors (esp SPJ).}
 
 \subsubsection{\discintname}
 It is now necessary to declare any competing interests or to specifically
