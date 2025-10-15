@@ -1,0 +1,651 @@
+\documentclass[llncs,screen,12pt, nonacm]{acmart}
+\let\Bbbk\relax %
+\usepackage{standalone}
+\usepackage{vmlmacros}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{0.7em plus 0.2em minus 0.1em}{0.5em}
+\usepackage{titlesec}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+\pagestyle{plain}
+\usepackage{lineno}
+\linenumbers 
+% Reduce whitespace before and after section titles
+\titlespacing*{\section}
+  {0pt}    % left margin
+  {0.6em plus 0.2em minus 0.1em} % before section
+  {0.4em plus 0.1em minus 0.1em} % after section
+
+\titlespacing*{\subsection}
+  {0pt}
+  {0.5em plus 0.1em minus 0.1em}
+  {0.3em plus 0.1em minus 0.1em}
+
+\titlespacing*{\subsubsection}
+  {0pt}
+  {0.4em plus 0.1em minus 0.1em}
+  {0.2em plus 0.05em minus 0.05em}
+
+% Slightly reduce paragraph spacing to match
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1em}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+\usepackage{outlines}
+\setlength{\headheight}{14.0pt}
+\setlength{\footskip}{13.3pt}
+\citestyle{acmauthoryear}
+\begin{document}
+\title{Never Going Back (tracking) Again: Equational Pattern Matching with Efficient Compilation}
+% \author{Roger Burtonpatel}
+% \email{roger.burtonpatel@tufts.edu}
+% \affiliation{%
+%   \institution{Tufts University}
+%   \streetaddress{419 Boston Ave}
+%   \city{Medford}
+%   \state{Massachusetts}
+%   \country{USA}
+%   \postcode{02155}
+% }
+\bibliographystyle{plainnat}
+
+
+
+
+% \renewcommand{\shortauthors}{Burtonpatel}
+
+\rab{into new template}
+
+\begin{abstract}
+    Pattern matching appeals to functional programmers for its expressiveness
+    and good cost model, but it fails to express certain computations without
+    verbosity. Verbosity can be reduced by using extended forms of pattern
+    matching, but extensions are not standardized, and making certain extensions
+    like or-patterns and pattern guards cooperate in a large-scale programming
+    language is a significant implementation challenge that has not seen success
+    until recent years. 
+    
+    Alternatively to pattern matching, computations can be expressed succinctly
+    by using equations, as has been demonstrated by the Verse programming
+    language. But such computations may have time and space costs that can be
+    hard to predict. As a compromise, we ~propose a new language,~\ensuremath{V^{-}},
+    which~uses equations in a limited way that makes time and space costs easy
+    to predict. In comparative examples, \ensuremath{V^{-}}~ expresses computations as
+    succinctly as pattern matching with popular extensions- namely, side
+    conditions, or-patterns, and pattern guards- and just like pattern matching,
+    it can be compiled to a decision tree. 
+    
+    We present formal rules and a Standard ML implementation for the \ensuremath{V^{-}}
+    match compiler, and we evaluate our implementation with micro-benchmarks and
+    a proof that our compilation algorithm preserves the desirable decision tree
+    height invariants. 
+
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+% fancy pm is nice, there are standard ways but not unified, there
+%   are other examples like vc and the ultimate, we’re looking at a compromise.
+%   contribution is core calculus that is very small yet quite expressive.
+
+\section{Pattern Matching vs. Equations}
+\label{pmandextensions}
+
+% --------------------------------------------
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.45\linewidth}
+\tiny
+\begin{verbatim}
+
+type standard_shape = Square of float 
+                    | Triangle of float * float
+                    | Trapezoid of float * float * float
+
+let exclaimTall sh =
+  match sh with 
+    | Square s -> 
+        if s > 100.0 
+        then "Wow! That's a sizeable square!"
+        else "Your shape is small." 
+    | Triangle (_, h) -> 
+        if h > 100.0 
+        then "Goodness! Towering triangle!"
+        else "Your shape is small." 
+    | Trapezoid (_, _, h) -> 
+        if h > 100.0
+        then "Zounds! Tremendous trapezoid!"
+        else "Your shape is small." 
+\end{verbatim}
+\caption*{Without extensions}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+\tiny
+\begin{verbatim}
+let exclaimTall sh =
+  match sh with 
+    | Square s when s > 100.0 ->
+        "Wow! That's a sizeable square!"
+    | Triangle (_, h) when h > 100.0 ->
+        "Goodness! Towering triangle!"
+    | Trapezoid (_, _, h) when h > 100.0 -> 
+        "Zounds! Tremendous trapezoid!"
+    | _ -> "Your shape is small." 
+\end{verbatim}
+\caption*{With side conditions}
+\end{minipage}
+\caption{Comparing pattern matching with and without side conditions.}
+\end{figure}
+\begin{figure}[ht]
+\centering
+\begin{minipage}{0.47\linewidth}
+\tiny
+\begin{verbatim}
+  let tripleLookup (rho : finitemap) (x : int) =
+      match lookup rho x with Some w -> 
+        (match lookup rho w with Some y -> 
+          (match lookup rho y with Some z -> z
+          | _ -> handleFailure x)
+        | _ -> handleFailure x)
+      | _ -> handleFailure x
+\end{verbatim}
+\caption*{OCaml version with nested pattern matching}
+\end{minipage}
+\hfill
+\begin{minipage}{0.47\linewidth}
+\tiny
+\begin{verbatim}
+  tripleLookup rho x
+     | Just w <- lookup rho x
+     , Just y <- lookup rho w
+     , Just z <- lookup rho y
+     = z
+  tripleLookup _ x = handleFailure x
+\end{verbatim}
+\caption*{Haskell version with pattern guards}
+\end{minipage}
+\caption{Comparing \texttt{tripleLookup} using pattern guards.}
+\label{fig:pmtriplelookup}
+\Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
+\end{figure}
+\label{fig:guardtriplelookup}
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.45\linewidth}
+\tiny
+\begin{verbatim}
+let describeColor c =
+  match c with
+    | Red -> "Warm color"
+    | Orange -> "Warm color"
+    | Yellow -> "Warm color"
+    | Blue -> "Cool color"
+    | Green -> "Cool color"
+\end{verbatim}
+\caption*{Without extensions}
+\end{minipage}
+\begin{minipage}{0.45\linewidth}
+\tiny
+\begin{verbatim}
+let describeColor c =
+  match c with
+    | Red | Orange | Yellow -> "Warm color"
+    | Blue | Green -> "Cool color"
+\end{verbatim}
+\caption*{With or-patterns}
+\end{minipage}
+\caption{Comparing pattern matching with and without or-patterns.}
+\end{figure}
+
+% PM is great. But needs to be extended to be more expressive. Consider how 
+% pm without extensions is worse: 
+
+% Examples. 
+
+% This Works, but not unified, hard, etc. 
+
+% How much work to extend? How much work to add to new lang? What's missing? 
+
+% Equations are expressive, 
+
+% Examples. But performance is hard to predict. Cite. 
+
+
+% P+ as just the vessel for the specific examples of extensions. then show v- has
+%       all that and more. then focus on dtran. 
+
+
+
+
+\subsection{Introducing \VMinus\ }
+\label{vminus}
+
+    \begin{figure}[H]
+          \begin{center}
+            \begin{bnf}
+            $P$ :~\textsf{Programs} ::=
+            $\bracketed{d}$ : definition
+            ;;
+            $d$ :~\textsf{Definitions} ::=
+            | $\it{val}\; x\;~\it{=}\;~\expr$ : bind name to expression
+            ;;
+            $\expr$ :~\textsf{Expressions} ::=
+            | $\v$ : literal values 
+            | $x, y, z$ : names
+            | $\bf{if}\;~\left[\; G\;~\bracketed{\dbar\; G}\;~\right]\;~\bf{fi}$ : if-fi 
+            | $K~\bracketed{\expr}$ : value constructor application 
+            | $\expr[1]\;~\expr[2]$ : function application 
+            | $\lambda x.\;~\expr$ : lambda declaration 
+            ;;
+            $G$ :~\textsf{Guarded Expressions} ::=  
+            $[\vexists{\bracketed{x}}]~\bracketed{g}~\boldsymbol{\rightarrow}\expr$ : names, guards, and body
+            ;;
+            $g$ :~\textsf{Guards} ::=  
+            | $\expr$ : intermediate expression 
+            | $\expr[1] =~\expr[2]$ : equation 
+            | $ g~\bracketed{; g}~\;~\choice~\; g~\bracketed{; g}$ : choice 
+            ;;
+            $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+            | $\lambda x.\;~\expr$ : lambda value
+            ;;
+            \end{bnf}
+            \medskip
+          
+          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. 
+          \end{center}
+          \Description{The concrete syntax of VMinus.}
+              \caption{\VMinus: Concrete syntax}
+              \label{fig:vmsyntax}
+              \end{figure}      
+
+        \VMinus takes several key concepts from {\VC}---namely, equations and
+        choice---with several key modifications. Like~\VC,~\VMinus has
+        equations and choice, but unlike in~\VC, choice only guards computations, 
+        there are no multiple results, and all decision-making appears in the 
+        \iffibf construct, inspired by Dijkstra~\citep{dijkstra}. 
+
+            \begin{figure}[ht] 
+      \begin{minipage}[h]{0.54\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
+          showstringspaces=false,
+          frame=single]
+val exclaimTall =~\sh.
+  if E s. sh = Square s; (> s) 100 -> 
+            Wow! That's A Sizeable Square!  
+    [] E w h. sh = Triangle w h; (> h) 100 ->
+            Goodness! Towering Triangle!
+    [] E b1 b2 h. sh = Trapezoid b1 b2 h; 
+     (> h) 100 -> Zounds! Tremendous Trapezoid!
+    [] ->  Your Shape Is Small
+  fi 
+  \end{lstlisting}
+      \Description{exclaimTall in VMinus}
+      \subcaption{\tt{exclaimTall} in~\VMinus}
+          \label{fig:vmexclaimtall} 
+      %   \vspace{4ex}
+      \end{minipage}%%
+      \begin{minipage}[h]{0.5\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
+                      frame=single]
+val tripleLookup =~\rho.~\x.
+  if E w y z v1 v2 v3. 
+    v1 = (lookup rho) x; v1 = Some w; 
+    v2 = (lookup rho) w; v2 = Some y; 
+    v3 = (lookup rho) y; v3 = Some z 
+       -> z 
+    [] -> handleFailure x
+  fi 
+   \end{lstlisting}
+        \Description{tripleLookup in VMinus}
+        \subcaption{\tt{tripleLookup} in~\VMinus}
+            \label{fig:vmtriplelookup} 
+        \vspace{4ex}
+      \end{minipage} 
+      \begin{minipage}[h]{\linewidth}
+        \vmlst 
+        \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em,
+          showstringspaces=false,
+          frame=single]
+val game_of_token =~\t. 
+  if E f. (t = BattlePass f  | (t = ChugJug f | t = TomatoTown f)) -> 
+        P (Fortnite f)
+  [] E f. (t = HuntersMark f | t = SawCleaver f)                   -> 
+        P (Bloodborne ((* 2) f))
+  [] E f. (t = MoghLordOfBlood f | t = PreatorRykard f)            -> 
+        P (EldenRing ((* 3) f))
+  [] -> P (Irrelevant 0)
+  fi 
+\end{lstlisting}
+      \Description{game_of_token in VMinus}
+      \subcaption{\tt{game\_of\_token} in~\VMinus}
+          \label{fig:vmgot}
+      \vspace{4ex}
+      \end{minipage}%% 
+      \caption{The functions in~\VMinus have a desirably concise
+      implementation, as before.}
+  \label{fig:vminusfuncs}
+    \end{figure}  
+
+\subsection{Formal Semantics of ${\VMinus}$}
+
+
+    \begin{table}
+\begin{tabular}{ll}
+\toprule
+    \multicolumn2{l}{\emph{\VMinus Metavariables}}~\\
+\midrule
+    $\expr$& An expression~\\ 
+    $\v,\;~\v'$& A value~\\
+    $\fail$& An expression failure~\\
+    $\result$& $\v~\vert~\fail$ : expressions produce~\it{results}: values or
+    failure.~\\
+    \Rho& An environment: $name~\rightarrow {\mathcal{V}}_{\bot}$~\\
+    $\rho\{ x~\mapsto y~\} $& An environment extended with name $x$ mapping to $y$~\\
+    $\g$& A guard~\\
+    $\gs$& Zero or more guards, separated by~\it{;}~\\
+    $\G$& A guarded expression~\\
+    $\Gs$& Zero or more guarded expressions, separated by~\dbar~\\
+    $eq$& An equation~\\ 
+    % $\tempstuck$& a temporarily-stuck equation~\\
+    $\dagger$& when solving guards is rejected~\\
+    $s$& $\rhohat~\mid~\dagger$ : guards produce~\it{solutions}: a
+    refined environment~\rhohat\; or rejection\\
+    $\mathcal{T}$& A context of all temporarily stuck guards (a sequence)~\\ 
+    % $G$& A guarded expression~\\
+    %~\uppsidown& Inability to compile to a decision tree; a compile time error~\\
+\bottomrule
+\end{tabular}    
+\Description{Metavariables used in rules for VMinus.}
+\caption{\VMinus metavariables and their meanings}
+\label{fig:vmmetavars}
+\end{table}
+
+
+    \subsubsection{Expressions}
+    
+    \newcommand\GNoTree{\vmrung~\rightsquigarrow~\uppsidown} 
+    
+    An expression in~\VC evaluates to produce possibly-empty sequence of values,
+    where an empty sequence of values is identical to the syntactic form~\fail.
+    In~\VMinus, an expression never returns multiple values, but it can~\fail.
+    Specifically, in~\VMinus, an expression evaluates to produce a single~\it{result}.
+    A result is either a single value $\v$ or~\fail. 
+    
+    \[\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\]
+    
+    \showvjudgement{Eval}{\vmeval}
+
+    \subsubsection{Names and refinement of environments}
+
+    In~\VMinus, like in~\VC, names can be introduced with the existential
+    {$\exists$} before they are given a binding. Bindings are given by equations
+    in guards~(\ref{guards}). When a name is introduced with {$\exists$}, it is
+    bound in the environment~\Rho\ to $\bot$ (pronounced “bottom”). Success of a
+    guard only~\it{refines} the environment; that~is, when
+    $\grefine[solution=\Rhoprime]$, we~expect $\rho~\subseteq~\Rhoprime$. The
+    definition of $\subseteq$ on environments is given below. 
+    
+    \begin{align*}
+    \rho~\subseteq~\Rhoprime~\text{ when }&\dom\rho  \subseteq~\dom~\Rhoprime\\
+    \text{ and } &\forall x~\in~\dom~\rho:~\rho(x)~\subseteq~\Rhoprime(x)
+    \end{align*}
+    
+    \smallskip
+        
+    \subsubsection{Guards}
+    \label{guards}
+
+    For example, the~\VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
+    succeeds and returns the value~\tt{K}. The~\VMinus expression~\tt{if~~fi},
+    the empty~\tt{if-fi}, always {\fail}s. 
+
+    Like~\VC,~\VMinus has a nondeterministic semantics. Guards are solved in~\VMinus
+    similarly to how equations are solved in Verse: the program nondeterministically
+    picks one out of a context (\context), attempts to solve it, and moves on. 
+
+In my semantics, this process occurs over a~\it{list} of guards~\gs in a guarded
+expression \G: the program picks a guard from~\G, attempts to solve it to refine
+the environment or fail, and repeats.~\VMinus can only pick a guard out of \G\
+that it \it{knows} it can solve. \it{Knowing} a guard can be solved can be determined
+in~\VMinus before code is executed. If~\VMinus can't pick a guard and there are
+guards left over, the semantics gets stuck before code is executed. 
+
+\showvjudgement{Solve-Guards}{\vmgs}
+
+
+The environment $\rho$ maps from a name to a value {\v} or $\bot$. $\bot$ means
+a name has been introduced with the existential, $\exists$, but is not yet bound
+to a value. Given any such $\rho$, a guard~\g\ eithers refine $\rho$
+($\Rhoprime$) or is~\bf{rejected}. We use the metavariable $\dagger$ to
+represent rejection, and if any guard in a list is rejected, the entire list of
+guards is rejected.
+
+    \showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
+    \showvjudgement{Guard-reject}\gfail
+
+  For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
+  existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho\ bound to
+  $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. The guard
+  \tt{x = K} successfully unifies~\tt{x} with~\tt{K}, producing the environment
+  $\bracketed{x~\mapsto~\tt{K}}$. The guard~\tt{x = K2} attempts to unify~\tt{K}
+  with~\tt{K2} and is rejected with $\dagger$. 
+
+  \subsection{Notable rules in the \VMinus semantics}
+
+  Worth discussing in the~\VMinus semantics are those in which a name in \Rho\
+  is bound to a value or to $\bot$. Notable among these include
+  \textsc{Guard-Name-Exp-Bot}, \textsc{Guard-Name-Exp-Eq},
+  \textsc{Guard-Name-Exp-Fail}, \textsc{Guard-Names-Bot-Succ},
+  and~\textsc{Guard-Names-Bot-Succ-Rev}. This section discusses each of these
+  rules in short detail. The full set of rules for \VMinus is in
+  Section~\ref{vmsemantics}. 
+
+  In this section, I use the terms~\it{known} and~\it{unknown} to denote a
+  name's status in \Rho. If a name $x$ is bound to a value \v in \Rho, then $x$
+  is \it{known}. If $x$ is bound to $\bot$ in \Rho, then $x$ is \it{unknown}. I
+  use this terminology again when compiling~\VMinus to \D, since it describes
+  the same status in both evaluation in compilation. 
+
+\[
+\guardnameexpbot
+\]
+
+When $\rho(x) = \bot$ ($x$ is \it{unknown}) and $\vmeval$, the program refines
+\Rho\ by making a binding of $x$ to \v. Here,~\it{=} is treated like a
+let-binding in ML-like languages. 
+
+\[
+  \guardnameexpfail
+\]
+  
+When $\rho(x) = \v$ ($x$ is \it{known}) and $\vmeval$, the program proceeds
+without refining the environment, since no new information is gained.
+Here,~\it{=} is treated like a \tt{==} in C-like languages. 
+
+\[
+\guardnameexpfail
+\]
+
+When $\rho(x) = \v'$ ($x$ is \it{known}) and $\vmeval$ and $\v \neq \v'$,
+unification fails, so the guarded expression fails. Here,~\it{=} is treated like
+a \tt{==} in C-like languages. 
+
+\[
+\guardnamesbotsucc
+\]
+
+When $\rho(x) = \v$ ($x$ is \it{known}) and $rho(y) = \bot$ ($y$ is
+\it{unknown}), the program can always bind $y$ to \v. Here,~\it{=} is treated
+like a let-binding in ML-like languages. 
+
+\[
+\guardnamesbotsuccrev
+\]
+
+This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse. 
+    
+    \vfilbreak
+    
+    \subsection{Rules (Big-step Operational Semantics) for~\U, shared by~\VMinus and~\D}
+    \label{usemantics1}
+    \usemantics 
+    \subsection{Rules (Big-step Operational Semantics) specific to~\VMinus}
+    \label{vmsemantics}
+    \vmsemantics
+
+    % An intriguing alternative to pattern matching exists in~\it{equations}, from
+    % the Verse Calculus (\VC), a core calculus for the functional logic
+    % programming language~\it{Verse}~\citep{antoy2010functional,
+    % hanus2013functional, verse}. 
+    
+    % Powerful. 
+
+    % But hard to predict. 
+
+
+
+    
+
+\subsection{\VMinus compiles to a decision tree in the ~\D language}
+\label{d}
+
+Like pattern matching, \VMinus~compiles to a decision tree whose height is 
+linear with respect to code size. To formalize decision trees, we use 
+\D, a language which generalizes the trees found in~\citet{maranget}. 
+
+The spec of decision trees and match compilation algorithm is presented below. 
+
+  \begin{figure}
+    \begin{center}
+    \dcsyntax
+    \end{center}
+    \Description{The concrete syntax of D.}
+    \caption{\D: Concrete syntax}
+    \label{fig:dsyntax}
+    \end{figure}
+
+      In~\D, as in Maranget's trees, the~\it{test} node extracts all names from a
+  value constructor at once for use in subtrees. The compiler is responsible for
+  introducing the fresh names used in~\it{test}. The compiler alpha-renames all
+  necessary terms before it translates an~\iffibf to a decision tree to ensure
+  all names are unique. 
+
+  In~\D, like in~\VMinus, expressions can~\it{fail}, meaning some of~\D's
+  syntactic forms like~\it{try-let} and~\it{cmp} have an extra branch that is
+  executed if the examined expression fails. 
+
+
+    \subsection{The~\DTran\ algorithm:~\VMinus $\rightarrow$~\D}
+
+
+    When presented with an~\iffibf,~\DTran\~invokes~\Compile with context~\ctx.
+    \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
+    branches with a desugaring function~\ITran: 
+    
+    \itran{if\;~\dots~\dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
+    
+    ==
+    
+    ${if\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;fi}$
+
+    With the desugared~\iffibf,~\Compile\ then repeatedly chooses a guarded
+    expression $G$ and applies one of the compilation rules below. The rules are
+    applied in a nondeterministic order. 
+
+    \Compile terminates when it inserts a final~\it{match} node (with rule
+    \textsc{Match}).  A~\it{match} node is inserted for a right-hand side expression~\expr when the list of
+    guards preceding~\expr is empty or a list of assignments from names to
+    unbound names. Termination of~\DTran\~is guaranteed because each recursive
+    call passes a list of guarded expressions in which the number of guards is
+    strictly smaller, so eventually the algorithm reaches a state in which the
+    first unmatched branch is all trivially-satisfied guards.
+
+
+    If~\Compile\ cannot choose a $g$ of one of the valid forms, it halts with an
+    error. This can happen when no $g$ is currently solvable in the context, as
+    determined by the same algorithm that~\VMinus uses to pick a guard to solve,
+    or when the program would be forced to unify incompatible values, such as
+    any value with a closure. 
+
+    \rab{I have these rules with english descriptions, though that increases length}.
+
+    
+\showvjudgement{Compile}{\compilebig}
+
+\subsection{Big-step rules for \Compile}
+
+      \begingroup
+      \scriptsize
+      \compiler
+      \endgroup
+
+      Application of the rules is nondeterministic, which is desirable in a
+      match compiler: the structure of the final result~\expr\ depends on the
+      \textit{heuristic input} to the compiler, which we discuss in
+      section~\ref{reductionstrats}.
+
+
+\section{Implementation}
+
+\section{Evaluation and Analysis}
+
+\subsection{Microbenchmarks}
+
+
+\subsection{Reduction Strategies}
+\label{reductionstrats}
+
+      In my implementation, I apply the~\textsc{Test} rule before other rules,
+      having found in my experiments that this heuristic leads to the smallest trees. A~%
+      risk of inserting a \it{test} node before a \it{let-unless} node is that
+      if there are many shared names across branches, a \it{test} node
+      will introduce those names in \it{let-unless} nodes in each
+      subtree.
+      It is possible to insert \it{let-unless} nodes before \it{test}
+      nodes, in which case those names will be bound
+      only once.  The risk of the \it{let}-first strategy
+      is that if there are many names used in only one subtree of a \it{test},
+      these names will be introduced to \it{all} branches.  The extra
+      bindings may harm
+      performance by bloating an environment in an interpreter or thrashing the
+      icache if the tree further is compiled to machine code. 
+
+      In the implementation,~\DTran\~first introduces all the names under the
+      all existential $\exists$'s to a context which determines if a name is
+      \it{known} or~\it{unknown}, applying the~\textsc{Exists} rule is applied
+      all at the start. At the start of compilation, each name introduced by
+      $\exists$ is~\it{unknown} in a context~\ctx. Since all names in the
+      program are unique at this stage, there are no clashes. 
+
+
+\subsection{Proof Sketch: \Compile~Preserves the Decision Tree Invariant}
+
+\section{Related and Future Work}
+    
+
+
+    \section{Conclusion}
+
+    % We~have introduced \VMinus, a~language that makes decisions using equations.
+    % By~example, we have shown that programs written in~\VMinus can have the same
+    % desirable properties as equivalent programs written using pattern matching.
+    % And~to~show that equations can be compiled to efficient decision trees, we
+    % have introduced~\D and~\DTran. In doing so, we~have demonstrated that
+    % programming with equations is a promising alternative to pattern matching.
+    
+    
+
+
+
+\end{document}

@@ -1,16 +1,11 @@
 Scratch:
 
-- [ ] P+ as just the vessel for the specific examples of extensions.
-      then show v- has all that and more. 
-      then focus on dtran. 
+- [ ] Beef up technical details as suggested
 
-- [ ] make a doc from scratch, skip intro 
+- [x] make a doc from scratch, skip intro 
 
 
 Things to point out:
-
-
-- [ ] Talk about coverage checking
 
 2. Things to do :
 - [x] Workshop the title
@@ -21,7 +16,7 @@ Things to point out:
 - [ ] Section 2: just examples
 - [ ] PM extensions are good. here are 3 examples:
 - [ ] But not unified/haskell/whatever
-- [ ] Cut section 3
+- [x] Cut section 3
 - [ ] 3. Go straight to Vminus - grammar, opsem, examples.
 
 - [ ] IT'S JUST AS EXPRESSIVE. AND MORE. 
@@ -35,6 +30,9 @@ Things to point out:
 they know about nonlinear patterns, so explain only briefly. “V- supports the
 common ones, and there are even more that you get for free”
 
+- [ ] Talk about coverage checking: 'when' makes this NP-hard; here is work on 
+how to do some. future work integrates this into V-. 
+
 
 - [ ] 4. Compilation- d syntax (semantics are straightforward, cite with
   semantics.)
@@ -47,8 +45,7 @@ common ones, and there are even more that you get for free”
   knobs work
 
 V- and D sections
-- [ ] Beef up technical details as suggested
-- [ ] Include which heuristics, why they matter
+- [ ] Include which heuristics, why they matter: reduction strategies (in eval and analysis?)
 - [ ] V- syntax, semantics
 - [ ] Definitely english explanation of D-compile rules
 - [ ] Syntax of d, say sem are obvious
@@ -58,7 +55,7 @@ V- and D sections
 - [ ] talk about https://dl.acm.org/doi/pdf/10.1145/3689746 - write enough of a
   summary for comparison
 
-  
+
 - [ ] EVAL:
 - [ ] Call it “Evaluation and Analysis”
 - [ ] 24 micro benchmarks: {side conditions, or patterns, guards, nonlinear
@@ -74,7 +71,7 @@ V- and D sections
 - [ ] Discussion: how does this compare to traditional PM? Then look at PPlus.
   PP to D is established.
 
-
+  
 
 
 GOALS:
