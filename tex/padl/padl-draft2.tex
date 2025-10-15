@@ -103,6 +103,10 @@
 
 \maketitle
 
+% TODO Change this after the whole paper is done Verse is significantly more
+% expressive because of the backtracking. The point is to explore the design
+% space in the middle: existential quantifier and overload =, but retain
+% compilability to decision tree
 \section{Introduction}
 
 Perhaps the most beloved tool among functional programmers for examining and
@@ -126,12 +130,12 @@ to pattern matching, most commonly \textit{side conditions}(cite),
 
 Extensions strengthen pattern matching, but they are not standardized, so each
 popular programming language with pattern matching features its own unique suite
-of extensions. Rather than continuing to extend pattern
-matching~\it{ad hoc}, a worthwhile goal could be to find an alternative that
-doesn't need extensions. A tempting possibility was introduced by the
-programming language Verse~\citep{verse}. In Verse, a programmer can deconstruct
-data using ~\it{equations}. Equations are flexible, and it appears that they can express everything that
-pattern matching can, including the popular extensions. 
+of extensions. Rather than continuing to extend pattern matching~\it{ad hoc}, a
+worthwhile goal could be to find an alternative that doesn't need extensions. A
+tempting possibility was introduced by the programming language
+Verse~\citep{verse}. In Verse, a programmer can deconstruct data using
+~\it{equations}. Equations are flexible, and it appears that they can express
+everything that pattern matching can, including the popular extensions. 
 
 But a full implementation of Verse is complicated, cost-wise. Verse is a
 functional logic programming language, and expressions can backtrack at runtime
@@ -159,20 +163,24 @@ and we~have implemented both languages in Standard ML.
 
 \section{Pattern Matching and its Extensions}
 \label{pmandextensions}
-    \textbf{\rab{GOAL: Introduce pattern matching in a way that's neither
-    dismissive of the interesting problem nor insulting to the audience's
-    intelligence and knowledge of functional programming.}}
-
 
     Pattern matching is a battle-tested and beloved features in declarative and
-    functional programming, but it often requires extensions to simplify cases
+    functional programming. In order to 
+
+    
+    
+    but it often requires extensions to simplify cases
     that are otherwise troublesome. 
     
     
     Specifically, in sophisticated programs that involve complex
     decision-making, pattern matching without extensions tends to duplicate
-    code. Consider this example of "simple" pattern matching (without
-    extensions): 
+    code. 
+    
+    Consider the examples of pattern matching without extensions in figure 
+    TODO, with side-by-side examples of how 
+
+
 
     \rab{Example; will discuss which to use. Adaptation of 'cellar' example
     seems good}.
@@ -853,12 +861,6 @@ The spec of decision trees and match compilation algorithm is presented below.
     \subsection{The~\DTran\ algorithm:~\VMinus $\rightarrow$~\D}
 
 
-
-       
-
-
-
-
     When presented with an~\iffibf,~\DTran\~invokes~\Compile with context~\ctx.
     \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
     branches with a desugaring function~\ITran: 
@@ -915,19 +917,40 @@ The spec of decision trees and match compilation algorithm is presented below.
       % $\exists$ is~\it{unknown} in a context~\ctx. Since all names in the
       % program are unique at this stage, there are no clashes. 
 
-      \subsection{Full Big-step rules for \Compile, with no descriptions}
+      \subsection{Big-step rules for \Compile}
 
-        The judgement form for compilation is \textsc{Compile}: 
+      \begingroup
+      \scriptsize
+      \compiler
+      \endgroup
 
-        \showvjudgement{Compile}{\compilebig}
 
-The rules are nondeterministic: the structure of the final result~\expr\ depends
-on the order in which rules are applied by the compiler.  
+      The rules are nondeterministic: the structure of the final result~\expr\
+      depends on the order in which rules are applied by the compiler.  
 
-\begingroup
-\scriptsize
-\rawcompiler
-\endgroup
+      \subsection{Reduction Strategies}
+
+      In my implementation, I apply the~\textsc{Test} rule before other rules,
+      having found in my experiments that this heuristic leads to the smallest trees. A~%
+      risk of inserting a \it{test} node before a \it{let-unless} node is that
+      if there are many shared names across branches, a \it{test} node
+      will introduce those names in \it{let-unless} nodes in each
+      subtree.
+      It is possible to insert \it{let-unless} nodes before \it{test}
+      nodes, in which case those names will be bound
+      only once.  The risk of the \it{let}-first strategy
+      is that if there are many names used in only one subtree of a \it{test},
+      these names will be introduced to \it{all} branches.  The extra
+      bindings may harm
+      performance by bloating an environment in an interpreter or thrashing the
+      icache if the tree further is compiled to machine code. 
+
+      In the implementation,~\DTran\~first introduces all the names under the
+      all existential $\exists$'s to a context which determines if a name is
+      \it{known} or~\it{unknown}, applying the~\textsc{Exists} rule is applied
+      all at the start. At the start of compilation, each name introduced by
+      $\exists$ is~\it{unknown} in a context~\ctx. Since all names in the
+      program are unique at this stage, there are no clashes. 
 
 
     \section{Implementations}

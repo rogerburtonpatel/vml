@@ -1,0 +1,38 @@
+\documentclass[manuscript,screen 12pt, nonacm]{acmart}
+\let\Bbbk\relax % Fix for amssymb clash 
+\usepackage{vmlmacros}
+% Title included so this document can compile alone
+\title{Never Going Back (tracking) Again: Equational Pattern Matching with Efficient Compilation}
+
+\begin{document}
+
+% Pretty dece: have Steve read. 
+\begin{abstract}
+    Pattern matching appeals to functional programmers for its expressiveness
+    and good cost model, but it fails to express certain computations without
+    verbosity. Verbosity can be reduced by using extended forms of pattern
+    matching, but extensions are not standardized, and making certain extensions
+    like or-patterns and pattern guards cooperate in a large-scale programming
+    language is a significant implementation challenge that has not seen success
+    until recent years. 
+    
+    Alternatively to pattern matching, computations can be expressed succinctly
+    by using equations, as has been demonstrated by the Verse programming
+    language. But such computations may have time and space costs that can be
+    hard to predict. As a compromise, we ~propose a new language,~\ensuremath{V^{-}},
+    which~uses equations in a limited way that makes time and space costs easy
+    to predict. In comparative examples, \ensuremath{V^{-}}~ expresses computations as
+    succinctly as pattern matching with popular extensions- namely, side
+    conditions, or-patterns, and pattern guards- and just like pattern matching,
+    it can be compiled to a decision tree. 
+    
+    We present formal rules and a Standard ML implementation for the \ensuremath{V^{-}}
+    match compiler, and we evaluate our implementation with micro-benchmarks and
+    a proof that our compilation algorithm preserves the desirable decision tree
+    height invariants. 
+
+\end{abstract}
+
+\maketitle
+
+\end{document}

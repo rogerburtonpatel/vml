@@ -218,7 +218,10 @@ engineered to look like Maranget's trees.
     with a closure. 
 
       \subsection{Big-step rules for \Compile}
-        \compiler
+      \compiler
+
+      The rules are nondeterministic: the structure of the final result~\expr\ depends
+on the order in which rules are applied by the compiler.  
 
       \subsection{Reduction Strategies}
 
@@ -250,8 +253,7 @@ engineered to look like Maranget's trees.
 
         \showvjudgement{Compile}{\compilebig}
 
-The rules are nondeterministic: the structure of the final result~\expr\ depends
-on the order in which rules are applied by the compiler.  
+
 
 \rawcompiler
 
