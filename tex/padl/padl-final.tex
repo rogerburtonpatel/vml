@@ -75,10 +75,10 @@
     guards- and just like pattern matching, it can be compiled to a decision
     tree. 
     
-    We present formal rules and a Standard ML implementation for the \ensuremath{V^{-}}
-    match compiler, and we evaluate our implementation with micro-benchmarks and
-    a proof that our compilation algorithm preserves the desirable decision tree
-    height invariants. 
+    We present formal rules and a Standard ML implementation for the
+    \ensuremath{V^{-}} match compiler, and we evaluate our implementation with
+    micro-benchmarks and a proof that our compilation algorithm preserves the
+    desirable decision tree height invariants. 
 
 \end{abstract}
 
@@ -89,14 +89,15 @@
 Pattern matching is a beloved tool among functional programmers for examining
 and deconstructing data, but it cannot express certain common computations
 succinctly without~\it{extensions}. Observe in
-Figure~\ref{fig:pmextensioncomparison} how several examples of common extensions
-to pattern matching mitigate verbosity in comparative examples. 
+Figures~\ref{fig:pmsideconditions}-\ref{fig:pmorpats} how several examples of
+common extensions to pattern matching mitigate verbosity in comparative
+examples. 
 
 % --------------------------------------------
 \begin{figure}[h]
 \centering
 \begin{minipage}{0.45\linewidth}
-\tiny
+\scriptsize
 \begin{verbatim}
 
 type standard_shape = Square of float 
@@ -122,7 +123,7 @@ let exclaimTall sh =
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\linewidth}
-\tiny
+\scriptsize
 \begin{verbatim}
 let exclaimTall sh =
   match sh with 
@@ -138,10 +139,11 @@ let exclaimTall sh =
 \end{minipage}
 \caption{Comparing pattern matching with and without side conditions.}
 \end{figure}
+\label{fig:pmsideconditions}
 \begin{figure}[ht]
 \centering
 \begin{minipage}{0.47\linewidth}
-\tiny
+\scriptsize
 \begin{verbatim}
 tripleLookup :: (Ord k) => Map k k -> k -> k
 tripleLookup rho x =
@@ -160,7 +162,7 @@ tripleLookup rho x =
 \end{minipage}
 \hfill
 \begin{minipage}{0.47\linewidth}
-\tiny
+\scriptsize
 \begin{verbatim}
   tripleLookup rho x
      | Just w <- lookup rho x
@@ -172,14 +174,13 @@ tripleLookup rho x =
 \caption*{Haskell with pattern guards}
 \end{minipage}
 \caption{Comparing \texttt{tripleLookup} using pattern guards.}
-\label{fig:pmtriplelookup}
 % \Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
 \end{figure}
-\label{fig:guardtriplelookup}
+\label{fig:pmguards}
 \begin{figure}[h]
 \centering
 \begin{minipage}{0.45\linewidth}
-\tiny
+\scriptsize
 \begin{verbatim}
 freeNames : expr -> list string 
   let freeNames e =
@@ -194,7 +195,7 @@ freeNames : expr -> list string
 \caption*{OCaml, not using or-patterns}
 \end{minipage}
 \begin{minipage}{0.45\linewidth}
-\tiny
+\scriptsize
 \begin{verbatim}
 freeNames : expr -> list string 
   let freeNames e =
@@ -207,20 +208,20 @@ freeNames : expr -> list string
 \end{minipage}
 \caption{Comparing pattern matching with and without or-patterns.}
 \end{figure}
-\label{fig:pmextensioncomparison}
+\label{fig:pmorpats}
 
 Naturally, designers of popular programming languages have introduced many such
 extensions, most commonly the exact ones from
-Figure~\ref{fig:pmextensioncomparison}: \textit{side conditions}(cite),
-\textit{or-patterns}(cite), and \textit{pattern guards}(cite). 
+Figures~\ref{fig:pmsideconditions}-\ref{fig:pmorpats}: \textit{side
+conditions}(cite), \textit{or-patterns}(cite), and \textit{pattern
+guards}(cite). 
 
 But no popular programming language lets you write all three of the above
 programs, because none has all three of these extenisions: Haskell lacks
-(binding) or-patterns, OCaml lacks guards, other languages lack side conditions,
-and so on. And there are the other extensons to pattern matching, like nonlinear
+(binding) or-patterns\footnote{Non-binding or-patterns have existed in GHC only
+as of 2023.}, OCaml lacks guards, other languages lack side conditions, and so
+on. And there are the other extensons to pattern matching, like nonlinear
 patterns, that appear in neither Haskell nor ML. 
-
-\rab{say more on how non-binding or pats exist in haskell, but only since 2023?}
 
 We~find the extension story somewhat unsatisfying. At the very least, we~want to
 be able to use pattern matching, with the extensions we~want, in a single
@@ -228,7 +229,10 @@ language. Or, we~want an alternative that gives me the expressive power of
 pattern matching with these extensions. 
 
 
-\subsection{Equations}
+\subsection{Equations in Functional Logic Programming}
+
+\rab{TODO: Give example, explain notation: can copy, use just 1}
+
 An intriguing possibility for such an alternative is \textit{equations} in
 functional logic programming languages like Verse~\cite{verse}\footnote{The
 Verse Calculus, or \VC, is the heart of Verse, and so we use Verse and \VC
@@ -241,6 +245,8 @@ challenging: because unification under equations can backtrack at runtime, code
 with equations can run in exponential time~\cite{hanus2013functional,
 wadler1985replace, clark1982introduction}. 
 
+\rab{TODO: say can be optimized to a dag via a shared continuation}
+
 Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a data
 structure that enforces linear runtime performance by guaranteeing no part of
 the matched expression will be examined more than once~\cite{maranget}. A
@@ -250,93 +256,41 @@ form of a value, it does not re-test it later with new information.
 Pattern matching tempts us with its desirable cost model, but challenging
 questions remain for the modern implementor of both a new and an existing
 programming language. How much work would it be to add binding or-patterns to
-GHC?\footnote{Non-binding or-patterns have existed in GHC only as of 2023.} How
-about nonlinear patterns? How much work would it be to add guards to OCaml? And
-finally: is it reasonable to assume that the implementor of a language will err
-and introduce an extension combination that makes pattern matching in the
-language unsound? 
+GHC? How about nonlinear patterns? How much work would it be to add guards to
+OCaml? And finally: is it reasonable to assume that the implementor of a
+language will err and introduce an extension combination that makes pattern
+matching in the language unsound? 
+
+\rab{SAZ: Is there such an example?}
 
 \rab{A lot of these above ideas are from people at ICFP, including SPJ. The
 presentation of them could use some work, I think- please help formulate.}
 
-These depressing questions motivate a somewhat hopeful one: what if we instead
-start with a new language and use equations from the start, and engineer the
-equations to be performant like pattern matching? 
+These questions motivate a somewhat hopeful one: what if we instead start with a
+new language and use equations from the start, and engineer the equations to be
+performant like pattern matching? 
 
-\section{Fast, Expressive Equations}
-\label{vminus}
-    Our answer to this question, and primary contribution, is a new core
-    language with the expressiveness of Verse and the cost model of pattern
-    matching. Being inspired by Verse but reduced to the absolute essence of
-    only decision-making, it is called~\VMinus (``V-minus''). 
-    
-    \VMinus has equations and choice, like~Verse, but it does not have multiple
-    results or backtracking. To eliminate multiple results, expressions
-    in~\VMinus evaluate to at most one result, and the logical "choice" operator
-    only~\it{guards} computation; it~is not a valid form of expression like in
-    Verse. To~eliminate backtracking, the compiler rejects a~\VMinus program
-    that would need to backtrack at runtime. To provide an efficient and
-    backtracking-free cost model to which~\VMinus can be compiled, we~introduce
-    a core language of decision trees,~\D, in Section~\ref{d}. 
+Our answer to this question, and primary contribution, is a new core language
+with decision-making expressiveness of equations and the cost model of pattern
+matching. Being inspired by Verse but reduced to the absolute essence of only
+decision-making, it is called~\VMinus (``V-minus''). 
 
-    \begin{figure}[H]
-      \scriptsize
-          \begin{center}
-            \begin{bnf}
-            $P$ :~\textsf{Programs} ::=
-            $\bracketed{d}$ : definition
-            ;;
-            $d$ :~\textsf{Definitions} ::=
-            | $\it{val}\; x\;~\it{=}\;~\expr$ : bind name to expression
-            ;;
-            $\expr$ :~\textsf{Expressions} ::=
-            | $\v$ : literal values 
-            | $x, y, z$ : names
-            | $\bf{if}\;~\left[\; G\;~\bracketed{\dbar\; G}\;~\right]\;~\bf{fi}$ : if-fi 
-            | $K~\bracketed{\expr}$ : value constructor application 
-            | $\expr[1]\;~\expr[2]$ : function application 
-            | $\lambda x.\;~\expr$ : lambda declaration 
-            ;;
-            $G$ :~\textsf{Guarded Expressions} ::=  
-            $[\vexists{\bracketed{x}}]~\bracketed{g}~\boldsymbol{\rightarrow}\expr$ : names, guards, and body
-            ;;
-            $g$ :~\textsf{Guards} ::=  
-            | $\expr$ : intermediate expression 
-            | $\expr[1] =~\expr[2]$ : equation 
-            | $ g~\bracketed{; g}~\choice~g~\bracketed{; g}$ : choice 
-            ;;
-            $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
-            | $\lambda x.\;~\expr$ : lambda value
-            ;;
-            \end{bnf}
-            \medskip
-          
-          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. 
-          \end{center}
-          % \Description{The concrete syntax of VMinus.}
-              \caption{\VMinus: Concrete syntax}
-              \label{fig:vmsyntax}
-              \end{figure}      
+\VMinus has equations and choice, like~Verse, but it does not have multiple
+results or backtracking. To eliminate multiple results, expressions
+in~\VMinus evaluate to at most one result, and the logical "choice" operator
+only~\it{guards} computation; it~is not a valid form of expression like in
+Verse. To~eliminate backtracking, the compiler rejects a~\VMinus program
+that would need to backtrack at runtime. To provide an efficient and
+backtracking-free cost model to which~\VMinus can be compiled, we~introduce
+a core language of decision trees,~\D, in Section~\ref{d}. 
 
-        \VMinus takes several key concepts from {\VC}---namely, equations and
-        choice---with several key modifications. Like~\VC,~\VMinus has
-        equations and choice, but unlike in~\VC, choice only guards computations, 
-        there are no multiple results, and all decision-making appears in the 
-        \iffibf construct, inspired by Dijkstra~\cite{dijkstra}. 
-
-        \subsection{Expressiveness}
-        \VMinus, like Verse, easily expresses all of the previous examples 
-        (Figure~\ref{fig:vminusfuncs}). Furthermore, 
-        \rab{Been suggested to say how \VMinus gives things like nonlinear patterns 
-        and others for free- agree? }
+\VMinus, like Verse, easily expresses all of the previous examples
+(Figure~\ref{fig:vminusfuncs}). Furthermore, \rab{Been suggested to say how
+\VMinus gives things like nonlinear patterns and others for free- agree? }
 
             \begin{figure}[ht] 
-              \tiny 
+              \scriptsize 
       \begin{minipage}[h]{0.54\linewidth}
-        % \vmlst 
-        % [numbers=none, basicstyle=\tiny, xleftmargin=.2em,
-        % showstringspaces=false,
-        % frame=single]
         \begin{verbatim}
 val exclaimTall = \sh.
   if E s. sh = Square s; s > 100 -> 
@@ -390,7 +344,59 @@ fun freeNames e =
   \label{fig:vminusfuncs}
     \end{figure}  
 
-\subsection{Formal Semantics of ${\VMinus}$}
+    
+    
+    \section{Fast, Expressive Equations}
+    \label{vminus}
+    Here we give our formal definition of \VMinus. 
+
+    \subsection{Formal Semantics of ${\VMinus}$}
+    
+    \begin{figure}[H]
+      \scriptsize
+          \begin{center}
+            \begin{bnf}
+            $P$ :~\textsf{Programs} ::=
+            $\bracketed{d}$ : definition
+            ;;
+            $d$ :~\textsf{Definitions} ::=
+            | $\it{val}\; x\;~\it{=}\;~\expr$ : bind name to expression
+            ;;
+            $\expr$ :~\textsf{Expressions} ::=
+            | $\v$ : literal values 
+            | $x, y, z$ : names
+            | $\bf{if}\;~\left[\; G\;~\bracketed{\dbar\; G}\;~\right]\;~\bf{fi}$ : if-fi 
+            | $K~\bracketed{\expr}$ : value constructor application 
+            | $\expr[1]\;~\expr[2]$ : function application 
+            ;;
+            $G$ :~\textsf{Guarded Expressions} ::=  
+            $[\vexists{\bracketed{x}}]~\bracketed{g}~\boldsymbol{\rightarrow}\expr$ : names, guards, and body
+            ;;
+            $g$ :~\textsf{Guards} ::=  
+            | $\expr$ : intermediate expression 
+            | $\expr[1] =~\expr[2]$ : equation 
+            | $ g~\bracketed{; g}~\choice~g~\bracketed{; g}$ : choice 
+            ;;
+            $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+            | $\lambda x.\;~\expr$ : lambda value
+            ;;
+            \end{bnf}
+            \medskip
+          
+          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. 
+          \end{center}
+          % \Description{The concrete syntax of VMinus.}
+              \caption{\VMinus: Concrete syntax}
+              \label{fig:vmsyntax}
+              \end{figure}      
+
+        % \VMinus takes several key concepts from {\VC}---namely, equations and
+        % choice---with several key modifications. Like~\VC,~\VMinus has
+        % equations and choice, but unlike in~\VC, choice only guards computations, 
+        % there are no multiple results, and all decision-making appears in the 
+        % \iffibf construct, inspired by Dijkstra~\cite{dijkstra}. 
+
+        
 
 
 \begin{table}
@@ -481,7 +487,7 @@ guards left over, the semantics gets stuck before code is executed.
 The environment $\rho$ maps from a name to a value {\v} or $\bot$. $\bot$ means
 a name has been introduced with the existential, $\exists$, but is not yet bound
 to a value. Given any such $\rho$, a guard~\g\ eithers refine $\rho$
-($\Rhoprime$) or is~\bf{rejected}. We use the metavariable $\dagger$ to
+($\Rhoprime$) or is~\bf{rejected}. We use the symbol $\dagger$ to
 represent rejection, and if any guard in a list is rejected, the entire list of
 guards is rejected.
 
