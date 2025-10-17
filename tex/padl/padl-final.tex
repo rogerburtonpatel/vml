@@ -1,5 +1,10 @@
+\PassOptionsToPackage{noabbrev,capitalize}{cleveref} % unclear where the load is
 \documentclass[runningheads]{llncs}
 \usepackage{vmlmacros}
+
+\renewcommand\nr[2][NR]{~\textsf{[#1: #2]}}
+
+% ow
 
 % for random stuff 
 \usepackage[T1]{fontenc}
@@ -24,6 +29,10 @@
 %\renewcommand\UrlFont{\color{blue}\rmfamily}
 %\urlstyle{rm}
 %
+
+\usepackage{cleveref} % load me last (as per doco)
+
+
 \begin{document}
 %
 \title{Never Going Back (tracking) Again: Equational Pattern Matching with Efficient Compilation}
@@ -92,14 +101,20 @@ In comparative examples,
 \section{Introduction}
 \label{pmandextensions}
 
-\subsection{Pattern Matching}
-Pattern matching is a beloved tool among functional programmers for examining
-and deconstructing data, but it cannot express certain common computations
-succinctly without~\it{extensions}. 
-Observe in
-Figures~\ref{fig:pmsideconditions}-\ref{fig:pmorpats} how several examples of
-common extensions to pattern matching mitigate verbosity in comparative
-examples. 
+%\subsection{Pattern Matching}
+When examining and deconstructing data, functional programmers
+love pattern matching:
+code is often admirably concise,
+and pattern matching compiles to efficient decision trees.
+But when expressing some common computations,
+pattern matching requires code that looks repetitive or redundant.
+To~eliminate the resulting verbosity, the designers of major languages like OCaml and
+Haskell have extended pattern matching;
+the most common extensions are
+\textit{side
+conditions}(cite), \textit{or-patterns}(cite), and \textit{pattern
+guards}(cite).
+Examples are shown in \crefrange{fig:pmsideconditions}{fig:pmorpats}.
 
 
 % --------------------------------------------
@@ -147,8 +162,8 @@ let exclaimTall sh =
 \caption*{OCaml with side conditions}
 \end{minipage}
 \caption{Comparing pattern matching with and without side conditions.}
-\end{figure}
 \label{fig:pmsideconditions}
+\end{figure}
 \begin{figure}[ht]
 \centering
 \begin{minipage}{0.47\linewidth}
@@ -184,8 +199,8 @@ tripleLookup rho x =
 \end{minipage}
 \caption{Comparing \texttt{tripleLookup} using pattern guards.}
 % \Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
-\end{figure}
 \label{fig:pmguards}
+\end{figure}
 \begin{figure}[h]
 \centering
 \begin{minipage}{0.45\linewidth}
@@ -212,49 +227,45 @@ freeNames : expr -> list string
     | Int _ | Bool _ | Float _ -> []
     | Local n | Global n -> [n]
     ... (* recursive cases *)
-  \end{verbatim}
+\end{verbatim}
 \caption*{OCaml using or-patterns}
 \end{minipage}
 \caption{Comparing pattern matching with and without or-patterns.}
-\end{figure}
 \label{fig:pmorpats}
+\end{figure}
 
-Naturally, designers of popular programming languages have introduced many such
-extensions, most commonly the exact ones from
-Figures~\ref{fig:pmsideconditions}-\ref{fig:pmorpats}: \textit{side
-conditions}(cite), \textit{or-patterns}(cite), and \textit{pattern
-guards}(cite). 
 
-But no popular programming language lets you write all three of the above
-programs, because none has all three of these extenisions: Haskell lacks
+But no popular programming language lets you write all three of the
+examples shown:
+% programs, because none has all three of these extenisions: 
+Haskell lacks
 (binding) or-patterns\footnote{Non-binding or-patterns have existed in GHC only
 as of 2023.}, OCaml lacks guards, other languages lack side conditions, and so
 on. 
-And there are the other extensons to pattern matching, like nonlinear
-patterns, that appear in neither Haskell nor ML. 
+And we~find the extension story somewhat unsatisfying:
+Even if one language had all three of the extensions used
+in \crefrange{fig:pmsideconditions}{fig:pmorpats},
+there are the other extensions, like nonlinear
+patterns, that appear in neither Haskell nor ML.\nr{OCaml?} 
+As~an alternative, we~show that the expressive power of 
+pattern matching, including all these extensions,
+can be provided by a design that uses \emph{equations}.
 
 
-We~find the extension story somewhat unsatisfying. 
-At the very least, we~want to
-be able to use pattern matching, with the extensions we~want, in a single
-language. 
-Or, we~want an alternative that gives me the expressive power of
-pattern matching with these extensions. 
-
-
-\subsection{Equations in Functional Logic Programming}
+%\subsection{Equations in Functional Logic Programming}
 
 \rab{TODO: Give example, explain notation: can copy, use just 1}
 
-An intriguing possibility for such an alternative is \textit{equations} in
-functional logic programming languages like Verse~\cite{verse}\footnote{The
-Verse Calculus, or \VC, is the heart of Verse, and so we use Verse and \VC
-somewhat interchangeably throughout this paper.}. 
-Equations are quite expressive on their own: each of the above examples is
-easily written using Verse equations with no code duplication, and encoding
-nonlinear patterns and even more expressive constructs using equations is quite
-easy (see section TODO LINK). 
-
+Our work is inspired by the effective use of equations in
+the functional logic programming language Verse,
+or rather, the Verse Calculus,~\VC~\cite{verse}.\nr{Don't use them interchangeably.  It's hard on the reader, to no benefit.}
+%\footnote{The
+%Verse Calculus, or \VC, is the heart of Verse, and so we use Verse and \VC
+%somewhat interchangeably throughout this paper.}. 
+Each of the examples in \crefrange{fig:pmsideconditions}{fig:pmorpats} is
+easily and concisely written using equations, and 
+nonlinear patterns (and even more expressive constructs) are also easily encoded
+(see section TODO LINK). 
 \rab{This wants an example to show Verse is expressive and briefly explain syntax.
  I'll put one here.}
 
