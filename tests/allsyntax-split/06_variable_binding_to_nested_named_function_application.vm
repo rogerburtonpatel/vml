@@ -1,0 +1,2 @@
+# Variable binding to nested named function application 
+ val napp = f (f x)

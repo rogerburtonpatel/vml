@@ -1,0 +1,4 @@
+# Can't unify x (K) with y (K K2)
+ val cantunify = if
+      E y. y = K2; x = K y -> x
+  fi

@@ -1,0 +1,136 @@
+#!/bin/bash
+#
+# Purpose: Compare interpreter vs. compiler output for VMinus programs.
+# Tests that either:
+#   (1) Both succeed and produce the same output, or
+#   (2) Both fail (nonzero exit code).
+#
+# If one fails but the other succeeds, the test fails.
+#
+
+# Script enhanced by AI. 
+
+BASEDIR=$DIRVML
+SRC=$DIRVML/src
+TESTDIR=$BASEDIR/tests/$(basename "$0")
+
+build() {
+    cd "$SRC" || exit 1
+
+    output=$(make 2>&1)
+    if [[ "$?" -ne 0 ]]; then
+        echo "$output"
+        echo "Exiting on compilation failure."
+        exit 1
+    fi
+}
+
+numtests=0
+numfail=0
+declare -a failed_tests
+
+run_one_test() {
+    local file=$1
+    numtests=$((numtests + 1))
+
+    # ---- Run interpreter ----
+    vminus_out=$(vminus "$file" 2>&1)
+    vminus_code=$?
+
+    # ---- Run compiler + VM separately ----
+    dtran_out=$(dtran vm-d "$file" 2>&1)
+    dtran_code=$?
+
+    if [[ $dtran_code -eq 0 ]]; then
+        d_out=$(echo "$dtran_out" | d 2>&1)
+        d_code=$?
+    else
+        # If dtran itself failed, don't run d
+        d_out=""
+        d_code=$dtran_code
+    fi
+
+    # Merge output for comparison
+    full_dtran_out="${dtran_out}${d_out:+$'\n'$d_out}"
+    full_dtran_code=$d_code
+
+    # ---- Evaluate result ----
+
+    # Case 1: both succeed — compare outputs
+    if [[ $vminus_code -eq 0 && $full_dtran_code -eq 0 ]]; then
+        if diff --color=always <(echo "$vminus_out") <(echo "$full_dtran_out") >/dev/null; then
+            echo "✅ Passed: $file"
+            result=0
+        else
+            echo "❌ Output mismatch: $file"
+            echo "--- vminus output ---"
+            echo "$vminus_out"
+            echo "--- dtran|d output ---"
+            echo "$full_dtran_out"
+            echo "--- diff ---"
+            diff --color=always <(echo "$vminus_out") <(echo "$full_dtran_out")
+            result=1
+        fi
+
+    # Case 2: both fail — treat as success
+    elif [[ $vminus_code -ne 0 && $full_dtran_code -ne 0 ]]; then
+        echo "✅ Both failed (as expected): $file"
+        result=0
+
+    # Case 3: one failed, the other succeeded — fail
+    else
+        echo "❌ Test failed: $file"
+        echo "--- vminus (exit $vminus_code) ---"
+        echo "$vminus_out"
+        echo "--- dtran (exit $dtran_code) ---"
+        echo "$dtran_out"
+        if [[ $dtran_code -eq 0 ]]; then
+            echo "--- d (exit $d_code) ---"
+            echo "$d_out"
+        fi
+        result=1
+    fi
+
+    if [[ $result -ne 0 ]]; then
+        numfail=$((numfail + 1))
+        failed_tests+=("$file")
+    fi
+}
+
+run_tests() {
+    shopt -s nullglob
+    for file in "$TESTDIR"/*.vm; do
+        run_one_test "$file"
+    done
+    shopt -u nullglob
+
+    echo
+    echo "========== SUMMARY =========="
+
+    if [[ "$numtests" -eq 0 ]]; then
+        >&2 echo "$(basename "$0"): No tests run. Check test directory."
+        exit 1
+    fi
+
+    if [[ "$numfail" -eq 0 ]]; then 
+        echo "All $numtests tests passed."
+    else 
+        numpassed=$((numtests - numfail))
+        echo "⚠️  $numpassed / $numtests tests passed."
+        echo
+        echo "Failed tests:"
+        for f in "${failed_tests[@]}"; do
+            echo "  - $f"
+        done
+        echo
+        echo "See above output for details."
+        exit 1
+    fi
+}
+
+main() {
+    build 
+    run_tests
+}
+
+main
