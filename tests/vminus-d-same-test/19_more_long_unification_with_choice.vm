@@ -34,15 +34,6 @@ val go_forth1 = if
  []  E fail. property = fail -> fail
  fi
 
-# Test binding names as patterns (THING FOR FREE)
-val k = K A B C 
-val check = if 
-    E x a b c. (k = K a b c; a = x | k = B) -> x
-fi  
-
-
-
-val ok = print check 
 
  val go_forth2 = if
      E x1 x x2 y x3. (property = Correct x1; x1 = x | property = Good_enough x2; x2 = x; y = x; x3 = y; x3 = true; x) -> Go_forth

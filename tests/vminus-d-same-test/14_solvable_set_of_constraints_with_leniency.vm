@@ -1,0 +1,4 @@
+#  Solvable set of constraints with leniency 
+ val can_solve_flipped = if
+   E x t. t = K; x = K t -> x
+ fi

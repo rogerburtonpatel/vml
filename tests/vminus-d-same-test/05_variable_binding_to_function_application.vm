@@ -1,0 +1,2 @@
+# Variable binding to function application
+ val app = f x
