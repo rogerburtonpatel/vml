@@ -1,0 +1,4 @@
+# circularity, fails 
+ val circular_with_binding = if
+     E x y. x = x; x = y -> x
+ fi

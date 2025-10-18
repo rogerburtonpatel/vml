@@ -221,7 +221,8 @@ structure VMinus :> VMINUS
     C.NAME n => member n predefs orelse 
                 if not (rho binds n)
                 then 
-                (dumpctx rho;
+                (
+                  (* dumpctx rho; *)
                   raise C.NameNotBound n )
                 else n exists_in rho
   | C.LITERAL (C.LAMBDA (n, captured, body)) =>
@@ -343,7 +344,8 @@ structure VMinus :> VMINUS
                         val rho' = (bind n v_arg rho <+> embed captured)
                     in eval rho' b
                     end
-                 | _ => raise Core.BadFunApp "attempted to apply non-function"))
+                 | _ => raise Core.BadFunApp 
+                 ("attempted to apply non-function " ^ expString fe ^ " to argument " ^ expString arg)))
                  
     | eval rho (I (IF_FI ((ns, (gs, rhs))::branches))) = 
         ( let val rho'  = introduceMany ns rho
@@ -376,8 +378,7 @@ structure VMinus :> VMINUS
           | EQN (x, e) => 
               let 
               (* debugging *)
-              
-              val _ = println 
+              (* val _ = println 
               ("Context:\n" ^
               ctxString rho ^
               "\nExp:\n" ^
@@ -385,7 +386,7 @@ structure VMinus :> VMINUS
               "\n")
               val _ = print ("name: " ^ x ^ ", exp: " ^ expString e ^ ".\n ")
               val _ = print ("x exists_in rho: " ^ (Bool.toString (x exists_in rho)) ^ 
-              ", currently_solvable rho e: " ^ (Bool.toString (currently_solvable rho e)) ^ ".\n ")
+              ", currently_solvable rho e: " ^ (Bool.toString (currently_solvable rho e)) ^ ".\n ") *)
               val rho' = 
                     case (x exists_in rho, currently_solvable rho e)
                       of (true, _) => 
@@ -412,12 +413,18 @@ structure VMinus :> VMINUS
                   end  
                  
       | _ => Impossible.impossible "runtime bug: running non-predef function"
+  
   fun def rho (DEF (n, e)) = 
     let val v = eval rho e
     in bind n v rho
     end
     handle Unsolvable s => 
-    (println ("Found unsolvable expression: \n" ^ s
+    (println ("Found unsolvable expression " ^ expString e ^ "\n Details: " ^ s
+    )
+    ; rho (* return unchanged environment *)
+     )
+     | Fail s => 
+    (println ("Failed on expression \"" ^ expString e ^ "\"\n Reason: \n" ^ s
     )
     ; rho (* return unchanged environment *)
      )
@@ -648,7 +655,8 @@ struct
     C.NAME n => member n predefs orelse 
                 if not (rho binds n)
                 then 
-                (dumpctx rho;
+                (
+                  (* dumpctx rho; *)
                   raise C.NameNotBound n )
                 else n exists_in rho
   | C.LITERAL (C.LAMBDA (n, captured, body)) =>

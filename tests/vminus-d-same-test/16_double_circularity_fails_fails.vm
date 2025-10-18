@@ -1,0 +1,4 @@
+# double circularity, fails 
+ val double_circular = if
+     E x y. x = x; y = x -> x
+ fi

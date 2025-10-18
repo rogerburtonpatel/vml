@@ -1,0 +1,2 @@
+# Variable binding to lambda, succeeds 
+ val f = \a.a

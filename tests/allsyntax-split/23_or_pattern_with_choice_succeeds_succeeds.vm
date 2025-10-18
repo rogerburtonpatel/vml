@@ -1,0 +1,5 @@
+# Or-pattern with choice, succeeds 
+val x = K 
+ val c1 = if
+     E f. (x = K | x = f) -> x
+ fi

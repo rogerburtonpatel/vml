@@ -1,0 +1,3 @@
+# Variable binding to constructor application, succeeds 
+ val x = K  
+ val z = K x

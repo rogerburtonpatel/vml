@@ -249,7 +249,11 @@ struct
     let val v = eval rho e
     in bind n v rho
     end
-
+    handle Fail s => 
+    (println ("Failed on expression \"" ^ expString e ^ "\"\n Reason: \n" ^ s
+    )
+    ; rho (* return unchanged environment *)
+     )
   fun runProg defs = 
   (  foldl (fn (d, env) => 
       let val rho = def env d

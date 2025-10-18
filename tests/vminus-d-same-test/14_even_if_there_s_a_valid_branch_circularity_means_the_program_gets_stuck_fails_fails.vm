@@ -1,0 +1,5 @@
+# Even if there's a valid branch, circularity means the program gets stuck, fails
+ val stuck_on_branch1 = if
+      E x y z x3 x4 x1 x2. x = K x1 x2; x1 = x; x2 = K x3 x4; x3 = y; x4 = z -> x
+  []  E a. x = a -> x # valid, but won't be hit, as branch 1 is stuck 
+  fi

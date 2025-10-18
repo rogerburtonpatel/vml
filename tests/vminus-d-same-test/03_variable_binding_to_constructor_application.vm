@@ -1,2 +1,0 @@
-# Variable binding to constructor application 
- val z = K x

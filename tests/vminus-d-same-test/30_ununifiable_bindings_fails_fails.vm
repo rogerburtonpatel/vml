@@ -1,0 +1,4 @@
+# Ununifiable bindings, fails
+ val ununifiable = if
+     E x1. x1 = true; x1 = false -> x
+ fi

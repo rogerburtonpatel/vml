@@ -1,4 +1,0 @@
-# Introduce but not bind: failure
- val x = if
-   E x. -> x
- fi

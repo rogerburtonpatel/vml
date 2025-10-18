@@ -7,10 +7,8 @@ BASES=all vminus pplus
 MLBS=$(BASES:%=%.mlb)
 CMS=$(BASES:%=%.cm)
 SRCS=$(shell echo *.sml)
-DML_SRCS=dml/example-dml.sml Unit.sml
-DML_CM=dml/dml.cm
 
-MAINS= dtran vminus pplus
+MAINS= dtran vminus pplus d
 
 RAWTARGETS=$(addprefix $(BIN)/,$(MAINS:%=%))
 

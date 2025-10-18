@@ -1,0 +1,6 @@
+# External unification under choice, succeeds 
+val property = Correct true
+ val go_forth2 = if
+     E x1 x x2 y x3. (property = Correct x1; x1 = x | property = Good_enough x2; x2 = x; y = x; x3 = y; x3 = true; x) -> Go_forth
+ []  E fail. property = fail -> fail
+ fi

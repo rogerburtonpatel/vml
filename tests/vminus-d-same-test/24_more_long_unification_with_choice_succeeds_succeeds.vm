@@ -1,0 +1,4 @@
+# More long unification with choice, succeeds 
+ val clong = if
+     E x y z x3 x4 x1 x2 f. (x = K x1 x2; x1 = x; x2 = K x3 x4; x3 = y; x4 = z | x = f) -> x
+ fi

@@ -1,0 +1,4 @@
+# Variable binding to function application, succeeds 
+ val f = \a.a
+ val x = K 
+ val app = f x

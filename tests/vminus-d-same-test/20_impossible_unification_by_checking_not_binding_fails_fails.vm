@@ -1,0 +1,6 @@
+# Impossible unification by checking, not binding, fails 
+ val x = K 
+ val y = K2 
+ val cantunify = if
+      x = y -> x
+  fi

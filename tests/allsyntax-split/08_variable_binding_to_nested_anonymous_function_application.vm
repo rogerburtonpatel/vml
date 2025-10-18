@@ -1,2 +1,0 @@
-# Variable binding to nested anonymous function application 
- val nlapp = (\y. y) (\y. y)

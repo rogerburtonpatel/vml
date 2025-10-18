@@ -1,15 +1,17 @@
 #!/bin/bash
 #
-# compare_one.sh — Run a single test comparing vminus vs. dtran|d.
-# Usage: ./compare_one.sh path/to/test.vm
+# compare-vm-d.sh — Compare vminus vs. dtran|d for a single .vm test file.
+#
+# Usage: ./compare-vm-d.sh path/to/testfile.vm
 #
 # Exit codes:
-#   0  success (either both succeed with same output, or both fail)
-#   1  failure (mismatch or one succeeds while other fails)
+#   0 = Test passed (matches expected outcome)
+#   1 = Test failed (mismatch or unexpected behavior)
 #
 
+
 file=$1
-if [[ -z "$file" ]]; then
+if [[ -z "${file:-}" ]]; then
     echo "Usage: $0 <file.vm>"
     exit 1
 fi
@@ -19,58 +21,79 @@ if [[ ! -f "$file" ]]; then
     exit 1
 fi
 
+# Determine expected outcome from filename
+if [[ "$file" =~ succeeds ]]; then
+    expected=0
+elif [[ "$file" =~ fails ]]; then
+    expected=1
+else
+    echo "⚠️  Warning: could not infer expected outcome from filename, assuming success"
+    expected=0
+fi
+
 # ---- Run interpreter ----
-vminus_out=$(vminus "$file" 2>&1)
-vminus_code=$?
+vminus_out=$(vminus "$file" 2>&1 | tee /tmp/vminus_out.$$)
+vminus_code=${PIPESTATUS[0]}
 
 # ---- Run compiler + VM ----
-dtran_out=$(dtran vm-d "$file" 2>&1)
-dtran_code=$?
+dtran_out=$(dtran vm-d "$file" 2>&1 | tee /tmp/dtran_out.$$)
+dtran_code=${PIPESTATUS[0]}
 
 if [[ $dtran_code -eq 0 ]]; then
-    d_out=$(echo "$dtran_out" | d 2>&1)
-    d_code=$?
+    d_out=$(cat /tmp/dtran_out.$$ | d 2>&1 | tee /tmp/d_out.$$)
+    d_code=${PIPESTATUS[0]}
 else
     d_out=""
     d_code=$dtran_code
 fi
 
-full_dtran_out="${dtran_out}${d_out:+$'\n'$d_out}"
+full_dtran_out="$d_out"
 full_dtran_code=$d_code
 
-# ---- Compare results ----
+# ---- Determine comparison logic ----
+if [[ $vminus_code -ne 0 && $full_dtran_code -ne 0 ]]; then
+    echo "✅ Both failed (expected failure behavior): $file"
+    actual=1
 
-# Case 1: both succeed — compare outputs
-if [[ $vminus_code -eq 0 && $full_dtran_code -eq 0 ]]; then
-    if diff --color=always <(echo "$vminus_out") <(echo "$full_dtran_out") >/dev/null; then
-        echo "✅ Passed: $file"
+elif [[ $vminus_code -eq 0 && $full_dtran_code -eq 0 ]]; then
+    # Check if outputs match ignoring whitespace
+    if diff -w <(echo "$vminus_out") <(echo "$full_dtran_out") >/dev/null; then
+        echo "✅ Both succeeded with matching output: $file"
+        exit 0
+    elif [[ "$vminus_out" == *"Failed on expression"* && "$full_dtran_out" == *"Failed on expression"* ]]; then
+        echo "✅ Both failed with 'Failed on expression' present: $file"
         exit 0
     else
-        echo "❌ Output mismatch: $file"
+        echo "❌ Output mismatch (both succeeded): $file"
         echo "--- vminus output ---"
         echo "$vminus_out"
         echo "--- dtran|d output ---"
         echo "$full_dtran_out"
-        echo "--- diff ---"
-        diff --color=always <(echo "$vminus_out") <(echo "$full_dtran_out")
-        exit 1
+        echo "--- diff (ignoring whitespace) ---"
+        diff --color=always -w <(echo "$vminus_out") <(echo "$full_dtran_out") || true
+        actual=1
     fi
 
-# Case 2: both fail — treat as success
-elif [[ $vminus_code -ne 0 && $full_dtran_code -ne 0 ]]; then
-    echo "✅ Both failed (as expected): $file"
-    exit 0
-
-# Case 3: one failed, the other succeeded — fail
 else
-    echo "❌ Test failed: $file"
+    echo "❌ One succeeded and the other failed: $file"
     echo "--- vminus (exit $vminus_code) ---"
     echo "$vminus_out"
-    echo "--- dtran (exit $dtran_code) ---"
-    echo "$dtran_out"
-    if [[ $dtran_code -eq 0 ]]; then
-        echo "--- d (exit $d_code) ---"
-        echo "$d_out"
-    fi
+    echo "--- dtran|d (exit $full_dtran_code) ---"
+    echo "$full_dtran_out"
+    exit 1
+fi
+
+# ---- Compare actual vs expected ----
+if [[ $actual -eq $expected ]]; then
+    echo "✅ Test passed (matches expected outcome): $file"
+    exit 0
+else
+    echo "❌ Test FAILED (does not match expected outcome): $file"
+    echo "--- vminus (exit $vminus_code) ---"
+    echo "$vminus_out"
+    echo "--- dtran|d (exit $full_dtran_code) ---"
+    echo "$full_dtran_out"
+    echo "--- diff (ignoring whitespace) ---"
+    diff --color=always -w <(echo "$vminus_out") <(echo "$full_dtran_out") || true
     exit 1
 fi

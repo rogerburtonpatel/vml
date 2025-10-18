@@ -1,0 +1,4 @@
+# Circular dependency: unsolvable, fails  
+ val x = if
+   E x. x = x -> x
+ fi

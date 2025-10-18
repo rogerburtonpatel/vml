@@ -8,74 +8,92 @@
 # If one fails but the other succeeds, the test fails.
 #
 
-# Script enhanced by AI. 
+# Script enhanced by AI.
+
+set -euo pipefail
 
 BASEDIR=$DIRVML
 SRC=$DIRVML/src
 TESTDIR=$BASEDIR/tests/$(basename "$0")
 
 build() {
+    echo "=== Building sources in $SRC ==="
     cd "$SRC" || exit 1
 
-    output=$(make 2>&1)
-    if [[ "$?" -ne 0 ]]; then
-        echo "$output"
-        echo "Exiting on compilation failure."
+    if ! make; then
+        echo "❌ Exiting on compilation failure."
         exit 1
     fi
+    echo "✅ Build succeeded."
+    echo
 }
 
 numtests=0
 numfail=0
+numpass=0
 declare -a failed_tests
 
 run_one_test() {
     local file=$1
     numtests=$((numtests + 1))
 
-    compare-vm-d "$file"
+    # Run compare-vm-d with live output
+    set +e
+    output=$(compare-vm-d "$file" 2>&1)
     result=$?
+    set -e
+
+    echo "$output"
+    echo "-----------------------------------"
 
     if [[ $result -ne 0 ]]; then
-        numfail=$((numfail + 1))
+        echo "❌ Test FAILED: $file"
+        echo
         failed_tests+=("$file")
+        numfail=$((numfail + 1))
+    else
+        echo "✅ Test PASSED: $file"
+        numpass=$((numpass + 1))
     fi
-}
 
+    echo
+}
 
 run_tests() {
     shopt -s nullglob
-    for file in "$TESTDIR"/*.vm; do
-        run_one_test "$file"
-    done
+    local files=("$TESTDIR"/*.vm)
     shopt -u nullglob
 
-    echo
-    echo "========== SUMMARY =========="
-
-    if [[ "$numtests" -eq 0 ]]; then
-        >&2 echo "$(basename "$0"): No tests run. Check test directory."
+    if [[ ${#files[@]} -eq 0 ]]; then
+        >&2 echo "$(basename "$0"): No tests found in $TESTDIR"
         exit 1
     fi
 
-    if [[ "$numfail" -eq 0 ]]; then 
-        echo "All $numtests tests passed."
-    else 
-        numpassed=$((numtests - numfail))
-        echo "⚠️  $numpassed / $numtests tests passed."
-        echo
-        echo "Failed tests:"
+    for file in "${files[@]}"; do
+        run_one_test "$file"
+    done
+
+    echo
+    echo "========== SUMMARY =========="
+    echo "Total tests: $numtests"
+    echo "Passed:      $numpass"
+    echo "Failed:      $numfail"
+    echo
+
+    if [[ $numfail -gt 0 ]]; then
+        echo "❌ Some tests failed:"
         for f in "${failed_tests[@]}"; do
             echo "  - $f"
         done
-        echo
-        echo "See above output for details."
         exit 1
+    else
+        echo "✅ All tests passed successfully."
+        exit 0
     fi
 }
 
 main() {
-    build 
+    build
     run_tests
 }
 

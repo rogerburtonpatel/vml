@@ -1,0 +1,4 @@
+# Variable binding to nested named function application, succeeds 
+ val f = \a. a 
+ val x = K 
+ val napp = f (f x)

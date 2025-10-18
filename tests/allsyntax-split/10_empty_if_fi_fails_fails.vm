@@ -1,0 +1,4 @@
+# Empty if-fi, fails 
+ val x = if
+ 
+ fi

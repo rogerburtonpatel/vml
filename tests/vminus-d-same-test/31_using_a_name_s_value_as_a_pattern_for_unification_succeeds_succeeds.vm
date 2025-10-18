@@ -1,0 +1,5 @@
+# Using a name's value as a 'pattern' for unification, succeeds
+val k = K A B C 
+val check = if 
+    E x a b c. (k = K a b c; a = x | k = B) -> x
+fi

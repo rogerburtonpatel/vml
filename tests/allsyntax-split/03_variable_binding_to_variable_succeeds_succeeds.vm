@@ -1,0 +1,3 @@
+# Variable binding to variable, succeeds 
+ val x = K 
+ val y = x

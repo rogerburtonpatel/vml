@@ -1,6 +1,0 @@
-# Unification by checking, not binding 
- val x = K 
-
- val x = if
-     x = K -> x
- fi

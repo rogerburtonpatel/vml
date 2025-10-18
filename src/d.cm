@@ -25,5 +25,5 @@ group is
   d-lex.sml
   d-parse.sml
 
-  (* d-main.sml *)
+  d-main.sml 
   

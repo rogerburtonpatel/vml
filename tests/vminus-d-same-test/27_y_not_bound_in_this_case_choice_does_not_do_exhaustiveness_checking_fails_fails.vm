@@ -1,0 +1,6 @@
+# y not bound in this case; choice does not do exhaustiveness checking, fails
+ val property = Correct true
+
+ val fail_nonbinding = if
+     E x y. (property = Correct x | property = Good_enough y) -> succeed y
+ fi

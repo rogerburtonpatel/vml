@@ -1,0 +1,4 @@
+# Variable binding to nested constructor application, succeeds 
+ val x = K 
+ val y = x
+ val ncapp = K x (K y)

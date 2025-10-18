@@ -1,0 +1,6 @@
+# simple length, succeeds 
+val len = \xs.  
+    if xs = NIL; x = K1 -> ZERO
+     [] E y ys. xs = CONS y ys -> INDUCT
+     [] xs = NIL; x = K -> OTHER 
+    fi
