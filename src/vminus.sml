@@ -346,9 +346,11 @@ structure VMinus :> VMINUS
           end 
   and runpredef which (rho, arg) = 
     case which of 
-      "print" => ( println (C.valString expString (eval rho arg)) 
-                  ; C.VCON (C.K "unit", [])
-                 )
+      "print" => let val v = eval rho arg in  
+                  println (C.valString expString v) 
+                  ; v (* print returns value printed *)
+                  end  
+                 
       | _ => Impossible.impossible "runtime bug: running non-predef function"
   fun def rho (DEF (n, e)) = 
     let val v = eval rho e
