@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # 
 # Purpose: tests all vml code based on testing files in bin
 # 
@@ -24,13 +24,12 @@ build ()
 {
     cd "$BASEDIR/src/"
     echo "Compiling..."
-    output=`make $2 2>&1`
+    output=`make $1 2>&1`
     if [[ "$?" -ne "0" ]]; then
         echo $output
         echo "Exiting on compilation failure."
         exit 1
     fi
-
 }
 
 update_failure () { 
@@ -73,7 +72,7 @@ See above output for details."
 
 main ()
 {
-    build
+    build all
     runtests
 }
 
