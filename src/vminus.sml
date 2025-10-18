@@ -122,6 +122,15 @@ structure VMinus :> VMINUS
 
   (* for debugging *)
   fun println s = print (s ^ "\n")
+  
+  fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
+  fun optValString v = optString (C.valString expString) v
+
+  fun ctxString ctx = Env.toString optValString ctx
+  val dumpctx = println o ctxString
+
+
   fun optValString v = optString (C.valString expString) v
 
   fun nub xs = (Set.elems o Set.fromList) xs
@@ -152,10 +161,68 @@ structure VMinus :> VMINUS
 
   fun makeKnown x rho = (bind x (C.VCON (C.K "Dummy", [])) rho)
 
+  (* Language predefined functions *)
+  val predefs = ["print"]
+
+(* unify binds a value to an expression that may contain unknown names, or
+   fails. *)
+  fun unify rho ((v as C.VCON (C.K vc, vs)), (C ce))  = 
+    let fun fail () = 
+        raise Fail ( "failed attempting to unify incompatible values " 
+                          ^ valString v ^ " and " ^ expString (C ce)) 
+    in 
+    (case ce of 
+      C.LITERAL v' =>  
+        if not (eqval (v, v')) 
+        then raise Fail ( "failed attempting to unify incompatible values " 
+                          ^ valString v ^ " and " ^ expString (C ce)) 
+        else empty
+    | C.NAME n     => 
+      if n exists_in rho 
+      then if not (eqval (lookupv n rho, v)) 
+            then raise Fail ( "failed attempting to unify incompatible values " 
+                          ^ valString v ^ " and " ^ expString (C ce)) 
+            else empty
+      else bind n v empty
+    | C.VCONAPP (C.K vc', es) => 
+        if vc <> vc' orelse length es <> length vs 
+        then raise Fail ( "failed attempting to unify incompatible values " 
+                          ^ valString v ^ " and " ^ expString (C ce)) 
+        else unifyMany rho es vs
+    | e as C.LAMBDAEXP _  => 
+        raise Unsolvable ("can't unify any value (" 
+                              ^ valString v ^ ") with a lambda (" 
+                              ^ Core.expString expString e ^ ")")
+    | e as C.FUNAPP    _  => 
+        raise Unsolvable ("can't unify any value (" 
+                            ^ valString v ^ ") with a function application (" 
+                            ^ Core.expString expString e ^ ") that has " 
+                            ^ "unbound names"))
+    end 
+      | unify rho (v, (if_fi as I _))        = 
+      raise Unsolvable ("can't unify any value (" 
+                            ^ valString v ^ ") with an if-fi (" 
+                            ^ expString if_fi ^ ") that has " 
+                            ^ "unbound names")
+      | unify rho ((v as C.LAMBDA _), e) =           
+          raise Unsolvable ("can't unify any value (" 
+                              ^ valString v ^ ") with a lambda (" 
+                              ^ expString e ^ ")")
+  and unifyMany rho es vs = 
+    foldr (fn ((ex, vl), rho') => 
+                        let val rho'' = unify rho' (vl, ex) 
+                        in (lvarEnvMerge rho'' rho') 
+                        end)
+                  rho (ListPair.zip (es, vs))
+
+
   fun currently_solvable rho (C ce) = 
     (case ce of 
-    C.NAME n => if not (rho binds n)
-                then raise C.NameNotBound n 
+    C.NAME n => member n predefs orelse 
+                if not (rho binds n)
+                then 
+                (dumpctx rho;
+                  raise C.NameNotBound n )
                 else n exists_in rho
   | C.LITERAL (C.LAMBDA (n, captured, body)) =>
         currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
@@ -172,19 +239,46 @@ structure VMinus :> VMINUS
     | val_solvable rho (C.VCON (vc, vs)) = List.all (val_solvable rho) vs
   and guard_solvable rho g = 
         case g of CONDITION e => currently_solvable rho e  
-                | EQN (x, e) => x exists_in rho orelse currently_solvable rho e
-                | CHOICE (gs1, gs2) => List.all (guard_solvable rho) gs1 
-                                        orelse List.all (guard_solvable rho) gs2
+                | EQN (x, e) =>                 
+                ( 
+                  (* dumpctx rho;
+                  println ("x : " ^ x ^ " e: " ^ expString e);
+                  println (Bool.toString (x exists_in rho orelse currently_solvable rho e)); *)
+                  x exists_in rho orelse currently_solvable rho e)
+                | CHOICE (gs1, gs2) => 
+                (* hack: use branch_currently_solvable to look at lists of
+                          guards. the function needs an expression on the right
+                          hand side, so we give it a trivially-solvable one. *)
+                let val trivial = C (C.LITERAL (C.VCON (C.K "OK", [])))
+                  (* val _ = print ("gs1: " ^ Bool.toString (branch_currently_solvable rho ([], (gs1, trivial))) ^ "\n")
+                  val _ = print ("gs2: " ^ Bool.toString (branch_currently_solvable rho ([], (gs2, trivial))) ^ "\n") *)
+
+                in 
+                       branch_currently_solvable rho ([], (gs1, trivial))
+                orelse branch_currently_solvable rho ([], (gs2, trivial))
+                end
   and tryfindorder rho made_progress [] [] = (rho, [])
     | tryfindorder rho made_progress stuck [] = 
       if made_progress 
       then tryfindorder rho false [] stuck
       else raise Unsolvable "guards cannot be sorted"
     | tryfindorder rho made_progress stuck (g::gs) = 
-      (case g of EQN (x, _) => 
-        if guard_solvable rho g 
-        then tryfindorder (makeKnown x rho) true stuck gs
-        else tryfindorder rho made_progress (g::stuck) gs  
+      (case g of EQN (x, e) => 
+        (
+          case (x exists_in rho, currently_solvable rho e)
+                      of (true, _) => 
+                      (let val extended = unify rho (lookupv x rho, e)
+                          (* val _ = print ("extended: " ^ ctxString extended ^ "\n") *)
+                          in 
+                          (* unification succeeded: move forward with bindings *)
+                          tryfindorder (rho <+> extended) true stuck gs 
+                          end 
+                          handle Unsolvable _ => tryfindorder rho made_progress (g::stuck) gs)
+                          (* unification failed: still stuck *)
+                      | (false, true) => 
+                          tryfindorder (makeKnown x rho) true stuck gs
+                      | (false, false) => tryfindorder rho made_progress (g::stuck) gs
+        )
        | CONDITION e => 
         if guard_solvable rho g 
         then tryfindorder rho true stuck gs
@@ -208,56 +302,6 @@ structure VMinus :> VMINUS
       end 
 
 
-(* unify binds a value to an expression that may contain unknown names, or
-   fails. *)
-  fun unify rho ((v as C.VCON (C.K vc, vs)), (C ce))  = 
-      let fun fail () = 
-          raise Fail ( "failed attempting to unify incompatible values " 
-                            ^ valString v ^ " and " ^ expString (C ce)) 
-      in 
-      (case ce of 
-        C.LITERAL v' =>  
-          if not (eqval (v, v')) 
-          then raise Fail ( "failed attempting to unify incompatible values " 
-                            ^ valString v ^ " and " ^ expString (C ce)) 
-          else empty
-      | C.NAME n     => 
-        if n exists_in rho 
-        then if not (eqval (lookupv n rho, v)) 
-             then raise Fail ( "failed attempting to unify incompatible values " 
-                            ^ valString v ^ " and " ^ expString (C ce)) 
-             else empty
-        else bind n v empty
-      | C.VCONAPP (C.K vc', es) => 
-          if vc <> vc' orelse length es <> length vs 
-          then raise Fail ( "failed attempting tjo unify incompatible values " 
-                            ^ valString v ^ " and " ^ expString (C ce)) 
-          else unifyMany rho es vs
-      | e as C.LAMBDAEXP _  => 
-          raise Unsolvable ("can't unify any value (" 
-                               ^ valString v ^ ") with a lambda (" 
-                               ^ Core.expString expString e ^ ")")
-      | e as C.FUNAPP    _  => 
-          raise Unsolvable ("can't unify any value (" 
-                              ^ valString v ^ ") with a function application (" 
-                              ^ Core.expString expString e ^ ") that has " 
-                              ^ "unbound names"))
-      end 
-        | unify rho (v, (if_fi as I _))        = 
-       raise Unsolvable ("can't unify any value (" 
-                              ^ valString v ^ ") with an if-fi (" 
-                              ^ expString if_fi ^ ") that has " 
-                              ^ "unbound names")
-        | unify rho ((v as C.LAMBDA _), e) =           
-            raise Unsolvable ("can't unify any value (" 
-                               ^ valString v ^ ") with a lambda (" 
-                               ^ expString e ^ ")")
-  and unifyMany rho es vs = 
-    foldr (fn ((ex, vl), rho') => 
-                        let val rho'' = unify rho' (vl, ex) 
-                        in (lvarEnvMerge rho'' rho') 
-                        end)
-                  rho (ListPair.zip (es, vs))
 
 
   fun find_or_die n rho = 
@@ -271,7 +315,6 @@ structure VMinus :> VMINUS
   in findSplit' [] xs
   end 
 
-  val predefs = ["print"]
 
   fun embed rho = Env.map SOME rho
   fun project rho = Env.mapPartial (fn x => x) rho
@@ -319,23 +362,40 @@ structure VMinus :> VMINUS
   fun pickAnEquation gs = case findSplit (guard_solvable rho) gs of SOME r => r
   | NONE => raise Unsolvable ("cannot make progress on guards (" 
                                ^ String.concatWith ";" (map guardString gs)
-                               ^ ") because the program could not pick a "
+                               ^ ") \n in context "
+                               ^ ctxString rho ^ "\n"
+                               ^ "because the program could not pick a "
                                ^ "solvable guard from among them.")
         
         val (g, gs) = pickAnEquation guards
 
         in (case g 
             of CONDITION e =>
-                (ignore (eval rho e) ; 
+                (ignore (eval rho e) ; (* can raise a failure exception, halting this branch*)
                   solve rho gs)
           | EQN (x, e) => 
-              let val rho' = 
+              let 
+              (* debugging *)
+              
+              val _ = println 
+              ("Context:\n" ^
+              ctxString rho ^
+              "\nExp:\n" ^
+              expString e ^
+              "\n")
+              val _ = print ("name: " ^ x ^ ", exp: " ^ expString e ^ ".\n ")
+              val _ = print ("x exists_in rho: " ^ (Bool.toString (x exists_in rho)) ^ 
+              ", currently_solvable rho e: " ^ (Bool.toString (currently_solvable rho e)) ^ ".\n ")
+              val rho' = 
                     case (x exists_in rho, currently_solvable rho e)
                       of (true, _) => 
-                          unify rho (lookupv x rho, e)
+                      let val extended = unify rho (lookupv x rho, e)
+                          (* val _ = print ("extended: " ^ ctxString extended ^ "\n") *)
+                          in rho <+> extended
+                          end 
                       | (false, true) => 
                           bind x (eval rho e) rho
-                      | (false, false) => Impossible.impossible "no progress"
+                      | (false, false) => Impossible.impossible "Compiler bug: no progress"
               in solve rho' gs
               end 
           | CHOICE (gs1, gs2) => 
@@ -356,6 +416,11 @@ structure VMinus :> VMINUS
     let val v = eval rho e
     in bind n v rho
     end
+    handle Unsolvable s => 
+    (println ("Found unsolvable expression: \n" ^ s
+    )
+    ; rho (* return unchanged environment *)
+     )
 
   fun runProg defs = 
   (  foldl (fn (d, env) => 
@@ -364,7 +429,6 @@ structure VMinus :> VMINUS
       end) empty defs;
       ()
   )
-
 
 end
 
@@ -486,6 +550,16 @@ struct
 
   exception Unsolvable of string 
 
+(* for debugging *)
+  fun println s = print (s ^ "\n")
+  
+  fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
+  fun optValString v = optString (C.valString expString) v
+
+  fun ctxString ctx = Env.toString optValString ctx
+  val dumpctx = println o ctxString
+
   fun nub xs = (Set.elems o Set.fromList) xs
   fun containsDuplicates xs = length xs <> length (nub xs)
   exception DuplicateNames of name list
@@ -506,13 +580,76 @@ struct
      else foldl (fn (n, env) => introduce n env) rho ns
   end
 
+  fun lvarEnvMerge (rho1 : lvar_env) (rho2 : lvar_env) = 
+  Env.merge (fn (SOME x, SOME y)   => SOME x
+              | (NONE,   SOME x)   => SOME x
+              | (SOME x, NONE)     => SOME x
+              | (NONE,   NONE)     => NONE) (rho1, rho2)
+
+
   fun makeKnown x rho = (bind x (C.VCON (C.K "Dummy", [])) rho)
 
+  fun eqval (e1, e2) = Core.eqval (e1, e2)
+
+  (* Language predefined functions *)
+  val predefs = ["print"]
+
+    fun unify rho ((v as C.VCON (C.K vc, vs)), (C ce))  = 
+      let fun fail () = 
+          raise Fail ( "failed attempting to unify incompatible values " 
+                            ^ valString v ^ " and " ^ expString (C ce)) 
+      in 
+      (case ce of 
+        C.LITERAL v' =>  
+          if not (eqval (v, v')) 
+          then raise Fail ( "failed attempting to unify incompatible values " 
+                            ^ valString v ^ " and " ^ expString (C ce)) 
+          else empty
+      | C.NAME n     => 
+        if n exists_in rho 
+        then if not (eqval (lookupv n rho, v)) 
+             then raise Fail ( "failed attempting to unify incompatible values " 
+                            ^ valString v ^ " and " ^ expString (C ce)) 
+             else empty
+        else bind n v empty
+      | C.VCONAPP (C.K vc', es) => 
+          if vc <> vc' orelse length es <> length vs 
+          then raise Fail ( "failed attempting to unify incompatible values " 
+                            ^ valString v ^ " and " ^ expString (C ce)) 
+          else unifyMany rho es vs
+      | e as C.LAMBDAEXP _  => 
+          raise Unsolvable ("can't unify any value (" 
+                               ^ valString v ^ ") with a lambda (" 
+                               ^ Core.expString expString e ^ ")")
+      | e as C.FUNAPP    _  => 
+          raise Unsolvable ("can't unify any value (" 
+                              ^ valString v ^ ") with a function application (" 
+                              ^ Core.expString expString e ^ ") that has " 
+                              ^ "unbound names"))
+      end 
+        | unify rho (v, (if_fi as I _))        = 
+       raise Unsolvable ("can't unify any value (" 
+                              ^ valString v ^ ") with an if-fi (" 
+                              ^ expString if_fi ^ ") that has " 
+                              ^ "unbound names")
+        | unify rho ((v as C.LAMBDA _), e) =           
+            raise Unsolvable ("can't unify any value (" 
+                               ^ valString v ^ ") with a lambda (" 
+                               ^ expString e ^ ")")
+  and unifyMany rho es vs = 
+    foldr (fn ((ex, vl), rho') => 
+                        let val rho'' = unify rho' (vl, ex) 
+                        in (lvarEnvMerge rho'' rho') 
+                        end)
+                  rho (ListPair.zip (es, vs))
 
   fun currently_solvable rho (C ce) = 
     (case ce of 
-    C.NAME n => if not (rho binds n)
-                then raise C.NameNotBound n 
+    C.NAME n => member n predefs orelse 
+                if not (rho binds n)
+                then 
+                (dumpctx rho;
+                  raise C.NameNotBound n )
                 else n exists_in rho
   | C.LITERAL (C.LAMBDA (n, captured, body)) =>
         currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
@@ -524,22 +661,39 @@ struct
     | currently_solvable rho (I (IF_FI [])) = true
     | currently_solvable rho (I (IF_FI branches)) =  
         List.all (branch_currently_solvable rho) branches
-    and val_solvable rho (C.LAMBDA (n, captured, body)) = 
+  and val_solvable rho (C.LAMBDA (n, captured, body)) = 
         currently_solvable (makeKnown n (rho <+> (Env.map SOME captured))) body
-  | val_solvable rho (C.VCON (vc, vs)) = List.all (val_solvable rho) vs
+    | val_solvable rho (C.VCON (vc, vs)) = List.all (val_solvable rho) vs
   and guard_solvable rho g = 
         case g of CONDITION e => currently_solvable rho e  
-                | EQN (x, e) => x exists_in rho orelse currently_solvable rho e
+                | EQN (x, e) =>                 
+                ( 
+                  (* dumpctx rho;
+                  println ("x : " ^ x ^ " e: " ^ expString e);
+                  println (Bool.toString (x exists_in rho orelse currently_solvable rho e)); *)
+                  x exists_in rho orelse currently_solvable rho e)
   and tryfindorder rho made_progress [] [] = (rho, [])
     | tryfindorder rho made_progress stuck [] = 
       if made_progress 
       then tryfindorder rho false [] stuck
       else raise Unsolvable "guards cannot be sorted"
     | tryfindorder rho made_progress stuck (g::gs) = 
-      (case g of EQN (x, _) => 
-        if guard_solvable rho g 
-        then tryfindorder (makeKnown x rho) true stuck gs
-        else tryfindorder rho made_progress (g::stuck) gs  
+      (case g of EQN (x, e) => 
+        (
+          case (x exists_in rho, currently_solvable rho e)
+                      of (true, _) => 
+                      (let val extended = unify rho (lookupv x rho, e)
+                          (* val _ = print ("extended: " ^ ctxString extended ^ "\n") *)
+                          in 
+                          (* unification succeeded: move forward with bindings *)
+                          tryfindorder (rho <+> extended) true stuck gs 
+                          end 
+                          handle Unsolvable _ => tryfindorder rho made_progress (g::stuck) gs)
+                          (* unification failed: still stuck *)
+                      | (false, true) => 
+                          tryfindorder (makeKnown x rho) true stuck gs
+                      | (false, false) => tryfindorder rho made_progress (g::stuck) gs
+        )
        | CONDITION e => 
         if guard_solvable rho g 
         then tryfindorder rho true stuck gs
