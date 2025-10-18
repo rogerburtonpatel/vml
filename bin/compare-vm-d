@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+# compare_one.sh — Run a single test comparing vminus vs. dtran|d.
+# Usage: ./compare_one.sh path/to/test.vm
+#
+# Exit codes:
+#   0  success (either both succeed with same output, or both fail)
+#   1  failure (mismatch or one succeeds while other fails)
+#
+
+file=$1
+if [[ -z "$file" ]]; then
+    echo "Usage: $0 <file.vm>"
+    exit 1
+fi
+
+if [[ ! -f "$file" ]]; then
+    echo "Error: file not found: $file"
+    exit 1
+fi
+
+# ---- Run interpreter ----
+vminus_out=$(vminus "$file" 2>&1)
+vminus_code=$?
+
+# ---- Run compiler + VM ----
+dtran_out=$(dtran vm-d "$file" 2>&1)
+dtran_code=$?
+
+if [[ $dtran_code -eq 0 ]]; then
+    d_out=$(echo "$dtran_out" | d 2>&1)
+    d_code=$?
+else
+    d_out=""
+    d_code=$dtran_code
+fi
+
+full_dtran_out="${dtran_out}${d_out:+$'\n'$d_out}"
+full_dtran_code=$d_code
+
+# ---- Compare results ----
+
+# Case 1: both succeed — compare outputs
+if [[ $vminus_code -eq 0 && $full_dtran_code -eq 0 ]]; then
+    if diff --color=always <(echo "$vminus_out") <(echo "$full_dtran_out") >/dev/null; then
+        echo "✅ Passed: $file"
+        exit 0
+    else
+        echo "❌ Output mismatch: $file"
+        echo "--- vminus output ---"
+        echo "$vminus_out"
+        echo "--- dtran|d output ---"
+        echo "$full_dtran_out"
+        echo "--- diff ---"
+        diff --color=always <(echo "$vminus_out") <(echo "$full_dtran_out")
+        exit 1
+    fi
+
+# Case 2: both fail — treat as success
+elif [[ $vminus_code -ne 0 && $full_dtran_code -ne 0 ]]; then
+    echo "✅ Both failed (as expected): $file"
+    exit 0
+
+# Case 3: one failed, the other succeeded — fail
+else
+    echo "❌ Test failed: $file"
+    echo "--- vminus (exit $vminus_code) ---"
+    echo "$vminus_out"
+    echo "--- dtran (exit $dtran_code) ---"
+    echo "$dtran_out"
+    if [[ $dtran_code -eq 0 ]]; then
+        echo "--- d (exit $d_code) ---"
+        echo "$d_out"
+    fi
+    exit 1
+fi
