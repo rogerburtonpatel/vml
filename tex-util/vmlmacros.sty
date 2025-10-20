@@ -864,7 +864,7 @@
 
 \newcommand\vmsemantics{% 
 
-These judgement forms and rules are specific to \VMinus. 
+% These judgement forms and rules are specific to \VMinus. 
 
 \subsubsection{Judgement forms for \VMinus}
 
@@ -911,7 +911,7 @@ These judgement forms and rules are specific to \VMinus.
     {
     x \rm{ fresh}
     \\\\
-    \vmrung[envext=\bracketed{x \mapsto \bot},
+    \vmgs[envext=\bracketed{x \mapsto \bot},
           guards=\gseqgs{x = \expr[1] \cdot x = \expr[2]}]}}
     {\vmgs[guards=\gseqgs{\expr[1] = \expr[2]}]}
 \]
@@ -1349,21 +1349,21 @@ These judgement forms and rules are specific to \VMinus.
 \newcommand\compileletunless {
 \[
 \inferrule*[Right=\textsc{ (Let-Unless) }]
-    {\rho(x) = unknown \and \knownj[exp=\expr]
+    {\ctx(x) = unknown \and \knownj[exp=\expr]
     \\\\
-    \compilebig[ctxext={  + \bracketed{x \mapsto known}}, iffi=\subst{\expr'}{x}{\expr}, compiled=\dt_{1}]
+    \compilebig[ctxext={  + \bracketed{x \mapsto known}}, iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
     \\\\
-    \compilebig[iffi=\subst{\expr'}{\fail}{\expr}, compiled=\dt_{2}]
+    \compilebig[iffi=\subst{\expr}{\fail}{\expr'}, compiled=\dt_{2}]
     }
     {\compile[eas={\expr \text{ as }}, guard={x = e}, 
-              compiled={let\; x = \expr\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
+              compiled={let\; x = \expr'\; in \; \dt_{1}\; unless\; \fail\; \Rightarrow\; \dt_{2}}]}
 \]
 }
 
 \newcommand\compileletif {
 \[
 \inferrule*[Right=\textsc{ (Let-If) }]
-    {\rho(x) = known \and \knownj[exp=\expr'] 
+    {\ctx(x) = known \and \knownj[exp=\expr'] 
     \\\\
     \compilebig[iffi=\subst{\expr}{x}{\expr'}, compiled=\dt_{1}]
     \\\\
@@ -1399,7 +1399,7 @@ are applied by the compiler.
 \]
 
 If the compiler finds one or more names introduced by $\exists$, it strips a
-name from the $\exists$ list and adds it to~\ctx as~\it{unknown}. This is the
+name from the $\exists$ list and adds it to~\ctx~as~\it{unknown}. This is the
 rule that grows the context with new names, along with lambda, which 
 introduces its argument as \it{known}. 
 
@@ -1424,7 +1424,7 @@ a~\it{match} node containing~\expr.
 
 \[
 \inferrule*[Left=\textsc{ (Test) }]
-    {\rho(x) = known
+    {\ctx(x) = known
     \\\\
     \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
              iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
@@ -1516,7 +1516,7 @@ containing it.
 
 \[
 \inferrule*[Left=\textsc{ (Test) }]
-    {\rho(x) = known
+    {\ctx(x) = known
     \\\\
     \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
              iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]

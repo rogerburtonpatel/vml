@@ -88,6 +88,11 @@ end = struct
   fun boxSeparated p       = tokSeparated box p
   fun barSeparatedMulti p  = curry op :: <$> p <*> many1 (reserved "|" >> p)
 
+  fun single a = [a]
+
+  (* val singleton : 'a P.producer -> 'a list P.producer
+    = fn p : 'a P.producer => curry op :: <$> p <~> succeed [] *)
+
 
   fun lookfor s p = P.ofFunction (fn tokens => 
                   (app eprint ["looking for ", s, "! "]; P.asFunction p tokens))
@@ -128,11 +133,26 @@ end = struct
   fun nub xs = (Set.elems o Set.fromList) xs
   fun containsDuplicates xs = length xs <> length (nub xs)
 
+  exception IllegalEquation of string 
+  
+  val rec breakExpEqn : (V.exp * V.exp) -> V.exp V.guard list = 
+  fn (e1, e2) =>
+    case (e1, e2) of 
+    (V.C (Core.NAME n), _) => [V.EQN (n, e2)] : (V.exp V.guard list)
+    | (V.C (Core.VCONAPP (vc, es)), (V.C (Core.VCONAPP (vc', es')))) => 
+      if vc = vc' andalso len es = len es' 
+      then List.concat (ListPair.map breakExpEqn (es, es'))
+      else raise IllegalEquation ("The equation " ^ V.expString e1 ^ " = " ^ V.expString e2 ^ " cannot be written in V-minus.")
+    | _ => raise IllegalEquation ("The equation " ^ V.expString e1 ^ " = " ^ V.expString e2 ^ " cannot be written in V-minus.")
+
+
   val exp = P.fix (fn exp : V.exp P.producer => 
     let         
       val existentials = 
              (exists <|> uniexists) >> sat (not o containsDuplicates) (many name) <~> dot
           <|> succeed []
+
+      val complexEqn = curry breakExpEqn <$> exp <*> equalssign >> exp 
       val guard = P.fix (fn guard : V.exp V.guard P.producer =>
           let val baseguard = curry V.EQN <$> name <*> equalssign >> exp 
                            <|> V.CONDITION <$> exp                          
@@ -141,6 +161,8 @@ end = struct
           in curry V.CHOICE <$> oneOrMoreGuards <~> bar <*> oneOrMoreGuards
           <|> baseguard
           end)  
+      (* todo finalize e1 = e2 equation desugaring *)
+      val guard' = single <$> guard <|> complexEqn
       val guards = semicolonSeparated guard <|> succeed []
       (* val multi = Multi.MULTI <$> many1 exp  *)
       val rhs = rightarrow >> exp 
