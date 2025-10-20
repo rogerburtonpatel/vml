@@ -184,7 +184,9 @@ end = struct
 | let 𝑥 = 𝑒 in 𝑡 [ unless fail -> 𝑡]
 | if 𝑥 = 𝑒 then 𝑡 else 𝑡 
 | ∃ 𝑥. 𝑡 
-| fail *)
+| fail
+| match e 
+ *)
 
 (* todo: 'reserved word used as name' error message *)
 
@@ -212,6 +214,7 @@ end = struct
     <|> curry4 A.IF_THEN_ELSE <$> word "if" >> name <*> equalssign >> name 
        <*> word "then" >> tree <*> word "else" >> tree
     <|> word "fail" >> succeed A.FAIL
+    <|> A.MATCH <$> reserved "match" >> exp
     <|> liberalBracket ("a bracketed tree", tree)
     end
     )
@@ -228,7 +231,7 @@ end = struct
         <|> A.I <$> tree
         <|> liberalBracket ("a bracketed expression", exp))
     in 
-      (* reserved "pat" >> pattern >> succeed (ppname "x") <|>  *)
+      (* reserved "tree" >> tree >> succeed (dname "x") <|>  *)
               (* debugging *)
       uncurry dfunapp <$> (P.pair <$> subexp <*> subexp)                    
       <|> subexp

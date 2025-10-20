@@ -50,7 +50,7 @@ struct
                   ] @ corereserved
 
   val dreserved = ["test", "else", "let", "in", "unless", 
-                  "if", "then", "fail", "[]",
+                  "if", "then", "fail", "match", "[]",
                   bar, rightarrow
                   (* debugging *)
                   (* , "parse", "tree" *)

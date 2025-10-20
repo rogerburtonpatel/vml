@@ -89,13 +89,13 @@ struct
            val emittedBranches = foldr (fn (b, acc) => "  | " ^ emitBranch b ^ acc) "" xs
         in emittedBranches ^ (if isSome default then "else " ^ treeString' (valOf default) else "")
         end 
-    and treeString'     (MATCH a) = expString a
-          | treeString' (TEST (n, branches, default)) = "test " ^ n ^ "\n" ^ emitBranches branches default
-          | treeString' (LET_UNLESS (n, e, t1, NONE)) = "let " ^ n ^ " = " ^ expString e ^ " in \n " ^ treeString' t1 
-          | treeString' (LET_UNLESS (n, e, t1, SOME t2)) = "let " ^ n ^ " = " ^ expString e ^ " in " ^ treeString' t1 ^ "\n unless fail => " ^ treeString' t2
-          | treeString' (IF_THEN_ELSE (x, y, t1, t2)) = "if " ^ x ^ " = " ^ y ^ "\n then " ^ treeString' t1 ^ "\n else " ^ treeString' t2
-          | treeString' (EXISTS (n, t)) = "E " ^ n ^ ". " ^ treeString' t
-          | treeString' FAIL = "fail"
+    and treeString'     (MATCH a) = br' ("match " ^ expString a)
+          | treeString' (TEST (n, branches, default)) = br' ("test " ^ n ^ "\n" ^ emitBranches branches default)
+          | treeString' (LET_UNLESS (n, e, t1, NONE)) = br' ("let " ^ n ^ " = " ^ expString e ^ " in \n " ^ treeString' t1 )
+          | treeString' (LET_UNLESS (n, e, t1, SOME t2)) = br' ("let " ^ n ^ " = " ^ expString e ^ " in " ^ treeString' t1 ^ "\n unless fail => " ^ treeString' t2)
+          | treeString' (IF_THEN_ELSE (x, y, t1, t2)) = br' ("if " ^ x ^ " = " ^ y ^ "\n then " ^ treeString' t1 ^ "\n else " ^ treeString' t2)
+          | treeString' (EXISTS (n, t)) = br' ("E " ^ n ^ ". " ^ treeString' t)
+          | treeString' FAIL = br' "fail"
     in treeString' t ^ "\n"
     end 
 
