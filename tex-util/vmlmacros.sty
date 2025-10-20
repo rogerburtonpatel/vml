@@ -193,7 +193,6 @@
   {\ensuremath{\it{test}\; x\; {\bracketed{K\bracketed{y} \; \Rightarrow\; \dt}} [\it{else}\; \dt]}} : test node
   | {\ensuremath{\it{let}\; x\; \it{=}\; \expr\; \it{in}\; \dt[\it{ unless fail => } \; \dt]}} : let-unless node
   | {\ensuremath{\it{if}\; x\; \it{=}\; \expr\; \it{then} \; \dt\; \it {else}\; \dt}} : comparison node
-  | {\ensuremath{\exists\; x\it{.}\; \dt}} : exists node
   | {\ensuremath{\textit{match}~e}} : match node
   | {\ensuremath{\fail}} : fail node
   ;;
@@ -408,7 +407,7 @@
 
     % rough opsem-based stuff: to change
 \newcommand{\br}[1]{\langle #1 \rangle}
-
+\newcommand\tree{\ensuremath{t}}
 
 %%%%%%%%%% INFERENCE RULES %%%%%%%%%%
 
@@ -458,7 +457,7 @@
 \defcomponent{pat}{\pat}
 \defcomponent{value}{\v}
 \defcomponent{result}{\result}
-\defcomponent{compiled}{\expr}
+\defcomponent{compiled}{\tree}
 \defcomponent{solution}{\solution}
 \defcomponent{envext}{}
 \defcomponent{tlp}{\tlp}
@@ -1397,6 +1396,8 @@ are applied by the compiler.
     {\compilebig[ctxext={\bracketed{x_1 \mapsto unknown}}, gexps={\GsgsGs{\vexists{\dots x_{n}}\; \gs \rightarrow \expr'}}]}
     {\compilebig[gexps={\GsgsGs{\vexists{x_{1} \dots x_{n}}\; \gs \rightarrow \expr'}}]}
 \]
+\label{rule:exists}
+
 
 If the compiler finds one or more names introduced by $\exists$, it strips a
 name from the $\exists$ list and adds it to~\ctx~as~\it{unknown}. This is the
@@ -1408,6 +1409,8 @@ introduces its argument as \it{known}.
     {\compilebig[gexps=\GsGs]}
     {\compile[guard={\fail}]}
 \]
+\label{rule:fail}
+
 
 If the compiler finds a guarded expression \G which contains~\fail, it stops
 compiling \G altogether. 
@@ -1415,8 +1418,9 @@ compiling \G altogether.
 \[
 \inferrule*[Left=\textsc{ (Match) }]
     {\ }
-    {\compilebig[gexps={\GsgsGs{\rightarrow \expr}}]}
+    {\compilebig[gexps={\GsgsGs{\rightarrow \expr}}, compiled=\mathit{match~e}]}
 \]
+\label{rule:match}
 
 
 If the compiler finds an ungarded right-hand side expression~\expr, it inserts
@@ -1427,15 +1431,17 @@ a~\it{match} node containing~\expr.
     {\ctx(x) = known
     \\\\
     \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
-             iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
+             iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\tree_{i}}]
     \\\\
-    \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \expr[i]
+    \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \tree_{i}
     \\\\
-    \expr[0] = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
+    \tree_{0} = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
     }
     {\compile[eas={\expr \text{ as }}, guard={x = K\; \expr[1] \dots \expr[n]},
-    compiled={test(x, \tbar, \expr[0])}]}
+    compiled={test(x, \tbar, \tree_{0})}]}
 \]
+\label{rule:test}
+
 
 If the compiler finds a known name $x$ equated to the application of a value
 constructor~\it{K}, it assembles a set of branches that correspond to varying
@@ -1443,6 +1449,10 @@ value constructors. The only requirement of the set is that it contain~\it{K}.
 With substiution of~$\subst{}{K_{i}{\ybar[i]}}{x}$, the compiler ensures that
 $x$ will never be tested again, and also allows for rules~\textsc{Elim-Vcon}
 and~\textsc{Expand-Vcon} to make progress. 
+The test node also creats a default branch,~$\tree_0$, by inserting a 
+constructor~$K_0$ which does not appear in~$e$. %
+At runtime, if~$x$~does not match any of the constructors in~$\overline{t}$, 
+the \textit{test} node will jump to this branch. 
 
 \[
 \inferrule*[Left=\textsc{ (Elim-Vcon) }]
@@ -1453,6 +1463,8 @@ and~\textsc{Expand-Vcon} to make progress.
     }
     {\compile[guard={\expr' = K\; \expr[1] \dots \expr[n]}]}
 \]
+\label{rule:elimvcon}
+
 
 If the compiler finds two equated expressions where one is an application of a
 value constructor to $n$ arguments and the other isn't, the compiler skips over
@@ -1465,6 +1477,8 @@ that branch, like in \textsc{Fail}.
     }
     {\compile[guard={K\; {\expr[1]} \dots {\expr[n]} = K\; {\expr[1]}' \dots {\expr[n]}'}]}
 \]
+\label{rule:expandvcon}
+
 
 
 If the compiler finds two equated expressions where each is an application of a
@@ -1474,6 +1488,8 @@ into a list of equations between the arguments. This rule takes advante of
 \expr[1] \cdot x = \expr[2]$, with $x$ fresh. 
 
 \compileletunless
+\label{rule:letunless}
+
 
 If the compiler finds an opportunity to bind a name to an expression \expr, it
 creates a~\it{let-unless} node and substitutes $x$ for all instances of \expr,
@@ -1483,6 +1499,8 @@ containing it.
 
 
 \compileletif
+\label{rule:letif}
+
 
 
 If the compiler finds a known name being compared to \expr, it creates
@@ -1511,7 +1529,7 @@ containing it.
 \[
 \inferrule*[Left=\textsc{ (Match) }]
     {\ }
-    {\compilebig[gexps={\GsgsGs{\rightarrow \expr}}]}
+    {\compilebig[gexps={\GsgsGs{\rightarrow \expr}}, compiled=\mathit{match~e}]}
 \]
 
 \[
@@ -1519,14 +1537,14 @@ containing it.
     {\ctx(x) = known
     \\\\
     \compilebig[ctxext={ + \overline{\bracketed{y_{i} \mapsto known}}}, 
-             iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\expr[i]}]
+             iffi=\subst{\expr}{K_{i}\; {\ybar[i]}}{x}, compiled={\tree_{i}}]
     \\\\
-    \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \expr[i]
+    \tbar = \sum_{i} K_{i}\; \ybar[i] \Rightarrow \tree_{i}
     \\\\
-    \expr[0] = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
+    \tree{0} = \subst{\expr}{K_{0}}{x} \and K_{0} \text{ does not appear in } e
     }
     {\compile[eas={\expr \text{ as }}, guard={x = K\; \expr[1] \dots \expr[n]},
-    compiled={test(x, \tbar, \expr[0])}]}
+    compiled={test(x, \tbar, \tree_{0})}]}
 \]
 
 \[
