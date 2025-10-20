@@ -325,12 +325,14 @@ $\exists$ freeNames. freeNames = $\lambda$ e.
       \end{figure}
 
 And~\VC~can do even more: the calculus easily encodes nonlinear patterns (and
-even more expressive constructs) (See Section~\ref{freeextensions}). %
+even more expressive constructs): see Section~\ref{freeextensions}. %
 
 But the cost model of functional logic languages like~\VC~can be challenging:
 because unification under equations can backtrack at runtime, code with
 equations can run in exponential
 time~\cite{hanus2013functional,wadler1985replace,clark1982introduction}. %
+And code that returns multiple values by nesting Verse's \textbf{choice}
+operator can quickly become exonential in space usage, too~\cite{verse}.
 
 Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a data
 structure that enforces linear runtime performance by guaranteeing no part of
@@ -1093,7 +1095,7 @@ pessimal example. We highlight these in the following section. %
       inductive hypothesis to the subtrees. 
       
       The case for \textsc{Let-If} is similar: in each subtree of the inserted
-      node, either~$e'$~or the equation~$x = e'$~is subsituted for a name or
+      node, either~$e'$~or the equation~$x = e'$~is substituted for a name or
       \textbf{fail}, meaning~$e'$ will be evaluated no more than once
       and~$x$~will be compared to~$e'$ no more than once.  The invariant is
       preserved, and we are done by application of our inductive hypothesis to
