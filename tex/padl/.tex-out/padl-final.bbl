@@ -9,6 +9,9 @@ Augustsson, L.: Compiling pattern matching. In: Conference on Functional Program
 \bibitem{verse}
 Augustsson, L., Breitner, J., Claessen, K., Jhala, R., Peyton~Jones, S., Shivers, O., Steele~Jr, G.L., Sweeney, T.: The verse calculus: A core calculus for deterministic functional logic programming. Proceedings of the ACM on Programming Languages  \textbf{7}(ICFP),  417--447 (2023)
 
+\bibitem{macqueen1985tree}
+Baudinet, M., MacQueen, D.: Tree pattern matching for {ML} (1986), available from David MacQueen, AT\&T Bell Laboratories, 600 Mountain Avenue, Murray, Hill, NJ 07974
+
 \bibitem{clark1982introduction}
 Clark, K.: An introduction to logic programming. Introductory Readings in Expert Systems, ed. D. Michie pp. 93--112 (1982)
 

@@ -16,12 +16,12 @@
 \linenumbers 
 
 % T1 fonts will be used to generate the final print and online PDFs,
-% so please use T1 fonts in your manuscript whenever possible.
-% Other font encondings may result in incorrect characters.
+% so please use T1 fonts in your manuscript whenever possible. %
+% Other font encondings may result in incorrect characters. %
 %
 
 % Used for displaying a sample figure. If possible, figure files should
-% be included in EPS format.
+% be included in EPS format. %
 %
 % If you use the hyperref package, please uncomment the following two lines
 % to display URLs in blue roman font according to Springer's eBook style:
@@ -50,8 +50,8 @@
 
 % \authorrunning{F. Author et al.}
 
-% First names are abbreviated in the running head.
-% If there are more than two authors, 'et al.' is used.
+% First names are abbreviated in the running head. %
+% If there are more than two authors, 'et al.' is used. %
 %
 % \institute{Princeton University, Princeton NJ 08544, USA \and
 % Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
@@ -67,33 +67,33 @@
 \begin{abstract}
     Pattern matching appeals to functional programmers for its expressiveness
     and good cost model, but it fails to express certain computations without
-    verbosity. 
+    verbosity. %
 Verbosity can be reduced by using extended forms of pattern
     matching, but extensions are not standardized, and making certain extensions
     like or-patterns and pattern guards cooperate in a large-scale programming
     language is a significant implementation challenge that has not seen success
-    until recent years. 
+    until recent years. %
 
     
     Alternatively to pattern matching, computations can be expressed succinctly
     by using equations, as has been demonstrated by the Verse programming
-    language. 
+    language. %
 But such computations may have time and space costs that can
-    be hard to predict. 
+    be hard to predict. %
 As a compromise, we ~propose a new
     language,~\ensuremath{V^{-}}, which~uses equations in a limited way that
-    makes time and space costs easy to predict. 
+    makes time and space costs easy to predict. %
 In comparative examples,
     \ensuremath{V^{-}}~ expresses computations as succinctly as pattern matching
     with popular extensions- namely, side conditions, or-patterns, and pattern
     guards- and just like pattern matching, it can be compiled to a decision
-    tree. 
+    tree. %
 
     
     We present formal rules and a Standard ML implementation for the
     \ensuremath{V^{-}} match compiler, and we evaluate our implementation with
     micro-benchmarks and a proof that our compilation algorithm preserves the
-    desirable decision tree height invariants. 
+    desirable decision tree height invariants. %
 
 
 \end{abstract}
@@ -105,16 +105,16 @@ In comparative examples,
 When examining and deconstructing data, functional programmers
 love pattern matching:
 code is often admirably concise,
-and pattern matching compiles to efficient decision trees.
+and pattern matching compiles to efficient decision trees. %
 But when expressing some common computations,
-pattern matching requires code that looks repetitive or redundant.
+pattern matching requires code that looks repetitive or redundant. %
 To~eliminate the resulting verbosity, the designers of major languages like OCaml and
 Haskell have extended pattern matching;
 the most common extensions are
 \textit{side
-conditions}(cite), \textit{or-patterns}(cite), and \textit{pattern
-guards}(cite).
-Examples are shown in \crefrange{fig:pmsideconditions}{fig:pmorpats}.
+conditions}, \textit{or-patterns}, and \textit{pattern
+guards}\cite{guardproposal}. %
+Examples are shown in \crefrange{fig:pmsideconditions}{fig:pmorpats}. %
 
 
 % --------------------------------------------
@@ -143,7 +143,7 @@ let exclaimTall sh =
         then "Zounds! Tremendous trapezoid!"
         else "Your shape is small." 
 \end{verbatim}
-\caption*{OCaml, without side conditions}
+\caption*{OCaml, without using side conditions}
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\linewidth}
@@ -159,7 +159,7 @@ let exclaimTall sh =
         "Zounds! Tremendous trapezoid!"
     | _ -> "Your shape is small." 
 \end{verbatim}
-\caption*{OCaml with side conditions}
+\caption*{OCaml, using side conditions}
 \end{minipage}
 \caption{Comparing pattern matching with and without side conditions.}
 \label{fig:pmsideconditions}
@@ -182,7 +182,7 @@ tripleLookup rho x =
     Nothing -> handleFailure x
 
 \end{verbatim}
-\caption*{Haskell, with nested pattern matching}
+\caption*{Haskell, without using pattern guards}
 \end{minipage}
 \hfill
 \begin{minipage}{0.47\linewidth}
@@ -195,7 +195,7 @@ tripleLookup rho x =
      = z
   tripleLookup _ x = handleFailure x
 \end{verbatim}
-\caption*{Haskell with pattern guards}
+\caption*{Haskell, using pattern guards}
 \end{minipage}
 \caption{Comparing \texttt{tripleLookup} using pattern guards.}
 % \Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
@@ -216,7 +216,7 @@ freeNames : expr -> list string
     | Global n -> [n]
     ... (* recursive cases *)
 \end{verbatim}
-\caption*{OCaml, not using or-patterns}
+\caption*{OCaml, without using or-patterns}
 \end{minipage}
 \begin{minipage}{0.45\linewidth}
 \scriptsize
@@ -241,15 +241,15 @@ examples shown:
 Haskell lacks
 (binding) or-patterns\footnote{Non-binding or-patterns have existed in GHC only
 as of 2023.}, OCaml lacks guards, other languages lack side conditions, and so
-on. 
-And we~find the extension story somewhat unsatisfying:
-Even if one language had all three of the extensions used
-in \crefrange{fig:pmsideconditions}{fig:pmorpats},
-there are the other extensions, like nonlinear
-patterns, that appear in neither Haskell nor ML.\nr{OCaml?} 
+on. %
+And we~find the extension story somewhat unsatisfying: Even if one language had
+all three of the extensions used in
+\crefrange{fig:pmsideconditions}{fig:pmorpats}, there are the other extensions,
+like nonlinear patterns and bidirectional matching,  that appear in neither
+Haskell nor OCaml. %
 As~an alternative, we~show that the expressive power of 
 pattern matching, including all these extensions,
-can be provided by a design that uses \emph{equations}.
+can be provided by a design that uses \emph{equations}. %
 
 
 %\subsection{Equations in Functional Logic Programming}
@@ -258,39 +258,36 @@ can be provided by a design that uses \emph{equations}.
 
 Our work is inspired by the effective use of equations in
 the functional logic programming language Verse,
-or rather, the Verse Calculus,~\VC~\cite{verse}.\nr{Don't use them interchangeably.  It's hard on the reader, to no benefit.}
-%\footnote{The
-%Verse Calculus, or \VC, is the heart of Verse, and so we use Verse and \VC
-%somewhat interchangeably throughout this paper.}. 
+or rather, the Verse Calculus,~\VC~\cite{verse}. %
 Each of the examples in \crefrange{fig:pmsideconditions}{fig:pmorpats} is
 easily and concisely written using equations, and 
 nonlinear patterns (and even more expressive constructs) are also easily encoded
-(see section TODO LINK). 
-\rab{This wants an example to show Verse is expressive and briefly explain syntax.
+\rab{see section TODO LINK.} %
+\rab{This wants an example to show Verse is expressive and briefly explain syntax. %
  I'll put one here.}
 
 But the cost model of functional logic languages can be
 challenging: because unification under equations can backtrack at runtime, code
 with equations can run in exponential 
-time~\cite{hanus2013functional,wadler1985replace,clark1982introduction}. 
-
-\rab{TODO: say can be optimized to a dag via a shared continuation}
+time~\cite{hanus2013functional,wadler1985replace,clark1982introduction}. %
 
 Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a data
 structure that enforces linear runtime performance by guaranteeing no part of
-the matched expression will be examined more than once~\cite{maranget}. 
-A
-decision tree does not backtrack: once a program makes a decision based on the
-form of a value, it does not re-test it later with new information. 
+the matched expression will be examined more than once~\cite{maranget}. %
+A decision tree does not backtrack: once a program makes a decision based on the
+form of a value, it does not re-test it later with new information. %
+Furthermore, a decision tree can be space-optimized so that all leaves are
+unique by reducing to a DAG via a shared continuation.\rab{cite} %
 
 Pattern matching tempts us with its desirable cost model, but challenging
 questions remain for the modern implementor of both a new and an existing
-programming language. 
-How much work would it be to add binding or-patterns to
-GHC? How about nonlinear patterns? How much work would it be to add guards to
-OCaml? And finally: is it reasonable to assume that the implementor of a
-language will err and introduce an extension combination that makes pattern
-matching in the language unsound? 
+programming language. %
+How much work would it be to add binding or-patterns to GHC? %
+How about nonlinear patterns? %
+How much work would it be to add guards to OCaml? %
+And finally: in a complex codebase like GHC's, is it reasonable to assume that
+adding a new extension to pattern matching will not introduce a corner case that
+makes pattern matching unsound? %
 
 \rab{SAZ: Is there such an example?}
 
@@ -303,24 +300,24 @@ performant like pattern matching?
 
 Our answer to this question, and primary contribution, is a new core language
 with decision-making expressiveness of equations and the cost model of pattern
-matching. 
-Being inspired by Verse but reduced to the absolute essence of only
-decision-making, it is called~\VMinus (``V-minus''). 
+matching. %
+Being inspired by~\VC~but reduced to the absolute essence of only
+decision-making, it is called~\VMinus (``V-minus''). %
 
-\VMinus has equations and choice, like~Verse, but it does not have multiple
-results or backtracking. 
+\VMinus has equations and choice, like~\VC, but it does not have multiple
+results or backtracking. %
 To eliminate multiple results, expressions
 in~\VMinus evaluate to at most one result, and the logical "choice" operator
 only~\it{guards} computation; it~is not a valid form of expression like in
-Verse. 
+\VC. %
 To~eliminate backtracking, the compiler rejects a~\VMinus program
-that would need to backtrack at runtime. 
+that would need to backtrack at runtime. %
 To provide an efficient and
 backtracking-free cost model to which~\VMinus can be compiled, we~introduce
-a core language of decision trees,~\D, in Section~\ref{d}. 
+a core language of decision trees,~\D, in Section~\ref{d}. %
 
-\VMinus, like Verse, easily expresses all of the previous examples
-(Figure~\ref{fig:vminusfuncs}). 
+\VMinus, like \VC, easily expresses all of the previous examples
+(Figure~\ref{fig:vminusfuncs}). %
 Furthermore, \rab{Been suggested to say how
 \VMinus gives things like nonlinear patterns and others for free- agree? }
 
@@ -384,7 +381,7 @@ fun freeNames e =
     
     \section{Fast, Expressive Equations}
     \label{vminus}
-    Here we give our formal definition of \VMinus. 
+    Here we give our formal definition of \VMinus. %
 
     \subsection{Formal Semantics of ${\VMinus}$}
     
@@ -421,7 +418,7 @@ fun freeNames e =
             \end{bnf}
             \medskip
           
-          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. 
+          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. %
           \end{center}
           % \Description{The concrete syntax of VMinus.}
               \caption{\VMinus: Concrete syntax}
@@ -430,20 +427,20 @@ fun freeNames e =
 
         \VMinus enforces the "no backtracking at runtime" principle by
         construction: names in \VMinus are expressions, not values, and
-        unification is permanent.
+        unification is permanent. %
         This means that a variable is unified with a
         value once, either by = or under a lambda, and there is no mechanism 
-        for re-binding it under a different execution context like in \VC.
+        for re-binding it under a different execution context like in \VC. %
         Furthermore, because choice only guards computations, the programmer can't write the kinds of nested choice 
-        expressions that lead to exponential runtime in \VC. 
+        expressions that lead to exponential runtime in \VC. %
         
         So that decision-making looks somewhat like pattern matching, our
         equation-wrapping construct of choice is Dijkstra's \iffibf
-        construct~\cite{dijkstra}. 
+        construct~\cite{dijkstra}. %
 
         There are two small details not captured by the figure: a guarded
         expression $G$ in an \iffibf is separated from its neighbours by a
-        \dbar, and each guard $g$ is separated from its neighbours by a semicolon.
+        \dbar, and each guard $g$ is separated from its neighbours by a semicolon. %
         
 
 \begin{table}
@@ -484,32 +481,32 @@ fun freeNames e =
     \newcommand\GNoTree{\vmrung~\rightsquigarrow~\uppsidown} 
     
     % An expression in~\VC evaluates to produce possibly-empty sequence of values,
-    % where an empty sequence of values is identical to the syntactic form~\fail.
+    % where an empty sequence of values is identical to the syntactic form~\fail. %
     
     In~\VMinus, an expression never returns multiple values, though it
-    can\textit{fail}. 
+    can\textit{fail}. %
     Specifically, a~\VMinus~expression evaluates to produce a
-    single~\it{result}, which is either a single value $\v$ or~\fail. 
+    single~\it{result}, which is either a single value $\v$ or~\fail. %
     
     \[\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\]
     
     \showvjudgement{Eval}{\vmeval}
 
     For example, the~\VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
-    succeeds and returns the value~\tt{K}. 
-    The~\VMinus expression~\tt{if~~fi}, the empty~\tt{if-fi}, always {\fail}s. 
+    succeeds and returns the value~\tt{K}. %
+    The~\VMinus expression~\tt{if~~fi}, the empty~\tt{if-fi}, always {\fail}s. %
 
 
     \subsubsection{Names and refinement of environments}
 
     In~\VMinus, like in~\VC, names can be introduced with the existential
-    {$\exists$} before they are given a binding. 
-    Bindings are given by equations in guards~(\ref{guards}). 
+    {$\exists$} before they are given a binding. %
+    Bindings are given by equations in guards~(\ref{guards}). %
     When a name is introduced with {$\exists$}, it is bound in the
-    environment~\Rho\ to $\bot$ (bottom). 
+    environment~\Rho\ to $\bot$ (bottom). %
     Success of a guard only~\it{refines} the environment; that~is, when
     $\grefine[solution=\Rhoprime]$, we~expect $\rho~\preceq~\Rhoprime$. The
-    definition of $\preceq$ on environments is given below. 
+    definition of $\preceq$ on environments is given below. %
     
     \smallskip 
     
@@ -521,38 +518,38 @@ fun freeNames e =
     &\forall~v.~\bot~\leq~v~\land~v~\leq~v
     \end{align*}
     
-    \rab{I'd prefer a different symbol over $\leq$ here, and I think this figure could use a bit of prettying.
+    \rab{I'd prefer a different symbol over $\leq$ here, and I think this figure could use a bit of prettying. %
      Any suggestions?}
     
     \smallskip
 
     Refinement on bound instances in environments is trivial: 
     $\bot$ can refine to a value, and once a value is bound, 
-    it is never rebound. 
+    it is never rebound. %
 
     The only place $\bot$ can appear is on the right-hand side of a variable in
     an environment. This means "partially refined" constructor application is
-    disallowed: a constructor $K$ can never be applied to $\bot$. 
+    disallowed: a constructor $K$ can never be applied to $\bot$. %
     
     \subsubsection{Guards}
     \label{guards}
     
 
     Like~\VC,~\VMinus has a semantics built around the philosphy of "pick an
-    equation and solve it" (now thinking with guards rather than equations).
+    equation and solve it" (now thinking with guards rather than equations). %
     Picking and solving a guard in~\VMinus is similar to picking and solving an
     equations \VC: the program picks one out of a context (\context), attempts
-    to solve it, and moves on. 
+    to solve it, and moves on. %
 
 The semantics processes a~\it{list} of guards~\gs in a guarded
 expression \G: the program picks a guard from~\G, attempts to solve it to refine
 the environment or fail, and repeats.~\VMinus can only pick a guard out of \G\
-that it \it{knows} it can solve. 
+that it \it{knows} it can solve. %
 \it{Knowing} a guard can be solved can be determined in~\VMinus before code is
 executed by building a dependency graph between variable binding sites and
-traversing it from the root.
+traversing it from the root. %
 If~\VMinus can't pick a guard and there are
-guards left over, the semantics gets stuck before code is executed. 
+guards left over, the semantics gets stuck before code is executed. %
 
 \rab{I'll walk through these examples.}
 
@@ -576,44 +573,44 @@ guards left over, the semantics gets stuck before code is executed.
 
 
 Given any such $\rho$, a guard~\g\ eithers refine $\rho$
-($\Rhoprime$) or is~\bf{rejected}. 
+($\Rhoprime$) or is~\bf{rejected}. %
 We use the symbol $\dagger$ to
 represent rejection, and if any guard in a list is rejected, the entire list of
-guards is rejected.
+guards is rejected. %
 
     \showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
     \showvjudgement{Guard-reject}\gfail
 
   For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
   existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho\ bound to
-  $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. 
+  $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. %
 The guard
   \tt{x = K} successfully unifies~\tt{x} with~\tt{K}, producing the environment
-  $\bracketed{x~\mapsto~\tt{K}}$. 
+  $\bracketed{x~\mapsto~\tt{K}}$. %
 The guard~\tt{x = K2} attempts to unify~\tt{K}
-  with~\tt{K2} and is rejected with $\dagger$. 
+  with~\tt{K2} and is rejected with $\dagger$. %
 
   \subsection{Notable rules in the \VMinus semantics}
 
   Worth discussing in the~\VMinus semantics are those in which a name in \Rho\
-  is bound to a value or to $\bot$. 
+  is bound to a value or to $\bot$. %
 Notable among these include
   \textsc{Guard-Name-Exp-Bot}, \textsc{Guard-Name-Exp-Eq},
   \textsc{Guard-Name-Exp-Fail}, \textsc{Guard-Names-Bot-Succ},
-  and~\textsc{Guard-Names-Bot-Succ-Rev}. 
+  and~\textsc{Guard-Names-Bot-Succ-Rev}. %
 This section discusses each of these
-  rules in short detail. 
+  rules in short detail. %
 The full set of rules for \VMinus is in
-  Section~\ref{vmsemantics}. 
+  Section~\ref{vmsemantics}. %
 
   In this section, the terms~\it{known} and~\it{unknown} denote a
-  name's status in \Rho. 
+  name's status in \Rho. %
 If a name $x$ is bound to a value \v in \Rho, then $x$
-  is \it{known}. 
-If $x$ is bound to $\bot$ in \Rho, then $x$ is \it{unknown}. 
+  is \it{known}. %
+If $x$ is bound to $\bot$ in \Rho, then $x$ is \it{unknown}. %
 % We
 %   use this terminology again when compiling~\VMinus to \D, since it describes
-%   the same status in both evaluation in compilation. 
+%   the same status in both evaluation in compilation. %
 
 \[
 \guardnameexpbot
@@ -625,16 +622,16 @@ If $x$ is bound to $\bot$ in \Rho, then $x$ is \it{unknown}.
 \]
   
 When $\rho(x) = \v$ ($x$ is \it{known}) and $\vmeval$, the program proceeds
-without refining the environment, since no new information is gained.
-Here,~\it{=} tests both sides for structural equality. 
+without refining the environment, since no new information is gained. %
+Here,~\it{=} tests both sides for structural equality. %
 
 \[
 \guardnameexpfail
 \]
 
 When $\rho(x) = \v'$ ($x$ is \it{known}) and $\vmeval$ and $\v \neq \v'$,
-unification fails, so the guarded expression fails. 
-Here,~\it{=} tests both sides for structural equality. 
+unification fails, so the guarded expression fails. %
+Here,~\it{=} tests both sides for structural equality. %
 
 
 \[
@@ -642,14 +639,14 @@ Here,~\it{=} tests both sides for structural equality.
 \]
 
 When $\rho(x) = \v$ ($x$ is \it{known}) and $rho(y) = \bot$ ($y$ is
-\it{unknown}), the program can always bind $y$ to \v. 
+\it{unknown}), the program can always bind $y$ to \v. %
 
 
 \[
 \guardnamesbotsuccrev
 \]
 
-This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse. 
+This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse. %
     
     \vfilbreak
     
@@ -665,9 +662,9 @@ This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse.
     \vmsemantics
     }
     
-    % Powerful. 
+    % Powerful. %
 
-    % But hard to predict. 
+    % But hard to predict. %
 
 
 
@@ -677,11 +674,11 @@ This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse.
 \label{d}
 
 Like pattern matching, \VMinus~compiles to a decision tree whose height is 
-linear with respect to code size. 
+linear with respect to code size. %
 To formalize decision trees, we use 
-\D, a language which generalizes the trees found in~\cite{maranget}. 
+\D, a language which generalizes the trees found in~\cite{maranget}. %
 
-The spec of decision trees and match compilation algorithm is presented below. 
+The spec of decision trees and match compilation algorithm is presented below. %
 
   \begin{figure}
     \scriptsize
@@ -694,22 +691,22 @@ The spec of decision trees and match compilation algorithm is presented below.
     \end{figure}
 
       In~\D, as in Maranget's trees, the~\it{test} node extracts all names from a
-  value constructor at once for use in subtrees. 
+  value constructor at once for use in subtrees. %
 The compiler is responsible for
-  introducing the fresh names used in~\it{test}. 
+  introducing the fresh names used in~\it{test}. %
 The compiler alpha-renames all
   necessary terms before it translates an~\iffibf to a decision tree to ensure
-  all names are unique. 
+  all names are unique. %
 
   In~\D, like in~\VMinus, expressions can~\it{fail}, meaning some of~\D's
   syntactic forms like~\it{try-let} and~\it{cmp} have an extra branch that is
-  executed if the examined expression fails. 
+  executed if the examined expression fails. %
 
 
     \subsection{The~\DTran\ algorithm:~\VMinus $\rightarrow$~\D}
 
 
-    When presented with an~\iffibf,~\DTran~invokes~\Compile with context~\ctx.
+    When presented with an~\iffibf,~\DTran~invokes~\Compile with context~\ctx. %
     \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
     branches with a desugaring function~\ITran: 
     
@@ -720,27 +717,27 @@ The compiler alpha-renames all
     \end{align*}
 
     With the desugared~\iffibf,~\Compile\ then repeatedly chooses a guarded
-    expression $G$ and applies one of the compilation rules below. 
+    expression $G$ and applies one of the compilation rules below. %
 The rules are
-    applied in a nondeterministic order. 
+    applied in a nondeterministic order. %
 
     \Compile terminates when it inserts a final~\it{match} node (with rule
-    \textsc{Match}). 
+    \textsc{Match}). %
  A~\it{match} node is inserted for a right-hand side expression~\expr when the list of
     guards preceding~\expr is empty or a list of assignments from names to
-    unbound names. 
+    unbound names. %
 Termination of~\DTran\~is guaranteed because each recursive
     call passes a list of guarded expressions in which the number of guards is
     strictly smaller, so eventually the algorithm reaches a state in which the
-    first unmatched branch is all trivially-satisfied guards.
+    first unmatched branch is all trivially-satisfied guards. %
 
 
     If~\Compile\ cannot choose a $g$ of one of the valid forms, it halts with an
-    error. 
+    error. %
 This can happen when no $g$ is currently solvable in the context, as
     determined by the same algorithm that~\VMinus uses to pick a guard to solve,
     or when the program would be forced to unify incompatible values, such as
-    any value with a closure. 
+    any value with a closure. %
 
     
 \showvjudgement{Compile}{\compilebig}
@@ -755,187 +752,162 @@ This can happen when no $g$ is currently solvable in the context, as
       Application of the rules is nondeterministic, which is desirable in a
       match compiler: the structure of the final result~\expr\ depends on the
       \textit{heuristic input} to the compiler, which we discuss in
-      section~\ref{reductionstrats}.
+      section~\ref{reductionstrats}. %
 
 
 \section{Evaluation and Analysis}
 
-Evaluated. Works like a dream. 
+We evaluate two properties of our code: 
 
-\rab{Put a picture here of the testing process}.
+\begin{enumerate}
+  \item \textit{Correctness:} Interpreting \VMinus code produces the same result as
+  compiling it to a decision tree and interpreting the tree. 
+  \item \textit{Performance:} The compiler produces a tree whose height is
+  linear in the size of the source code. 
+\end{enumerate}
 
-\rab{Sketch: }
-
-We implemented \VMinus, compilation. We ran 24 microbenchmarks to test each case
-of the compiler for correctness and appropriate size of generated trees. 
-
-Performance: decision trees are height-bound by invariant. Exact shape depends
-  on heuristics, as is well known. Here are how ours adhere to that, here is where the
-  knobs work. 
+\begin{figure}
   
-  Heuristic affects code size but never affects the height. Point to NR paper,
-  then say how mine is different.
-  
-  It's well-known that any match compiler with a
-  heuristic can be given an optimal and a pessimal example.
-  
-  Proof sketch of decision tree height boundedness in our compiler.
+\end{figure}
+\label{fig:evaluation}
+\rab{Put a picture here of the testing process}. %
 
-\subsection{Microbenchmarks}
+To evaluate correctness and performance, we implemented an interpreter for
+\VMinus, its compiler, and an interpreter for the resulting decision trees, and
+ran a differential correctness and performance analysis across a suite of 32
+microbenchark tests. %
+Figure~\ref{fig:evaluation} shows the map of our evaluation strategy. % 
 
+\subsection{Microbenchmark tests}
 
-\subsection{Reduction Strategies}
+Each microbenchmark test runs a program $p$ through the \VMinus
+interpreter to produce a result $r$ and running it through the \DTran compiler and
+\D interpreter to produce a result $r'$. %
+For correctness, the test ensures that $r = r'$. % 
+In the case that $r$ and $r'$ are failures, the test ensures the failure is of
+the same kind. %
+For performance, the microbenchmark measures the size of the source \iffibf and
+target decision tree and ensures they are equal. % 
+
+We built the set of test programs $p_1, p_2, \dots p_32$ by case split on each
+expression type and minimal unique example of \iffibf. 
+
+All of our tests produce equivalent results with correct-sized decision trees. 
+
+While any given decision tree is height-bound by the invariant, the exact shape
+of the tree depends on heuristics, a fact that is well-examined in the
+literature\cite{macqueen1985tree,maranget,scottramsey}. %
+ Our decision trees adhere to this principle by the same means of a
+\textit{heuristic hole}. % 
+When presented with more than one 'chooseable' equation in the context, the
+compiler selects one by a heuristic which is easily adjustable within the source
+code. %
+As with any match compiler with a heuristic, ours can be given an optimal and a
+pessimal example. We highlight these in the following section. % 
+
+\subsection{Heurstic Comparison and Reduction Strategies}
 \label{reductionstrats}
 
       In our implementation, I apply the~\textsc{Test} rule before other rules,
-      having found in our experiments that this heuristic leads to the smallest trees. 
-A~%
-      risk of inserting a \it{test} node before a \it{let-unless} node is that
-      if there are many shared names across branches, a \it{test} node
-      will introduce those names in \it{let-unless} nodes in each
-      subtree.
+      having found in our experiments that this heuristic leads to the smallest trees. %
+      A~risk of inserting a \it{test} node before a \it{let-unless} node is that
+      if there are many shared names across branches, a \it{test} node will
+      introduce those names in \it{let-unless} nodes in each subtree. %
       It is possible to insert \it{let-unless} nodes before \it{test}
       nodes, in which case those names will be bound
-      only once. 
- The risk of the \it{let}-first strategy
+      only once. %
+      The risk of the \it{let}-first strategy
       is that if there are many names used in only one subtree of a \it{test},
-      these names will be introduced to \it{all} branches. 
- The extra
-      bindings may harm
-      performance by bloating an environment in an interpreter or thrashing the
-      icache if the tree further is compiled to machine code. 
+      these names will be introduced to \it{all} branches. %
+      The extra bindings may harm performance by bloating an environment in an
+      interpreter or thrashing the icache if the tree further is compiled to
+      machine code. %
 
+\rab{todo move this up}
       In the implementation,~\DTran\~first introduces all the names under the
       all existential $\exists$'s to a context which determines if a name is
       \it{known} or~\it{unknown}, applying the~\textsc{Exists} rule is applied
-      all at the start. 
-At the start of compilation, each name introduced by
-      $\exists$ is~\it{unknown} in a context~\ctx. 
-Since all names in the
-      program are unique at this stage, there are no clashes. 
+      all at the start. %
+      At the start of compilation, each name introduced by $\exists$ is~\it{unknown}
+      in a context~\ctx. %
+      Since all names in the program are unique at this stage, there are no clashes. %
 
 
 \subsection{Proof Sketch: \Compile~Preserves the Decision Tree Invariant}
+      \rab{todo}
+  Proof sketch of decision tree height boundedness in our compiler. %
+
 
     \section{Related and Future Work}
 
     This paper builds on Augustsson et al.'s Verse Calculus~\cite{verse} and
-    decision trees~\cite{maranget}. 
-Augustsson et al. 
-give the formal rewrite
-    semantics for the Verse Calculus; Maranget gives an elegant formalism of
-    decision trees and a translation algorithm from patterns to decision trees.
+    decision trees~\cite{maranget}. %
+    Augustsson et al. give the formal rewrite semantics for the Verse Calculus;
+    Maranget gives an elegant formalism of decision trees and a translation
+    algorithm from patterns to decision trees. %
     We~attempted to imitate the behavior of the rewrite semantics of~\VC in the
     big-step semantics of~\VMinus by manually rewriting terms in~\VC and
-    creating rules that would imitate the ultimate result of term-rewriting.
+    creating rules that would imitate the ultimate result of term-rewriting. %
     
-    \rab{"big-step-looking interpreters are the way we like to write them?"
-    what's a good way to say this point? } 
-    
-    We~chose a big-step semantics because
-    the big-step evaulation rules closely mirrors the structure of our
-    interpreters and compiler, which helped us reason about the code. 
+    We~chose a big-step semantics because the big-step evaulation rules closely
+    mirrors the structure of our interpreters and compiler, which helped us
+    reason about the code. For our microbenchmark-based approach, this equivalence 
+    between code and rules was valuable for reasoning. %
 
-    \rab{axe below, because too related to Verse?}
-
-    Using a rewrite semantics instead would more closely relate~\VMinus
-    and~\VC, and is a likely future project. 
-    
-    Maranget's formalism was the foundation off of which we~built~\D. 
+    Maranget's formalism was the foundation off of which we~built~\D. %
     
     Extensions to pattern matching, and how they appeal to language designers,
-    find an excellent example in~\cite{guardproposal}. 
-The authors describe
-    pattern guards and transformational patterns (another extension to pattern
-    matching), both of which allow a Haskell programmer to write more concise
-    code using pattern matching. 
-Or-patterns are documented in the OCaml
-    Language Reference Manual~\cite{ocaml}.
+    find an excellent example in~\cite{guardproposal}. %
+    The authors describe pattern guards and transformational patterns (another
+    extension to pattern matching), both of which allow a Haskell programmer to
+    write more concise code using pattern matching. %
+    Or-patterns are documented in the OCaml Language Reference
+    Manual~\cite{ocaml}. %
     
     \cite{augustsson1985compiling}~ gives a foundation in compiling pattern
-    matching. 
+    matching. %
 \cite{scottramsey} have a crisp example of a match-compilation
-    algorithm (pattern matching to decision trees). 
-Scott and Ramsey's algorithm
-    structurally inspired mine, and studying the source code from the paper
-    aided our implementation. 
+    algorithm (pattern matching to decision trees). %
+    Scott and Ramsey's algorithm
+    structurally inspired ours, and studying the source code from the paper
+    aided our implementation. %
 
     For future work, our top priority is to prove that \DTran~preserves
-    semantics. 
-    Secondarily, we~plan to prove that \VMinus, like pattern
-    matching, is deterministic. 
+    semantics. %
+    Secondarily, we~plan to formally prove that \VMinus subsumes pattern
+    matching by showing that the translation of pattern-matching code to \VMinus 
+    does not increase code complexity. 
 
-    Finally, we~would like to explore
-    exhaustiveness analysis of~\VMinus.
-    Exhaustiveness analysis
-    can warn programmers of a missing or extraneous alternative in a~\it{case} expression.
+    Finally, we~would like to explore exhaustiveness analysis, or coverage
+    checking, of~\VMinus. %
+    Exhaustiveness analysis can warn programmers of a missing or extraneous
+    alternative in a~\it{case} expression. %
     Owing to its significantly more flexible structure,
-    however,~\iffibf may prove trickier to analyze.
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-
-
-    
-    
-    
-
-    
-    
-        
-
-
-
-
-
-
-
-        
-
-            
-            
-            
-
-
-
-
-
-        
-        
-        
-
-        
+    however,~\iffibf may prove trickier to analyze. %
+    And exhasutiveness in the presence of arbitrary side conditions, both in
+    pattern matching and \VMinus, is NP-hard. % 
+    But there is hope: proving that the translation from pattern matching to
+    \VMinus does does not \textit{weaken} exhaustiveness analysis can give a
+    convincing argument that the language does "as good a job" at exhaustiveness
+    as pattern matching. 
 
     \section{Conclusion}
 
-    We~have introduced \VMinus, a~language that makes decisions using equations.
+    We~have introduced~\VMinus, a~language that makes decisions using
+    equations.%
     By~example, we have shown that programs written in~\VMinus can have the same
-    desirable properties as equivalent programs written using pattern matching.
+    desirable properties as equivalent programs written using pattern matching. %
     And~to~show that equations can be compiled to efficient decision trees, we
-    have introduced~\D and~\DTran. In doing so, we~have demonstrated that
-    programming with equations is a promising alternative to pattern matching.
+    have introduced~\D and~\DTran and showed their correctness and efficiency in
+    under a suite of microbencharks. In doing so, we~have demonstrated that
+    programming with equations is a promising alternative to pattern matching. %
     
     
 
 \begin{credits}
-\subsubsection{\ackname} \rab{Enormous thanks Norman, Steve, Milod, Verse
-authors (esp SPJ).}
+\subsubsection{\ackname} 
+\textit{Acknowledgements anonymized for review.}
+% {Enormous thanks Norman, Steve, Milod, Verse authors (esp SPJ).}
 
 \subsubsection{\discintname}
 \textbf{\small{The authors have no competing interests to declare that are relevant to the
@@ -944,8 +916,8 @@ content of this article.}}
 %
 % ---- Bibliography ----
 %
-% BibTeX users should specify bibliography style 'splncs04'.
-% References will then be sorted and formatted in the correct style.
+% BibTeX users should specify bibliography style 'splncs04'. %
+% References will then be sorted and formatted in the correct style. %
 %
 \bibliographystyle{splncs04}
 \bibliography{sources}
