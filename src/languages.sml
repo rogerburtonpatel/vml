@@ -1,7 +1,7 @@
 (* All the languages and the order in which they can be translated *)
 
 structure Languages :> sig
-  datatype language = PPLUS | VMINUS | D | Eval
+  datatype language = PPLUS | VMINUS | D | Eval | DEval
   val table : { language : language, short : string, description : string } list
 
   val find : string -> language option
@@ -10,7 +10,7 @@ structure Languages :> sig
 end
   =
 struct
-  datatype language = PPLUS | VMINUS | D | Eval
+  datatype language = PPLUS | VMINUS | D | Eval | DEval
 
   fun inject (l, s, d) = { language = l, short = s, description = d }
 
@@ -26,6 +26,7 @@ struct
     , (AST_V,  "astv",  "AST for V-") *)
     , (D,  "d",  "decision-tree language")
     , (Eval,  "eval",  "language evaluator for P+ and V-")
+    , (DEval,  "deval",  "language evaluator for code compiled to D")
     ]
 
 
@@ -39,6 +40,7 @@ struct
     | pred D             = SOME VMINUS
     | pred PPLUS         = NONE
     | pred Eval          = Impossible.impossible "bug in languages"
+    | pred DEval          = Impossible.impossible "bug in languages"
 
   fun le (from, to) =
         from = to   orelse 

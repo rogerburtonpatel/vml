@@ -115,7 +115,16 @@ struct
 
   fun uncurry f (x, y) = f x y
   fun uncurry3 f (x, y, z) = f x y z
+  
+  (* for debugging *)
   fun println s = print (s ^ "\n")
+
+    fun optString printer (SOME x) = printer x 
+    | optString printer NONE     = "NONE"
+  fun optValString v = optString (C.valString expString) v
+
+  fun ctxString ctx = Env.toString optValString ctx
+  val dumpctx = println o ctxString
 
   fun lookup x rho = Env.find (x, rho)
   fun bind x v rho = Env.bind (x, v, rho)
@@ -143,8 +152,7 @@ struct
   fun n unknown_in (rho: lvar_env) = 
     rho binds n andalso not (isSome (lookup n rho))
   fun find_or_die n rho = 
-      if n exists_in rho then lookupv n rho else raise C.NameNotBound n
-
+    if n exists_in rho then lookupv n rho else raise C.NameNotBound n
 
   fun optString printer (SOME x) = printer x 
     | optString printer NONE     = "NONE"

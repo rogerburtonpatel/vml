@@ -391,7 +391,7 @@ struct
         (* Missing a rule in the paper: x known, rhs unknown *)
         (case findAnyRHSBinding context choices
           of SOME (x, y as V.C (C.NAME y')) => 
-              D.LET_UNLESS (x, D.C (C.NAME y'), compile (makeKnown y' context) 
+              D.LET_UNLESS (y', D.C (C.NAME x), compile (makeKnown y' context) 
                         (choices -- (V.EQN (x, y))), NONE)
         (* TODO: the `known x = unknown K y1 y2 ...` case is caught by
         findAnyConstructorApplication being first. This needs to change for a 

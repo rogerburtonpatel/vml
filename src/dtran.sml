@@ -81,13 +81,18 @@ struct
     | runProg VMINUS = vminusOfFile >>> Error.map VMinus.runProg
     | runProg D      = raise Can'tDigest D
     | runProg Eval   = raise Can'tDigest Eval
+    | runProg DEval   = raise Can'tDigest DEval
 
   fun D_of VMINUS  = vminusOfFile    >>> Error.map dofVM
     | D_of PPLUS   = VMINUS_of PPLUS >>> Error.map dofVM (* the composition *)
     | D_of D       = dOfFile
     | D_of _       = raise Backward
   
-
+  (* todo better error message *)
+  fun deval VMINUS = D_of VMINUS >>> Error.map D.runProg
+    | deval PPLUS  = D_of PPLUS >>> Error.map D.runProg
+    | deval D      = dOfFile >>> Error.map D.runProg
+    | deval lang      = raise Can'tDigest lang
 
   fun emitPPLUS outfile =
     app (fn d => ( TextIO.output(outfile, PPlus.defString d)
@@ -121,7 +126,9 @@ struct
         | D      => D_of      inLang >>> 
         (* Error.map D.runProg *)
         Error.map (emitD outfile)
-        | Eval   => runProg inLang
+        | Eval   => runProg inLang  
+        | DEval => deval inLang
+
     ) infile
     handle Backward                => raise NotForward (inLang, outLang)
          | NoTranslationTo outLang => raise NotForward (inLang, outLang)
