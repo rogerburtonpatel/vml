@@ -2,7 +2,7 @@
 \ProvidesPackage{vmlmacros}[2011/02/23 v1.0 Custom VML macros.]
 % Thank you Norman Ramsey and Cheng Shao for the foundation needed for these!
 \RequirePackage{amsmath}
-\RequirePackage{geometry}
+%\RequirePackage{geometry}
 \RequirePackage{amssymb}
 \RequirePackage{verbatim}
 \RequirePackage{graphicx}
@@ -229,7 +229,8 @@
 
 \newcommand\one{\bf{\tt{one}}\xspace}
 % \newcommand\dbar{\ensuremath{\square}}
-\newfontfamily\dys{OpenDyslexic}[Scale=2.0]
+%\newfontfamily\dys{OpenDyslexic}[Scale=2.0]
+\newcommand{\dys}[1]{\ensuremath{#1}}
 \newcommand\dbar{\raisebox{-4pt}{\dys ▯}}
 % \newcommand\dbar{\raisebox{-4pt}{\dys {▯}}}
 % \llap{\hspace{0.7pt}}}
@@ -311,9 +312,9 @@
 
 % Quick display a v- judgement form
 \newcommand{\showvjudgement}[3][Right]{%
-  \[\inferrule*[#1=\textsc{ (#2) }]%
+  \inferrule*[#1={\small\textsc{ (#2) }}]%
   {}      
-  {#3}\]%
+  {#3}%
 }
       
 % Somewhat depricated 
@@ -865,10 +866,11 @@
 
 % These judgement forms and rules are specific to \VMinus. 
 
-\subsubsection{Judgement forms for \VMinus}
+\subsubsection{Judgement forms for \VMinus} \ 
 
-\showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
-\showvjudgement{Guard-reject}\gfail
+\(\showvjudgement{Guard-Refine}{\grefine[solution=\rho']}\)
+\hspace{2in}
+\(\showvjudgement{Guard-reject}\gfail\)
 
 \subsubsection{Choosing and solving a guard}
 \begin{mathpar}
@@ -1038,9 +1040,9 @@
 
       \subsubsection{Judgement forms for \PPlus}
 
-      \showvjudgement{Eval}{\ppeval}
-      \showvjudgement{Match-Success}{\pmatch}
-      \showvjudgement{Match-Fail}{\pfail}
+      \(\showvjudgement{Eval}{\ppeval}\)
+      \(\showvjudgement{Match-Success}{\pmatch}\)
+      \(\showvjudgement{Match-Fail}{\pfail}\)
 
       \subsubsection{Evaluating General Expressions}
       
@@ -1382,7 +1384,7 @@
 
 The judgement form for the compiler is: 
 
-\showvjudgement{Compile}{\compilebig}
+\[\showvjudgement{Compile}{\compilebig}\]
 
 \subsection{Rules (Big-step Translation) for compiling \iffibf}
 

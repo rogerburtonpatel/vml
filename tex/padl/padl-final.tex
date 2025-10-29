@@ -450,7 +450,7 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     % Though our guards are quite different from patterns, the \iffibf construct 
     % is similar to \textit{case}/\textit{match}.
     
-    \begin{figure}[H]
+    \begin{figure}[t]
       \scriptsize
           \begin{center}
             \begin{bnf}
@@ -565,9 +565,9 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     Specifically, a~\VMinus~expression evaluates to produce a
     single~\it{result}, which is either a single value $\v$ or~\fail. %
     
-    \[\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\]
-    
-    \showvjudgement{Eval}{\vmeval}
+    \(\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\)
+%    
+    \(showvjudgement{Eval}{\vmeval}\)
 
     For example, the~\VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
     succeeds and returns the value~\tt{K}. %
@@ -659,7 +659,7 @@ and the derivation fails with $\dagger$.
 Here $3$ cannot be unified with $4$ no matter the order in which 
 the semantics picks the guards, so the derivation fails with $\dagger$. 
 
-\showvjudgement{Solve-Guards}{\vmgs}
+\(\showvjudgement{Solve-Guards}{\vmgs}\)
 
 
 Given any such $\rho$, a guard~\g\ either refine $\rho$
@@ -668,8 +668,9 @@ We use the symbol $\dagger$ to
 represent rejection, and if any guard in a list is rejected, the entire list of
 guards is rejected. %
 
-    \showvjudgement{Guard-Refine}{\grefine[solution=\rho']}
-    \showvjudgement{Guard-reject}\gfail
+\(\showvjudgement{Guard-Refine}{\grefine[solution=\rho']}\)
+\hspace{2in}
+\(\showvjudgement{Guard-reject}\gfail\)
 
   For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
   existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho\ bound to
@@ -801,7 +802,7 @@ trees found in~Maranget's formalization~\cite{maranget}. %
 
 The spec of~\D~and the match compilation algorithm is presented below. %
 
-  \begin{figure}[H]
+  \begin{figure}[t]
     \scriptsize
     \begin{center}
     \dcsyntax
@@ -876,11 +877,11 @@ The spec of~\D~and the match compilation algorithm is presented below. %
     \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
     branches with a desugaring function~\ITran: 
     
-    \begin{align*}
-      &\itran{if\;~\dots~\dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}\\
-      &==\\
-      &{if\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;fi}
-    \end{align*}
+    \[
+      \itran{if\dots \dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
+      ==
+      {\bf{if}\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;\bf{fi}}
+    \]
 
     The duplicated instances of $e$ in the image can be optimized away with the
     classic decision tree DAG optimization. 
@@ -948,7 +949,7 @@ We evaluate two properties of our code:
   linear in the size of the source code. 
 \end{enumerate}
 
-\begin{figure}[H]
+\begin{figure}[h]
   \centering  % centers the figure
   \usetikzlibrary{positioning}
   \begin{tikzpicture}[
@@ -1176,8 +1177,8 @@ pessimal example. We highlight these in the following section. %
     
 
 \begin{credits}
-\subsubsection{\ackname} 
-\textit{Acknowledgements anonymized for review.}
+% \subsubsection{\ackname} 
+% \textit{Acknowledgements anonymized for review.}
 
 \subsubsection{\discintname}
 \textbf{\small{The authors have no competing interests to declare that are relevant to the
