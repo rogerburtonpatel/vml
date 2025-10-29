@@ -35,7 +35,7 @@
 
 \usepackage{cleveref} % load me last (as per doco)
 
-
+\usepackage{showframe}
 \begin{document}
 %
 \title{Never Going Back (tracking) Again: Equational Pattern Matching with Efficient Compilation}
@@ -66,7 +66,7 @@
 %
 \maketitle              % typeset the header of the contribution
 %
-
+\vspace{-0.25in}
 \begin{abstract}
     Pattern matching appeals to functional programmers for its expressiveness
     and good cost model, but it fails to express certain computations without
@@ -123,7 +123,7 @@ Examples are shown in \crefrange{fig:pmsideconditions}{fig:pmorpats}. %
 
 
 % --------------------------------------------
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \begin{minipage}{0.45\linewidth}
 \scriptsize
@@ -148,7 +148,7 @@ let exclaimTall sh =
         then "Zounds! Tremendous trapezoid!"
         else "Your shape is small." 
 \end{verbatim}
-\caption*{OCaml, without using side conditions}
+\caption*{OCaml, without using~side~conditions}
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\linewidth}
@@ -166,10 +166,10 @@ let exclaimTall sh =
 \end{verbatim}
 \caption*{OCaml, using side conditions}
 \end{minipage}
-\caption{Comparing pattern matching with and without side conditions.}
+\caption{Side conditions deduplicate right-hand sides.}
 \label{fig:pmsideconditions}
 \end{figure}
-\begin{figure}[ht]
+\begin{figure}[t]
 \centering
 \begin{minipage}{0.47\linewidth}
 \scriptsize
@@ -202,11 +202,11 @@ tripleLookup rho x =
 \end{verbatim}
 \caption*{Haskell, using pattern guards}
 \end{minipage}
-\caption{Comparing \texttt{tripleLookup} using pattern guards.}
+\caption{Pattern guards deduplicate right-hand sides and replace awkward nesting.}
 % \Description{Side-by-side comparison of tripleLookup implementations in OCaml and Haskell.}
 \label{fig:pmguards}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \begin{minipage}{0.45\linewidth}
 \scriptsize
@@ -235,7 +235,7 @@ freeNames : expr -> list string
 \end{verbatim}
 \caption*{OCaml using or-patterns}
 \end{minipage}
-\caption{Comparing pattern matching with and without or-patterns.}
+\caption{Or-patterns deduplicate left-hand sides with shared right-hand sides.}
 \label{fig:pmorpats}
 \end{figure}
 
@@ -271,61 +271,56 @@ Unification (and indeed any \VC expression) can \textit{succeed} or
 expressions. 
 
 
-    \begin{figure}[ht] 
-        \begin{minipage}[h]{0.54\linewidth}
-          \verselst
-          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=.2em,
-                            showstringspaces=false,
-                            frame=single]
+\begin{figure}[t]
+  \centering
+  \begin{minipage}[t]{0.54\linewidth}
+    \verselst
+    \begin{lstlisting}
 $\exists$ exclaimTall. exclaimTall = $\lambda$ sh. 
   one { 
-      $\exists$ s. sh = $\langle$Square s$\rangle$; 
-      s > 100.0; "Wow! That's a sizeable square!"
-    | $\exists$ w h. sh = $\langle$Triangle, w, h$\rangle$; 
-      h > 100.0; "Goodness! Towering triangle!"
-    | $\exists$ b1 b2 h. sh = $\langle$Trapezoid, b1, b2, h$\rangle$;
-      h > 100.0; "Zounds! Tremendous trapezoid!"
-    | "Your shape is small." }
-            \end{lstlisting}
-        \subcaption{\tt{exclaimTall} in~\VC }
-            \label{fig:verseexclaimtall} 
-        %   \vspace{4ex}
-        \end{minipage}%%
-        \begin{minipage}[h]{0.5\linewidth}
-          \verselst
-          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=2em,
-                        frame=single]
+    $\exists$ s. sh = ⟨Square s⟩; s > 100.0; "Wow! That's a sizeable square!"
+  | $\exists$ w h. sh = ⟨Triangle, w, h⟩; h > 100.0; "Goodness! Towering triangle!"
+  | $\exists$ b1 b2 h. sh = ⟨Trapezoid, b1, b2, h⟩; h > 100.0; "Zounds! Tremendous trapezoid!"
+  | "Your shape is small."
+  }
+    \end{lstlisting}
+    \vspace{-0.3em}
+    \subcaption{\tt exclaimTall in~\VC}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.44\linewidth}
+    \verselst
+    \begin{lstlisting}
 $\exists$ tripleLookup. tripleLookup = $\lambda$ rho x. 
-    one { $\exists$ w. lookup rho x = $\langle$Just w$\rangle$; 
-          $\exists$ y. lookup rho w = $\langle$Just y$\rangle$; 
-          $\exists$ z. lookup rho y = $\langle$Just z$\rangle$;
-          z
-        | handleFailure x }
-          \end{lstlisting}
-            \subcaption{\tt{tripleLookup} in~\VC }
-            \label{fig:versetriplelookup} 
-        \vspace{4ex}
-        \end{minipage} 
-        \begin{minipage}[h]{\linewidth}
-          \verselst
-          \begin{lstlisting}[numbers=none, basicstyle=\tiny, xleftmargin=9em, 
-                            frame=single, showstringspaces=false]
+  one { 
+    $\exists$ w. lookup rho x = ⟨Just w⟩;
+    $\exists$ y. lookup rho w = ⟨Just y⟩;
+    $\exists$ z. lookup rho y = ⟨Just z⟩;
+    z | handleFailure x
+  }
+    \end{lstlisting}
+    \vspace{-0.3em}
+    \subcaption{\tt tripleLookup in~\VC}
+  \end{minipage}
+  \vspace{0.5em}
 
+  \begin{minipage}[t]{0.9\linewidth}
+    \verselst
+    \begin{lstlisting}
 $\exists$ freeNames. freeNames = $\lambda$ e.
   one {
-    one { $\exists$ e. e = $\langle$Int _$\rangle$ | e = $\langle$Bool _$\rangle$ | e = $\langle$Float _$\rangle$}; nil
-    | one { $\exists$ n. e = $\langle$Local n$\rangle$ | e = $\langle$Global n$\rangle$ }; n
-  } 
-  ...
-          \end{lstlisting}
-        \subcaption{\tt{freeNames} in~\VC }
-            \label{fig:versegot} 
-        \vspace{4ex}
-        \end{minipage}%% 
-    \caption{Code for the functions with equations looks
-    similar, and it doesn't need extensions.}
-    \label{fig:verseextfuncs}
-      \end{figure}
+    one { $\exists$ e. e = ⟨Int _⟩ | e = ⟨Bool _⟩ | e = ⟨Float _⟩ }; nil
+  | one { $\exists$ n. e = ⟨Local n⟩ | e = ⟨Global n⟩ }; n
+  }
+    \end{lstlisting}
+    \vspace{-0.3em}
+    \subcaption{\tt freeNames in~\VC}
+  \end{minipage}
+
+  \caption{Compact \VC~function definitions in extended pattern-matching style.}
+  \label{fig:verseextfuncs}
+\end{figure}
+
 
 And~\VC~can do even more: the calculus easily encodes nonlinear patterns (and
 even more expressive constructs): see Section~\ref{freeextensions}. %
@@ -388,7 +383,7 @@ with these extensions at all (Section~\ref{freeextensions}).
 
 
 
-\begin{figure}[ht]
+\begin{figure}[t]
 \scriptsize
 \begin{minipage}[t]{0.48\linewidth}
 \begin{verbatim}
@@ -509,7 +504,7 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
         are seemingly ``out of order.'' The following is valid in \VMinus:
 
         \begin{example}[Out-of-order solving] 
-          $\exists\; x~y~z.~z = y;~y = x;~x = \mathit{A\_VALUE}$ 
+          $\exists\; x~y~z.~z = y;~y = x;~x = \mathit{3}$ 
         \end{example}
 
         The key insight of how \VMinus remains expressive in the absence of
@@ -546,13 +541,10 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     $\dagger$& when solving guards is rejected~\\
     $s$& $\rhohat~\mid~\dagger$ : guards produce~\it{solutions}: a
     refined environment~\rhohat\; or rejection\\
-    $\mathcal{T}$& A context of all temporarily stuck guards (a sequence)~\\ 
-    % $G$& A guarded expression~\\
-    %~\uppsidown& Inability to compile to a decision tree; a compile time error~\\
 \bottomrule
 \end{tabular}    
 % \Description{Metavariables used in rules for VMinus.}
-\caption{\VMinus metavariables and their meanings}
+\caption{\VMinus metavariables}
 \label{fig:vmmetavars}
 \end{table}
 
@@ -562,13 +554,14 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     \newcommand\GNoTree{\vmrung~\rightsquigarrow~\uppsidown} 
     
     In~\VMinus, an expression never returns multiple values, though it
-    can\textit{fail}. %
+    can~\textit{fail}. % 
     Specifically, a~\VMinus~expression evaluates to produce a
     single~\it{result}, which is either a single value $\v$ or~\fail. %
-    
-    \(\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\)
-%    
-    \(showvjudgement{Eval}{\vmeval}\)
+    \begin{center}
+      \(\result\;~\rm{::=}\;~\v\;~\vert~\;~\fail~\)
+      \qquad     
+      \(\showvjudgement{Eval}{\vmeval}\)
+    \end{center}
 
     For example, the~\VMinus expression {\tt{((}\ttbackslash\tt{x. x) K)}}
     succeeds and returns the value~\tt{K}. %
@@ -590,13 +583,13 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     
     \textbf{Refinement ($\preceq$) of environments and variables}
 
+{\scriptsize
     \begin{align*}
     \rho~\preceq~\Rhoprime~&\text{ when }\dom\rho~\subseteq~\dom~\Rhoprime\\
     &\text{ and }\forall x~\in~\dom~\rho:~\rho(x)~\leq~\Rhoprime(x) \\
     &\forall~v.~\bot~\leq~v~\land~v~\leq~v
     \end{align*}
-
-    \smallskip
+}
 
     Refinement on bound instances in environments is trivial: 
     $\bot$ can refine to a value, and once a value is bound, 
@@ -616,6 +609,28 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     equations \VC: the program picks one out of a context (\context), attempts
     to solve it, and moves on. %
 
+    \(\showvjudgement{Solve-Guards}{\vmgs}\)
+
+Given any such $\rho$, a guard~\g\ either refine $\rho$
+($\Rhoprime$) or is~\bf{rejected}. %
+We use the symbol $\dagger$ to
+represent rejection, and if any guard in a list is rejected, the entire list of
+guards is rejected. %
+
+\(\showvjudgement{Refine}{\grefine[solution=\rho']}\)
+\hspace{2in}
+\(\showvjudgement{reject}\gfail\)
+
+  For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
+  existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho\ bound to
+  $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. %
+The guard
+  \tt{x = K} successfully unifies~\tt{x} with~\tt{K}, producing the environment
+  $\bracketed{x~\mapsto~\tt{K}}$. %
+The guard~\tt{x = K2} attempts to unify~\tt{K}
+  with~\tt{K2} and is rejected with $\dagger$. %
+
+
 The semantics processes a~\it{list} of guards~\gs in a guarded
 expression \G: the program picks a guard from~\G, attempts to solve it to refine
 the environment or fail, and repeats.~\VMinus can only pick a guard out of \G\
@@ -629,7 +644,7 @@ guards left over, the semantics gets stuck before code is executed. %
 Below are several examples of how \VMinus is interpreted, using abstract syntax. 
 
 \begin{example}
-  $\exists\; x\;y.\; K~x~1 = K~2~z \rightarrowtail x \mapsto 2,~y\mapsto1$  
+  $\exists\; x\;y.\; K~x~1 = K~2~z~~~\rightarrowtail~~~\{x \mapsto 2,~y\mapsto1\}$  
 \end{example}
 
 
@@ -638,7 +653,7 @@ sub-equations $x = 2;~1=z$, and the derivation succeeds with an extended
 environment. 
 
 \begin{example}
-  $\exists\; x\;y.\; x=K~y;~y = K~0 \rightarrowtail x \mapsto K (K~0),~y\mapsto~K~0$  
+  $\exists\; x\;y.\; x=K~y;~y = K~0~~~\rightarrowtail~~~\{x \mapsto K (K~0),~y\mapsto~K~0\}$  
 \end{example}
 
 The semantics first ``picks'' the guard $y = K~0$ since it is immediately
@@ -647,49 +662,27 @@ Once $y$ is bound to $K~0$ in the environment, $x=K~y$ becomes solvable, and
 the derivation succeeds with an extended environment. 
 
 \begin{example}
-    $\exists\; x\;y.\; x=K~y;~y = K~x \rightarrowtail \dagger$ 
+    $\exists\; x\;y.\; x=K~y;~y = K~x~~~\rightarrowtail~~~\dagger$ 
 \end{example}
 
 Here $x$ and $y$ are circularly dependent, so the program cannot make progress,
 and the derivation fails with $\dagger$. 
 
 \begin{example}
-    $\exists\; x.\;x=3=x=4 \rightarrowtail \dagger$ 
+    $\exists\; x.\;x=3=x=4~~~\rightarrowtail~~~\dagger$ 
 \end{example}
 
 Here $3$ cannot be unified with $4$ no matter the order in which 
 the semantics picks the guards, so the derivation fails with $\dagger$. 
-
-\(\showvjudgement{Solve-Guards}{\vmgs}\)
-
-
-Given any such $\rho$, a guard~\g\ either refine $\rho$
-($\Rhoprime$) or is~\bf{rejected}. %
-We use the symbol $\dagger$ to
-represent rejection, and if any guard in a list is rejected, the entire list of
-guards is rejected. %
-
-\(\showvjudgement{Guard-Refine}{\grefine[solution=\rho']}\)
-\hspace{2in}
-\(\showvjudgement{Guard-reject}\gfail\)
-
-  For example, in the~\VMinus expression~\tt{if E x. x = K; x = K2 -> x fi}, the
-  existential (in concrete syntax,~\tt{E}) introduces~\tt{x} to~\Rho\ bound to
-  $\bot$, producing the environment $\bracketed{x~\mapsto~\bot}$. %
-The guard
-  \tt{x = K} successfully unifies~\tt{x} with~\tt{K}, producing the environment
-  $\bracketed{x~\mapsto~\tt{K}}$. %
-The guard~\tt{x = K2} attempts to unify~\tt{K}
-  with~\tt{K2} and is rejected with $\dagger$. %
 
 %   \subsection{Notable rules in the \VMinus semantics}
 
 %   Worth discussing in the~\VMinus semantics are those in which a name in \Rho\
 %   is bound to a value or to $\bot$. %
 % Notable among these include
-%   \textsc{Guard-Name-Exp-Bot}, \textsc{Guard-Name-Exp-Eq},
-%   \textsc{Guard-Name-Exp-Fail}, \textsc{Guard-Names-Bot-Succ},
-%   and~\textsc{Guard-Names-Bot-Succ-Rev}. %
+%   \textsc{Name-Exp-Bot}, \textsc{Name-Exp-Eq},
+%   \textsc{Name-Exp-Fail}, \textsc{Names-Bot-Succ},
+%   and~\textsc{Names-Bot-Succ-Rev}. %
 % This section discusses each of these
 %   rules in short detail. %
 % The full set of rules for \VMinus is in
@@ -738,7 +731,7 @@ The guard~\tt{x = K2} attempts to unify~\tt{K}
 % \guardnamesbotsuccrev
 % \]
 
-% This rule is simply an application of \textsc{Guard-Names-Bot-Succ} in reverse. %
+% This rule is simply an application of \textsc{Names-Bot-Succ} in reverse. %
     
     \vfilbreak
     
@@ -748,7 +741,12 @@ The guard~\tt{x = K2} attempts to unify~\tt{K}
     \label{usemantics1}
 
     \scriptsize
-    {\usemantics \vmsemantics}
+    {\vmsemantics
+
+    \noindent \textbf{Standard Evaluation Rules}
+    
+    \usemantics 
+    }
     
     % Powerful. %
 
@@ -762,7 +760,7 @@ The guard~\tt{x = K2} attempts to unify~\tt{K}
 In addition to subsuming the three extensions we mentioned, \VMinus also allows
 for some constructs that aren't expressible with these extensions at all: 
 
-\footnotesize{
+\scriptsize{
 \begin{verbatim}
   val nonlinear_binding = \xs. 
     if E y ys. xs = cons y (cons y) ys -> ys fi 
@@ -815,25 +813,27 @@ The spec of~\D~and the match compilation algorithm is presented below. %
 
   \D~shares most syntax and corresponding evaluation rules with~\VMinus, except
   that it has decision trees instead of \iffibf. The rules for $test$ and $let$
-  are the only interesting cases: 
+  are the only interesting cases (Figure~\ref{fig:dinterestingcases}).
 
-{\scriptsize  \[
-\inferrule*[Left=\textsc{ (Eval-Test-Fail) }]
+\begin{figure}[t]
+  {\scriptsize  
+\[
+\begin{array}{c}
+    \inferrule*
+    % [Left={\scriptsize \textsc{ (Test-Fail) }}]
     {\ }
     {\treeval[tree={test({x, []})}, result={\fail}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Test-Succeed) }]
+    \hspace{0.3in}
+    \inferrule*
+    % [Left={\scriptsize \textsc{ (Test-Succeed) }}]
     {\rho(x) = K\; v_{1}, \dots, v_{i}
     \\\\ 
     {\treeval[envext={\bracketed{v_{1} \mapsto y_{1}, \dots, v_{i} \mapsto y_{i}}}, tree={t}, result={\result}]}
     }
     {\treeval[tree={test({x, (K\; y_{1}, \dots, y_{i}, t) \cdot ts})}, result={\result}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Eval-Test-Recurse) }]
+    \\ \\
+    \inferrule*
+    % [Left={\scriptsize \textsc{ (Test-Recurse) }}]
     {\rho(x) = \v
     \\\\
     \v \rm{ does not have the form } K\; v_{1}, \dots, v_{i}
@@ -841,26 +841,28 @@ The spec of~\D~and the match compilation algorithm is presented below. %
     {\treeval[tree={test({x, ts})}, result={\result}]}
     }
     {\treeval[tree={test({x, (K\; y_{1}, \dots, y_{i}, t) \cdot ts})}, result={\result}]}
-\]
-
-\[
-\inferrule*[Left=\textsc{ (Let-Succeed) }]
+    \\ \\
+    \inferrule*
+    % [Left={\scriptsize \textsc{ (Let-Succeed) }}]
     {\treeval[tree=e, result=\v]
     \\\\ 
     {\treeval[envext={\bracketed{x \mapsto \v}}, tree={\dt_{1}}, result={\result}]}
     }
     {\treeval[tree={let\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
-\]
-
-
-\[
-\inferrule*[Left=\textsc{ (Let-Unless) }]
+    \hspace{0.3in}
+    \inferrule*
+    % [Left={\scriptsize \textsc{ (Let-Unless) }}]
     {\treeval[tree=e, result=\fail]
     \\\\ 
     {\treeval[tree={\dt_{2}}, result={\result}]}
     }
     {\treeval[tree={let\; x = e\; in\; \dt_{1}\; unless\; \fail \Rightarrow \dt_{2}}, result={\result}]}
+  \end{array}
 \]}
+\caption{Rules that expand decision-tree evaluation to fit \VMinus}
+\end{figure}
+\label{fig:dinterestingcases}
+
 
   In~\D, like in~\VMinus, expressions can~\it{fail}. To capture this behavior,
   \textit{let} has an extra branch that is executed if the examined expression
@@ -878,11 +880,12 @@ The spec of~\D~and the match compilation algorithm is presented below. %
     \Compile~first desugars the~\iffibf by expanding choice to multiple~\iffibf
     branches with a desugaring function~\ITran: 
     
-    \[
-      \itran{if\dots \dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
-      ==
-      {\bf{if}\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;\bf{fi}}
-    \]
+    % todo put this on one line
+    % \[
+    %   \itran{if\dots \dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
+    %   ==
+    %   {\bf{if}\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;\bf{fi}}
+    % \]
 
     The duplicated instances of $e$ in the image can be optimized away with the
     classic decision tree DAG optimization. 
@@ -929,7 +932,6 @@ The spec of~\D~and the match compilation algorithm is presented below. %
 \subsection{Big-step rules for \Compile}
 
       \begingroup
-      \footnotesize
       \compiler
       \endgroup
 
@@ -957,8 +959,6 @@ ran a differential correctness and performance analysis across a suite of 32
 microbenchark tests. %
 For further reference on our evaluation strategy, Figure~\ref{fig:evaluation} in
 the Appendix shows the map of our testing framework. % 
-
-\textit{Implementation location omitted for submission. It's real, though!}
 
 \subsection{Microbenchmark tests}
 
@@ -1149,9 +1149,9 @@ content of this article.}}
 \bibliographystyle{splncs04}
 \bibliography{sources}
 
-\appendix
-
-\begin{figure}[h]
+\newpage
+\section{Appendix}
+\begin{figure}[ht]
   \centering  % centers the figure
   \usetikzlibrary{positioning}
   \begin{tikzpicture}[

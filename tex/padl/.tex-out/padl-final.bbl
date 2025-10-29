@@ -4,54 +4,36 @@
 \providecommand{\doi}[1]{https://doi.org/#1}
 
 \bibitem{augustsson1985compiling}
-Augustsson, L.: Compiling pattern matching. In: Conference on Functional
-  Programming Languages and Computer Architecture. pp. 368--381. Springer
-  (1985)
+Augustsson, L.: Compiling pattern matching. In: Conference on Functional Programming Languages and Computer Architecture. pp. 368--381. Springer (1985)
 
 \bibitem{verse}
-Augustsson, L., Breitner, J., Claessen, K., Jhala, R., Peyton~Jones, S.,
-  Shivers, O., Steele~Jr, G.L., Sweeney, T.: The verse calculus: A core
-  calculus for deterministic functional logic programming. Proceedings of the
-  ACM on Programming Languages  \textbf{7}(ICFP),  417--447 (2023)
+Augustsson, L., Breitner, J., Claessen, K., Jhala, R., Peyton~Jones, S., Shivers, O., Steele~Jr, G.L., Sweeney, T.: The verse calculus: A core calculus for deterministic functional logic programming. Proceedings of the ACM on Programming Languages  \textbf{7}(ICFP),  417--447 (2023)
 
 \bibitem{macqueen1985tree}
-Baudinet, M., MacQueen, D.: Tree pattern matching for {ML} (1986), available
-  from David MacQueen, AT\&T Bell Laboratories, 600 Mountain Avenue, Murray,
-  Hill, NJ 07974
+Baudinet, M., MacQueen, D.: Tree pattern matching for {ML} (1986), available from David MacQueen, AT\&T Bell Laboratories, 600 Mountain Avenue, Murray, Hill, NJ 07974
 
 \bibitem{clark1982introduction}
-Clark, K.: An introduction to logic programming. Introductory Readings in
-  Expert Systems, ed. D. Michie pp. 93--112 (1982)
+Clark, K.: An introduction to logic programming. Introductory Readings in Expert Systems, ed. D. Michie pp. 93--112 (1982)
 
 \bibitem{dijkstra}
-Dijkstra, E.W.: A Discipline of Programming. Prentice Hall, Englewood Cliffs,
-  NJ (1976)
+Dijkstra, E.W.: A Discipline of Programming. Prentice Hall, Englewood Cliffs, NJ (1976)
 
 \bibitem{guardproposal}
-Erwig, M., Jones, S.P.: Pattern guards and transformational patterns.
-  Electronic Notes in Theoretical Computer Science  \textbf{41}(1), ~3 (2001)
+Erwig, M., Jones, S.P.: Pattern guards and transformational patterns. Electronic Notes in Theoretical Computer Science  \textbf{41}(1), ~3 (2001)
 
 \bibitem{hanus2013functional}
-Hanus, M.: Functional logic programming: From theory to curry. Programming
-  Logics: Essays in Memory of Harald Ganzinger pp. 123--168 (2013)
+Hanus, M.: Functional logic programming: From theory to curry. Programming Logics: Essays in Memory of Harald Ganzinger pp. 123--168 (2013)
 
 \bibitem{ocaml}
-Leroy, X., Doligez, D., Frisch, A., Garrigue, J., R{\'e}my, D.,
-  Sivaramakrishnan, K., Vouillon, J.: The ocaml system release 5.1:
-  Documentation and user's manual (2023)
+Leroy, X., Doligez, D., Frisch, A., Garrigue, J., R{\'e}my, D., Sivaramakrishnan, K., Vouillon, J.: The ocaml system release 5.1: Documentation and user's manual (2023)
 
 \bibitem{maranget}
-Maranget, L.: Compiling pattern matching to good decision trees. In:
-  Proceedings of the 2008 ACM SIGPLAN workshop on ML. pp. 35--46 (2008)
+Maranget, L.: Compiling pattern matching to good decision trees. In: Proceedings of the 2008 ACM SIGPLAN workshop on ML. pp. 35--46 (2008)
 
 \bibitem{scottramsey}
-Scott, K., Ramsey, N.: When do match-compilation heuristics matter? Tech. Rep.
-  CS-2000-13, Department of Computer Science, University of Virginia (May 2000)
+Scott, K., Ramsey, N.: When do match-compilation heuristics matter? Tech. Rep. CS-2000-13, Department of Computer Science, University of Virginia (May 2000)
 
 \bibitem{wadler1985replace}
-Wadler, P.: How to replace failure by a list of successes a method for
-  exception handling, backtracking, and pattern matching in lazy functional
-  languages. In: Conference on Functional Programming Languages and Computer
-  Architecture. pp. 113--128. Springer (1985)
+Wadler, P.: How to replace failure by a list of successes a method for exception handling, backtracking, and pattern matching in lazy functional languages. In: Conference on Functional Programming Languages and Computer Architecture. pp. 113--128. Springer (1985)
 
 \end{thebibliography}
