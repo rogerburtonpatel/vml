@@ -881,11 +881,11 @@ The spec of~\D~and the match compilation algorithm is presented below. %
     branches with a desugaring function~\ITran: 
     
     % todo put this on one line
-    % \[
-    %   \itran{if\dots \dbar\; gs_{1};\;~\choiceg{gs_{2}}{gs_{3}};\; gs_{4}~\rightarrow e\;~\dbar~\dots~\;fi}
-    %   ==
-    %   {\bf{if}\;~\dots~\dbar\; gs_{1};\; gs_{2}~\rightarrow e~\;\dbar\; gs_{3};\; gs_{4}~\rightarrow e~\;\dbar~\dots~\;\bf{fi}}
-    % \]
+    {\scriptsize \[
+      \itran{if\dots \dbar~gs_{1};~\choiceg{gs_{2}}{gs_{3}};~gs_{4}~\rightarrow e~\dbar~\dots~fi}
+      ==
+      {\bf{if}~\dots~\dbar~gs_{1};~gs_{2}~\rightarrow e~\dbar~gs_{3};~gs_{4}~\rightarrow e~\dbar~\dots~\bf{fi}}
+    \]}
 
     The duplicated instances of $e$ in the image can be optimized away with the
     classic decision tree DAG optimization. 
