@@ -1,3 +1,8 @@
+For next iteration: 
+
+- Polish 
+- More context and explanation for the technical parts 
+
 Scratch:
 
 - [ ] improve syntax 

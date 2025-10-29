@@ -15,6 +15,8 @@
 \usepackage{lineno}
 \linenumbers 
 
+\captionsetup{belowskip=0pt, aboveskip=2pt}  % globally reduce spacing
+
 % T1 fonts will be used to generate the final print and online PDFs,
 % so please use T1 fonts in your manuscript whenever possible. %
 % Other font encodings may result in incorrect characters. %
@@ -363,6 +365,10 @@ produces a decision tree. %
 Being inspired by~\VC~but reduced to the absolute essence of only
 decision-making, it is called~\VMinus (``V-minus''). %
 
+
+
+\section{Syntax and Formal Semantics of~\VMinus}
+\label{vminus}
 \VMinus has equations and choice, like~\VC, but it does not have multiple
 results or backtracking. %
 To eliminate multiple results, expressions in~\VMinus evaluate to at most one
@@ -432,9 +438,6 @@ val freeNames = \.e
 \label{fig:vminusfuncs}
 \end{figure}
 
-\vspace{-9ex}  % Reduce space after section heading
-\section{Syntax and Formal Semantics of~\VMinus}
-\label{vminus}
 % \vspace{-10ex}  % Reduce space after section heading
 Because we are comparing $V^-$ with pattern matching, we strove in our
     design to model around a ``decision wrapping construct'' analogous to
@@ -1163,8 +1166,8 @@ pessimal example. We highlight these in the following section. %
 
     We~have introduced~\VMinus, a~language that makes decisions using
     equations.%
-    By~example, we have shown that programs written in~\VMinus can have the same
-    desirable properties as equivalent programs written using pattern matching. %
+    By~example, we have shown that programs written in~\VMinus can be as
+    succinct as equivalent programs written using pattern matching. %
     And~to~show that equations can be compiled to efficient decision trees, we
     have introduced~\D and~\DTran and showed their correctness and efficiency in
     under a suite of microbencharks. In doing so, we~have demonstrated that
