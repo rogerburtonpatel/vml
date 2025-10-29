@@ -2,7 +2,7 @@
 \documentclass[runningheads]{llncs}
 \usepackage{vmlmacros}
 
-\renewcommand\nr[2][NR]{~\textsf{[#1: #2]}}
+% \renewcommand\nr[2][NR]{~\textsf{[#1: #2]}}
 
 % ow
 
@@ -15,6 +15,7 @@
 \usepackage{lineno}
 \linenumbers 
 
+\usepackage{caption}
 \captionsetup{belowskip=0pt, aboveskip=2pt}  % globally reduce spacing
 
 % T1 fonts will be used to generate the final print and online PDFs,
@@ -948,58 +949,13 @@ We evaluate two properties of our code:
   linear in the size of the source code. 
 \end{enumerate}
 
-\begin{figure}[H]
-  \centering  % centers the figure
-  \usetikzlibrary{positioning}
-  \begin{tikzpicture}[
-      % smaller distances
-      node distance=1.1cm and 2.0cm,  
-      every node/.style={font=\sffamily, align=center},
-      % even smaller boxes
-      process/.style={rectangle, draw, rounded corners=2pt, minimum width=1.8cm, minimum height=0.7cm},
-      smallbox/.style={rectangle, draw, minimum width=2.0cm, minimum height=0.5cm},
-      file/.style={rectangle, draw, minimum width=0.7cm, minimum height=0.7cm},
-      arrow/.style={->, thick}
-  ]
-  
-  % Top
-  \node[file] (file) {$\mathit{p}$};
-  
-  % Middle layer
-  \node[process, below left=0.35cm and 0.7cm of file] (vminus) {$\VMinus$};
-  \node[process, below right=0.35cm and 0.7cm of file] (dtran) {$\DTran$};
-  \node[process, below=0.2cm of dtran] (d) {$\D$};
-  
-  % Bottom layer (aligned horizontally)
-  \node[smallbox, below=2.5cm of file, xshift=-1.2cm] (chkperf)
-  {\textit{check-performance}}; 
-  
-  \node[smallbox, below=2.5cm of file, xshift=1.2cm] (chkout)
-  {\textit{check-output}};
-  
-  % Connections
-  \draw[arrow] (file) -- (vminus);
-  \draw[arrow] (file) -- (dtran);
-  \draw[arrow] (dtran) -- (d);
-  
-  \draw[arrow] (vminus.south) -- (chkperf.north);
-  \draw[arrow] (vminus.south) -- (chkout.north);
-  \draw[arrow] (d.south) -- (chkperf.north);
-  \draw[arrow] (d.south) -- (chkout.north);
-  
-  \end{tikzpicture}
-  \caption{Differential testing and decision-tree performance measurement for a program $p$.}
-  \label{fig:evaluation}
-\end{figure}
-
-
-
 
 To evaluate correctness and performance, we implemented an interpreter for
 \VMinus, its compiler, and an interpreter for the resulting decision trees, and
 ran a differential correctness and performance analysis across a suite of 32
 microbenchark tests. %
-Figure~\ref{fig:evaluation} shows the map of our evaluation strategy. % 
+For further reference on our evaluation strategy, Figure~\ref{fig:evaluation} in
+the Appendix shows the map of our testing framework. % 
 
 \textit{Implementation location omitted for submission. It's real, though!}
 
@@ -1176,8 +1132,8 @@ pessimal example. We highlight these in the following section. %
     
 
 \begin{credits}
-\subsubsection{\ackname} 
-\textit{Acknowledgements anonymized for review.}
+% \subsubsection{\ackname} 
+% \textit{Acknowledgements anonymized for review.}
 
 \subsubsection{\discintname}
 \textbf{\small{The authors have no competing interests to declare that are relevant to the
@@ -1191,4 +1147,51 @@ content of this article.}}
 %
 \bibliographystyle{splncs04}
 \bibliography{sources}
+
+\appendix
+
+\begin{figure}[h]
+  \centering  % centers the figure
+  \usetikzlibrary{positioning}
+  \begin{tikzpicture}[
+      % smaller distances
+      node distance=1.1cm and 2.0cm,  
+      every node/.style={font=\sffamily, align=center},
+      % even smaller boxes
+      process/.style={rectangle, draw, rounded corners=2pt, minimum width=1.8cm, minimum height=0.7cm},
+      smallbox/.style={rectangle, draw, minimum width=2.0cm, minimum height=0.5cm},
+      file/.style={rectangle, draw, minimum width=0.7cm, minimum height=0.7cm},
+      arrow/.style={->, thick}
+  ]
+  
+  % Top
+  \node[file] (file) {$\mathit{p}$};
+  
+  % Middle layer
+  \node[process, below left=0.7cm and 0.7cm of file] (vminus) {$\VMinus$};
+  \node[process, below right=0.35cm and 0.7cm of file] (dtran) {$\DTran$};
+  \node[process, below=0.2cm of dtran] (d) {$\D$};
+  
+  % Bottom layer (aligned horizontally)
+  \node[smallbox, below=3cm of file, xshift=-1.4cm] (chkperf)
+  {\textit{check-performance}}; 
+  
+  \node[smallbox, below=3cm of file, xshift=1.4cm] (chkout)
+  {\textit{check-output}};
+  
+  % Connections
+  \draw[arrow] (file) -- (vminus);
+  \draw[arrow] (file) -- (dtran);
+  \draw[arrow] (dtran) -- (d);
+  
+  \draw[arrow] (vminus.south) -- (chkperf.north);
+  \draw[arrow] (vminus.south) -- (chkout.north);
+  \draw[arrow] (d.south) -- (chkperf.north);
+  \draw[arrow] (d.south) -- (chkout.north);
+  
+  \end{tikzpicture}
+  \caption{Differential testing and decision-tree performance measurement for a program $p$.}
+  \label{fig:evaluation}
+\end{figure}
+
 \end{document}
