@@ -100,9 +100,8 @@ In comparative examples,
     We support our claim about \VMinus's cost model by providing
     formal rules and a Standard ML implementation for a \ensuremath{V^{-}}
     match compiler.
-    We~prove that our compilation algorithm
-    \nr{produces decision trees whose height is comparable to trees
-    produced by compiling pattern matching??},
+    We~prove that our 
+    compiled decision-making code runs in time at most linear in the size of the equations,
     and we evaluate our implementation with micro-benchmarks.
 
 \end{abstract}
@@ -113,10 +112,11 @@ In comparative examples,
 % \rab{read once more for formatting and spelling, last to remove.}
 
 %\subsection{Pattern Matching}
-When examining and deconstructing data, functional programmers
-love pattern matching:
-code is often admirably concise,
-and pattern matching compiles to efficient decision trees. %
+Functional programmers
+love pattern matching.
+Data can be examined and deconstructed using code that is often
+concise and perspicuous,
+and the code compiles to efficient decision trees. %
 But when expressing some common computations,
 pattern matching requires code that looks repetitive or redundant. %
 To~eliminate the resulting verbosity, the designers of major languages like OCaml and
@@ -124,7 +124,7 @@ Haskell have extended pattern matching;
 the most common extensions are
 \textit{side
 conditions}, \textit{or-patterns}, and \textit{pattern
-guards}\cite{guardproposal}. %
+guards}~\cite{guardproposal}. %
 Examples are shown in \crefrange{fig:pmsideconditions}{fig:pmorpats}. %
 
 
@@ -246,12 +246,13 @@ freeNames : expr -> list string
 \end{figure}
 
 
-But no popular programming language lets you write all three of the
-examples shown:
+But no popular programming language lets you write all three of these
+examples:
 % programs, because none has all three of these extensions: 
 Haskell lacks
-(binding) or-patterns\footnote{Non-binding or-patterns have existed in GHC only
-as of 2023.}, OCaml lacks guards, other languages lack side conditions, and so
+binding or-patterns\footnote{Even non-binding or-patterns have been
+supported in GHC only
+since 2023.}, OCaml lacks guards, other languages lack side conditions, and so
 on. %
 And we~find the extension story somewhat unsatisfying: Even if one language had
 all three of the extensions used in
@@ -268,13 +269,16 @@ or rather, the Verse Calculus,~\VC~\cite{verse}. %
 Each of the examples in \crefrange{fig:pmsideconditions}{fig:pmorpats} is easily
 and concisely written using equations (Figure~\ref{fig:verseextfuncs}).
 
-In~\VC, names can be introduced with the existential {$\exists$} before they are
-given a binding. %
+In~\VC, names are introduced with the existential quantifier~{$\exists$} before they are
+given bindings. %
 Bindings are given by equations of the form $x = e$, which unify their left- and
 right-hand sides at runtime. %
 Unification (and indeed any \VC expression) can \textit{succeed} or
-\textit{fail}, letting programmers ``guard'' an expression with equations and other
-expressions. 
+\textit{fail}, letting programmers ``guard'' an expression with an equation or other
+expression. 
+\VC's equations can easily encode patterns, including nonlinear patterns,
+as well as 
+even more expressive constructs (Section~\ref{freeextensions}). %
 
 
 \begin{figure}[t]
@@ -328,44 +332,45 @@ $\exists$ freeNames. freeNames = $\lambda$ e.
 \end{figure}
 
 
-And~\VC~can do even more: the calculus easily encodes nonlinear patterns (and
-even more expressive constructs): see Section~\ref{freeextensions}. %
-
-But the cost model of functional logic languages like~\VC~can be challenging:
-because unification under equations can backtrack at runtime, code with
-equations can run in exponential
+But the cost of computing with \VC's equations, 
+or with equations in any functional logic language,
+can be daunting.
+Unification under equations can backtrack at runtime, so code with
+equations may run in exponential
 time~\cite{hanus2013functional,wadler1985replace,clark1982introduction}. %
-And code that returns multiple values by nesting Verse's \textbf{choice}
-operator can quickly become exonential in space usage, too~\cite{verse}.
+And if code returns multiple values by nesting \VC's \textbf{choice}
+operator, its evaluation may also require exponential space~\cite{verse}.
 
-Pattern matching, by contrast, can be compiled to a~\it{decision tree}, a data
-structure that enforces linear runtime performance by guaranteeing no part of
-the matched expression will be examined more than once~\cite{maranget}. %
-A decision tree does not backtrack: once a program makes a decision based on the
-form of a value, it does not re-test it later with new information. %
-Furthermore, a decision tree can be space-optimized so that all leaves are
-unique by reducing to a DAG via a shared continuation.
+Pattern matching, by contrast, can be compiled to a~\it{decision tree}.
+A~decision tree ensures linear run time by guaranteeing that no part of
+the matched value is examined more than once~\cite{maranget}. %
+Evaluation never backtracks;
+once a value is examined and its form is known,
+all future decisions are aware of that form.
 
-Pattern matching tempts us with its desirable cost model, but challenging
-questions remain for the modern implementor of both a new and an existing
-programming language. %
+Pattern matching compiles to efficient code,
+but as illustrated above, 
+simple pattern matching is seldom enough:
+programmers hear the siren call of extensions.
+But language implementors will have questions:
 How much work would it be to add binding or-patterns to GHC? %
 How about nonlinear patterns? %
 How much work would it be to add guards to OCaml? %
-And finally: in a complex codebase like GHC's, is it reasonable to assume that
-adding a new extension to pattern matching will not introduce a corner case that
-makes pattern matching unsound? %
+In~a complex code base, how can we be confident that 
+adding a new extension to pattern matching will not change the order
+of evaluation or even make pattern matching unsound? %
+We~propose another approach: use equations from the start, and engineer them to be
+as performant as pattern matching.
 
-These questions motivate a somewhat hopeful one: what if we instead start with a
-new language and use equations from the start, and engineer the equations to be
-performant like pattern matching? 
-
-Our answer to this question, and primary contribution, is a new core calculus
-and implementation of expressive equations and an accompanying compiler which
-produces a decision tree. % 
-
-Being inspired by~\VC~but reduced to the absolute essence of only
-decision-making, it is called~\VMinus (``V-minus''). %
+Our approach is embodied in a new core calculus.
+This calculus is 
+ inspired by~\VC, 
+but we have reduced it to contain only those features
+that are essential to
+decision-making.
+Our calculus is therefore called~\VMinus (``V-minus''). %
+\VMinus, together with a compiler that translates \VMinus\ to a
+decision tree, is the primary contribution of this paper.
 
 
 
@@ -440,6 +445,7 @@ val freeNames = \.e
 \label{fig:vminusfuncs}
 \end{figure}
 
+
 % \vspace{-10ex}  % Reduce space after section heading
 Because we are comparing $V^-$ with pattern matching, we strove in our
     design to model around a ``decision wrapping construct'' analogous to
@@ -452,6 +458,8 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
     % Though our guards are quite different from patterns, the \iffibf construct 
     % is similar to \textit{case}/\textit{match}.
     
+        
+
     \begin{figure}[t]
       \scriptsize
           \begin{center}
@@ -522,7 +530,6 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
         If it cannot find one, the compiler rejects the program. %
         Under the hood, the compiler does this by building a dependency graph
         between variable binding sites and traversing it from the root. %
-        
         
 
 \begin{table}
@@ -894,8 +901,10 @@ The spec of~\D~and the match compilation algorithm is presented below. %
       {\bf{if}~\dots~\dbar~gs_{1};~gs_{2}~\rightarrow e~\dbar~gs_{3};~gs_{4}~\rightarrow e~\dbar~\dots~\bf{fi}}
     \]}
 
-    The duplicated instances of $e$ in the image can be optimized away with the
-    classic decision tree DAG optimization. 
+    The duplicated instances of $e$ in the image can be optimized away with a
+    classic optimization;
+    the decision tree is reduced to a DAG, and in the resulting DAG all
+    leaves are unique. 
 
     With the desugared~\iffibf,~\Compile\ then repeatedly chooses a guarded
     expression $G$ and applies one of the compilation rules below. %
