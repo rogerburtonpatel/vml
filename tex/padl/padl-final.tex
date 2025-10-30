@@ -69,35 +69,41 @@
 \vspace{-0.25in}
 \begin{abstract}
     Pattern matching appeals to functional programmers for its expressiveness
-    and good cost model, but it fails to express certain computations without
-    verbosity. %
+    and good cost model, but it expresses certain computations quite verbosely.
 Verbosity can be reduced by using extended forms of pattern
-    matching, but extensions are not standardized, and making certain extensions
-    like or-patterns and pattern guards cooperate in a large-scale programming
-    language is a significant implementation challenge that has not seen success
-    until recent years. %
+    matching, but extensions are not standardized, and
+in a large-scale programming
+    language, 
+ making certain extensions
+     cooperate,
+like or-patterns and pattern guards,
+ is a significant implementation challenge.
 
     
-    Alternatively to pattern matching, computations can be expressed succinctly
-    by using equations, as has been demonstrated by the Verse programming
-    language. %
-But such computations may have time and space costs that can
-    be hard to predict. %
-As a compromise, we ~propose a new
-    calculus,~\ensuremath{V^{-}}, which~uses equations in a limited way that
+    Alternatively,
+as has been shown in the Verse programming
+    language, computations can be expressed succinctly
+    by using equations.
+But computations expressed using equations have have time and space costs that can
+    be hard to predict. 
+As~a potential sweet spot, we~propose a new
+    calculus,~\ensuremath{V^{-}}, which limits equations in a way that
     makes time and space costs easy to predict. %
 In comparative examples,
-    \ensuremath{V^{-}}~ expresses computations as succinctly as pattern matching
-    with popular extensions- namely, side conditions, or-patterns, and pattern
-    guards- and just like pattern matching, it can be compiled to a decision
+    \ensuremath{V^{-}}~expresses computations as succinctly as pattern matching
+    with popular extensions (side conditions, or-patterns, and pattern
+    guards).
+    And just like a case expression with patterns,
+    a~set of \VMinus\ equations can be compiled to an efficient decision
     tree. %
 
-    To show that \VMinus has the same cost model as pattern matching, we present
-    formal rules and a Standard ML implementation for the \ensuremath{V^{-}}
-    match compiler, and we evaluate our implementation with micro-benchmarks and
-    a proof that our compilation algorithm preserves the desirable decision tree
-    height invariants. %
-
+    We support our claim about \VMinus's cost model by providing
+    formal rules and a Standard ML implementation for a \ensuremath{V^{-}}
+    match compiler.
+    We~prove that our compilation algorithm
+    \nr{produces decision trees whose height is comparable to trees
+    produced by compiling pattern matching??},
+    and we evaluate our implementation with micro-benchmarks.
 
 \end{abstract}
 
