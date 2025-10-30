@@ -760,7 +760,7 @@ the semantics picks the guards, so the derivation fails with $\dagger$.
 In addition to subsuming the three extensions we mentioned, \VMinus also allows
 for some constructs that aren't expressible with these extensions at all: 
 
-\scriptsize{
+\begingroup\scriptsize
 \begin{verbatim}
   val nonlinear_binding = \xs. 
     if E y ys. xs = cons y (cons y) ys -> ys fi 
@@ -770,9 +770,11 @@ for some constructs that aren't expressible with these extensions at all:
 
     val lenient_binding = \xs.
       if E x y z. x = y; z = cons y ys -> x fi 
-\end{verbatim}}
+\end{verbatim}
+\par
+\endgroup % scriptsize
 
-\normalsize
+
     
 Nonlinear patterns (patterns that use a name more than once) appear in some
 programming languages like Erlang, but like our prior examples, they are also
