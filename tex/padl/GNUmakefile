@@ -2,9 +2,11 @@ TOP := ../..
 TEXUTIL := $(TOP)/tex-util
 TEXINPUTS := .:$(TEXUTIL):
 
-compile := env TEXINPUTS=$(TEXINPUTS) latexmk --norc -r ./latexmkrc -pdf -xelatex -output-directory=. -aux-directory=.tex-out --halt-on-error -file-line-error -shell-escape
+TEXOPTS := -output-directory=. -aux-directory=.tex-out --halt-on-error -file-line-error -shell-escape
 
-.PHONY: all padl
+compile := env TEXINPUTS=$(TEXINPUTS) latexmk --norc -r ./latexmkrc -pdf -xelatex $(TEXOPTS)
+
+.PHONY: all padl draft
 
 
 # builds the full paper
@@ -18,6 +20,10 @@ all: padl
 
 # Thesis.pdf: 
 # 	$(shell cp fullpaper.pdf Thesis.pdf)
+
+draft:
+	env TEXINPUTS=$(TEXINPUTS) xelatex $(TEXOPTS) --output-directory .tex-out padl-final.tex
+	cp -u .tex-out/padl-final.pdf .
 
 padl: padl-final.pdf
 	@ : go 
