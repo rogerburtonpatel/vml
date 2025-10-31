@@ -499,7 +499,42 @@ Because we are comparing $V^-$ with pattern matching, we strove in our
           \caption{\VMinus: Concrete syntax}\footnote{$\overline{x}$ means ``zero or more of $x$;''
           $\overline{x}^{+}$ means ``one or more of $x$.''}
           \label{fig:vmsyntax}
-        \end{figure}      
+        \end{figure}
+
+    \begin{figure}[t]
+      \scriptsize
+          \begin{center}
+            % Array-based version of VMinus syntax for faster processing
+            \[
+            \begin{array}{lrcll}
+            \textsf{Programs} & P & ::= & \overline{d} & \text{zero or more definitions} \\
+            \\
+            \textsf{Definitions} & d & ::= & \it{val}\; x\;~\it{=}\;~\expr & \text{bind name to expression} \\
+            \\
+            \textsf{Expressions} & \expr & ::= & \v & \text{literal values} \\
+            & & | & x, y, z & \text{names} \\
+            & & | & \bf{if}\;~\left[\; \overline{G}\right]\;~\bf{fi} & \text{if-fi} \\
+            & & | & K~\overline{\expr} & \text{value constructor application} \\
+            & & | & \expr[1]\;~\expr[2] & \text{function application} \\
+            \\
+            \textsf{Guarded Expressions} & G & ::= & [\vexists{\overline{x}}]~\overline{g}~\boldsymbol{\rightarrow}\expr & \text{names, guards, and body} \\
+            \\
+            \textsf{Guards} & g & ::= & \expr & \text{intermediate expression} \\
+            & & | & \expr[1] =~\expr[2] & \text{equation} \\
+            & & | & \overline{g}^{+}~\choice~\overline{g}^{+} & \text{choice; each side has at least one guard} \\
+            \\
+            \textsf{Values} & \v & ::= & K\;\overline{\v} & \text{value constructor application} \\
+            & & | & \lambda x.\;~\expr & \text{lambda value}
+            \end{array}
+            \]
+            \medskip
+
+          * Desugars to~{$x = e_{1};\; x = e_{2}$}, $x$ fresh. %
+          \end{center}
+          \caption{\VMinus: Concrete syntax (array-based)}\footnote{$\overline{x}$ means ``zero or more of $x$;''
+          $\overline{x}^{+}$ means ``one or more of $x$.''}
+          \label{fig:vmsyntax-array}
+        \end{figure}
 
         There are two small syntactic details: a guarded expression $G$ in an
         \iffibf is separated from its neighbors by a \dbar, and each guard $g$
@@ -824,6 +859,16 @@ The spec of~\D~and the match compilation algorithm is presented below. %
     % \Description{The concrete syntax of D.}
     \caption{\D: Syntax}
     \label{fig:dsyntax}
+    \end{figure}
+
+  \begin{figure}[t]
+    \scriptsize
+    \begin{center}
+    \dcsyntaxarray
+    \end{center}
+    % \Description{The concrete syntax of D.}
+    \caption{\D: Syntax (array-based)}
+    \label{fig:dsyntax-array}
     \end{figure}
 
   \D~shares most syntax and corresponding evaluation rules with~\VMinus, except

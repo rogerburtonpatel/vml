@@ -171,7 +171,7 @@
 
 }
 
-\newcommand\dcsyntax {% 
+\newcommand\dcsyntax {%
 
 \begin{bnf}
   $P$ :~\textsf{Programs} ::=
@@ -181,24 +181,51 @@
   | $\it{val}\; x\;~\it{=}\;~\expr$ : bind name to expression
   ;;
   $\expr$ :~\textsf{Expressions} ::=
-  | $\v$ : literal values 
+  | $\v$ : literal values
   | $x, y, z$ : names
   | $\dt$ : decision tree
-  | $K~\bracketed{\expr}$ : value constructor application 
-  | $\expr[1]\;~\expr[2]$ : function application 
-  | $\lambda x.\;~\expr$ : lambda declaration 
+  | $K~\bracketed{\expr}$ : value constructor application
+  | $\expr[1]\;~\expr[2]$ : function application
+  | $\lambda x.\;~\expr$ : lambda declaration
   ;;
-  $\dt$ : Decision Trees ::= 
+  $\dt$ : Decision Trees ::=
   {\ensuremath{\it{test}\; x\; {\bracketed{K\bracketed{y} \; \Rightarrow\; \dt}} [\it{else}\; \dt]}} : test node
   | {\ensuremath{\it{let}\; x\; \it{=}\; \expr\; \it{in}\; \dt[\it{ unless fail => } \; \dt]}} : let-unless node
   | {\ensuremath{\it{if}\; x\; \it{=}\; \expr\; \it{then} \; \dt\; \it {else}\; \dt}} : comparison node
   | {\ensuremath{\textit{match}~e}} : match node
   | {\ensuremath{\fail}} : fail node
   ;;
-  $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application 
+  $\v$ : Values ::= $K\bracketed{\v}$ : value constructor application
   | $\lambda x.\;~\expr$ : lambda value
   ;;
   \end{bnf}
+}
+
+\newcommand\dcsyntaxarray {%
+% Array-based version of D syntax for faster processing
+\[
+\begin{array}{lrcll}
+\textsf{Programs} & P & ::= & \bracketed{d} & \text{definition} \\
+\\
+\textsf{Definitions} & d & ::= & \it{val}\; x\;~\it{=}\;~\expr & \text{bind name to expression} \\
+\\
+\textsf{Expressions} & \expr & ::= & \v & \text{literal values} \\
+& & | & x, y, z & \text{names} \\
+& & | & \dt & \text{decision tree} \\
+& & | & K~\bracketed{\expr} & \text{value constructor application} \\
+& & | & \expr[1]\;~\expr[2] & \text{function application} \\
+& & | & \lambda x.\;~\expr & \text{lambda declaration} \\
+\\
+\textsf{Decision Trees} & \dt & ::= & \it{test}\; x\; {\bracketed{K\bracketed{y} \; \Rightarrow\; \dt}} [\it{else}\; \dt] & \text{test node} \\
+& & | & \it{let}\; x\; \it{=}\; \expr\; \it{in}\; \dt[\it{ unless fail => } \; \dt] & \text{let-unless node} \\
+& & | & \it{if}\; x\; \it{=}\; \expr\; \it{then} \; \dt\; \it {else}\; \dt & \text{comparison node} \\
+& & | & \textit{match}~e & \text{match node} \\
+& & | & \fail & \text{fail node} \\
+\\
+\textsf{Values} & \v & ::= & K\bracketed{\v} & \text{value constructor application} \\
+& & | & \lambda x.\;~\expr & \text{lambda value}
+\end{array}
+\]
 }
 
 %%%%%%%%%% VERSE CONCRETE SYNTAX %%%%%%%%%%
