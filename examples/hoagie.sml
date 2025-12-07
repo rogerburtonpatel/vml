@@ -45,3 +45,37 @@ fun princeton_snacktime card store free_time =
 
 
 case ⟿ if fi 
+
+case x of Y z ... 
+        | A b (C d) ... 
+... 
+
+freeNames : expr -> string list 
+fun freenames e = 
+  case e of 
+  Int _   => []
+  Bool _  => []
+  Float _ => []
+  Local n  => [n]
+  Global n => [n]
+  ... (* recursive cases *)
+
+freeNames : expr -> string list 
+fun freeNames e = 
+  case e of 
+  Int _ | Bool _  | Float _ => []
+  Local n | Global n => [n]
+  ... (* recursive cases *)
+
+  l = 3 :: nil 
+if 
+  ∃ x xs. l = x :: xs; even x | prime x -> x 
+fi 
+
+l = 3 :: nil 
+if 
+  ∃ x xs. l = x :: xs; even x | prime x -> x 
+fi 
+
+
+λ
